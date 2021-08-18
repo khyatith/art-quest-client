@@ -1,25 +1,27 @@
-import logo from './logo.svg';
-import './App.css';
+import { BrowserRouter, Switch, Route } from "react-router-dom";
+import { socket } from "./global/socket";
+import React, { useEffect, useState } from "react";
+import LaunchScreen from "./components/lauchScreen";
+import StagingScreen from "./components/StagingScreen";
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+	useEffect(() => {
+		socket.on("gameState", handleGameState);
+	}, [window.gameStateGlobal]);
+
+	const handleGameState = gameState => {
+		gameState = JSON.parse(gameState);
+		window.gameStateGlobal = gameState;
+	};
+
+	return (
+		<BrowserRouter>
+			<Switch>
+				<Route path="/" exact component={LaunchScreen} />
+				<Route path="/staging/:code" exact component={StagingScreen} />
+			</Switch>
+		</BrowserRouter>
+	);
 }
 
 export default App;
