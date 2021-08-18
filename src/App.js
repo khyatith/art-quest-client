@@ -12,6 +12,7 @@ function App() {
 	const handleGameState = gameState => {
 		gameState = JSON.parse(gameState);
 		window.gameStateGlobal = gameState;
+		console.log(window.gameStateGlobal);
 	};
 
 	return (
