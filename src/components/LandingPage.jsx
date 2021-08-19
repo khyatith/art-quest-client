@@ -32,17 +32,13 @@ function LandingPage() {
   useEffect(() => {
     socket.on("gameState", gameState => {
       const globalGameState = JSON.parse(gameState);
-      console.log('globalGameState', globalGameState);
-      //const { auctions } = KSk_1BVI2WOjHJXTAAAB
       const { auctions } = globalGameState;
-      console.log('auctions', auctions);
       setArtifacts(auctions.artifacts);
       setGameState(gameState);
     })
   }, [gameState]);
 
   const renderArtifacts = () => {
-    console.log('inside', artifacts)
     return artifacts.map(artifact => {
       return (
         <Card key={artifact.id}>
