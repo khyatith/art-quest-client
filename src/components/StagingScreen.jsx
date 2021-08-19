@@ -22,7 +22,8 @@ function StagingScreen() {
 	const location = useLocation();
 
 	const handleClick = () => {
-		socket.emit("startGame", socket.id);
+    socket.emit("joinRoom", socket.id);
+    history.push("/game/" + socket.id);
 	};
 
 	return (
