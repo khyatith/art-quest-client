@@ -33,7 +33,7 @@ function LaunchScreen() {
 
 	const handleCreate = () => {
 		socket.emit("createRoom", JSON.stringify(player));
-    history.push("/staging/" + socket.id);
+		history.push("/staging/" + socket.id);
 	};
 
 	const handleChange = event => {
@@ -53,8 +53,8 @@ function LaunchScreen() {
 	};
 
 	const handleJoin = () => {
-		socket.emit("joinRoom", JSON.stringify(player));
-    history.push("/game/" + socket.id);
+		socket.emit("joinRoom", JSON.stringify(joinCode));
+		history.push("/staging/" + joinCode.hostCode);
 	};
 
 	return (
