@@ -9,6 +9,7 @@ import CardContent from "@material-ui/core/CardContent";
 import CardActions from "@material-ui/core/CardActions";
 import IconButton from "@material-ui/core/IconButton";
 import FavoriteIcon from "@material-ui/icons/Favorite";
+import LiveAuctions from './LiveAuctions';
 
 const useStyles = makeStyles(theme => ({
 	root: {
@@ -27,23 +28,29 @@ function LandingPage() {
 		auctions: {
 			artifacts: [],
 		},
-	});
+  });
+  const [startAuctions, setStartAuctions] = useState(false);
 
 	useEffect(() => {
 		socket.on("gameState", gameState => {
 			setGameState(JSON.parse(gameState));
 		});
-	}, []);
+  }, []);
+  
+  const startLiveAuction = () => {
+    setStartAuctions(true);
+    socket.emit("startLiveAuctions");
+  }
 
 	const renderArtifacts = () => {
-		let { auctions } = gameState;
+    let { auctions } = gameState;
 		return auctions.artifacts.map(artifact => {
 			return (
 				<Card key={artifact.id}>
 					<CardHeader title={artifact.name} />
 					<CardMedia className={classes.media} component="img" image={`${artifact.imageURL}`} title={artifact.name} />
 					<CardActions disableSpacing>
-						<Button variant="contained" color="secondary">
+						<Button variant="contained" color="secondary" onClick={startLiveAuction}>
 							Nominate
 						</Button>
 					</CardActions>
@@ -52,7 +59,16 @@ function LandingPage() {
 		});
 	};
 	//return <div></div>;
-	return <div className={classes.root}>{renderArtifacts()}</div>;
+	return (
+    <>
+      {
+        !startAuctions ?
+        <div className={classes.root}>{renderArtifacts()}</div>
+        :
+        <LiveAuctions getNextAuctionObj={startLiveAuction} />
+      }
+    </>
+  )
 }
 
 export default LandingPage;
