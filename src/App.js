@@ -1,6 +1,5 @@
 import { BrowserRouter, Switch, Route } from "react-router-dom";
-import { socket } from "./global/socket";
-import React, { useEffect } from "react";
+import React from "react";
 import LaunchScreen from "./components/lauchScreen";
 import StagingScreen from "./components/StagingScreen";
 import Game from "./components/Game";

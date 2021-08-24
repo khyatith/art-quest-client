@@ -7,8 +7,6 @@ import CardHeader from "@material-ui/core/CardHeader";
 import CardMedia from "@material-ui/core/CardMedia";
 import CardContent from "@material-ui/core/CardContent";
 import CardActions from "@material-ui/core/CardActions";
-import IconButton from "@material-ui/core/IconButton";
-import FavoriteIcon from "@material-ui/icons/Favorite";
 import { Typography } from "@material-ui/core";
 import { TextField } from "@material-ui/core";
 
@@ -28,22 +26,11 @@ function LiveAuctions({ gameState, getNextAuctionObj }) {
     const [artifact, setArtifact] = useState();
     const [auctionObj, setAuctionObj] = useState();
 
-    // useEffect(() => {
-    //     socket.on("gameState", state => {
-    //         console.log(state);
-    //         setGameState(JSON.parse(state));
-    //     });
-    // }, [gameState]);
-
     useEffect(() => {
       socket.on("startNextAuction", auctionObj => {
         setAuctionObj(auctionObj);
       });
     }, [auctionObj]);
-
-    const getNextAuctionObject = () => {
-      getNextAuctionObj();
-    }
 
     const renderArtifacts = () => {
         let { auctions } = gameState;
