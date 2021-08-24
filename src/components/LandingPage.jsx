@@ -7,6 +7,7 @@ import CardHeader from "@material-ui/core/CardHeader";
 import CardMedia from "@material-ui/core/CardMedia";
 import CardActions from "@material-ui/core/CardActions";
 import LiveAuctions from './LiveAuctions';
+import Timer from "../components/Timer";
 
 const useStyles = makeStyles(theme => ({
 	root: {
@@ -55,12 +56,17 @@ function LandingPage() {
 			);
 		});
 	};
-	//return <div></div>;
+
 	return (
     <>
       {
         !startAuctions ?
-        <div className={classes.root}>{renderArtifacts()}</div>
+        <div className={classes.root}>
+          <>
+            <Timer />
+            {renderArtifacts()}
+          </>
+        </div>
         :
         <LiveAuctions getNextAuctionObj={startLiveAuction} />
       }
