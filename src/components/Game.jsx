@@ -6,7 +6,7 @@ function Game() {
 
   useEffect(() => {
     socket.emit("startLandingPageTimer", 10);
-  });
+  }, []);
 
 	return (
 		<div>

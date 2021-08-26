@@ -27,12 +27,22 @@ function LandingPage() {
 			artifacts: [],
 		},
   });
+  const [hasTimerEnded, setHasTimerEnded] = useState(false);
   const [startAuctions, setStartAuctions] = useState(false);
+  const [timerEndMessage, setTimerEndMessage] = useState(null);
+
+  // useEffect(() => {
+  //   socket.on("landingPageTimerEnds", message => {
+  //     console.log('inside landing page timer ends');
+  //     setTimerEndMessage(message);
+  //     setHasTimerEnded(true);
+  //   });
+  // }, [hasTimerEnded]);
 
 	useEffect(() => {
 		socket.on("gameState", gameState => {
 			setGameState(JSON.parse(gameState));
-		});
+    });
   }, []);
   
   const startLiveAuction = () => {
@@ -63,7 +73,7 @@ function LandingPage() {
         !startAuctions ?
         <div className={classes.root}>
           <>
-            <Timer />
+            {<Timer />}
             {renderArtifacts()}
           </>
         </div>
