@@ -25,30 +25,46 @@ function LaunchScreen() {
 	const { player, setPlayer } = useContext(userContext);
 
 	const handleCreate = () => {
+		localStorage.setItem("user", JSON.stringify(player));
 		socket.emit("createRoom", JSON.stringify(player));
 		history.push("/staging/" + player.playerId);
 	};
 
 	const handleChange = event => {
 		const { name, value } = event.target;
-		setPlayer(prevValues => {
-			return {
-				...prevValues,
-				[name]: value,
-			};
-		});
-		if (player.playerId === "") {
-			let uid = getRandomString(6);
+		if (localStorage.getItem("user") === null) {
 			setPlayer(prevValues => {
 				return {
 					...prevValues,
-					playerId: uid,
+					[name]: value,
+				};
+			});
+			if (player.playerId === "") {
+				let uid = getRandomString(6);
+				setPlayer(prevValues => {
+					return {
+						...prevValues,
+						playerId: uid,
+					};
+				});
+			}
+		} else {
+			console.log("game");
+			let gamer = JSON.parse(localStorage.getItem("user"));
+			setPlayer(prevValues => {
+				return {
+					...prevValues,
+					...gamer,
+					[name]: value,
 				};
 			});
 		}
 	};
 
 	const handleJoin = () => {
+		if (localStorage.getItem("user") === null) {
+			localStorage.setItem("user", player);
+		}
 		socket.emit("joinRoom", JSON.stringify(player));
 		history.push("/staging/" + player.hostCode);
 	};
