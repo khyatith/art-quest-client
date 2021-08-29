@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import { Typography } from "@material-ui/core";
 import TextField from "@material-ui/core/TextField";
 import { useHistory } from "react-router";
 import { socket } from "../global/socket";
+import userContext from "../global/userContext";
 
 const useStyles = makeStyles(theme => ({
 	root: {
@@ -21,19 +22,11 @@ const useStyles = makeStyles(theme => ({
 function LaunchScreen() {
 	const classes = useStyles();
 	const history = useHistory();
-	const [player, setPlayer] = useState({
-		playerName: "",
-		teamName: "",
-	});
-	const [joinCode, setJoinCode] = useState({
-		hostCode: "",
-		playerName: "",
-		teamName: "",
-	});
+	const { player, setPlayer } = useContext(userContext);
 
 	const handleCreate = () => {
 		socket.emit("createRoom", JSON.stringify(player));
-		history.push("/staging/" + socket.id);
+		history.push("/staging/" + player.playerId);
 	};
 
 	const handleChange = event => {
@@ -44,18 +37,30 @@ function LaunchScreen() {
 				[name]: value,
 			};
 		});
-		setJoinCode(prevValues => {
-			return {
-				...prevValues,
-				[name]: value,
-			};
-		});
+		if (player.playerId === "") {
+			let uid = getRandomString(6);
+			setPlayer(prevValues => {
+				return {
+					...prevValues,
+					playerId: uid,
+				};
+			});
+		}
 	};
 
 	const handleJoin = () => {
-		socket.emit("joinRoom", JSON.stringify(joinCode));
-		history.push("/staging/" + joinCode.hostCode);
+		socket.emit("joinRoom", JSON.stringify(player));
+		history.push("/staging/" + player.hostCode);
 	};
+
+	function getRandomString(length) {
+		var randomChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+		var result = "";
+		for (var i = 0; i < length; i++) {
+			result += randomChars.charAt(Math.floor(Math.random() * randomChars.length));
+		}
+		return result;
+	}
 
 	return (
 		<div className={classes.root}>

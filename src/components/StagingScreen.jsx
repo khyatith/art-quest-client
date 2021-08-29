@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useContext } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import { useHistory, useLocation } from "react-router-dom";
 import { socket } from "../global/socket";
+import userContext from "../global/userContext";
 
 const useStyles = makeStyles(theme => ({
 	root: {
@@ -20,9 +21,10 @@ function StagingScreen() {
 	const classes = useStyles();
 	const history = useHistory();
 	const location = useLocation();
+	const { player, setPlayer } = useContext(userContext);
 
 	const handleClick = () => {
-		socket.emit("startGame", socket.id);
+		socket.emit("startGame", JSON.stringify(player));
 		history.push("/game/" + location.pathname.substring(9, 29));
 	};
 
