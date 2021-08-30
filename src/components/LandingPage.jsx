@@ -45,9 +45,11 @@ function LandingPage() {
     });
   }, []);
   
-  const startLiveAuction = () => {
-    setStartAuctions(true);
-    socket.emit("startLiveAuctions");
+  const startLiveAuction = (currentAuctionObj) => {
+    if (!currentAuctionObj || !currentAuctionObj.newState || currentAuctionObj.auctionState === 2) {
+      setStartAuctions(true);
+      socket.emit("startLiveAuctions");
+    }
   }
 
 	const renderArtifacts = () => {
@@ -73,7 +75,7 @@ function LandingPage() {
         !startAuctions ?
         <div className={classes.root}>
           <>
-            {<Timer />}
+            {<Timer sourcePage={'landing'} />}
             {renderArtifacts()}
           </>
         </div>

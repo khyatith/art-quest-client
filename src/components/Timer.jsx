@@ -1,16 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { socket } from "../global/socket";
 
-function Timer() {
+function Timer({ sourcePage }) {
 
   const [currentTime, setCurrentTime] = useState();
 
   useEffect(() => {
-    socket.on("timerValue", value => {
-      console.log('value', value);
+    socket.on("landingPageTimerValue", value => {
       setCurrentTime(value);
     });
-  }, []);
+  });
 
 	return (
 		<div>
