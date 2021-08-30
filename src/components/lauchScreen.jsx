@@ -63,7 +63,7 @@ function LaunchScreen() {
 
 	const handleJoin = () => {
 		if (localStorage.getItem("user") === null) {
-			localStorage.setItem("user", player);
+			localStorage.setItem("user", JSON.stringify(player));
 		}
 		socket.emit("joinRoom", JSON.stringify(player));
 		history.push("/staging/" + player.hostCode);
