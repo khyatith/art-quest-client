@@ -21,16 +21,62 @@ const useStyles = makeStyles(theme => ({
 	},
 }));
 
-function LiveAuctions({ gameState, getNextAuctionObj }) {
+function LiveAuctions({ getNextAuctionObj }) {
 	const classes = useStyles();
-	const [artifact, setArtifact] = useState();
-	const [auctionObj, setAuctionObj] = useState();
+  const [auctionObj, setAuctionObj] = useState();
+  const [currentBid, setCurrentBid] = useState();
+  const [auctionTimer, setAuctionTimer] = useState({
+    total: 0,
+    minutes: 0,
+    seconds: 0
+  });
+  const [bidWinner, setBidWinner] = useState();
 
 	useEffect(() => {
-		socket.on("startNextAuction", auctionObj => {
-			setAuctionObj(auctionObj);
-		});
-	}, [auctionObj]);
+    socket.removeListener('landingPageTimerValue');
+    socket.on("startNextAuction", auctionObj => {
+      if (auctionObj) {
+        setAuctionObj(auctionObj);
+      }
+    });
+  }, [auctionObj]);
+  
+  useEffect(() => {
+    setTimeout(() => {
+      socket.emit("startAuctionsTimer", 2);
+    }, 10000);
+  }, [auctionObj]);
+
+  useEffect(() => {
+    socket.on('auctionTimerValue', timerValue => {
+      setAuctionTimer(timerValue);
+    });
+  }, [auctionTimer]);
+
+  useEffect(() => {
+    socket.on("displayBidWinner", bidWinner => {
+      console.log('bidWinner', bidWinner);
+      setBidWinner(bidWinner);
+    });
+  }, [auctionTimer])
+
+  const nextAuctionObj = () => {
+    getNextAuctionObj(auctionObj);
+  }
+
+  const setBidAmt = () => {
+    const bidInfo = {
+      auctionType: auctionObj.auctionType,
+      auctionObj: auctionObj,
+      bidAmount: currentBid,
+      bidAt: + new Date()
+    };
+    socket.emit("addNewBid", bidInfo);
+  }
+
+  const setCurrentBidAmt = (e) => {
+    setCurrentBid(e.target.value);
+  }
 
 	return (
 		<div className={classes.root}>
@@ -41,19 +87,21 @@ function LiveAuctions({ gameState, getNextAuctionObj }) {
 						<CardMedia className={classes.media} component="img" image={`${auctionObj.imageURL}`} title={auctionObj.name} />
 						<CardContent>
 							<Typography color="textSecondary">Original price:{auctionObj.originalValue}</Typography>
-							<Typography>Winning Bid: {auctionObj.bid.buyingPrice}</Typography>
-							<Typography>Winning Team: {auctionObj.bid.buyingTeam}</Typography>
+							{/* <Typography>Winning Bid: {auctionObj && auctionObj.bid.buyingPrice}</Typography>
+							<Typography>Winning Team: {auctionObj && auctionObj.bid.buyingTeam}</Typography> */}
 						</CardContent>
 						<CardActions disableSpacing>
-							<TextField name="bidAmount" placeholder="Bidding Amount" variant="outlined" />
-							<Button variant="contained" color="secondary">
+							<TextField type="number" name="bidAmount" placeholder="Bidding Amount" variant="outlined" onChange={setCurrentBidAmt} />
+							<Button variant="contained" color="secondary" onClick={setBidAmt}>
 								Bid
 							</Button>
+              <div>Bid time remaining: {auctionTimer && auctionTimer.minutes}:{ auctionTimer && auctionTimer.seconds}</div>
 						</CardActions>
 					</Card>
 				</>
 			)}
-			<Button onClick={getNextAuctionObj}>Next</Button>
+			<Button onClick={nextAuctionObj}>Next</Button>
+      { bidWinner && <div>Bid winner is {JSON.stringify(bidWinner)}</div>}
 		</div>
 	);
 }
