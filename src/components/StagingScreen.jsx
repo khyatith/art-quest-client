@@ -4,6 +4,7 @@ import Button from "@material-ui/core/Button";
 import { useHistory, useLocation } from "react-router-dom";
 import { socket } from "../global/socket";
 import userContext from "../global/userContext";
+import Header from "./Header";
 
 const useStyles = makeStyles(theme => ({
 	root: {
@@ -29,17 +30,20 @@ function StagingScreen() {
 	};
 
 	return (
-		<div className={classes.root}>
-			<div>
-				<h1 className={classes.form}>Your game code is: {location.pathname.substring(9, 29)}</h1>
-				<h1 className={classes.form}>Your UID is: {player.playerId}</h1>
-			</div>
-			<form>
-				<Button className={classes.form} variant="contained" color="primary" onClick={handleClick}>
-					Play
-				</Button>
-			</form>
-		</div>
+		<>
+      <Header />
+      <div className={classes.root}>
+        <div>
+          <h1 className={classes.form}>Your game code is: {location.pathname.substring(9, 29)}</h1>
+          <h1 className={classes.form}>Your UID is: {player.playerId}</h1>
+        </div>
+        <form>
+          <Button className={classes.form} variant="contained" color="primary" onClick={handleClick}>
+            Play
+          </Button>
+        </form>
+      </div>
+		</>
 	);
 }
 

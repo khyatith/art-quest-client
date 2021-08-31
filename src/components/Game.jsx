@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
-import LandingPage from "../components/LandingPage";
+import LandingPage from "./LandingPage";
+import Header from "./Header";
 import { socket } from "../global/socket";
 
 function Game() {
@@ -10,6 +11,7 @@ function Game() {
 
 	return (
 		<div>
+      <Header />
 			<LandingPage />
 		</div>
 	);

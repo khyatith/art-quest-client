@@ -2,22 +2,32 @@ import React, { useEffect, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import { socket } from "../global/socket";
-import Card from "@material-ui/core/Card";
-import CardHeader from "@material-ui/core/CardHeader";
-import CardMedia from "@material-ui/core/CardMedia";
-import CardActions from "@material-ui/core/CardActions";
+import ImageList from '@material-ui/core/ImageList';
+import ImageListItem from '@material-ui/core/ImageListItem';
+import ImageListItemBar from '@material-ui/core/ImageListItemBar';
 import LiveAuctions from './LiveAuctions';
-import Timer from "../components/Timer";
+import Timer from "./Timer";
+import AppBar from '@material-ui/core/AppBar';
 
 const useStyles = makeStyles(theme => ({
-	root: {
-		width: 500,
-		padding: 100,
-		margin: "0 30%",
-	},
+  root: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    justifyContent: 'space-around',
+    overflow: 'hidden',
+    backgroundColor: theme.palette.background.paper,
+    padding: 50
+  },
+  imageList: {
+    width: 900,
+    height: 800,
+  },
 	media: {
 		height: "200px", // 16:9
-	},
+  },
+  appbar: {
+    backgroundColor: '#2ECC71'
+  }
 }));
 
 function LandingPage() {
@@ -30,6 +40,10 @@ function LandingPage() {
   const [hasTimerEnded, setHasTimerEnded] = useState(false);
   const [startAuctions, setStartAuctions] = useState(false);
   const [timerEndMessage, setTimerEndMessage] = useState(null);
+  const [landingPageTimerValue, setLandingPageTimerValue] = useState({
+    minutes: '00',
+    seconds: '00'
+  });
 
   // useEffect(() => {
   //   socket.on("landingPageTimerEnds", message => {
@@ -44,6 +58,13 @@ function LandingPage() {
 			setGameState(JSON.parse(gameState));
     });
   }, []);
+
+  useEffect(() => {
+    socket.on("landingPageTimerValue", value => {
+      console.log('value', value);
+      setLandingPageTimerValue(value);
+    });
+  });
   
   const startLiveAuction = (currentAuctionObj) => {
     if (!currentAuctionObj || !currentAuctionObj.newState || currentAuctionObj.auctionState === 2) {
@@ -51,33 +72,42 @@ function LandingPage() {
       socket.emit("startLiveAuctions");
     }
   }
-
-	const renderArtifacts = () => {
+  
+  const renderArtifacts = () => {
     let { auctions } = gameState;
-		return auctions.artifacts.map(artifact => {
-			return (
-				<Card key={artifact.id}>
-					<CardHeader title={artifact.name} />
-					<CardMedia className={classes.media} component="img" image={`${artifact.imageURL}`} title={artifact.name} />
-					<CardActions disableSpacing>
-						<Button variant="contained" color="secondary" onClick={startLiveAuction}>
-							Nominate
-						</Button>
-					</CardActions>
-				</Card>
-			);
-		});
-	};
+    return (
+      <div className={classes.root}>
+        <ImageList rowHeight={200} gap={20} className={classes.imageList}>
+          {auctions.artifacts.map((item) => {
+            return (
+              <ImageListItem key={item.id}>
+                <img src={item.imageURL} alt={item.name} />
+                <ImageListItemBar
+                  title={item.name}
+                  subtitle={<span>by: {item.artist}</span>}
+                  // actionIcon={
+                  //   <IconButton aria-label={`info about ${item.name}`} className={classes.icon}>
+                  //     <InfoIcon />
+                  //   </IconButton>
+                  // }
+                />
+              </ImageListItem>
+            )
+          })}
+        </ImageList>
+      </div>
+    )
+  }
 
 	return (
     <>
       {
         !startAuctions ?
         <div className={classes.root}>
-          <>
-            {<Timer sourcePage={'landing'} />}
-            {renderArtifacts()}
-          </>
+          <AppBar position="fixed" className={classes.appbar}>
+            <Timer timerValue={landingPageTimerValue} />
+          </AppBar>
+          {renderArtifacts()}
         </div>
         :
         <LiveAuctions getNextAuctionObj={startLiveAuction} />
