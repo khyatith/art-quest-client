@@ -32,12 +32,12 @@ function LaunchScreen() {
 	};
 
 	const handleChange = event => {
-		const { name, value } = event.target;
+    const { name, value } = event.target;
 		if (localStorage.getItem("user") === null) {
 			setPlayer(prevValues => {
 				return {
 					...prevValues,
-					[name]: value,
+          [name]: value,
 				};
 			});
 			if (player.playerId === "") {

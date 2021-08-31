@@ -27,6 +27,20 @@ const useStyles = makeStyles(theme => ({
   },
   appbar: {
     backgroundColor: '#2ECC71'
+  },
+  startauctionsbtndiv: {
+    marginLeft: '45%',
+    marginTop: '100px',
+    display: 'block',
+    position: 'relative'
+  },
+  startbtn: {
+    width: '200px',
+    height: '60px',
+    "&.MuiButton-label": {
+      fontWeight: '700',
+      fontSize: '18px'
+    }
   }
 }));
 
@@ -37,21 +51,18 @@ function LandingPage() {
 			artifacts: [],
 		},
   });
-  const [hasTimerEnded, setHasTimerEnded] = useState(false);
   const [startAuctions, setStartAuctions] = useState(false);
-  const [timerEndMessage, setTimerEndMessage] = useState(null);
   const [landingPageTimerValue, setLandingPageTimerValue] = useState({
+    total: '0',
     minutes: '00',
     seconds: '00'
   });
 
-  // useEffect(() => {
-  //   socket.on("landingPageTimerEnds", message => {
-  //     console.log('inside landing page timer ends');
-  //     setTimerEndMessage(message);
-  //     setHasTimerEnded(true);
-  //   });
-  // }, [hasTimerEnded]);
+  useEffect(() => {
+    setTimeout(() => {
+      socket.emit("startLandingPageTimer", 10);
+    }, 5000);
+  }, []);
 
 	useEffect(() => {
 		socket.on("gameState", gameState => {
@@ -64,7 +75,7 @@ function LandingPage() {
       console.log('value', value);
       setLandingPageTimerValue(value);
     });
-  });
+  }, []);
   
   const startLiveAuction = (currentAuctionObj) => {
     if (!currentAuctionObj || !currentAuctionObj.newState || currentAuctionObj.auctionState === 2) {
@@ -103,10 +114,13 @@ function LandingPage() {
     <>
       {
         !startAuctions ?
-        <div className={classes.root}>
+        <div>
           <AppBar position="fixed" className={classes.appbar}>
             <Timer timerValue={landingPageTimerValue} />
           </AppBar>
+          <div className={classes.startauctionsbtndiv}>
+            <Button variant="contained" color="secondary" className={classes.startbtn} onClick={startLiveAuction}>Start Auctions</Button>
+          </div>
           {renderArtifacts()}
         </div>
         :
