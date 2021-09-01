@@ -6,7 +6,7 @@ import TextField from "@material-ui/core/TextField";
 import { useHistory } from "react-router";
 import { socket } from "../global/socket";
 import userContext from "../global/userContext";
-import Header from './Header';
+import Header from "./Header";
 
 const useStyles = makeStyles(theme => ({
 	root: {
@@ -26,18 +26,18 @@ function LaunchScreen() {
 	const { player, setPlayer } = useContext(userContext);
 
 	const handleCreate = () => {
-		localStorage.setItem("user", JSON.stringify(player));
+		sessionStorage.setItem("user", JSON.stringify(player));
 		socket.emit("createRoom", JSON.stringify(player));
 		history.push("/staging/" + player.playerId);
 	};
 
 	const handleChange = event => {
-    const { name, value } = event.target;
-		if (localStorage.getItem("user") === null) {
+		const { name, value } = event.target;
+		if (sessionStorage.getItem("user") === null) {
 			setPlayer(prevValues => {
 				return {
 					...prevValues,
-          [name]: value,
+					[name]: value,
 				};
 			});
 			if (player.playerId === "") {
@@ -51,7 +51,7 @@ function LaunchScreen() {
 			}
 		} else {
 			console.log("game");
-			let gamer = JSON.parse(localStorage.getItem("user"));
+			let gamer = JSON.parse(sessionStorage.getItem("user"));
 			setPlayer(prevValues => {
 				return {
 					...prevValues,
@@ -63,8 +63,8 @@ function LaunchScreen() {
 	};
 
 	const handleJoin = () => {
-		if (localStorage.getItem("user") === null) {
-			localStorage.setItem("user", JSON.stringify(player));
+		if (sessionStorage.getItem("user") === null) {
+			sessionStorage.setItem("user", JSON.stringify(player));
 		}
 		socket.emit("joinRoom", JSON.stringify(player));
 		history.push("/staging/" + player.hostCode);
@@ -80,22 +80,22 @@ function LaunchScreen() {
 	}
 
 	return (
-    <>
+		<>
 			<Header />
-        <div className={classes.root}>
-        <h1>Auction Game</h1>
-        <TextField className={classes.form} name="playerName" label="Player Name" variant="outlined" onChange={handleChange} />
-        <TextField className={classes.form} name="teamName" label="Team Name" variant="outlined" onChange={handleChange} />
-        <Button className={classes.form} variant="contained" color="primary" onClick={handleCreate}>
-          Create Game
-        </Button>
-        <Typography className={classes.form}>Or</Typography>
-        <TextField className={classes.form} name="hostCode" label="Game Code" variant="outlined" onChange={handleChange} />
-        <Button className={classes.form} variant="contained" color="primary" onClick={handleJoin}>
-          Join Game
-        </Button>
-		  </div>
-    </>
+			<div className={classes.root}>
+				<h1>Auction Game</h1>
+				<TextField className={classes.form} name="playerName" label="Player Name" variant="outlined" onChange={handleChange} />
+				<TextField className={classes.form} name="teamName" label="Team Name" variant="outlined" onChange={handleChange} />
+				<Button className={classes.form} variant="contained" color="primary" onClick={handleCreate}>
+					Create Game
+				</Button>
+				<Typography className={classes.form}>Or</Typography>
+				<TextField className={classes.form} name="hostCode" label="Game Code" variant="outlined" onChange={handleChange} />
+				<Button className={classes.form} variant="contained" color="primary" onClick={handleJoin}>
+					Join Game
+				</Button>
+			</div>
+		</>
 	);
 }
 
