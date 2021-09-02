@@ -72,16 +72,13 @@ function LandingPage() {
 
   useEffect(() => {
     socket.on("landingPageTimerValue", value => {
-      console.log('value', value);
       setLandingPageTimerValue(value);
     });
   }, []);
   
   const startLiveAuction = (currentAuctionObj) => {
-    if (!currentAuctionObj || !currentAuctionObj.newState || currentAuctionObj.auctionState === 2) {
-      setStartAuctions(true);
-      socket.emit("startLiveAuctions");
-    }
+    setStartAuctions(true);
+    socket.emit("startLiveAuctions", currentAuctionObj);
   }
   
   const renderArtifacts = () => {

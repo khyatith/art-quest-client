@@ -36,21 +36,21 @@ function LiveAuctions({ getNextAuctionObj }) {
 	const [bidWinner, setBidWinner] = useState();
 
 	useEffect(() => {
-		socket.removeListener("landingPageTimerValue");
-		socket.on("startNextAuction", auctionObj => {
-			if (auctionObj) {
-				setAuctionObj(auctionObj);
-			}
-		});
-	}, [auctionObj]);
-
-	useEffect(() => {
-		setLive(false);
-		setTimeout(() => {
-			socket.emit("startAuctionsTimer", 2);
-			setLive(true);
-		}, 10000);
-	}, [auctionObj]);
+    socket.removeListener('landingPageTimerValue');
+    socket.on("startNextAuction", auctionObj => {
+      if (auctionObj.auctionState !== 2) {
+        setAuctionObj(auctionObj);
+      }
+    });
+  }, [auctionObj]);
+  
+  useEffect(() => {
+    setLive(false);
+    setTimeout(() => {
+      socket.emit("startAuctionsTimer", 1);
+      setLive(true);
+    }, 10000);
+  }, [auctionObj]);
 
 	useEffect(() => {
 		socket.on("auctionTimerValue", timerValue => {
