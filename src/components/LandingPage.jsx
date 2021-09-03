@@ -6,7 +6,6 @@ import ImageList from '@material-ui/core/ImageList';
 import ImageListItem from '@material-ui/core/ImageListItem';
 import ImageListItemBar from '@material-ui/core/ImageListItemBar';
 import LiveAuctions from './LiveAuctions';
-import Timer from "./Timer";
 import AppBar from '@material-ui/core/AppBar';
 
 const useStyles = makeStyles(theme => ({
@@ -41,6 +40,14 @@ const useStyles = makeStyles(theme => ({
       fontWeight: '700',
       fontSize: '18px'
     }
+  },
+  timerwrapper: {
+		margin: '0 auto',
+  },
+  timercontent: {
+    fontWeight: '700',
+    color: '#000000',
+    fontSize: '22px'
   }
 }));
 
@@ -77,6 +84,7 @@ function LandingPage() {
   }, []);
   
   const startLiveAuction = (currentAuctionObj) => {
+    socket.removeListener('landingPageTimerValue');
     setStartAuctions(true);
     socket.emit("startLiveAuctions", currentAuctionObj);
   }
@@ -113,10 +121,12 @@ function LandingPage() {
         !startAuctions ?
         <div>
           <AppBar position="fixed" className={classes.appbar}>
-            <Timer timerValue={landingPageTimerValue} />
+          <div className={classes.timerwrapper}>
+            <p className={classes.timercontent}>Auction starts in: {landingPageTimerValue && landingPageTimerValue.minutes}:{landingPageTimerValue && landingPageTimerValue.seconds}</p>
+          </div>
           </AppBar>
           <div className={classes.startauctionsbtndiv}>
-            <Button variant="contained" color="secondary" className={classes.startbtn} onClick={startLiveAuction}>Start Auctions</Button>
+            <Button variant="contained" color="secondary" className={classes.startbtn} onClick={() => startLiveAuction(null)}>Start Auctions</Button>
           </div>
           {renderArtifacts()}
         </div>

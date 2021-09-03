@@ -22,12 +22,16 @@ const useStyles = makeStyles(theme => ({
 	},
 }));
 
-function FirstPriceSealedBid({ newAuctionObj }) {
+function EnglishAuction({ newAuctionObj }) {
 	const classes = useStyles();
-	const [live, setLive] = useState(false);
 	const { player, setPlayer } = useContext(userContext);
 	const [auctionObj, setAuctionObj] = useState();
-	const [currentBid, setCurrentBid] = useState();
+  const [currentBid, setCurrentBid] = useState();
+  const [isLive, setLive] = useState(false);
+  const [previousBidDetails, setPreviousBidDetails] = useState({
+    bidAmount: 0,
+    bidTeam: null
+  });
 	const [auctionTimer, setAuctionTimer] = useState({
 		total: 0,
 		minutes: 0,
@@ -42,7 +46,6 @@ function FirstPriceSealedBid({ newAuctionObj }) {
   }, [newAuctionObj]);
   
   useEffect(() => {
-    setLive(false);
     setTimeout(() => {
       socket.emit("startAuctionsTimer", 1);
       setLive(true);
@@ -59,27 +62,29 @@ function FirstPriceSealedBid({ newAuctionObj }) {
 		socket.on("displayBidWinner", bidWinner => {
 			setBidWinner(bidWinner);
 		});
-	}, [auctionTimer]);
-
-	useEffect(() => {
-		socket.on("setLiveStyles", team => {
-			if (player.teamName === team) {
-				setLive(false);
-			} else {
-				console.log("not your team");
-			}
-		});
-  }, [player.teamName]);
+  }, [auctionTimer]);
+  
+  useEffect(() => {
+    socket.on("setPreviousBid", previousBid => {
+      setPreviousBidDetails(previousBid);
+    })
+  });
 
 	const setBidAmt = () => {
-		const bidInfo = {
-			auctionType: auctionObj.auctionType,
-			auctionObj: auctionObj,
-			bidAmount: currentBid,
-			bidAt: +new Date(),
-			player: player,
-		};
-		socket.emit("addNewBid", bidInfo);
+    const { bidAmount } = previousBidDetails;
+    if (currentBid <= parseInt(bidAmount)) {
+      //show error
+      return;
+    } else if (currentBid > parseInt(bidAmount)) {
+      const bidInfo = {
+        auctionType: auctionObj.auctionType,
+        auctionObj: auctionObj,
+        bidAmount: currentBid,
+        bidAt: +new Date(),
+        player: player,
+      };
+      socket.emit("addNewBid", bidInfo);
+    }
 	};
 
 	const setCurrentBidAmt = e => {
@@ -99,15 +104,23 @@ function FirstPriceSealedBid({ newAuctionObj }) {
 							<Typography>Winning Team: {auctionObj && auctionObj.bid.buyingTeam}</Typography> */}
 						</CardContent>
 						<CardActions disableSpacing>
-							{live && (
 								<div>
-									<TextField type="number" name="bidAmount" placeholder="Bidding Amount" variant="outlined" onChange={setCurrentBidAmt} />
-									<Button variant="contained" color="secondary" onClick={setBidAmt}>
-										Bid
-									</Button>
+                  { isLive && 
+                    <>
+                      <TextField type="number" name="bidAmount" placeholder="Bidding Amount" variant="outlined" onChange={setCurrentBidAmt} />
+                      <Button variant="contained" color="secondary" onClick={setBidAmt}>
+                        Bid
+                      </Button>
+                    </>
+                  }
 								</div>
-							)}
-							<div>
+                { previousBidDetails &&
+                  <div>
+                    <p>Last Bid: {previousBidDetails.bidAmount}</p>
+                    <p>Bid by: {previousBidDetails.bidTeam}</p>
+                  </div>
+                }
+              <div>
 								Bid time remaining: {auctionTimer && auctionTimer.minutes}:{auctionTimer && auctionTimer.seconds}
 							</div>
 						</CardActions>
@@ -119,4 +132,4 @@ function FirstPriceSealedBid({ newAuctionObj }) {
 	);
 }
 
-export default FirstPriceSealedBid;
+export default EnglishAuction;

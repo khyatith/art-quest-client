@@ -1,7 +1,6 @@
-import React, { useEffect } from "react";
+import React from "react";
 import LandingPage from "./LandingPage";
 import Header from "./Header";
-import { socket } from "../global/socket";
 
 function Game() {
 

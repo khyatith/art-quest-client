@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { socket } from "../global/socket";
 import { makeStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles(theme => ({
@@ -12,18 +13,24 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-function Timer({ timerValue }) {
+function Timer() {
   const classes = useStyles();
-
-  const [currentTime, setCurrentTime] = useState();
+  const [landingPageTimerValue, setLandingPageTimerValue] = useState({
+    total: '0',
+    minutes: '00',
+    seconds: '00'
+  });
 
   useEffect(() => {
-    setCurrentTime(timerValue);
-  });
+    socket.on("landingPageTimerValue", value => {
+      setLandingPageTimerValue(value);
+    });
+  }, []);
+
 
 	return (
 		<div className={classes.wrapper}>
-      <p className={classes.content}>Auction starts in: {currentTime && currentTime.minutes}:{currentTime && currentTime.seconds}</p>
+      <p className={classes.content}>Auction starts in: {landingPageTimerValue && landingPageTimerValue.minutes}:{landingPageTimerValue && landingPageTimerValue.seconds}</p>
 		</div>
 	);
 }
