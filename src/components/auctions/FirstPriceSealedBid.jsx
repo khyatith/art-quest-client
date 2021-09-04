@@ -24,7 +24,7 @@ const useStyles = makeStyles(() => ({
 function FirstPriceSealedBid({ newAuctionObj }) {
   const classes = useStyles();
   const [live, setLive] = useState(false);
-  const { player } = useContext(userContext);
+  const { player, setPlayer } = useContext(userContext);
   const [auctionObj, setAuctionObj] = useState();
   const [currentBid, setCurrentBid] = useState();
   const [auctionTimer, setAuctionTimer] = useState({
@@ -43,7 +43,7 @@ function FirstPriceSealedBid({ newAuctionObj }) {
   useEffect(() => {
     setLive(false);
     setTimeout(() => {
-      socket.emit('startAuctionsTimer', 1);
+      socket.emit('startAuctionsTimer', { auctionType: 1, client: player });
       setLive(true);
     }, 10000);
   }, [auctionObj]);

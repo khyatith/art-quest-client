@@ -43,10 +43,10 @@ function LaunchScreen() {
         setPlayer((prevValues) => ({
           ...prevValues,
           playerId: uid,
+          hostCode: uid,
         }));
       }
     } else {
-      console.log('game');
       const gamer = JSON.parse(sessionStorage.getItem('user'));
       setPlayer((prevValues) => ({
         ...prevValues,
