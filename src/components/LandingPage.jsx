@@ -10,6 +10,9 @@ import userContext from "../global/userContext";
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import ImageGallery from 'react-image-gallery';
+import Modal from '@material-ui/core/Modal';
+import Backdrop from '@material-ui/core/Backdrop';
+import Fade from '@material-ui/core/Fade';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -30,12 +33,6 @@ const useStyles = makeStyles(theme => ({
   appbar: {
     backgroundColor: '#2ECC71',
     flexGrow: 1,
-  },
-  startauctionsbtndiv: {
-    marginLeft: '45%',
-    marginTop: '100px',
-    display: 'block',
-    position: 'relative'
   },
   startbtn: {
     width: '200px',
@@ -62,14 +59,25 @@ const useStyles = makeStyles(theme => ({
     marginTop: '50px',
   },
   titlecontent: {
-    margin: '30px auto',
-    width: '500px',
+    margin: '0 auto',
+    textAlign: 'center',
+    width: '100%',
     fontWeight: 700,
-    color: '#008080',
-    backgroundColor: '#40E0D0',
-    padding: '20px',
-    borderRadius: '10px'
-  }
+    color: '#922B21',
+    backgroundColor: '#FADBD8',
+    padding: '15px',
+  },
+  modal: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  paper: {
+    backgroundColor: theme.palette.background.paper,
+    border: '2px solid #000',
+    boxShadow: theme.shadows[5],
+    padding: theme.spacing(10, 10, 10),
+  },
 }));
 
 const IMAGE_GALLERY_SETTINGS = {
@@ -92,25 +100,38 @@ const IMAGE_GALLERY_SETTINGS = {
 };
 
 function LandingPage() {
-	const classes = useStyles();
+  const classes = useStyles();
+  const { player } = useContext(userContext);
+
+  //states
 	const [gameState, setGameState] = useState({
 		auctions: {
 			artifacts: [],
 		},
   });
   const [startAuctions, setStartAuctions] = useState(false);
-  const { player } = useContext(userContext);
+  const [openModal, setOpenModal] = React.useState(false);
   const [isGalleryFullScreen, setIsGalleryFullscreen] = useState(false);
+  const [hasLandingPageTimerEnded, setHasLandingPageTimerEnded] = useState(false);
   const [landingPageTimerValue, setLandingPageTimerValue] = useState({
     total: '0',
     minutes: '00',
     seconds: '00'
   });
 
+  //hooks and methods
   useEffect(() => {
     setTimeout(() => {
       socket.emit("startLandingPageTimer", 10);
     }, 5000);
+  }, []);
+
+  useEffect(() => {
+    socket.on("landingPageTimerEnded", () => {
+      setHasLandingPageTimerEnded(true);
+      handleOpenModal();
+      socket.removeListener('landingPageTimerValue');
+    });
   }, []);
 
 	useEffect(() => {
@@ -125,15 +146,16 @@ function LandingPage() {
     });
   }, []);
   
+  const handleOpenModal = () => {
+    setOpenModal(true);
+  };
+
   const startLiveAuction = (currentAuctionObj) => {
-    socket.removeListener('landingPageTimerValue');
     setStartAuctions(true);
     socket.emit("startLiveAuctions", currentAuctionObj);
   }
 
   const _onScreenChange = (fullScreenElement) => {
-    console.log('inside fullscreen element', fullScreenElement)
-    console.debug('isFullScreen?', !!fullScreenElement);
     setIsGalleryFullscreen(fullScreenElement);
   }
 
@@ -153,33 +175,60 @@ function LandingPage() {
     return <ImageGallery items={imageGalleryArr} onScreenChange={_onScreenChange} {...IMAGE_GALLERY_SETTINGS} />;
   }
 
+  const renderStartAuctionModal = () => {
+    return(
+      <Modal
+        aria-labelledby="transition-modal-title"
+        aria-describedby="transition-modal-description"
+        className={classes.modal}
+        open={openModal}
+        closeAfterTransition
+        BackdropComponent={Backdrop}
+        BackdropProps={{
+          timeout: 500,
+        }}
+      >
+        <Fade in={openModal}>
+          <div className={classes.paper}>
+            <Button variant="contained" color="secondary" className={classes.startbtn} onClick={() => startLiveAuction(null)}>Start Auctions</Button>
+          </div>
+        </Fade>
+      </Modal>
+    )
+  }
+
 	return (
     <>
       {
         !startAuctions ?
-        <div>
-          <AppBar position="fixed" className={classes.appbar}>
-            <Toolbar>
-              <Typography variant="h6" className={classes.timercontent}>
-                Auction starts in: {landingPageTimerValue && landingPageTimerValue.minutes}:{landingPageTimerValue && landingPageTimerValue.seconds}
-              </Typography>
-              { player &&
-                <div className={classes.playerdiv}>
-                  <p>{player.playerName}, Team {player.teamName}, {player.playerId}</p>
-                </div>
-              }
-            </Toolbar>
-          </AppBar>
-          <Typography variant="h6" className={classes.titlecontent}>
-            Welcome to the world's best painting exhibition. Paintings can be bought once the auction begin.
-          </Typography>
-          {/* <div className={classes.startauctionsbtndiv}>
-            <Button variant="contained" color="secondary" className={classes.startbtn} onClick={() => startLiveAuction(null)}>Start Auctions</Button>
-          </div> */}
-          <div className={classes.imagegallerywrapper}>
-            {renderArtifacts()}
+        (
+          hasLandingPageTimerEnded ?
+          renderStartAuctionModal()
+          :
+          <div>
+            <AppBar position="fixed" className={classes.appbar}>
+              <Toolbar>
+                <Typography variant="h6" className={classes.timercontent}>
+                  Auction starts in: {landingPageTimerValue && landingPageTimerValue.minutes}:{landingPageTimerValue && landingPageTimerValue.seconds}
+                </Typography>
+                { player &&
+                  <div className={classes.playerdiv}>
+                    <p>{player.playerName}, Team {player.teamName}, {player.playerId}</p>
+                  </div>
+                }
+              </Toolbar>
+            </AppBar>
+            <Typography variant="subtitle1" className={classes.titlecontent}>
+              Welcome to the world's best painting exhibition. Paintings can be bought once the auction begin.
+            </Typography>
+            {/* <div className={classes.startauctionsbtndiv}>
+              <Button variant="contained" color="secondary" className={classes.startbtn} onClick={() => startLiveAuction(null)}>Start Auctions</Button>
+            </div> */}
+            <div className={classes.imagegallerywrapper}>
+              {renderArtifacts()}
+            </div>
           </div>
-        </div>
+        )
         :
         <LiveAuctions getNextAuctionObj={startLiveAuction} />
       }
