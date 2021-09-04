@@ -22,7 +22,7 @@ function StagingScreen() {
 	const classes = useStyles();
 	const history = useHistory();
 	const location = useLocation();
-	const { player, setPlayer } = useContext(userContext);
+	const { player } = useContext(userContext);
 
 	const handleClick = () => {
 		socket.emit("startGame", JSON.stringify(player));

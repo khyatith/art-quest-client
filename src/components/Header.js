@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
+import userContext from "../global/userContext";
 
 const useStyles = makeStyles((theme) => ({
   grow: {
@@ -16,10 +17,14 @@ const useStyles = makeStyles((theme) => ({
       display: 'block',
     },
   },
+  playerdiv: {
+    fontWeight: 700
+  }
 }));
 
 function Header() {
   const classes = useStyles();
+  const { player } = useContext(userContext);
 	return (
     <div className={classes.grow}>
       <AppBar position="static">
@@ -27,6 +32,11 @@ function Header() {
           <Typography variant="h6" className={classes.title}>
             ART QUEST
           </Typography>
+          { player &&
+            <div className={classes.playerdiv}>
+              <p>{player.playerName}, Team {player.teamName}, {player.playerId}</p>
+            </div>
+          }
         </Toolbar>
       </AppBar>
     </div>
