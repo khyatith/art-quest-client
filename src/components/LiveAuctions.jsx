@@ -1,42 +1,42 @@
-import React, { useEffect, useState } from "react";
-import Button from "@material-ui/core/Button";
-import { socket } from "../global/socket";
+import React, { useEffect, useState } from 'react';
+import Button from '@material-ui/core/Button';
+import { socket } from '../global/socket';
 import FirstPriceSealedBid from './auctions/FirstPriceSealedBid';
 import EnglishAuction from './auctions/EnglishAuction';
 
 function LiveAuctions({ getNextAuctionObj }) {
-	const [auctionObj, setAuctionObj] = useState();
+  const [auctionObj, setAuctionObj] = useState();
 
-	useEffect(() => {
-    socket.on("startNextAuction", auctionObj => {
-      if (auctionObj.auctionState !== 2) {
-        setAuctionObj(auctionObj);
+  useEffect(() => {
+    socket.on('startNextAuction', (auctionObjFromServer) => {
+      if (auctionObjFromServer.auctionState !== 2) {
+        setAuctionObj(auctionObjFromServer);
       }
     });
   }, [auctionObj]);
 
-	const nextAuctionObj = () => {
-		getNextAuctionObj(auctionObj);
+  const nextAuctionObj = () => {
+    getNextAuctionObj(auctionObj);
   };
-  
+
   const loadAuction = () => {
     const { auctionType } = auctionObj;
-    switch(auctionType) {
+    switch (auctionType) {
       case '1':
-        return <FirstPriceSealedBid newAuctionObj={auctionObj} />
+        return <FirstPriceSealedBid newAuctionObj={auctionObj} />;
       case '2':
-        return <EnglishAuction newAuctionObj={auctionObj} />
+        return <EnglishAuction newAuctionObj={auctionObj} />;
       default:
-        return null
+        return null;
     }
-  }
+  };
 
-	return (
-		<>
-			{auctionObj && loadAuction()}
-			<Button onClick={nextAuctionObj}>Next</Button>
-		</>
-	);
+  return (
+    <>
+      {auctionObj && loadAuction()}
+      <Button onClick={nextAuctionObj}>Next</Button>
+    </>
+  );
 }
 
 export default LiveAuctions;
