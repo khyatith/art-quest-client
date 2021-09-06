@@ -40,6 +40,16 @@ function LaunchScreen() {
     history.push(`/staging/${player.playerId}`);
   };
 
+  function getRandomString(length) {
+    const randomChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let result = '';
+    // eslint-disable-next-line no-plusplus
+    for (let i = 0; i < length; i++) {
+      result += randomChars.charAt(Math.floor(Math.random() * randomChars.length));
+    }
+    return result;
+  }
+
   const handleChange = (event) => {
     const { name, value } = event.target;
     if (sessionStorage.getItem('user') === null) {

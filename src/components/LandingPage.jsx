@@ -32,7 +32,7 @@ const useStyles = makeStyles((theme) => ({
     height: '200px', // 16:9
   },
   appbar: {
-    backgroundColor: '#2ECC71',
+    backgroundColor: '#0fc',
     flexGrow: 1,
   },
   startbtn: {
@@ -111,7 +111,7 @@ function LandingPage() {
     },
   });
   const [startAuctions, setStartAuctions] = useState(false);
-  const [openModal, setOpenModal] = React.useState(false);
+  const [openModal, setOpenModal] = useState(false);
   const [isGalleryFullScreen, setIsGalleryFullscreen] = useState(false);
   const [hasLandingPageTimerEnded, setHasLandingPageTimerEnded] = useState(false);
   const [landingPageTimerValue, setLandingPageTimerValue] = useState({
@@ -128,11 +128,12 @@ function LandingPage() {
   useEffect(() => {
     setTimeout(() => {
       socket.emit('startLandingPageTimer', 10);
-    }, 5000);
+    }, 1000);
   }, []);
 
   useEffect(() => {
     socket.on('landingPageTimerEnded', () => {
+      console.log('inside ldp timer ended');
       setHasLandingPageTimerEnded(true);
       handleOpenModal();
       socket.removeListener('landingPageTimerValue');
@@ -147,6 +148,7 @@ function LandingPage() {
 
   useEffect(() => {
     socket.on('landingPageTimerValue', (value) => {
+      console.log('inside ldp timer', value);
       setLandingPageTimerValue(value);
     });
   }, []);
@@ -205,6 +207,7 @@ function LandingPage() {
   return (
     <>
       {
+        // eslint-disable-next-line no-nested-ternary
         !startAuctions
           ? (
             hasLandingPageTimerEnded
@@ -239,9 +242,6 @@ function LandingPage() {
                   <Typography variant="subtitle1" className={classes.titlecontent}>
                     Welcome to the world's best painting exhibition. Paintings can be bought once the auction begin.
                   </Typography>
-                  {/* <div className={classes.startauctionsbtndiv}>
-              <Button variant="contained" color="secondary" className={classes.startbtn} onClick={() => startLiveAuction(null)}>Start Auctions</Button>
-            </div> */}
                   <div className={classes.imagegallerywrapper}>
                     {renderArtifacts()}
                   </div>
