@@ -25,20 +25,21 @@ function LaunchScreen() {
   const history = useHistory();
   const { player, setPlayer } = useContext(userContext);
 
-  function getRandomString(length) {
-    const randomChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    let result = '';
-    for (let i = 0; i < length; i++) {
-      result += randomChars.charAt(Math.floor(Math.random() * randomChars.length));
-    }
-    return result;
-  }
-
   const handleCreate = () => {
     sessionStorage.setItem('user', JSON.stringify(player));
     socket.emit('createRoom', JSON.stringify(player));
     history.push(`/staging/${player.playerId}`);
   };
+
+  function getRandomString(length) {
+    const randomChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let result = '';
+    // eslint-disable-next-line no-plusplus
+    for (let i = 0; i < length; i++) {
+      result += randomChars.charAt(Math.floor(Math.random() * randomChars.length));
+    }
+    return result;
+  }
 
   const handleChange = (event) => {
     const { name, value } = event.target;
