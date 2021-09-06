@@ -25,6 +25,15 @@ function LaunchScreen() {
   const history = useHistory();
   const { player, setPlayer } = useContext(userContext);
 
+  function getRandomString(length) {
+    const randomChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let result = '';
+    for (let i = 0; i < length; i++) {
+      result += randomChars.charAt(Math.floor(Math.random() * randomChars.length));
+    }
+    return result;
+  }
+
   const handleCreate = () => {
     sessionStorage.setItem('user', JSON.stringify(player));
     socket.emit('createRoom', JSON.stringify(player));
@@ -63,15 +72,6 @@ function LaunchScreen() {
     socket.emit('joinRoom', JSON.stringify(player));
     history.push(`/staging/${player.hostCode}`);
   };
-
-  function getRandomString(length) {
-    const randomChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    let result = '';
-    for (let i = 0; i < length; i++) {
-      result += randomChars.charAt(Math.floor(Math.random() * randomChars.length));
-    }
-    return result;
-  }
 
   return (
     <>

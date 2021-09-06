@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 import React, { useEffect, useState, useContext } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import '../global/ImageGallery.module.css';
@@ -119,6 +120,10 @@ function LandingPage() {
     seconds: '00',
   });
 
+  const handleOpenModal = () => {
+    setOpenModal(true);
+  };
+
   // hooks and methods
   useEffect(() => {
     setTimeout(() => {
@@ -135,8 +140,8 @@ function LandingPage() {
   }, []);
 
   useEffect(() => {
-    socket.on('gameState', (gameState) => {
-      setGameState(JSON.parse(gameState));
+    socket.on('gameState', (newGameState) => {
+      setGameState(JSON.parse(newGameState));
     });
   }, []);
 
@@ -145,10 +150,6 @@ function LandingPage() {
       setLandingPageTimerValue(value);
     });
   }, []);
-
-  const handleOpenModal = () => {
-    setOpenModal(true);
-  };
 
   const startLiveAuction = (currentAuctionObj) => {
     setStartAuctions(true);
@@ -163,7 +164,7 @@ function LandingPage() {
     const { auctions } = gameState;
     const imageGalleryArr = auctions.artifacts.reduce((acc, item) => {
       const {
-        imageURL, artist, name, id,
+        imageURL, artist, name,
       } = item;
       acc.push({
         original: imageURL,
