@@ -164,11 +164,11 @@ function FirstPriceSealedBid({ newAuctionObj, renderNextAuction }) {
 
   useEffect(() => {
     socket.on('auctionTimerValue', (timerValue) => {
+      setAuctionTimer(timerValue);
       if (timerValue.total <= 1000) {
         setDisableNextBtn(false);
         setExpandedLeaderboard(true);
       }
-      setAuctionTimer(timerValue);
     });
   }, [auctionTimer]);
 
@@ -176,7 +176,7 @@ function FirstPriceSealedBid({ newAuctionObj, renderNextAuction }) {
     socket.on('displayBidWinner', (calculatedBidWinner) => {
       setBidWinner(calculatedBidWinner);
     });
-  }, [bidWinner]);
+  }, []);
 
   useEffect(() => {
     socket.on('setLiveStyles', (team) => {
