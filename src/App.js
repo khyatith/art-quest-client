@@ -1,6 +1,6 @@
 import { BrowserRouter, Switch, Route } from 'react-router-dom';
 import React, { useState } from 'react';
-import LaunchScreen from './components/LauchScreen';
+import LaunchScreen from './components/LaunchScreen';
 import StagingScreen from './components/StagingScreen';
 import Game from './components/Game';
 import userContext from './global/userContext';
