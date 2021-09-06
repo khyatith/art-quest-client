@@ -8,14 +8,24 @@ import CardMedia from '@material-ui/core/CardMedia';
 import CardContent from '@material-ui/core/CardContent';
 import CardActions from '@material-ui/core/CardActions';
 import { Typography, TextField } from '@material-ui/core';
-import Modal from '@material-ui/core/Modal';
-import Backdrop from '@material-ui/core/Backdrop';
-import Fade from '@material-ui/core/Fade';
-import { socket } from '../../global/socket';
+import clsx from 'clsx';
+import Collapse from '@material-ui/core/Collapse';
+import Avatar from '@material-ui/core/Avatar';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import IconButton from '@material-ui/core/IconButton';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import Divider from '@material-ui/core/Divider';
+import ListItemText from '@material-ui/core/ListItemText';
+import ListItemAvatar from '@material-ui/core/ListItemAvatar';
+import Confetti from 'react-confetti';
+import useWindowSize from '../../hooks/use-window-size';
 import userContext from '../../global/userContext';
+import { socket } from '../../global/socket';
+import leaderboardImg from '../../assets/leaderboardimg.png';
 
 const useStyles = makeStyles((theme) => ({
-  root: {
+  cardRoot: {
     width: 500,
     padding: 20,
     // margin: '0 30%',
@@ -67,35 +77,61 @@ const useStyles = makeStyles((theme) => ({
     display: 'inline-block',
     padding: '10px 10px 0px 10px',
   },
-  modal: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  paper: {
-    backgroundColor: '#1C2833',
-    border: '2px solid #000',
-    boxShadow: theme.shadows[5],
-    padding: theme.spacing(10, 10, 10),
-    textAlign: 'center',
-  },
   nextbtn: {
     backgroundColor: '#0fc',
     color: '#000',
-    margin: '0 auto',
+    fontWeight: 700,
+    '& .Mui-disabled': {
+      backgroundColor: '#cccccc',
+      color: '#616A6B',
+    },
   },
-  winmessage: {
+  leaderboardroot: {
+    float: 'right',
+    margin: '0px',
+    backgroundColor: '#1C2833',
     color: '#0fc',
-    fontSize: '30px',
+    position: 'fixed',
+    right: 0,
+    width: '300px',
   },
-  teammessage: {
-    color: '#fff',
+  leaderboardheaderstyle: {
+    '& .MuiCardHeader-title': {
+      fontWeight: 700,
+      fontSize: '20px',
+    },
+  },
+  avatar: {
+    height: '80px',
+    width: '80px',
+  },
+  expand: {
+    transform: 'rotate(0deg)',
+    marginLeft: 'auto',
+    color: '#ffffff',
+    top: '20px',
+    transition: theme.transitions.create('transform', {
+      duration: theme.transitions.duration.shortest,
+    }),
+  },
+  expandOpen: {
+    transform: 'rotate(180deg)',
+  },
+  listroot: {
+    width: '100%',
+    maxWidth: '36ch',
+    // backgroundColor: theme.palette.background.paper,
+  },
+  teamdetails: {
+    color: '#ffffff',
   },
 }));
 
 function FirstPriceSealedBid({ newAuctionObj, renderNextAuction }) {
   const classes = useStyles();
+  const windowSize = useWindowSize();
   const [live, setLive] = useState(false);
+  const [expanded, setExpandedLeaderboard] = React.useState(false);
   const { player } = useContext(userContext);
   const [auctionObj, setAuctionObj] = useState();
   const [currentBid, setCurrentBid] = useState();
@@ -105,9 +141,15 @@ function FirstPriceSealedBid({ newAuctionObj, renderNextAuction }) {
     seconds: 0,
   });
   const [bidWinner, setBidWinner] = useState();
+  const [isDisableNextBtn, setDisableNextBtn] = useState(true);
+
+  const handleExpandLeaderboardClick = () => {
+    setExpandedLeaderboard(!expanded);
+  };
 
   useEffect(() => {
     if (newAuctionObj) {
+      setDisableNextBtn(true);
       setAuctionObj(newAuctionObj);
     }
   }, [newAuctionObj]);
@@ -122,16 +164,19 @@ function FirstPriceSealedBid({ newAuctionObj, renderNextAuction }) {
 
   useEffect(() => {
     socket.on('auctionTimerValue', (timerValue) => {
+      if (timerValue.total <= 1000) {
+        setDisableNextBtn(false);
+        setExpandedLeaderboard(true);
+      }
       setAuctionTimer(timerValue);
     });
   }, [auctionTimer]);
 
   useEffect(() => {
     socket.on('displayBidWinner', (calculatedBidWinner) => {
-      // eslint-disable-next-line max-len
       setBidWinner(calculatedBidWinner);
     });
-  }, []);
+  }, [bidWinner]);
 
   useEffect(() => {
     socket.on('setLiveStyles', (team) => {
@@ -160,59 +205,104 @@ function FirstPriceSealedBid({ newAuctionObj, renderNextAuction }) {
     renderNextAuction();
   };
 
-  const renderBidWinner = () => {
-    const { bidAmount, bidTeam } = bidWinner;
-    return (
-      <Modal
-        aria-labelledby="transition-modal-title"
-        aria-describedby="transition-modal-description"
-        className={classes.modal}
-        closeAfterTransition
-        BackdropComponent={Backdrop}
-        BackdropProps={{ timeout: 500 }}
-      >
-        <Fade>
-          <div className={classes.paper}>
-            <div>
-              <p className={classes.winmessage}>
-                CONGRATULATIONS!!
-                {' '}
-                <p className={classes.teammessage}>
-                  Team
-                  {' '}
-                  {bidTeam}
-                  {' '}
-                  won for
-                </p>
-                <p className={classes.teammessage}>
-                  {auctionObj.name}
-                  {' '}
-                  for
-                </p>
-                <p>
-                  {bidAmount}
-                </p>
-              </p>
-            </div>
-            <Button
-              variant="contained"
-              color="secondary"
-              fullWidth="true"
-              className={classes.nextbtn}
-              onClick={getNextAuction}
-            >
-              Next
-            </Button>
-          </div>
-        </Fade>
-      </Modal>
-    );
+  const renderConfetti = () => {
+    if (player.teamName === bidWinner.bidTeam && !isDisableNextBtn) {
+      return (
+        <Confetti
+          width={windowSize.width}
+          height={windowSize.height}
+        />
+      );
+    }
+    return <></>;
   };
+
+  const renderWinner = () => (
+    <>
+      <Collapse in={expanded} timeout="auto" unmountOnExit>
+        <CardContent>
+          {!bidWinner
+              && (
+              <Typography component="subtitle2" variant="subtitle2">
+                There are no winners announced yet. Please wait for auctions to begin
+              </Typography>
+              )}
+          { bidWinner && (
+          <>
+            {renderConfetti()}
+            <List className={classes.listroot}>
+              <ListItem alignItems="flex-start">
+                <ListItemAvatar>
+                  <Avatar alt="artifact-img" src={bidWinner.auctionObj.imageURL} />
+                </ListItemAvatar>
+                <ListItemText
+                  primary={bidWinner.auctionObj.name}
+                  secondary={(
+                    <>
+                      <Typography
+                        component="p"
+                        variant="body2"
+                        className={classes.teamdetails}
+                        color="#ffffff"
+                      >
+                        Won by:
+                        {' '}
+                        Team
+                        {' '}
+                        {bidWinner.bidTeam}
+                      </Typography>
+                      <Typography
+                        component="p"
+                        variant="body2"
+                        className={classes.teamdetails}
+                        color="#ffffff"
+                      >
+                        Paid:
+                        {' '}
+                        {bidWinner.bidAmount}
+                      </Typography>
+                    </>
+                  )}
+                />
+              </ListItem>
+              <Divider variant="inset" component="li" />
+            </List>
+          </>
+          )}
+        </CardContent>
+      </Collapse>
+    </>
+  );
 
   return (
     <div className={classes.root}>
+      <Button onClick={getNextAuction} size="large" className={classes.nextbtn} fullWidth disabled={isDisableNextBtn}>Click for next auction</Button>
+      <Card className={classes.leaderboardroot}>
+        <CardHeader
+          title="Result"
+          avatar={
+            <Avatar aria-label="recipe" className={classes.avatar} src={leaderboardImg} />
+          }
+          action={(
+            <IconButton
+              className={clsx(classes.expand, {
+                [classes.expandOpen]: expanded,
+              })}
+              onClick={handleExpandLeaderboardClick}
+              aria-expanded={expanded}
+              aria-label="show more"
+            >
+              <ExpandMoreIcon />
+            </IconButton>
+          )}
+          className={classes.leaderboardheaderstyle}
+        />
+        {
+          expanded && renderWinner()
+        }
+      </Card>
       {auctionObj && (
-      <>
+      <div className={classes.cardRoot}>
         <Card key={auctionObj.id}>
           <CardHeader className={classes.titlestyle} title={auctionObj.name} subheader={`Created By: ${auctionObj.artist}`} />
           <CardMedia className={classes.media} component="img" image={`${auctionObj.imageURL}`} title={auctionObj.name} />
@@ -248,9 +338,8 @@ function FirstPriceSealedBid({ newAuctionObj, renderNextAuction }) {
             </div>
           </CardActions>
         </Card>
-      </>
+      </div>
       )}
-      {bidWinner && renderBidWinner()}
     </div>
   );
 }

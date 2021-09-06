@@ -1,10 +1,6 @@
 import { BrowserRouter, Switch, Route } from 'react-router-dom';
 import React, { useState } from 'react';
-<<<<<<< HEAD
-import LaunchScreen from './components/lauchScreen';
-=======
 import LaunchScreen from './components/LauchScreen';
->>>>>>> Fix eslint + add modal
 import StagingScreen from './components/StagingScreen';
 import Game from './components/Game';
 import userContext from './global/userContext';
