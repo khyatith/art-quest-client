@@ -1,10 +1,10 @@
-import React from "react";
+import React from 'react';
 
 const userContext = React.createContext({
-	playerName: "",
-	teamName: "",
-	playerId: "",
-	hostCode: "",
+  playerName: '',
+  teamName: '',
+  playerId: '',
+  hostCode: '',
 });
 
 export default userContext;

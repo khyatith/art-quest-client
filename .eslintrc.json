@@ -1,0 +1,36 @@
+{
+    "env": {
+        "browser": true,
+        "es2021": true
+    },
+    "extends": [
+        "eslint:recommended",
+        "react-app",
+        "plugin:react/recommended",
+        "airbnb"
+    ],
+    "parserOptions": {
+        "ecmaFeatures": {
+            "jsx": true,
+            "es6": true,
+            "browser": true
+        },
+        "ecmaVersion": 12,
+        "sourceType": "module"
+    },
+    "plugins": [
+        "react",
+        "react-perf"
+    ],
+    "rules": {
+        "complexity": ["error", { "max": 30 }],
+        "react/prop-types": "warn",
+        "react/display-name": "warn",
+        "react/jsx-no-target-blank": "warn",
+        "react/no-unescaped-entities": "warn",
+        "no-import-assign": "warn",
+        "react-perf/jsx-no-new-object-as-prop": "warn",
+        "react-perf/jsx-no-new-array-as-prop": "warn",
+        "react-perf/jsx-no-new-function-as-prop": "warn"
+    }
+}
