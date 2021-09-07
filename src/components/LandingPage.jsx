@@ -152,7 +152,7 @@ function LandingPage() {
 
   const startLiveAuction = (currentAuctionObj) => {
     setStartAuctions(true);
-    socket.emit('startLiveAuctions', currentAuctionObj);
+    socket.emit('startLiveAuctions', { auctions: currentAuctionObj, client: player });
   };
 
   const onScreenChange = (fullScreenElement) => {

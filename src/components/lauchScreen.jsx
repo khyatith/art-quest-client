@@ -43,6 +43,7 @@ function LaunchScreen() {
         setPlayer((prevValues) => ({
           ...prevValues,
           playerId: uid,
+          hostCode: uid,
         }));
       }
     } else {
