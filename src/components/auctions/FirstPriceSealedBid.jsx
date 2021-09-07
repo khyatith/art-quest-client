@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-closing-bracket-location */
 /* eslint-disable react-perf/jsx-no-new-function-as-prop */
 import React, { useContext, useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
@@ -131,12 +132,8 @@ function FirstPriceSealedBid({ newAuctionObj, renderNextAuction }) {
   const classes = useStyles();
   const windowSize = useWindowSize();
   const [live, setLive] = useState(false);
-<<<<<<< HEAD
-  const { player, setPlayer } = useContext(userContext);
-=======
   const [expanded, setExpandedLeaderboard] = React.useState(false);
   const { player } = useContext(userContext);
->>>>>>> a75612785692317d81dfab8e657c292df63bda0a
   const [auctionObj, setAuctionObj] = useState();
   const [currentBid, setCurrentBid] = useState();
   const [auctionTimer, setAuctionTimer] = useState({
@@ -211,12 +208,7 @@ function FirstPriceSealedBid({ newAuctionObj, renderNextAuction }) {
 
   const renderConfetti = () => {
     if (player.teamName === bidWinner.bidTeam && !isDisableNextBtn) {
-      return (
-        <Confetti
-          width={windowSize.width}
-          height={windowSize.height}
-        />
-      );
+      return <Confetti width={windowSize.width} height={windowSize.height} />;
     }
     return <></>;
   };
@@ -225,53 +217,39 @@ function FirstPriceSealedBid({ newAuctionObj, renderNextAuction }) {
     <>
       <Collapse in={expanded} timeout="auto" unmountOnExit>
         <CardContent>
-          {!bidWinner
-              && (
-              <Typography component="subtitle2" variant="subtitle2">
-                There are no winners announced yet. Please wait for auctions to begin
-              </Typography>
-              )}
-          { bidWinner && (
-          <>
-            {renderConfetti()}
-            <List className={classes.listroot}>
-              <ListItem alignItems="flex-start">
-                <ListItemAvatar>
-                  <Avatar alt="artifact-img" src={bidWinner.auctionObj.imageURL} />
-                </ListItemAvatar>
-                <ListItemText
-                  primary={bidWinner.auctionObj.name}
-                  secondary={(
-                    <>
-                      <Typography
-                        component="p"
-                        variant="body2"
-                        className={classes.teamdetails}
-                        color="#ffffff"
-                      >
-                        Won by:
-                        {' '}
-                        Team
-                        {' '}
-                        {bidWinner.bidTeam}
-                      </Typography>
-                      <Typography
-                        component="p"
-                        variant="body2"
-                        className={classes.teamdetails}
-                        color="#ffffff"
-                      >
-                        Paid:
-                        {' '}
-                        {bidWinner.bidAmount}
-                      </Typography>
-                    </>
-                  )}
-                />
-              </ListItem>
-              <Divider variant="inset" component="li" />
-            </List>
-          </>
+          {!bidWinner && (
+            <Typography component="subtitle2" variant="subtitle2">
+              There are no winners announced yet. Please wait for auctions to begin
+            </Typography>
+          )}
+          {bidWinner && (
+            <>
+              {renderConfetti()}
+              <List className={classes.listroot}>
+                <ListItem alignItems="flex-start">
+                  <ListItemAvatar>
+                    <Avatar alt="artifact-img" src={bidWinner.auctionObj.imageURL} />
+                  </ListItemAvatar>
+                  <ListItemText
+                    primary={bidWinner.auctionObj.name}
+                    secondary={
+                      // eslint-disable-next-line react/jsx-wrap-multilines
+                      <>
+                        <Typography component="p" variant="body2" className={classes.teamdetails} color="#ffffff">
+                          Won by: Team
+                          {bidWinner.bidTeam}
+                        </Typography>
+                        <Typography component="p" variant="body2" className={classes.teamdetails} color="#ffffff">
+                          Paid:
+                          {bidWinner.bidAmount}
+                        </Typography>
+                      </>
+                    }
+                  />
+                </ListItem>
+                <Divider variant="inset" component="li" />
+              </List>
+            </>
           )}
         </CardContent>
       </Collapse>
@@ -280,69 +258,63 @@ function FirstPriceSealedBid({ newAuctionObj, renderNextAuction }) {
 
   return (
     <div className={classes.root}>
-      <Button onClick={getNextAuction} size="large" className={classes.nextbtn} fullWidth disabled={isDisableNextBtn}>Click for next auction</Button>
+      <Button onClick={getNextAuction} size="large" className={classes.nextbtn} fullWidth disabled={isDisableNextBtn}>
+        Click for next auction
+      </Button>
       <Card className={classes.leaderboardroot}>
         <CardHeader
           title="Result"
-          avatar={
-            <Avatar aria-label="recipe" className={classes.avatar} src={leaderboardImg} />
-          }
-          action={(
+          avatar={<Avatar aria-label="recipe" className={classes.avatar} src={leaderboardImg} />}
+          action={
+            // eslint-disable-next-line react/jsx-wrap-multilines
             <IconButton
               className={clsx(classes.expand, {
                 [classes.expandOpen]: expanded,
               })}
               onClick={handleExpandLeaderboardClick}
               aria-expanded={expanded}
-              aria-label="show more"
-            >
+              aria-label="show more">
               <ExpandMoreIcon />
             </IconButton>
-          )}
+          }
           className={classes.leaderboardheaderstyle}
         />
-        {
-          expanded && renderWinner()
-        }
+        {expanded && renderWinner()}
       </Card>
       {auctionObj && (
-      <div className={classes.cardRoot}>
-        <Card key={auctionObj.id}>
-          <CardHeader className={classes.titlestyle} title={auctionObj.name} subheader={`Created By: ${auctionObj.artist}`} />
-          <CardMedia className={classes.media} component="img" image={`${auctionObj.imageURL}`} title={auctionObj.name} />
-          <CardContent className={classes.cardcontentstyle}>
-            <Typography component="h6" variant="h6">
-              {`Bid should begin from : $${auctionObj.originalValue}`}
-            </Typography>
-          </CardContent>
-          <CardActions className={classes.cardactionsstyle}>
-            <div>
-              <TextField
-                className={classes.textfieldstyle}
-                size="small"
-                disabled={!live}
-                type="number"
-                name="bidAmount"
-                placeholder="Bidding Amount"
-                variant="outlined"
-                onChange={setCurrentBidAmt}
-              />
-              <Button disabled={!live} variant="contained" color="secondary" onClick={setBidAmt}>
-                Bid
-              </Button>
-            </div>
-            <div className={classes.timercontainer}>
-              <p className={classes.timercaption}>Time Remaining</p>
-              <div className={classes.timer}>
-                {auctionTimer && auctionTimer.minutes}
+        <div className={classes.cardRoot}>
+          <Card key={auctionObj.id}>
+            <CardHeader className={classes.titlestyle} title={auctionObj.name} subheader={`Created By: ${auctionObj.artist}`} />
+            <CardMedia className={classes.media} component="img" image={`${auctionObj.imageURL}`} title={auctionObj.name} />
+            <CardContent className={classes.cardcontentstyle}>
+              <Typography component="h6" variant="h6">
+                {`Bid should begin from : $${auctionObj.originalValue}`}
+              </Typography>
+            </CardContent>
+            <CardActions className={classes.cardactionsstyle}>
+              <div>
+                <TextField
+                  className={classes.textfieldstyle}
+                  size="small"
+                  disabled={!live}
+                  type="number"
+                  name="bidAmount"
+                  placeholder="Bidding Amount"
+                  variant="outlined"
+                  onChange={setCurrentBidAmt}
+                />
+                <Button disabled={!live} variant="contained" color="secondary" onClick={setBidAmt}>
+                  Bid
+                </Button>
               </div>
-              <div className={classes.timer}>
-                {auctionTimer && auctionTimer.seconds}
+              <div className={classes.timercontainer}>
+                <p className={classes.timercaption}>Time Remaining</p>
+                <div className={classes.timer}>{auctionTimer && auctionTimer.minutes}</div>
+                <div className={classes.timer}>{auctionTimer && auctionTimer.seconds}</div>
               </div>
-            </div>
-          </CardActions>
-        </Card>
-      </div>
+            </CardActions>
+          </Card>
+        </div>
       )}
     </div>
   );

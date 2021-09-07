@@ -8,11 +8,12 @@ function LiveAuctions({ getNextAuctionObj }) {
 
   useEffect(() => {
     socket.on('startNextAuction', (auctionObjFromServer) => {
-      if (auctionObjFromServer.auctionState !== 2) {
+      console.log(auctionObjFromServer);
+      if (auctionObjFromServer && auctionObjFromServer.auctionState !== 2) {
         setAuctionObj(auctionObjFromServer);
       }
     });
-  }, [auctionObj]);
+  }, []);
 
   const nextAuctionObj = () => {
     getNextAuctionObj(auctionObj);
@@ -30,11 +31,7 @@ function LiveAuctions({ getNextAuctionObj }) {
     }
   };
 
-  return (
-    <>
-      {auctionObj && loadAuction()}
-    </>
-  );
+  return <>{auctionObj && loadAuction()}</>;
 }
 
 export default LiveAuctions;
