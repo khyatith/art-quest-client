@@ -227,7 +227,7 @@ function FirstPriceSealedBid({ newAuctionObj, renderNextAuction }) {
                 There are no winners announced yet. Please wait for auctions to begin
               </Typography>
               )}
-          { bidWinner && (
+          { bidWinner && bidWinner.auctionObj && (
           <>
             {renderConfetti()}
             <List className={classes.listroot}>

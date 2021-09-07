@@ -12,7 +12,7 @@ function LiveAuctions({ getNextAuctionObj }) {
         setAuctionObj(auctionObjFromServer);
       }
     });
-  }, [auctionObj]);
+  }, []);
 
   const nextAuctionObj = () => {
     getNextAuctionObj(auctionObj);
