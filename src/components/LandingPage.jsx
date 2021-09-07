@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 import React, { useEffect, useState, useContext } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import '../global/ImageGallery.module.css';
@@ -31,7 +32,7 @@ const useStyles = makeStyles((theme) => ({
     height: '200px', // 16:9
   },
   appbar: {
-    backgroundColor: '#2ECC71',
+    backgroundColor: '#0fc',
     flexGrow: 1,
   },
   startbtn: {
@@ -110,7 +111,7 @@ function LandingPage() {
     },
   });
   const [startAuctions, setStartAuctions] = useState(false);
-  const [openModal, setOpenModal] = React.useState(false);
+  const [openModal, setOpenModal] = useState(false);
   const [isGalleryFullScreen, setIsGalleryFullscreen] = useState(false);
   const [hasLandingPageTimerEnded, setHasLandingPageTimerEnded] = useState(false);
   const [landingPageTimerValue, setLandingPageTimerValue] = useState({
@@ -119,15 +120,20 @@ function LandingPage() {
     seconds: '00',
   });
 
+  const handleOpenModal = () => {
+    setOpenModal(true);
+  };
+
   // hooks and methods
   useEffect(() => {
     setTimeout(() => {
       socket.emit('startLandingPageTimer', 10);
-    }, 5000);
+    }, 1000);
   }, []);
 
   useEffect(() => {
     socket.on('landingPageTimerEnded', () => {
+      console.log('inside ldp timer ended');
       setHasLandingPageTimerEnded(true);
       handleOpenModal();
       socket.removeListener('landingPageTimerValue');
@@ -135,20 +141,17 @@ function LandingPage() {
   }, []);
 
   useEffect(() => {
-    socket.on('gameState', (gameState) => {
-      setGameState(JSON.parse(gameState));
+    socket.on('gameState', (newGameState) => {
+      setGameState(JSON.parse(newGameState));
     });
   }, []);
 
   useEffect(() => {
     socket.on('landingPageTimerValue', (value) => {
+      console.log('inside ldp timer', value);
       setLandingPageTimerValue(value);
     });
   }, []);
-
-  const handleOpenModal = () => {
-    setOpenModal(true);
-  };
 
   const startLiveAuction = (currentAuctionObj) => {
     setStartAuctions(true);
@@ -163,7 +166,7 @@ function LandingPage() {
     const { auctions } = gameState;
     const imageGalleryArr = auctions.artifacts.reduce((acc, item) => {
       const {
-        imageURL, artist, name, id,
+        imageURL, artist, name,
       } = item;
       acc.push({
         original: imageURL,
@@ -204,6 +207,7 @@ function LandingPage() {
   return (
     <>
       {
+        // eslint-disable-next-line no-nested-ternary
         !startAuctions
           ? (
             hasLandingPageTimerEnded
@@ -238,9 +242,6 @@ function LandingPage() {
                   <Typography variant="subtitle1" className={classes.titlecontent}>
                     Welcome to the world's best painting exhibition. Paintings can be bought once the auction begin.
                   </Typography>
-                  {/* <div className={classes.startauctionsbtndiv}>
-              <Button variant="contained" color="secondary" className={classes.startbtn} onClick={() => startLiveAuction(null)}>Start Auctions</Button>
-            </div> */}
                   <div className={classes.imagegallerywrapper}>
                     {renderArtifacts()}
                   </div>

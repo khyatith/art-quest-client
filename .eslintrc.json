@@ -24,13 +24,17 @@
     ],
     "rules": {
         "complexity": ["error", { "max": 30 }],
+        "max-len": ["error", { "code": 160 }],
         "react/prop-types": "warn",
         "react/display-name": "warn",
         "react/jsx-no-target-blank": "warn",
         "react/no-unescaped-entities": "warn",
         "no-import-assign": "warn",
-        "react-perf/jsx-no-new-object-as-prop": "warn",
+        "react-perf/jsx-no-new-object-as-prop": "off",
         "react-perf/jsx-no-new-array-as-prop": "warn",
-        "react-perf/jsx-no-new-function-as-prop": "warn"
+        "react-perf/jsx-no-new-function-as-prop": "warn",
+        "react/jsx-props-no-spreading": "off",
+        "no-plusplus": "off",
+        "react/jsx-filename-extension": "off"
     }
 }

@@ -23,6 +23,7 @@ function Timer() {
 
   useEffect(() => {
     socket.on('landingPageTimerValue', (value) => {
+      console.log('value', value);
       setLandingPageTimerValue(value);
     });
   }, []);
