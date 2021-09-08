@@ -183,8 +183,10 @@ function EnglishAuction({ newAuctionObj, renderNextAuction }) {
 
   useEffect(() => {
     socket.on('setPreviousBid', (previousBid) => {
-      setPreviousBidDetails(previousBid);
-      console.log(previousBid);
+      if (previousBid) {
+        setPreviousBidDetails(previousBid.bid);
+      }
+      // console.log(previousBid);
     });
   });
 
@@ -210,6 +212,7 @@ function EnglishAuction({ newAuctionObj, renderNextAuction }) {
   useEffect(() => {
     socket.on('displayBidWinner', (calculatedBidWinner) => {
       setBidWinner(calculatedBidWinner);
+      console.log(calculatedBidWinner);
     });
   }, []);
 
@@ -265,24 +268,24 @@ function EnglishAuction({ newAuctionObj, renderNextAuction }) {
               There are no winners announced yet. Please wait for auctions to begin
             </Typography>
           )}
-          {bidWinner && bidWinner.auctionObj && (
+          {bidWinner && bidWinner.bid && (
             <>
               {renderConfetti()}
               <List className={classes.listroot}>
                 <ListItem alignItems="flex-start">
                   <ListItemAvatar>
-                    <Avatar alt="artifact-img" src={bidWinner.auctionObj.imageURL} />
+                    <Avatar alt="artifact-img" src={bidWinner.imageURL} />
                   </ListItemAvatar>
                   <ListItemText
-                    primary={bidWinner.auctionObj.name}
+                    primary={bidWinner.name}
                     secondary={
                       // eslint-disable-next-line react/jsx-wrap-multilines
                       <>
                         <Typography component="p" variant="body2" className={classes.teamdetails} color="#ffffff">
-                          Won by: Team {bidWinner.bidTeam}
+                          Won by: Team {bidWinner.bid.bidTeam}
                         </Typography>
                         <Typography component="p" variant="body2" className={classes.teamdetails} color="#ffffff">
-                          Paid: {bidWinner.bidAmount}
+                          Paid: {bidWinner.bid.bidAmount}
                         </Typography>
                       </>
                     }
