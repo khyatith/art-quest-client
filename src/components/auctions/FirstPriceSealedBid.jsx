@@ -288,7 +288,7 @@ function FirstPriceSealedBid({ newAuctionObj, renderNextAuction }) {
             <CardMedia className={classes.media} component="img" image={`${auctionObj.imageURL}`} title={auctionObj.name} />
             <CardContent className={classes.cardcontentstyle}>
               <Typography component="h6" variant="h6">
-                {`Bid should begin from : $${auctionObj.originalValue}`}
+                {`Opening bid : $${auctionObj.originalValue}`}
               </Typography>
             </CardContent>
             <CardActions className={classes.cardactionsstyle}>
