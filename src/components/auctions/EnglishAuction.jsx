@@ -183,7 +183,7 @@ function EnglishAuction({ newAuctionObj, renderNextAuction }) {
 
   useEffect(() => {
     socket.on('setPreviousBid', (previousBid) => {
-      if (previousBid) {
+      if (previousBid && previousBid.bid) {
         setPreviousBidDetails(previousBid.bid);
       }
       // console.log(previousBid);
@@ -212,7 +212,6 @@ function EnglishAuction({ newAuctionObj, renderNextAuction }) {
   useEffect(() => {
     socket.on('displayBidWinner', (calculatedBidWinner) => {
       setBidWinner(calculatedBidWinner);
-      console.log(calculatedBidWinner);
     });
   }, []);
 
