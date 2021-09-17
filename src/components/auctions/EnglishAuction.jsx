@@ -1,6 +1,6 @@
 /* eslint-disable react/jsx-one-expression-per-line */
-/* eslint-disable react-perf/jsx-no-new-function-as-prop */
 import React, { useContext, useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import Card from '@material-ui/core/Card';
@@ -196,7 +196,7 @@ function EnglishAuction({ newAuctionObj, renderNextAuction }) {
       socket.emit('startAuctionsTimer', { auctionType: 2, client: player });
       setLive(true);
     }, 10000);
-  }, [auctionObj]);
+  }, [auctionObj, player]);
 
   useEffect(() => {
     socket.on('auctionTimerValue', (timerValue) => {
@@ -206,7 +206,7 @@ function EnglishAuction({ newAuctionObj, renderNextAuction }) {
         setExpandedLeaderboard(true);
       }
     });
-  }, [auctionTimer]);
+  }, []);
 
   // bid winner
   useEffect(() => {
@@ -359,12 +359,12 @@ function EnglishAuction({ newAuctionObj, renderNextAuction }) {
                 </div>
                 {previousBidDetails && previousBidDetails.bidTeam && previousBidDetails.bidAmount ? (
                   <div className={classes.lastbidcontainer}>
-                    <p className={classes.lastbidby}>Last Bid By: {previousBidDetails && `Team ${previousBidDetails.bidTeam}`}</p>
-                    <p className={classes.lastbidamount}>Last Bid Amount: {previousBidDetails && previousBidDetails.bidAmount}</p>
+                    <p className={classes.lastbidby}>Last Bid By: {`Team ${previousBidDetails.bidTeam}`}</p>
+                    <p className={classes.lastbidamount}>Last Bid Amount: {previousBidDetails.bidAmount}</p>
                   </div>
                 ) : (
                   <div className={classes.lastbidcontainer}>
-                    <p className={classes.lastbidby}>You can see your competitor's bid here</p>
+                    <p className={classes.lastbidby}>Highest bid will show here</p>
                   </div>
                 )}
               </div>
@@ -375,5 +375,15 @@ function EnglishAuction({ newAuctionObj, renderNextAuction }) {
     </div>
   );
 }
+
+EnglishAuction.defaultProps = {
+  newAuctionObj: {},
+  renderNextAuction: () => {},
+};
+
+EnglishAuction.propTypes = {
+  newAuctionObj: PropTypes.objectOf(PropTypes.any),
+  renderNextAuction: PropTypes.func,
+};
 
 export default EnglishAuction;

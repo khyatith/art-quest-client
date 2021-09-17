@@ -39,13 +39,7 @@ function StagingScreen() {
     } else {
       setAdmin(false);
     }
-  }, []);
-
-  useEffect(() => {
-    socket.on('updatedLeaderBoard', (updatedLeaderBoard) => {
-      console.log(updatedLeaderBoard);
-    });
-  }, []);
+  }, [player]);
 
   const handleClick = () => {
     socket.emit('startGame', JSON.stringify(player));

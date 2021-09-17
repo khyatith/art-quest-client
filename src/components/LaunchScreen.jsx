@@ -57,7 +57,6 @@ function LaunchScreen() {
         }));
       }
     } else {
-      console.log('game');
       const gamer = JSON.parse(sessionStorage.getItem('user'));
       setPlayer((prevValues) => ({
         ...prevValues,

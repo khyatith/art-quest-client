@@ -133,7 +133,6 @@ function LandingPage() {
 
   useEffect(() => {
     socket.on('landingPageTimerEnded', () => {
-      console.log('inside ldp timer ended');
       setHasLandingPageTimerEnded(true);
       handleOpenModal();
       socket.removeListener('landingPageTimerValue');
@@ -148,7 +147,6 @@ function LandingPage() {
 
   useEffect(() => {
     socket.on('landingPageTimerValue', (value) => {
-      console.log('inside ldp timer', value);
       setLandingPageTimerValue(value);
     });
   }, []);
@@ -240,7 +238,7 @@ function LandingPage() {
                     </Toolbar>
                   </AppBar>
                   <Typography variant="subtitle1" className={classes.titlecontent}>
-                    Welcome to the world's best painting exhibition. Paintings can be bought once the auction begin.
+                    Welcome to the world&#39;s best painting exhibition. Paintings can be bought once the auction begin.
                   </Typography>
                   <div className={classes.imagegallerywrapper}>
                     {renderArtifacts()}

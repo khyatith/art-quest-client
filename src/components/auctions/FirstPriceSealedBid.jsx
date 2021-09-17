@@ -1,6 +1,7 @@
 /* eslint-disable react/jsx-closing-bracket-location */
 /* eslint-disable react-perf/jsx-no-new-function-as-prop */
 import React, { useContext, useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import Card from '@material-ui/core/Card';
@@ -161,7 +162,7 @@ function FirstPriceSealedBid({ newAuctionObj, renderNextAuction }) {
       socket.emit('startAuctionsTimer', { auctionType: 1, client: player });
       setLive(true);
     }, 10000);
-  }, [auctionObj]);
+  }, [auctionObj, player]);
 
   useEffect(() => {
     socket.on('auctionTimerValue', (timerValue) => {
@@ -319,5 +320,15 @@ function FirstPriceSealedBid({ newAuctionObj, renderNextAuction }) {
     </div>
   );
 }
+
+FirstPriceSealedBid.defaultProps = {
+  newAuctionObj: {},
+  renderNextAuction: () => {},
+};
+
+FirstPriceSealedBid.propTypes = {
+  newAuctionObj: PropTypes.objectOf(PropTypes.any),
+  renderNextAuction: PropTypes.func,
+};
 
 export default FirstPriceSealedBid;

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
 import { socket } from '../global/socket';
 import FirstPriceSealedBid from './auctions/FirstPriceSealedBid';
 import EnglishAuction from './auctions/EnglishAuction';
@@ -9,7 +10,6 @@ function LiveAuctions({ getNextAuctionObj }) {
 
   useEffect(() => {
     socket.on('startNextAuction', (auctionObjFromServer) => {
-      console.log(auctionObjFromServer);
       if (auctionObjFromServer && auctionObjFromServer.auctionState !== 2) {
         setAuctionObj(auctionObjFromServer);
       }
@@ -44,5 +44,13 @@ function LiveAuctions({ getNextAuctionObj }) {
 
   return <>{auctionObj && loadAuction()}</>;
 }
+
+LiveAuctions.defaultProps = {
+  getNextAuctionObj: () => {},
+};
+
+LiveAuctions.propTypes = {
+  getNextAuctionObj: PropTypes.func,
+};
 
 export default LiveAuctions;
