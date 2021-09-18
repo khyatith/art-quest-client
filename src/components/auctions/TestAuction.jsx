@@ -1,18 +1,13 @@
 /* eslint-disable react/jsx-one-expression-per-line */
 import React, { useContext, useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import Button from '@material-ui/core/Button';
 import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
 import CardMedia from '@material-ui/core/CardMedia';
 import CardContent from '@material-ui/core/CardContent';
 import CardActions from '@material-ui/core/CardActions';
 import { Typography, TextField } from '@material-ui/core';
-import clsx from 'clsx';
 // import Collapse from '@material-ui/core/Collapse';
-import Avatar from '@material-ui/core/Avatar';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import IconButton from '@material-ui/core/IconButton';
 // import List from '@material-ui/core/List';
 // import ListItem from '@material-ui/core/ListItem';
 // import Divider from '@material-ui/core/Divider';
@@ -20,9 +15,10 @@ import IconButton from '@material-ui/core/IconButton';
 // import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 // import Confetti from 'react-confetti';
 // import useWindowSize from '../../hooks/use-window-size';
+import Button from '@material-ui/core/Button';
 import userContext from '../../global/userContext';
 import { socket } from '../../global/socket';
-import leaderboardImg from '../../assets/leaderboardimg.png';
+// import leaderboardImg from '../../assets/leaderboardimg.png';
 
 const useStyles = makeStyles((theme) => ({
   cardRoot: {
@@ -149,31 +145,16 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function EnglishAuction({ newAuctionObj, renderNextAuction }) {
+function TestAuction({ newAuctionObj, renderNextAuction }) {
   const classes = useStyles();
   // const windowSize = useWindowSize();
   const [live, setLive] = useState(false);
-  const [expanded, setExpandedLeaderboard] = React.useState(false);
   const { player } = useContext(userContext);
   const [auctionObj, setAuctionObj] = useState();
-  const [currentBid, setCurrentBid] = useState();
   const [auctionTimer, setAuctionTimer] = useState();
+  const [currentBid, setCurrentBid] = useState();
+  const [previousBidDetails, setPreviousBidDetails] = useState();
   const [isDisableNextBtn, setDisableNextBtn] = useState(true);
-  const [previousBidDetails, setPreviousBidDetails] = useState({
-    bidAmount: 0,
-    bidTeam: null,
-  });
-
-  const handleExpandLeaderboardClick = () => {
-    setExpandedLeaderboard(!expanded);
-  };
-
-  useEffect(() => {
-    setTimeout(() => {
-      console.log('inside start auctions timer');
-      socket.emit('startAuctionsTimer');
-    }, 10000);
-  }, [auctionObj]);
 
   useEffect(() => {
     if (newAuctionObj) {
@@ -183,46 +164,45 @@ function EnglishAuction({ newAuctionObj, renderNextAuction }) {
   }, [newAuctionObj]);
 
   useEffect(() => {
-    socket.on('setPreviousBid', (previousBid) => {
-      console.log('inside set previous bid', previousBid);
-      if (previousBid && previousBid.bid) {
-        setPreviousBidDetails(previousBid.bid);
-      }
-      // console.log(previousBid);
-    });
-  });
+    setTimeout(() => {
+      socket.emit('startAuctionsTimer', player);
+    }, 10000);
+  }, [auctionObj]);
 
   useEffect(() => {
     socket.on('auctionTimerValue', (timerValue) => {
-      console.log('timerValue', timerValue);
       setAuctionTimer(timerValue);
       setLive(true);
       if (timerValue.total <= 1000) {
         setDisableNextBtn(false);
-        setExpandedLeaderboard(true);
       }
     });
   }, []);
 
   useEffect(() => {
     socket.on('auctionPageTimerEnded', () => {
-      console.log('inside auction page timer ended');
-      setDisableNextBtn(false);
+      setPreviousBidDetails(null);
       setLive(false);
     });
   });
 
-  // bid winner
-  // useEffect(() => {
-  //   socket.on('updatedLeaderBoard', (updatedLeaderBoard) => {
-  //     // setBidWinner(calculatedBidWinner);
-  //     console.log('updatedLeaderBoard', updatedLeaderBoard);
-  //   });
-  // }, []);
+  const setCurrentBidAmt = (e) => {
+    setCurrentBid(e.target.value);
+  };
+
+  useEffect(() => {
+    socket.on('setPreviousBid', (previousBid) => {
+      const previousBidAuctionObj = previousBid && previousBid.auctionObj;
+      if (previousBidAuctionObj) {
+        setPreviousBidDetails(previousBidAuctionObj.bid);
+      }
+      // console.log(previousBid);
+    });
+  });
 
   const setBidAmt = () => {
-    const { bidAmount } = previousBidDetails;
-    if (currentBid <= parseInt(bidAmount, 10)) {
+    const prevBidAmt = previousBidDetails && previousBidDetails.bidAmount;
+    if (prevBidAmt && currentBid <= parseInt(prevBidAmt, 10)) {
       // show error
     } else {
       const bidInfo = {
@@ -237,12 +217,9 @@ function EnglishAuction({ newAuctionObj, renderNextAuction }) {
     }
   };
 
-  const setCurrentBidAmt = (e) => {
-    setCurrentBid(e.target.value);
-  };
-
   const getNextAuction = () => {
     renderNextAuction();
+    setDisableNextBtn(true);
     setPreviousBidDetails({
       bidTeam: null,
       bidAmount: 0,
@@ -297,27 +274,6 @@ function EnglishAuction({ newAuctionObj, renderNextAuction }) {
       <Button onClick={getNextAuction} size="large" className={classes.nextbtn} fullWidth disabled={isDisableNextBtn}>
         Click for next auction
       </Button>
-      <Card className={classes.leaderboardroot}>
-        <CardHeader
-          title="Result"
-          avatar={<Avatar aria-label="recipe" className={classes.avatar} src={leaderboardImg} />}
-          action={
-            // eslint-disable-next-line react/jsx-wrap-multilines
-            <IconButton
-              className={clsx(classes.expand, {
-                [classes.expandOpen]: expanded,
-              })}
-              onClick={handleExpandLeaderboardClick}
-              aria-expanded={expanded}
-              // eslint-disable-next-line react/jsx-closing-bracket-location
-              aria-label="show more">
-              <ExpandMoreIcon />
-            </IconButton>
-          }
-          className={classes.leaderboardheaderstyle}
-        />
-        {/* {expanded && renderWinner()} */}
-      </Card>
       {auctionObj && (
         <div className={classes.cardRoot}>
           <Card key={auctionObj.id}>
@@ -369,4 +325,4 @@ function EnglishAuction({ newAuctionObj, renderNextAuction }) {
   );
 }
 
-export default EnglishAuction;
+export default TestAuction;

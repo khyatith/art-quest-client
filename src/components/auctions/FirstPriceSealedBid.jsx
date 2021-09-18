@@ -159,7 +159,7 @@ function FirstPriceSealedBid({ newAuctionObj, renderNextAuction }) {
   useEffect(() => {
     setLive(false);
     setTimeout(() => {
-      socket.emit('startAuctionsTimer', { auctionType: 1, client: player });
+      socket.emit('startAuctionsTimer', player);
       setLive(true);
     }, 10000);
   }, [auctionObj, player]);
@@ -172,7 +172,7 @@ function FirstPriceSealedBid({ newAuctionObj, renderNextAuction }) {
         setExpandedLeaderboard(true);
       }
     });
-  }, [auctionTimer]);
+  }, []);
 
   useEffect(() => {
     socket.on('displayBidWinner', (calculatedBidWinner) => {
@@ -191,9 +191,11 @@ function FirstPriceSealedBid({ newAuctionObj, renderNextAuction }) {
   const setBidAmt = () => {
     const bidInfo = {
       auctionType: auctionObj.auctionType,
+      auctionId: auctionObj.id,
       auctionObj,
       bidAmount: currentBid,
       bidAt: +new Date(),
+      bidTeam: player.teamName,
       player,
     };
     socket.emit('addNewBid', bidInfo);
