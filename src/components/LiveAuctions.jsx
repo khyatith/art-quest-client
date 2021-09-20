@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import PropTypes from 'prop-types';
 import { socket } from '../global/socket';
 import FirstPriceSealedBid from './auctions/FirstPriceSealedBid';
-import EnglishAuction from './auctions/EnglishAuction';
-import LeaderBoard from './LeaderBoard';
+import TestAuction from './auctions/TestAuction';
 
 function LiveAuctions({ getNextAuctionObj }) {
   const [auctionObj, setAuctionObj] = useState();
@@ -25,17 +23,11 @@ function LiveAuctions({ getNextAuctionObj }) {
     switch (auctionType) {
       case '1':
         return (
-          <>
-            <FirstPriceSealedBid newAuctionObj={auctionObj} renderNextAuction={nextAuctionObj} />
-            <LeaderBoard />
-          </>
+          <FirstPriceSealedBid newAuctionObj={auctionObj} renderNextAuction={nextAuctionObj} />
         );
       case '2':
         return (
-          <>
-            <EnglishAuction newAuctionObj={auctionObj} renderNextAuction={nextAuctionObj} />
-            <LeaderBoard />
-          </>
+          <TestAuction newAuctionObj={auctionObj} renderNextAuction={nextAuctionObj} />
         );
       default:
         return null;
@@ -44,13 +36,5 @@ function LiveAuctions({ getNextAuctionObj }) {
 
   return <>{auctionObj && loadAuction()}</>;
 }
-
-LiveAuctions.defaultProps = {
-  getNextAuctionObj: () => {},
-};
-
-LiveAuctions.propTypes = {
-  getNextAuctionObj: PropTypes.func,
-};
 
 export default LiveAuctions;

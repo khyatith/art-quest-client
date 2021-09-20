@@ -12,6 +12,7 @@ import { useHistory, useLocation } from 'react-router-dom';
 import { socket } from '../global/socket';
 import userContext from '../global/userContext';
 import Header from './Header';
+import { TEAM_DETAILS } from '../global/constants';
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -47,13 +48,16 @@ function StagingScreen() {
   };
 
   const handleChange = (event) => {
-    const { name, value } = event.target;
-    setPlayer((prevValues) => ({ ...prevValues, [name]: value }));
+    const { value } = event.target;
+    const selectedTeam = TEAM_DETAILS.filter((team) => team.id === parseInt(value, 10))[0];
+    const teamColor = selectedTeam.color;
+    const teamName = selectedTeam.name;
+    setPlayer((prevValues) => ({ ...prevValues, teamName, teamColor }));
     sessionStorage.setItem('user', JSON.stringify(player));
   };
 
   const handleTeams = (event) => {
-    const { name, value } = event.target;
+    const { value } = event.target;
     setNoOfTeams(value);
   };
 
@@ -73,22 +77,11 @@ function StagingScreen() {
             <Select
               native
               onChange={handleChange}
-              label="teamColours"
-              inputProps={{
-                name: 'teamName',
-                id: 'outlined-age-native-simple',
-              }}>
+              label="teamColours">
               <option aria-label="None" value="" />
-              <option value="Blue">Blue</option>
-              <option value="Red">Red</option>
-              <option value="Green">Green</option>
-              <option value="Yellow">Yellow</option>
-              <option value="Purple">Purple</option>
-              <option value="Orange">Orange</option>
-              <option value="Indigo">Indigo</option>
-              <option value="White">White</option>
-              <option value="Black">Black</option>
-              <option value="Gold">Gold</option>
+              {
+                TEAM_DETAILS.map((team) => (<option key={team.id} value={team.id}>{team.name}</option>))
+              }
             </Select>
           </FormControl>
         </div>

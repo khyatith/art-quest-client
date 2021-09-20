@@ -127,7 +127,7 @@ function LandingPage() {
   // hooks and methods
   useEffect(() => {
     setTimeout(() => {
-      socket.emit('startLandingPageTimer', 10);
+      socket.emit('startLandingPageTimer', { roomCode: player.hostCode, timerInMinutes: 10 });
     }, 1000);
   }, []);
 
@@ -135,7 +135,6 @@ function LandingPage() {
     socket.on('landingPageTimerEnded', () => {
       setHasLandingPageTimerEnded(true);
       handleOpenModal();
-      socket.removeListener('landingPageTimerValue');
     });
   }, []);
 
@@ -146,14 +145,14 @@ function LandingPage() {
   }, []);
 
   useEffect(() => {
-    socket.on('landingPageTimerValue', (value) => {
-      setLandingPageTimerValue(value);
+    socket.on('landingPageTimerValue', ({ timerValue }) => {
+      setLandingPageTimerValue(timerValue);
     });
   }, []);
 
   const startLiveAuction = (currentAuctionObj) => {
     setStartAuctions(true);
-    socket.emit('startLiveAuctions', { auctions: currentAuctionObj, client: player });
+    socket.emit('startLiveAuctions', { currentAuctionObj, client: player });
   };
 
   const onScreenChange = (fullScreenElement) => {

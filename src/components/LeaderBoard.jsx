@@ -1,46 +1,159 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import Table from '@material-ui/core/Table';
-// import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableContainer from '@material-ui/core/TableContainer';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import Paper from '@material-ui/core/Paper';
-// import userContext from '../global/userContext';
-import { socket } from '../global/socket';
+import Box from '@material-ui/core/Box';
+import Drawer from '@material-ui/core/Drawer';
+import Avatar from '@material-ui/core/Avatar';
+import Toolbar from '@material-ui/core/Toolbar';
+import List from '@material-ui/core/List';
+import Typography from '@material-ui/core/Typography';
+import Divider from '@material-ui/core/Divider';
+import ListItemText from '@material-ui/core/ListItemText';
+import ListSubheader from '@material-ui/core/ListSubheader';
+import ListItemAvatar from '@material-ui/core/ListItemAvatar';
+import fontawesome from '@fortawesome/fontawesome';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCoins } from '@fortawesome/fontawesome-free-solid';
+import leaderboardImg from '../assets/leaderboardimg.png';
+import { leaderboardSocket } from '../global/socket';
+import { TEAM_DETAILS } from '../global/constants';
 
-const useStyles = makeStyles({
-  table: {
-    minWidth: 650,
+const useStyles = makeStyles((theme) => ({
+  drawerStyle: {
+    '& .MuiDrawer-paper': {
+      top: 'auto',
+      width: '400px',
+    },
   },
-});
+  avatar: {
+    height: '80px',
+    width: '80px',
+    left: '-20px',
+  },
+  title: {
+    fontWeight: '700',
+    marginLeft: '-20px',
+  },
+  listheaderstyle: {
+    width: '100%',
+    backgroundColor: theme.palette.background.paper,
+  },
+  inline: {
+    display: 'inline',
+  },
+  listSection: {
+    backgroundColor: 'inherit',
+    marginBottom: '10px',
+  },
+  ul: {
+    backgroundColor: 'inherit',
+    padding: 0,
+  },
+  listitemscontainer: {
+    display: 'flex',
+    padding: '10px',
+  },
+}));
 
-function LeaderBoard() {
+fontawesome.library.add(faCoins);
+
+export default function LeaderBoard({ hasAuctionTimerEnded }) {
   const classes = useStyles();
-  // const { player } = useContext(userContext);
+  const [leaderboardData, setLeaderboardData] = useState({});
 
   useEffect(() => {
-    socket.on('updatedLeaderBoard', (updatedLeaderBoard) => {
-      console.log(updatedLeaderBoard);
+    if (hasAuctionTimerEnded) {
+      leaderboardSocket.on('leaderboard', (leaderboard) => {
+        setLeaderboardData(leaderboard);
+      });
+    }
+  });
+
+  const getLeaderboard = () => {
+    if (!leaderboardData) return <></>;
+
+    return Object.entries(leaderboardData).map((entry) => {
+      const teamName = entry[0];
+      const teamResult = entry[1];
+      const winTeam = TEAM_DETAILS.filter((detail) => detail.name === teamName.toString());
+      const teamColor = winTeam[0].color;
+      return (
+        <>
+          <List className={classes.listheaderstyle} subheader={<li />}>
+            <li key="section-1" className={classes.listSection}>
+              <ul className={classes.ul}>
+                <ListSubheader style={{ backgroundColor: `${teamColor}`, fontSize: '15px', color: '#000000' }}>
+                  Team
+                  {' '}
+                  {teamName}
+                </ListSubheader>
+                {
+                teamResult.map((result) => {
+                  const { auctionObj, bidAmount } = result;
+                  const paintingImg = auctionObj.imageURL;
+                  const paintingName = auctionObj.name;
+                  const paintingArtist = result.auctionObj.artist;
+                  return (
+                    <div className={classes.listitemscontainer}>
+                      <ListItemAvatar>
+                        <Avatar alt="painting-img" src={paintingImg} />
+                      </ListItemAvatar>
+                      <ListItemText
+                        primary={paintingName}
+                        secondary={(
+                          <>
+                            <Typography
+                              component="span"
+                              variant="body2"
+                              className={classes.inline}
+                              color="textPrimary"
+                            >
+                              {paintingArtist}
+                            </Typography>
+                          </>
+                          )}
+                      />
+                      <div style={{ display: 'flex' }}>
+                        <FontAwesomeIcon
+                          style={{
+                            flex: '1', marginTop: '20px', width: '20px', height: '20px',
+                          }}
+                          icon="coins"
+                        />
+                        <p style={{ flex: '1', marginLeft: '10px' }}>
+                          {bidAmount}
+                        </p>
+                      </div>
+                    </div>
+                  );
+                })
+              }
+              </ul>
+            </li>
+          </List>
+          <Divider />
+        </>
+      );
     });
-  }, []);
+  };
 
   return (
-    <>
-      <TableContainer component={Paper}>
-        <Table className={classes.table} aria-label="simple table">
-          <TableHead>
-            <TableRow>
-              <TableCell>Team</TableCell>
-              <TableCell align="right">no. of paintings</TableCell>
-            </TableRow>
-          </TableHead>
-          {/* <TableBody></TableBody> */}
-        </Table>
-      </TableContainer>
-    </>
+    <Box sx={{ display: 'flex' }}>
+      <Drawer
+        className={classes.drawerStyle}
+        variant="permanent"
+        anchor="right"
+      >
+        <Toolbar>
+          <>
+            <Avatar aria-label="trophy" className={classes.avatar} src={leaderboardImg} />
+            <Typography component="h6" variant="h6" className={classes.title}>
+              Results
+            </Typography>
+          </>
+        </Toolbar>
+        <Divider />
+        {leaderboardData ? getLeaderboard() : <p>Results will update here</p>}
+      </Drawer>
+    </Box>
   );
 }
-
-export default LeaderBoard;
