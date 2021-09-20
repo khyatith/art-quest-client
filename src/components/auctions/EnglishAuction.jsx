@@ -8,11 +8,6 @@ import CardMedia from '@material-ui/core/CardMedia';
 import CardContent from '@material-ui/core/CardContent';
 import CardActions from '@material-ui/core/CardActions';
 import { Typography, TextField } from '@material-ui/core';
-import clsx from 'clsx';
-// import Collapse from '@material-ui/core/Collapse';
-import Avatar from '@material-ui/core/Avatar';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import IconButton from '@material-ui/core/IconButton';
 // import List from '@material-ui/core/List';
 // import ListItem from '@material-ui/core/ListItem';
 // import Divider from '@material-ui/core/Divider';
@@ -22,7 +17,7 @@ import IconButton from '@material-ui/core/IconButton';
 // import useWindowSize from '../../hooks/use-window-size';
 import userContext from '../../global/userContext';
 import { socket } from '../../global/socket';
-import leaderboardImg from '../../assets/leaderboardimg.png';
+import LeaderBoard from '../LeaderBoard';
 
 const useStyles = makeStyles((theme) => ({
   cardRoot: {
@@ -153,7 +148,6 @@ function EnglishAuction({ newAuctionObj, renderNextAuction }) {
   const classes = useStyles();
   // const windowSize = useWindowSize();
   const [live, setLive] = useState(false);
-  const [expanded, setExpandedLeaderboard] = React.useState(false);
   const { player } = useContext(userContext);
   const [auctionObj, setAuctionObj] = useState();
   const [currentBid, setCurrentBid] = useState();
@@ -163,10 +157,6 @@ function EnglishAuction({ newAuctionObj, renderNextAuction }) {
     bidAmount: 0,
     bidTeam: null,
   });
-
-  const handleExpandLeaderboardClick = () => {
-    setExpandedLeaderboard(!expanded);
-  };
 
   useEffect(() => {
     setTimeout(() => {
@@ -199,7 +189,6 @@ function EnglishAuction({ newAuctionObj, renderNextAuction }) {
       setLive(true);
       if (timerValue.total <= 1000) {
         setDisableNextBtn(false);
-        setExpandedLeaderboard(true);
       }
     });
   }, []);
@@ -211,14 +200,6 @@ function EnglishAuction({ newAuctionObj, renderNextAuction }) {
       setLive(false);
     });
   });
-
-  // bid winner
-  // useEffect(() => {
-  //   socket.on('updatedLeaderBoard', (updatedLeaderBoard) => {
-  //     // setBidWinner(calculatedBidWinner);
-  //     console.log('updatedLeaderBoard', updatedLeaderBoard);
-  //   });
-  // }, []);
 
   const setBidAmt = () => {
     const { bidAmount } = previousBidDetails;
@@ -297,27 +278,7 @@ function EnglishAuction({ newAuctionObj, renderNextAuction }) {
       <Button onClick={getNextAuction} size="large" className={classes.nextbtn} fullWidth disabled={isDisableNextBtn}>
         Click for next auction
       </Button>
-      <Card className={classes.leaderboardroot}>
-        <CardHeader
-          title="Result"
-          avatar={<Avatar aria-label="recipe" className={classes.avatar} src={leaderboardImg} />}
-          action={
-            // eslint-disable-next-line react/jsx-wrap-multilines
-            <IconButton
-              className={clsx(classes.expand, {
-                [classes.expandOpen]: expanded,
-              })}
-              onClick={handleExpandLeaderboardClick}
-              aria-expanded={expanded}
-              // eslint-disable-next-line react/jsx-closing-bracket-location
-              aria-label="show more">
-              <ExpandMoreIcon />
-            </IconButton>
-          }
-          className={classes.leaderboardheaderstyle}
-        />
-        {/* {expanded && renderWinner()} */}
-      </Card>
+      <LeaderBoard />
       {auctionObj && (
         <div className={classes.cardRoot}>
           <Card key={auctionObj.id}>

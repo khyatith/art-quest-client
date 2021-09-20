@@ -10,23 +10,11 @@ import CardMedia from '@material-ui/core/CardMedia';
 import CardContent from '@material-ui/core/CardContent';
 import CardActions from '@material-ui/core/CardActions';
 import { Typography, TextField } from '@material-ui/core';
-import clsx from 'clsx';
-import Collapse from '@material-ui/core/Collapse';
-import Avatar from '@material-ui/core/Avatar';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import IconButton from '@material-ui/core/IconButton';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import Divider from '@material-ui/core/Divider';
-import ListItemText from '@material-ui/core/ListItemText';
-import ListItemAvatar from '@material-ui/core/ListItemAvatar';
-import Confetti from 'react-confetti';
-import useWindowSize from '../../hooks/use-window-size';
 import userContext from '../../global/userContext';
-import { socket } from '../../global/socket';
-import leaderboardImg from '../../assets/leaderboardimg.png';
+import { socket, leaderboardSocket } from '../../global/socket';
+import LeaderBoard from '../LeaderBoard';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   cardRoot: {
     width: 500,
     padding: 20,
@@ -88,52 +76,11 @@ const useStyles = makeStyles((theme) => ({
       color: '#616A6B',
     },
   },
-  leaderboardroot: {
-    float: 'right',
-    margin: '0px',
-    backgroundColor: '#1C2833',
-    color: '#0fc',
-    position: 'fixed',
-    right: 0,
-    width: '300px',
-  },
-  leaderboardheaderstyle: {
-    '& .MuiCardHeader-title': {
-      fontWeight: 700,
-      fontSize: '20px',
-    },
-  },
-  avatar: {
-    height: '80px',
-    width: '80px',
-  },
-  expand: {
-    transform: 'rotate(0deg)',
-    marginLeft: 'auto',
-    color: '#ffffff',
-    top: '20px',
-    transition: theme.transitions.create('transform', {
-      duration: theme.transitions.duration.shortest,
-    }),
-  },
-  expandOpen: {
-    transform: 'rotate(180deg)',
-  },
-  listroot: {
-    width: '100%',
-    maxWidth: '36ch',
-    // backgroundColor: theme.palette.background.paper,
-  },
-  teamdetails: {
-    color: '#ffffff',
-  },
 }));
 
 function FirstPriceSealedBid({ newAuctionObj, renderNextAuction }) {
   const classes = useStyles();
-  const windowSize = useWindowSize();
   const [live, setLive] = useState(false);
-  const [expanded, setExpandedLeaderboard] = React.useState(false);
   const { player } = useContext(userContext);
   const [auctionObj, setAuctionObj] = useState();
   const [currentBid, setCurrentBid] = useState();
@@ -142,15 +89,12 @@ function FirstPriceSealedBid({ newAuctionObj, renderNextAuction }) {
     minutes: 0,
     seconds: 0,
   });
-  const [bidWinner, setBidWinner] = useState();
   const [isDisableNextBtn, setDisableNextBtn] = useState(true);
-
-  const handleExpandLeaderboardClick = () => {
-    setExpandedLeaderboard(!expanded);
-  };
+  const [hasAuctionTimerEnded, setAuctionTimerEnded] = useState(false);
 
   useEffect(() => {
     if (newAuctionObj) {
+      setAuctionTimerEnded(false);
       setDisableNextBtn(true);
       setAuctionObj(newAuctionObj);
     }
@@ -160,6 +104,7 @@ function FirstPriceSealedBid({ newAuctionObj, renderNextAuction }) {
     setLive(false);
     setTimeout(() => {
       socket.emit('startAuctionsTimer', player);
+      setAuctionTimerEnded(false);
       setLive(true);
     }, 10000);
   }, [auctionObj, player]);
@@ -167,18 +112,25 @@ function FirstPriceSealedBid({ newAuctionObj, renderNextAuction }) {
   useEffect(() => {
     socket.on('auctionTimerValue', (timerValue) => {
       setAuctionTimer(timerValue);
+      setAuctionTimerEnded(false);
       if (timerValue.total <= 1000) {
         setDisableNextBtn(false);
-        setExpandedLeaderboard(true);
+        setAuctionTimerEnded(true);
       }
     });
   }, []);
 
   useEffect(() => {
-    socket.on('displayBidWinner', (calculatedBidWinner) => {
-      setBidWinner(calculatedBidWinner);
+    socket.on('auctionPageTimerEnded', () => {
+      setAuctionTimerEnded(true);
     });
-  }, []);
+  });
+
+  useEffect(() => {
+    if (hasAuctionTimerEnded) {
+      leaderboardSocket.emit('getLeaderBoard', player);
+    }
+  });
 
   useEffect(() => {
     socket.on('setLiveStyles', (team) => {
@@ -209,81 +161,12 @@ function FirstPriceSealedBid({ newAuctionObj, renderNextAuction }) {
     renderNextAuction();
   };
 
-  const renderConfetti = () => {
-    if (player.teamName === bidWinner.bidTeam && !isDisableNextBtn) {
-      return <Confetti width={windowSize.width} height={windowSize.height} />;
-    }
-    return <></>;
-  };
-
-  const renderWinner = () => (
-    <>
-      <Collapse in={expanded} timeout="auto" unmountOnExit>
-        <CardContent>
-          {!bidWinner && (
-            <Typography component="subtitle2" variant="subtitle2">
-              There are no winners announced yet. Please wait for auctions to begin
-            </Typography>
-          )}
-          {bidWinner && bidWinner.auctionObj && (
-            <>
-              {renderConfetti()}
-              <List className={classes.listroot}>
-                <ListItem alignItems="flex-start">
-                  <ListItemAvatar>
-                    <Avatar alt="artifact-img" src={bidWinner.auctionObj.imageURL} />
-                  </ListItemAvatar>
-                  <ListItemText
-                    primary={bidWinner.auctionObj.name}
-                    secondary={
-                      // eslint-disable-next-line react/jsx-wrap-multilines
-                      <>
-                        <Typography component="p" variant="body2" className={classes.teamdetails} color="#ffffff">
-                          Won by: Team
-                          {bidWinner.bidTeam}
-                        </Typography>
-                        <Typography component="p" variant="body2" className={classes.teamdetails} color="#ffffff">
-                          Paid:
-                          {bidWinner.bidAmount}
-                        </Typography>
-                      </>
-                    }
-                  />
-                </ListItem>
-                <Divider variant="inset" component="li" />
-              </List>
-            </>
-          )}
-        </CardContent>
-      </Collapse>
-    </>
-  );
-
   return (
     <div className={classes.root}>
       <Button onClick={getNextAuction} size="large" className={classes.nextbtn} fullWidth disabled={isDisableNextBtn}>
         Click for next auction
       </Button>
-      <Card className={classes.leaderboardroot}>
-        <CardHeader
-          title="Result"
-          avatar={<Avatar aria-label="recipe" className={classes.avatar} src={leaderboardImg} />}
-          action={
-            // eslint-disable-next-line react/jsx-wrap-multilines
-            <IconButton
-              className={clsx(classes.expand, {
-                [classes.expandOpen]: expanded,
-              })}
-              onClick={handleExpandLeaderboardClick}
-              aria-expanded={expanded}
-              aria-label="show more">
-              <ExpandMoreIcon />
-            </IconButton>
-          }
-          className={classes.leaderboardheaderstyle}
-        />
-        {expanded && renderWinner()}
-      </Card>
+      <LeaderBoard hasAuctionTimerEnded={hasAuctionTimerEnded} />
       {auctionObj && (
         <div className={classes.cardRoot}>
           <Card key={auctionObj.id}>

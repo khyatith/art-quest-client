@@ -7,20 +7,12 @@ import CardMedia from '@material-ui/core/CardMedia';
 import CardContent from '@material-ui/core/CardContent';
 import CardActions from '@material-ui/core/CardActions';
 import { Typography, TextField } from '@material-ui/core';
-// import Collapse from '@material-ui/core/Collapse';
-// import List from '@material-ui/core/List';
-// import ListItem from '@material-ui/core/ListItem';
-// import Divider from '@material-ui/core/Divider';
-// import ListItemText from '@material-ui/core/ListItemText';
-// import ListItemAvatar from '@material-ui/core/ListItemAvatar';
-// import Confetti from 'react-confetti';
-// import useWindowSize from '../../hooks/use-window-size';
 import Button from '@material-ui/core/Button';
 import userContext from '../../global/userContext';
-import { socket } from '../../global/socket';
-// import leaderboardImg from '../../assets/leaderboardimg.png';
+import { socket, leaderboardSocket } from '../../global/socket';
+import LeaderBoard from '../LeaderBoard';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   cardRoot: {
     width: 500,
     padding: 20,
@@ -104,50 +96,10 @@ const useStyles = makeStyles((theme) => ({
       color: '#616A6B',
     },
   },
-  leaderboardroot: {
-    float: 'right',
-    margin: '0px',
-    backgroundColor: '#1C2833',
-    color: '#0fc',
-    position: 'fixed',
-    right: 0,
-    width: '300px',
-  },
-  leaderboardheaderstyle: {
-    '& .MuiCardHeader-title': {
-      fontWeight: 700,
-      fontSize: '20px',
-    },
-  },
-  avatar: {
-    height: '80px',
-    width: '80px',
-  },
-  expand: {
-    transform: 'rotate(0deg)',
-    marginLeft: 'auto',
-    color: '#ffffff',
-    top: '20px',
-    transition: theme.transitions.create('transform', {
-      duration: theme.transitions.duration.shortest,
-    }),
-  },
-  expandOpen: {
-    transform: 'rotate(180deg)',
-  },
-  listroot: {
-    width: '100%',
-    maxWidth: '36ch',
-    // backgroundColor: theme.palette.background.paper,
-  },
-  teamdetails: {
-    color: '#ffffff',
-  },
 }));
 
 function TestAuction({ newAuctionObj, renderNextAuction }) {
   const classes = useStyles();
-  // const windowSize = useWindowSize();
   const [live, setLive] = useState(false);
   const { player } = useContext(userContext);
   const [auctionObj, setAuctionObj] = useState();
@@ -155,9 +107,11 @@ function TestAuction({ newAuctionObj, renderNextAuction }) {
   const [currentBid, setCurrentBid] = useState();
   const [previousBidDetails, setPreviousBidDetails] = useState();
   const [isDisableNextBtn, setDisableNextBtn] = useState(true);
+  const [hasAuctionTimerEnded, setAuctionTimerEnded] = useState(false);
 
   useEffect(() => {
     if (newAuctionObj) {
+      setAuctionTimerEnded(false);
       setDisableNextBtn(true);
       setAuctionObj(newAuctionObj);
     }
@@ -173,7 +127,9 @@ function TestAuction({ newAuctionObj, renderNextAuction }) {
     socket.on('auctionTimerValue', (timerValue) => {
       setAuctionTimer(timerValue);
       setLive(true);
+      setAuctionTimerEnded(false);
       if (timerValue.total <= 1000) {
+        setAuctionTimerEnded(true);
         setDisableNextBtn(false);
       }
     });
@@ -183,7 +139,14 @@ function TestAuction({ newAuctionObj, renderNextAuction }) {
     socket.on('auctionPageTimerEnded', () => {
       setPreviousBidDetails(null);
       setLive(false);
+      setAuctionTimerEnded(true);
     });
+  });
+
+  useEffect(() => {
+    if (hasAuctionTimerEnded) {
+      leaderboardSocket.emit('getLeaderBoard', player);
+    }
   });
 
   const setCurrentBidAmt = (e) => {
@@ -192,11 +155,10 @@ function TestAuction({ newAuctionObj, renderNextAuction }) {
 
   useEffect(() => {
     socket.on('setPreviousBid', (previousBid) => {
-      const previousBidAuctionObj = previousBid && previousBid.auctionObj;
-      if (previousBidAuctionObj) {
-        setPreviousBidDetails(previousBidAuctionObj.bid);
+      setAuctionTimerEnded(false);
+      if (previousBid) {
+        setPreviousBidDetails({ bidAmount: previousBid.bidAmount, bidTeam: previousBid.bidTeam });
       }
-      // console.log(previousBid);
     });
   });
 
@@ -207,6 +169,7 @@ function TestAuction({ newAuctionObj, renderNextAuction }) {
     } else {
       const bidInfo = {
         auctionType: auctionObj.auctionType,
+        auctionId: auctionObj.id,
         auctionObj,
         player,
         bidAmount: currentBid,
@@ -226,54 +189,12 @@ function TestAuction({ newAuctionObj, renderNextAuction }) {
     });
   };
 
-  // const renderConfetti = () => {
-  //   if (player.teamName === bidWinner.biddingteam && !isDisableNextBtn) {
-  //     return <Confetti width={windowSize.width} height={windowSize.height} />;
-  //   }
-  //   return <></>;
-  // };
-
-  // const renderWinner = () => (
-  //   <>
-  //     <Collapse in={expanded} timeout="auto" unmountOnExit>
-  //       <CardContent>
-  //         {/* {bidWinner && bidWinner.bid && (
-  //           <>
-  //             {renderConfetti()}
-  //             <List className={classes.listroot}>
-  //               <ListItem alignItems="flex-start">
-  //                 <ListItemAvatar>
-  //                   <Avatar alt="artifact-img" src={bidWinner.imageURL} />
-  //                 </ListItemAvatar>
-  //                 <ListItemText
-  //                   primary={bidWinner.name}
-  //                   secondary={
-  //                     // eslint-disable-next-line react/jsx-wrap-multilines
-  //                     <>
-  //                       <Typography component="p" variant="body2" className={classes.teamdetails} color="#ffffff">
-  //                         Won by: Team {bidWinner.bid.bidTeam}
-  //                       </Typography>
-  //                       <Typography component="p" variant="body2" className={classes.teamdetails} color="#ffffff">
-  //                         Paid: {bidWinner.bid.bidAmount}
-  //                       </Typography>
-  //                     </>
-  //                   }
-  //                 />
-  //               </ListItem>
-  //               <Divider variant="inset" component="li" />
-  //             </List>
-  //           </>
-  //         )} */}
-  //       </CardContent>
-  //     </Collapse>
-  //   </>
-  // );
-
   return (
     <div className={classes.root}>
       <Button onClick={getNextAuction} size="large" className={classes.nextbtn} fullWidth disabled={isDisableNextBtn}>
         Click for next auction
       </Button>
+      <LeaderBoard hasAuctionTimerEnded={hasAuctionTimerEnded} />
       {auctionObj && (
         <div className={classes.cardRoot}>
           <Card key={auctionObj.id}>
