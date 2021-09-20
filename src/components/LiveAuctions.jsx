@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { socket } from '../global/socket';
 import FirstPriceSealedBid from './auctions/FirstPriceSealedBid';
-import TestAuction from './auctions/TestAuction';
+import EnglishAuction from './auctions/EnglishAuction';
 
 function LiveAuctions({ getNextAuctionObj }) {
   const [auctionObj, setAuctionObj] = useState();
@@ -27,7 +27,7 @@ function LiveAuctions({ getNextAuctionObj }) {
         );
       case '2':
         return (
-          <TestAuction newAuctionObj={auctionObj} renderNextAuction={nextAuctionObj} />
+          <EnglishAuction newAuctionObj={auctionObj} renderNextAuction={nextAuctionObj} />
         );
       default:
         return null;
