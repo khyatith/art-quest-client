@@ -57,7 +57,7 @@ const useStyles = makeStyles(() => ({
     textAlign: 'center',
     flex: '1',
     marginRight: '20px',
-    backgroundColor: '#0fc',
+    backgroundColor: '#fff',
     width: '50px',
     marginLeft: '80px',
     padding: '0 10px 10px 0',
@@ -157,7 +157,7 @@ function EnglishAuction({ newAuctionObj, renderNextAuction }) {
     socket.on('setPreviousBid', (previousBid) => {
       setAuctionTimerEnded(false);
       if (previousBid) {
-        setPreviousBidDetails({ bidAmount: previousBid.bidAmount, bidTeam: previousBid.bidTeam });
+        setPreviousBidDetails({ bidAmount: previousBid.bidAmount, bidTeam: previousBid.bidTeam, bidColor: previousBid.bidColor });
       }
     });
   });
@@ -175,6 +175,7 @@ function EnglishAuction({ newAuctionObj, renderNextAuction }) {
         bidAmount: currentBid,
         bidAt: +new Date(),
         bidTeam: player.teamName,
+        bidColor: player.teamColor,
       };
       socket.emit('addNewBid', bidInfo);
     }
@@ -228,7 +229,7 @@ function EnglishAuction({ newAuctionObj, renderNextAuction }) {
                   <div className={classes.timer}>{auctionTimer && auctionTimer.seconds}</div>
                 </div>
                 {previousBidDetails && previousBidDetails.bidTeam && previousBidDetails.bidAmount ? (
-                  <div className={classes.lastbidcontainer}>
+                  <div className={classes.lastbidcontainer} style={{ backgroundColor: `${previousBidDetails.bidColor}` }}>
                     <p className={classes.lastbidby}>Last Bid By: {`Team ${previousBidDetails.bidTeam}`}</p>
                     <p className={classes.lastbidamount}>Last Bid Amount: {previousBidDetails.bidAmount}</p>
                   </div>

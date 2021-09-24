@@ -2,14 +2,19 @@ import React, { useEffect, useState } from 'react';
 import { socket } from '../global/socket';
 import FirstPriceSealedBid from './auctions/FirstPriceSealedBid';
 import EnglishAuction from './auctions/EnglishAuction';
+import EndBuyingPhase from './EndBuyingPhase';
 
 function LiveAuctions({ getNextAuctionObj }) {
   const [auctionObj, setAuctionObj] = useState();
+  const [hasEndedAuctions, setHasEndedAuctions] = useState(false);
 
   useEffect(() => {
     socket.on('startNextAuction', (auctionObjFromServer) => {
       if (auctionObjFromServer && auctionObjFromServer.auctionState !== 2) {
         setAuctionObj(auctionObjFromServer);
+      } else if (!auctionObjFromServer) {
+        setAuctionObj(null);
+        setHasEndedAuctions(true);
       }
     });
   }, []);
@@ -34,7 +39,12 @@ function LiveAuctions({ getNextAuctionObj }) {
     }
   };
 
-  return <>{auctionObj && loadAuction()}</>;
+  return (
+    <>
+      {auctionObj && loadAuction()}
+      {hasEndedAuctions && <EndBuyingPhase />}
+    </>
+  );
 }
 
 export default LiveAuctions;
