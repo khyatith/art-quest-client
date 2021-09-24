@@ -37,21 +37,24 @@ function EndBuyingPhase() {
   }, []);
 
   return (
-    <div className={classes.root}>
-      <ImageList rowHeight={300} className={classes.imageList}>
-        {
-          artforTeams
-          && artforTeams.map((item) => {
-            const { auctionObj } = item;
-            return (
-              <ImageListItem key={item.auctionId}>
-                <img key={item.auctionId} src={auctionObj.imageURL} alt={auctionObj.name} />
-              </ImageListItem>
-            );
-          })
-        }
-      </ImageList>
-    </div>
+    <>
+      <h45>Congratulations! For winning all this art and creating your favorite art collection!</h5>
+      <div className={classes.root}>
+        <ImageList rowHeight={300} className={classes.imageList}>
+          {
+            artforTeams
+            && artforTeams.map((item) => {
+              const { auctionObj } = item;
+              return (
+                <ImageListItem key={item.auctionId}>
+                  <img key={item.auctionId} src={auctionObj.imageURL} alt={auctionObj.name} />
+                </ImageListItem>
+              );
+            })
+          }
+        </ImageList>
+      </div>
+    </>
   );
 }
 
