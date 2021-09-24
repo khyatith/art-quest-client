@@ -37,8 +37,8 @@ function EndBuyingPhase() {
   }, []);
 
   return (
-    <>
-      <h5>Congratulations! For winning all this art and creating your favorite art collection!</h5>
+    <div>
+      <h3 style={{ marginLeft: '20%' }}>Congratulations! For creating your favorite art collection!</h3>
       <div className={classes.root}>
         <ImageList rowHeight={300} className={classes.imageList}>
           {
@@ -54,7 +54,7 @@ function EndBuyingPhase() {
           }
         </ImageList>
       </div>
-    </>
+    </div>
   );
 }
 
