@@ -38,7 +38,7 @@ function EndBuyingPhase() {
 
   return (
     <>
-      <h45>Congratulations! For winning all this art and creating your favorite art collection!</h5>
+      <h5>Congratulations! For winning all this art and creating your favorite art collection!</h5>
       <div className={classes.root}>
         <ImageList rowHeight={300} className={classes.imageList}>
           {
