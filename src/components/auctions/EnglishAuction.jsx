@@ -108,12 +108,14 @@ function EnglishAuction({ newAuctionObj, renderNextAuction }) {
   const [previousBidDetails, setPreviousBidDetails] = useState();
   const [isDisableNextBtn, setDisableNextBtn] = useState(true);
   const [hasAuctionTimerEnded, setAuctionTimerEnded] = useState(false);
+  const [bidAmtError, setBidAmtError] = useState();
 
   useEffect(() => {
     if (newAuctionObj) {
       setAuctionTimerEnded(false);
       setDisableNextBtn(true);
       setAuctionObj(newAuctionObj);
+      setBidAmtError(null);
     }
   }, [newAuctionObj]);
 
@@ -164,9 +166,11 @@ function EnglishAuction({ newAuctionObj, renderNextAuction }) {
 
   const setBidAmt = () => {
     const prevBidAmt = previousBidDetails && previousBidDetails.bidAmount;
-    if (prevBidAmt && currentBid <= parseInt(prevBidAmt, 10)) {
-      // show error
+    const desiredBid = parseInt(prevBidAmt, 10) + 5000;
+    if (prevBidAmt && currentBid < desiredBid) {
+      setBidAmtError(`Your bid should be more than ${desiredBid}`);
     } else {
+      setBidAmtError(null);
       const bidInfo = {
         auctionType: auctionObj.auctionType,
         auctionId: auctionObj.id,
@@ -209,6 +213,8 @@ function EnglishAuction({ newAuctionObj, renderNextAuction }) {
             <CardActions className={classes.cardactionsstyle}>
               <div>
                 <TextField
+                  error={!!bidAmtError}
+                  helperText={bidAmtError && bidAmtError}
                   className={classes.textfieldstyle}
                   size="small"
                   disabled={!live}
@@ -221,6 +227,12 @@ function EnglishAuction({ newAuctionObj, renderNextAuction }) {
                 <Button disabled={!live} variant="contained" color="secondary" onClick={setBidAmt}>
                   Bid
                 </Button>
+                { previousBidDetails && previousBidDetails.bidAmount
+                  && (
+                  <p>
+                    * Your bid cannot be less than {parseInt(previousBidDetails.bidAmount, 10) + 5000}
+                  </p>
+                  )}
               </div>
               <div className={classes.bottomcontainer}>
                 <div className={classes.timercontainer}>
