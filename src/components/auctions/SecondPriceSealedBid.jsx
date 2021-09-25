@@ -78,7 +78,7 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-function FirstPriceSealedBid({ newAuctionObj, renderNextAuction }) {
+function SecondPriceSealedBid({ newAuctionObj, renderNextAuction }) {
   const classes = useStyles();
   const [live, setLive] = useState(false);
   const { player } = useContext(userContext);
@@ -201,6 +201,9 @@ function FirstPriceSealedBid({ newAuctionObj, renderNextAuction }) {
                 <Button disabled={!live} variant="contained" color="secondary" onClick={setBidAmt}>
                   Bid
                 </Button>
+                <p>
+                  * The highest bid will win but the winner will pay the amount of the second highest bid
+                </p>
               </div>
               <div className={classes.timercontainer}>
                 <p className={classes.timercaption}>Time Remaining</p>
@@ -215,14 +218,14 @@ function FirstPriceSealedBid({ newAuctionObj, renderNextAuction }) {
   );
 }
 
-FirstPriceSealedBid.defaultProps = {
+SecondPriceSealedBid.defaultProps = {
   newAuctionObj: {},
   renderNextAuction: () => {},
 };
 
-FirstPriceSealedBid.propTypes = {
+SecondPriceSealedBid.propTypes = {
   newAuctionObj: PropTypes.objectOf(PropTypes.any),
   renderNextAuction: PropTypes.func,
 };
 
-export default FirstPriceSealedBid;
+export default SecondPriceSealedBid;
