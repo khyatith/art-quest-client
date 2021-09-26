@@ -78,7 +78,7 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-function FirstPriceSealedBid({ newAuctionObj, renderNextAuction }) {
+function AllPayAuctions({ newAuctionObj, renderNextAuction }) {
   const classes = useStyles();
   const [live, setLive] = useState(false);
   const { player } = useContext(userContext);
@@ -202,7 +202,7 @@ function FirstPriceSealedBid({ newAuctionObj, renderNextAuction }) {
                   Bid
                 </Button>
                 <p>
-                  * The highest bid will win
+                  * The highest bid will win but all teams will pay the price that they bid
                 </p>
               </div>
               <div className={classes.timercontainer}>
@@ -218,14 +218,14 @@ function FirstPriceSealedBid({ newAuctionObj, renderNextAuction }) {
   );
 }
 
-FirstPriceSealedBid.defaultProps = {
+AllPayAuctions.defaultProps = {
   newAuctionObj: {},
   renderNextAuction: () => {},
 };
 
-FirstPriceSealedBid.propTypes = {
+AllPayAuctions.propTypes = {
   newAuctionObj: PropTypes.objectOf(PropTypes.any),
   renderNextAuction: PropTypes.func,
 };
 
-export default FirstPriceSealedBid;
+export default AllPayAuctions;

@@ -91,24 +91,17 @@ export default function LeaderBoard({ hasAuctionTimerEnded }) {
                     {' '}
                     {teamName}
                   </div>
-                  {
-                    totalAmountForAllTeams && totalAmountForAllTeams.map((teamsAmounts) => {
-                      const amt = teamsAmounts[`${teamName}`];
-                      return (
-                        <div style={{ flexGrow: '1', lineHeight: '1.8' }}>
-                          <h5 style={{ lineHeight: '0.5' }}>Total Loan:</h5>
-                          <FontAwesomeIcon
-                            style={{
-                              flex: '1', width: '18px', height: '18px', marginRight: '6px',
-                            }}
-                            icon="coins"
-                          />
-                          -
-                          {amt}
-                        </div>
-                      );
-                    })
-                  }
+                  <div style={{ flexGrow: '1', lineHeight: '1.8' }}>
+                    <h5 style={{ lineHeight: '0.5' }}>Total Loan:</h5>
+                    <FontAwesomeIcon
+                      style={{
+                        flex: '1', width: '18px', height: '18px', marginRight: '6px',
+                      }}
+                      icon="coins"
+                    />
+                    -
+                    {totalAmountForAllTeams && totalAmountForAllTeams[`${teamName}`]}
+                  </div>
                 </ListSubheader>
                 {
                 teamResult.map((result) => {
