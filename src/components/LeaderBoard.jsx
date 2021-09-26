@@ -59,32 +59,56 @@ fontawesome.library.add(faCoins);
 export default function LeaderBoard({ hasAuctionTimerEnded }) {
   const classes = useStyles();
   const [leaderboardData, setLeaderboardData] = useState({});
+  const [totalAmountForAllTeams, setTotalAmountByTeam] = useState([]);
 
   useEffect(() => {
     if (hasAuctionTimerEnded) {
-      leaderboardSocket.on('leaderboard', (leaderboard) => {
+      leaderboardSocket.on('leaderboard', ({ leaderboard, totalAmountByTeam }) => {
         setLeaderboardData(leaderboard);
+        setTotalAmountByTeam(totalAmountByTeam);
       });
     }
   });
 
   const getLeaderboard = () => {
     if (!leaderboardData) return <></>;
-
     return Object.entries(leaderboardData).map((entry) => {
       const teamName = entry[0];
       const teamResult = entry[1];
       const winTeam = TEAM_DETAILS.filter((detail) => detail.name === teamName.toString());
-      const teamColor = winTeam[0].color;
+      const teamColor = winTeam.length && winTeam[0].color;
       return (
         <>
           <List className={classes.listheaderstyle} subheader={<li />}>
             <li key="section-1" className={classes.listSection}>
               <ul className={classes.ul}>
-                <ListSubheader style={{ backgroundColor: `${teamColor}`, fontSize: '15px', color: '#000000' }}>
-                  Team
-                  {' '}
-                  {teamName}
+                <ListSubheader style={{
+                  backgroundColor: `${teamColor}`, fontSize: '15px', color: '#000000', display: 'flex',
+                }}
+                >
+                  <div style={{ flexGrow: '1', width: '70%', fontWeight: '700' }}>
+                    Team
+                    {' '}
+                    {teamName}
+                  </div>
+                  {
+                    totalAmountForAllTeams && totalAmountForAllTeams.map((teamsAmounts) => {
+                      const amt = teamsAmounts[`${teamName}`];
+                      return (
+                        <div style={{ flexGrow: '1', lineHeight: '1.8' }}>
+                          <h5 style={{ lineHeight: '0.5' }}>Total Loan:</h5>
+                          <FontAwesomeIcon
+                            style={{
+                              flex: '1', width: '18px', height: '18px', marginRight: '6px',
+                            }}
+                            icon="coins"
+                          />
+                          -
+                          {amt}
+                        </div>
+                      );
+                    })
+                  }
                 </ListSubheader>
                 {
                 teamResult.map((result) => {
@@ -120,6 +144,7 @@ export default function LeaderBoard({ hasAuctionTimerEnded }) {
                           icon="coins"
                         />
                         <p style={{ flex: '1', marginLeft: '10px' }}>
+                          -
                           {bidAmount}
                         </p>
                       </div>
