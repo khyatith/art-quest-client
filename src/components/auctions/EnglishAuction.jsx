@@ -121,7 +121,9 @@ function EnglishAuction({ newAuctionObj, renderNextAuction }) {
 
   useEffect(() => {
     setTimeout(() => {
-      socket.emit('startAuctionsTimer', player);
+      if (auctionObj) {
+        socket.emit('startAuctionsTimer', { player, currentAuctionId: auctionObj.id });
+      }
     }, 10000);
   }, [auctionObj]);
 
