@@ -105,9 +105,11 @@ function SecondPriceSealedBid({ newAuctionObj, renderNextAuction }) {
   useEffect(() => {
     setLive(false);
     setTimeout(() => {
-      socket.emit('startAuctionsTimer', player);
-      setAuctionTimerEnded(false);
-      setLive(true);
+      if (auctionObj) {
+        socket.emit('startAuctionsTimer', { player, currentAuctionId: auctionObj.id });
+        setAuctionTimerEnded(false);
+        setLive(true);
+      }
     }, 10000);
   }, [auctionObj, player]);
 
