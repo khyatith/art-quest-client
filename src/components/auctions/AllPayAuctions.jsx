@@ -13,6 +13,7 @@ import { Typography, TextField } from '@material-ui/core';
 import userContext from '../../global/userContext';
 import { socket, leaderboardSocket } from '../../global/socket';
 import LeaderBoard from '../LeaderBoard';
+import SimpleRating from '../Rating';
 
 const useStyles = makeStyles(() => ({
   cardRoot: {
@@ -182,6 +183,7 @@ function AllPayAuctions({ newAuctionObj, renderNextAuction }) {
             <CardHeader className={classes.titlestyle} title={auctionObj.name} subheader={`Created By: ${auctionObj.artist}`} />
             <CardMedia className={classes.media} component="img" image={`${auctionObj.imageURL}`} title={auctionObj.name} />
             <CardContent className={classes.cardcontentstyle}>
+              <SimpleRating rating={parseFloat(auctionObj.paintingQuality)} />
               <Typography component="h6" variant="h6">
                 {`Opening bid : $${auctionObj.originalValue}`}
               </Typography>
