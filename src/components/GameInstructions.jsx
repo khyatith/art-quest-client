@@ -4,7 +4,7 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import Button from '@material-ui/core/Button';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import { socket } from '../global/socket';
 import userContext from '../global/userContext';
 
@@ -63,12 +63,11 @@ const useStyles = makeStyles(() => ({
 function GameInstructions() {
   const classes = useStyles();
   const history = useHistory();
-  const location = useLocation();
   const { player } = useContext(userContext);
 
   const handleClick = () => {
     socket.emit('startGame', JSON.stringify(player));
-    history.push(`/game/${location.pathname.substring(9, 29)}`);
+    history.push(`/game/${player.playerId}`);
   };
 
   return (
