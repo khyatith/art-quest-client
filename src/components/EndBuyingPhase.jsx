@@ -26,19 +26,28 @@ const useStyles = makeStyles((theme) => ({
 function EndBuyingPhase() {
   const classes = useStyles();
   const [artforTeams, setArtForTeams] = useState();
+  const [gameWinner, setGameWinner] = useState({});
   const { player } = useContext(userContext);
 
   useEffect(() => {
-    leaderboardSocket.on('leaderboard', (leaderboard) => {
+    leaderboardSocket.on('displayGameWinner', ({ winner, leaderboard }) => {
       const { teamName } = player;
       const allTeamArt = leaderboard[teamName];
       setArtForTeams(allTeamArt);
+      setGameWinner(winner);
     });
-  }, []);
+  });
 
   return (
-    <div>
-      <h3 style={{ marginLeft: '20%' }}>Congratulations! For creating your favorite art collection!</h3>
+    <div style={{ textAlign: 'center' }}>
+      <h2 style={{ backgroundColor: '#ffd4db', padding: '20px', color: '#000000' }}>
+        The winner is
+        {' '}
+        Team
+        {' '}
+        {gameWinner.team}
+      </h2>
+      <h3>Congratulations! For creating your favorite art collection!</h3>
       <div className={classes.root}>
         <ImageList rowHeight={300} className={classes.imageList}>
           {

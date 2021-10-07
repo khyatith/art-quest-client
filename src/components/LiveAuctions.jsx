@@ -1,14 +1,16 @@
-import React, { useEffect, useState } from 'react';
-import { socket } from '../global/socket';
+import React, { useEffect, useState, useContext } from 'react';
+import { socket, leaderboardSocket } from '../global/socket';
 import FirstPriceSealedBid from './auctions/FirstPriceSealedBid';
 import EnglishAuction from './auctions/EnglishAuction';
 import EndBuyingPhase from './EndBuyingPhase';
 import SecondPriceSealedBid from './auctions/SecondPriceSealedBid';
 import AllPayAuctions from './auctions/AllPayAuctions';
+import userContext from '../global/userContext';
 
 function LiveAuctions({ getNextAuctionObj }) {
   const [auctionObj, setAuctionObj] = useState();
   const [hasEndedAuctions, setHasEndedAuctions] = useState(false);
+  const { player } = useContext(userContext);
 
   useEffect(() => {
     socket.on('startNextAuction', (auctionObjFromServer) => {
@@ -17,6 +19,7 @@ function LiveAuctions({ getNextAuctionObj }) {
       } else if (!auctionObjFromServer) {
         setAuctionObj(null);
         setHasEndedAuctions(true);
+        leaderboardSocket.emit('getWinner', player);
       }
     });
   }, []);
