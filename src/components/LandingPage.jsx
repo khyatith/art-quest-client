@@ -140,7 +140,7 @@ function LandingPage() {
 
   useEffect(() => {
     socket.on('gameState', (newGameState) => {
-      setGameState(JSON.parse(newGameState));
+      setGameState(newGameState);
     });
   }, []);
 
