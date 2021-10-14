@@ -137,7 +137,6 @@ function LandingPage() {
   useEffect(() => {
     async function fetchTimerValue() {
       const { data } = await axios.get(`/landing-page/timer/${player.hostCode}`);
-      console.log('data', data.landingPageTimerValue);
       setLandingPageTimerValue(data.landingPageTimerValue);
     }
     if (Object.keys(landingPageTimerValue).length === 0) {
