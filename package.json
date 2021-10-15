@@ -38,11 +38,9 @@
 		"eject": "react-scripts eject",
 		"lint": "eslint **/*.jsx --ignore-pattern node_modules/",
 		"start:dev": "env-cmd -f ./environments/.dev.env react-scripts start",
-		"build:dev": "env-cmd -f ./environments/.dev.env npm run-script build",
-		"start:qa": "env-cmd -f ./environments/.qa.env react-scripts start",
-		"build:qa": "env-cmd -f ./environments/.qa.env npm run-script build",
+		"build:dev": "env-cmd -f ./environments/.dev.env react-scripts build",
 		"start:prod": "env-cmd -f ./environments/.prod.env react-scripts start",
-		"build:prod": "env-cmd -f ./environments/.prod.env npm run-script build"
+		"build:prod": "env-cmd -f ./environments/.prod.env react-scripts build"
 	},
 	"eslintConfig": {
 		"extends": [
