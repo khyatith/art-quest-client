@@ -11,6 +11,7 @@ import ImageGallery from 'react-image-gallery';
 import Modal from '@material-ui/core/Modal';
 import Backdrop from '@material-ui/core/Backdrop';
 import Fade from '@material-ui/core/Fade';
+import axios from 'axios';
 import userContext from '../global/userContext';
 import LiveAuctions from './LiveAuctions';
 import { socket } from '../global/socket';
@@ -114,29 +115,47 @@ function LandingPage() {
   const [openModal, setOpenModal] = useState(false);
   const [isGalleryFullScreen, setIsGalleryFullscreen] = useState(false);
   const [hasLandingPageTimerEnded, setHasLandingPageTimerEnded] = useState(false);
-  const [landingPageTimerValue, setLandingPageTimerValue] = useState({
-    total: '0',
-    minutes: '00',
-    seconds: '00',
-  });
+  const [landingPageTimerValue, setLandingPageTimerValue] = useState({});
 
   const handleOpenModal = () => {
     setOpenModal(true);
   };
 
-  // hooks and methods
-  useEffect(() => {
-    setTimeout(() => {
-      socket.emit('startLandingPageTimer', { roomCode: player.hostCode, timerInMinutes: 10 });
-    }, 1000);
-  }, []);
-
-  useEffect(() => {
-    socket.on('landingPageTimerEnded', () => {
+  const getRemainingTime = () => {
+    const total = parseInt(landingPageTimerValue.total, 10) - 1000;
+    const seconds = Math.floor((parseInt(total, 10) / 1000) % 60);
+    const minutes = Math.floor((parseInt(total, 10) / 1000 / 60) % 60);
+    if (total < 1000) {
       setHasLandingPageTimerEnded(true);
       handleOpenModal();
-    });
+    } else {
+      const value = {
+        total,
+        minutes,
+        seconds,
+      };
+      setLandingPageTimerValue(value);
+    }
+  };
+
+  // hooks and methods
+  useEffect(() => {
+    async function fetchTimerValue() {
+      const { data } = await axios.get(`/landing-page/timer/${player.hostCode}`);
+      setLandingPageTimerValue(data.landingPageTimerValue);
+    }
+    if (Object.keys(landingPageTimerValue).length === 0) {
+      fetchTimerValue();
+    }
   }, []);
+
+  // eslint-disable-next-line consistent-return
+  useEffect(() => {
+    if (landingPageTimerValue && landingPageTimerValue.total) {
+      const interval = setInterval(() => getRemainingTime(), 1000);
+      return () => clearInterval(interval);
+    }
+  });
 
   useEffect(() => {
     socket.on('gameState', (newGameState) => {
