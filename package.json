@@ -15,6 +15,7 @@
 		"@testing-library/user-event": "^12.8.3",
 		"axios": "^0.23.0",
 		"clsx": "^1.1.1",
+		"env-cmd": "^10.1.0",
 		"eslint-config-prettier": "^8.3.0",
 		"eslint-plugin-prettier": "^4.0.0",
 		"eslint-plugin-react-perf": "^3.3.0",
@@ -33,11 +34,15 @@
 		"web-vitals": "^1.1.2"
 	},
 	"scripts": {
-		"start": "react-scripts start",
-		"build": "react-scripts build",
 		"test": "react-scripts test",
 		"eject": "react-scripts eject",
-		"lint": "eslint **/*.jsx --ignore-pattern node_modules/"
+		"lint": "eslint **/*.jsx --ignore-pattern node_modules/",
+		"start:dev": "env-cmd -f ./environments/.dev.env react-scripts start",
+		"build:dev": "env-cmd -f ./environments/.dev.env npm run-script build",
+		"start:qa": "env-cmd -f ./environments/.qa.env react-scripts start",
+		"build:qa": "env-cmd -f ./environments/.qa.env npm run-script build",
+		"start:prod": "env-cmd -f ./environments/.prod.env react-scripts start",
+		"build:prod": "env-cmd -f ./environments/.prod.env npm run-script build"
 	},
 	"eslintConfig": {
 		"extends": [
@@ -59,6 +64,5 @@
 	},
 	"devDependencies": {
 		"eslint-config-airbnb": "^18.2.1"
-	},
-	"proxy": "http://localhost:3001"
+	}
 }

@@ -125,12 +125,17 @@ function LandingPage() {
     const total = parseInt(landingPageTimerValue.total, 10) - 1000;
     const seconds = Math.floor((parseInt(total, 10) / 1000) % 60);
     const minutes = Math.floor((parseInt(total, 10) / 1000 / 60) % 60);
-    const value = {
-      total,
-      minutes,
-      seconds,
-    };
-    setLandingPageTimerValue(value);
+    if (total < 1000) {
+      setHasLandingPageTimerEnded(true);
+      handleOpenModal();
+    } else {
+      const value = {
+        total,
+        minutes,
+        seconds,
+      };
+      setLandingPageTimerValue(value);
+    }
   };
 
   // hooks and methods
@@ -151,13 +156,6 @@ function LandingPage() {
       return () => clearInterval(interval);
     }
   });
-
-  useEffect(() => {
-    socket.on('landingPageTimerEnded', () => {
-      setHasLandingPageTimerEnded(true);
-      handleOpenModal();
-    });
-  }, []);
 
   useEffect(() => {
     socket.on('gameState', (newGameState) => {
