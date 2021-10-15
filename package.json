@@ -62,5 +62,6 @@
 	},
 	"devDependencies": {
 		"eslint-config-airbnb": "^18.2.1"
-	}
+	},
+	"proxy": "https://art-quest-server.herokuapp.com/"
 }
