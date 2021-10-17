@@ -104,6 +104,7 @@ const IMAGE_GALLERY_SETTINGS = {
 function LandingPage() {
   const classes = useStyles();
   const { player } = useContext(userContext);
+  const [totalNumberOfPaintings, setTotalNumberOfPaintings] = useState();
 
   // states
   const [gameState, setGameState] = useState({
@@ -122,6 +123,11 @@ function LandingPage() {
   };
 
   const getRemainingTime = () => {
+    if (Object.keys(landingPageTimerValue).length <= 0) {
+      setHasLandingPageTimerEnded(true);
+      handleOpenModal();
+      return;
+    }
     const total = parseInt(landingPageTimerValue.total, 10) - 1000;
     const seconds = Math.floor((parseInt(total, 10) / 1000) % 60);
     const minutes = Math.floor((parseInt(total, 10) / 1000 / 60) % 60);
@@ -151,7 +157,7 @@ function LandingPage() {
 
   // eslint-disable-next-line consistent-return
   useEffect(() => {
-    if (landingPageTimerValue && landingPageTimerValue.total) {
+    if (landingPageTimerValue) {
       const interval = setInterval(() => getRemainingTime(), 1000);
       return () => clearInterval(interval);
     }
@@ -160,6 +166,7 @@ function LandingPage() {
   useEffect(() => {
     socket.on('gameState', (newGameState) => {
       setGameState(newGameState);
+      setTotalNumberOfPaintings(newGameState.auctions.artifacts.length);
     });
   }, []);
 
@@ -264,7 +271,7 @@ function LandingPage() {
                 </div>
               )
           )
-          : <LiveAuctions getNextAuctionObj={startLiveAuction} />
+          : <LiveAuctions getNextAuctionObj={startLiveAuction} totalNumberOfPaintings={totalNumberOfPaintings} />
       }
     </>
   );

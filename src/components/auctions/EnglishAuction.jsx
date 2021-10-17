@@ -12,6 +12,7 @@ import userContext from '../../global/userContext';
 import { socket, leaderboardSocket } from '../../global/socket';
 import LeaderBoard from '../LeaderBoard';
 import SimpleRating from '../Rating';
+import RoundsInfo from '../RoundsInfo';
 
 const useStyles = makeStyles(() => ({
   cardRoot: {
@@ -99,7 +100,7 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-function EnglishAuction({ newAuctionObj, renderNextAuction }) {
+function EnglishAuction({ newAuctionObj, renderNextAuction, totalNumberOfPaintings }) {
   const classes = useStyles();
   const [live, setLive] = useState(false);
   const { player } = useContext(userContext);
@@ -202,6 +203,7 @@ function EnglishAuction({ newAuctionObj, renderNextAuction }) {
       <Button onClick={getNextAuction} size="large" className={classes.nextbtn} fullWidth disabled={isDisableNextBtn}>
         Click for next auction
       </Button>
+      {auctionObj && <RoundsInfo label={`Round ${auctionObj.id} of ${totalNumberOfPaintings}`} />}
       <LeaderBoard hasAuctionTimerEnded={hasAuctionTimerEnded} />
       {auctionObj && (
         <div className={classes.cardRoot}>
@@ -209,6 +211,7 @@ function EnglishAuction({ newAuctionObj, renderNextAuction }) {
             <CardHeader className={classes.titlestyle} title={auctionObj.name} subheader={`Created By: ${auctionObj.artist}`} />
             <CardMedia className={classes.media} component="img" image={`${auctionObj.imageURL}`} title={auctionObj.name} />
             <CardContent className={classes.cardcontentstyle}>
+              <p>Painting Quality</p>
               <SimpleRating rating={parseFloat(auctionObj.paintingQuality)} />
               <Typography component="h6" variant="h6">
                 {`Opening bid : $${auctionObj.originalValue}`}

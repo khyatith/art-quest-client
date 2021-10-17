@@ -7,7 +7,7 @@ import SecondPriceSealedBid from './auctions/SecondPriceSealedBid';
 import AllPayAuctions from './auctions/AllPayAuctions';
 import userContext from '../global/userContext';
 
-function LiveAuctions({ getNextAuctionObj }) {
+function LiveAuctions({ getNextAuctionObj, totalNumberOfPaintings }) {
   const [auctionObj, setAuctionObj] = useState();
   const [hasEndedAuctions, setHasEndedAuctions] = useState(false);
   const { player } = useContext(userContext);
@@ -33,19 +33,19 @@ function LiveAuctions({ getNextAuctionObj }) {
     switch (auctionType) {
       case '1':
         return (
-          <FirstPriceSealedBid newAuctionObj={auctionObj} renderNextAuction={nextAuctionObj} />
+          <FirstPriceSealedBid newAuctionObj={auctionObj} renderNextAuction={nextAuctionObj} totalNumberOfPaintings={totalNumberOfPaintings} />
         );
       case '2':
         return (
-          <EnglishAuction newAuctionObj={auctionObj} renderNextAuction={nextAuctionObj} />
+          <EnglishAuction newAuctionObj={auctionObj} renderNextAuction={nextAuctionObj} totalNumberOfPaintings={totalNumberOfPaintings} />
         );
       case '3':
         return (
-          <SecondPriceSealedBid newAuctionObj={auctionObj} renderNextAuction={nextAuctionObj} />
+          <SecondPriceSealedBid newAuctionObj={auctionObj} renderNextAuction={nextAuctionObj} totalNumberOfPaintings={totalNumberOfPaintings} />
         );
       case '4':
         return (
-          <AllPayAuctions newAuctionObj={auctionObj} renderNextAuction={nextAuctionObj} />
+          <AllPayAuctions newAuctionObj={auctionObj} renderNextAuction={nextAuctionObj} totalNumberOfPaintings={totalNumberOfPaintings} />
         );
       default:
         return null;
