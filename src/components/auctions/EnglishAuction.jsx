@@ -16,7 +16,7 @@ import RoundsInfo from '../RoundsInfo';
 
 const useStyles = makeStyles(() => ({
   cardRoot: {
-    width: 500,
+    width: 400,
     padding: 20,
     // margin: '0 30%',
   },
@@ -122,11 +122,9 @@ function EnglishAuction({ newAuctionObj, renderNextAuction, totalNumberOfPaintin
   }, [newAuctionObj]);
 
   useEffect(() => {
-    setTimeout(() => {
-      if (auctionObj) {
-        socket.emit('startAuctionsTimer', { player, currentAuctionId: auctionObj.id });
-      }
-    }, 10000);
+    if (auctionObj) {
+      socket.emit('startAuctionsTimer', { player, currentAuctionId: auctionObj.id });
+    }
   }, [auctionObj]);
 
   useEffect(() => {
@@ -172,6 +170,7 @@ function EnglishAuction({ newAuctionObj, renderNextAuction, totalNumberOfPaintin
       const bidInfo = {
         auctionType: auctionObj.auctionType,
         auctionId: auctionObj.id,
+        paintingQuality: auctionObj.paintingQuality,
         auctionObj,
         player,
         bidAmount: currentBid,
