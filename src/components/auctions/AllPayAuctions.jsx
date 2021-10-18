@@ -11,7 +11,7 @@ import CardContent from '@material-ui/core/CardContent';
 import CardActions from '@material-ui/core/CardActions';
 import { Typography, TextField } from '@material-ui/core';
 import userContext from '../../global/userContext';
-import { socket, leaderboardSocket } from '../../global/socket';
+import { socket } from '../../global/socket';
 import LeaderBoard from '../LeaderBoard';
 import SimpleRating from '../Rating';
 import RoundsInfo from '../RoundsInfo';
@@ -130,12 +130,6 @@ function AllPayAuctions({ newAuctionObj, renderNextAuction, totalNumberOfPaintin
     socket.on('auctionPageTimerEnded', () => {
       setAuctionTimerEnded(true);
     });
-  });
-
-  useEffect(() => {
-    if (hasAuctionTimerEnded) {
-      leaderboardSocket.emit('getLeaderBoard', player);
-    }
   });
 
   useEffect(() => {

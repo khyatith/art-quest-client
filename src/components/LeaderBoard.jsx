@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Box from '@material-ui/core/Box';
 import Drawer from '@material-ui/core/Drawer';
@@ -13,9 +13,10 @@ import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import fontawesome from '@fortawesome/fontawesome';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCoins } from '@fortawesome/fontawesome-free-solid';
+import axios from 'axios';
 import leaderboardImg from '../assets/leaderboardimg.png';
-import { leaderboardSocket } from '../global/socket';
 import { TEAM_DETAILS } from '../global/constants';
+import userContext from '../global/userContext';
 
 const useStyles = makeStyles((theme) => ({
   drawerStyle: {
@@ -58,15 +59,22 @@ fontawesome.library.add(faCoins);
 
 export default function LeaderBoard({ hasAuctionTimerEnded }) {
   const classes = useStyles();
+  const { player } = useContext(userContext);
   const [leaderboardData, setLeaderboardData] = useState({});
   const [totalAmountForAllTeams, setTotalAmountByTeam] = useState([]);
 
   useEffect(() => {
+    async function fetchLeaderboard() {
+      const { data } = await axios.get(`http://localhost:3001/buying/getResults/${player.hostCode}`);
+      if (data && data.leaderboard) {
+        setLeaderboardData(data.leaderboard);
+      }
+      if (data && data.totalAmountByTeam) {
+        setTotalAmountByTeam(data.totalAmountByTeam);
+      }
+    }
     if (hasAuctionTimerEnded) {
-      leaderboardSocket.on('leaderboard', ({ leaderboard, totalAmountByTeam }) => {
-        setLeaderboardData(leaderboard);
-        setTotalAmountByTeam(totalAmountByTeam);
-      });
+      fetchLeaderboard(player);
     }
   });
 
