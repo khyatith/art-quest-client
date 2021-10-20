@@ -35,3 +35,7 @@ with
 
 `http://localhost:3001/buying/timer/${player.hostCode}`
 
+# End
+
+You should be able to start your node server and your client now and your client will be connecting to localhost:3001 to get the data.
+
