@@ -19,7 +19,7 @@ const options = {
   },
 };
 
-const GroupedBarChart = (props) => {
+const SellingGroupedBarChart = (props) => {
   const { results, teamColorMap } = props;
   const [barChartData, setBarChartData] = useState();
 
@@ -28,8 +28,6 @@ const GroupedBarChart = (props) => {
     chart.labels = ['Visits', 'Cash', 'Total'];
     if (results) {
       const dataset = Object.entries(results).map(([key, value]) => {
-        console.log('key', key);
-        console.log('value', value);
         const teamName = key;
         const { visit, cashPoints, total } = value;
         return {
@@ -55,4 +53,4 @@ const GroupedBarChart = (props) => {
   );
 };
 
-export default GroupedBarChart;
+export default SellingGroupedBarChart;

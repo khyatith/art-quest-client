@@ -24,6 +24,8 @@ const useStyles = makeStyles((theme) => ({
     '& .MuiDrawer-paper': {
       top: 'auto',
       width: '500px',
+      position: 'absolute',
+      overflowY: 'scroll',
     },
   },
   avatar: {

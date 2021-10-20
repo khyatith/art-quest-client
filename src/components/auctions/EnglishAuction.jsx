@@ -13,6 +13,8 @@ import { socket } from '../../global/socket';
 import LeaderBoard from '../LeaderBoard';
 import SimpleRating from '../Rating';
 import RoundsInfo from '../RoundsInfo';
+import leaderboardContext from '../../global/leaderboardContext';
+import BuyingBarChart from '../visualizations/BuyingBarChart';
 
 const useStyles = makeStyles(() => ({
   cardRoot: {
@@ -111,6 +113,7 @@ function EnglishAuction({ newAuctionObj, renderNextAuction, totalNumberOfPaintin
   const [isDisableNextBtn, setDisableNextBtn] = useState(true);
   const [hasAuctionTimerEnded, setAuctionTimerEnded] = useState(false);
   const [bidAmtError, setBidAmtError] = useState();
+  const { leaderboardData } = useContext(leaderboardContext);
 
   useEffect(() => {
     if (newAuctionObj) {
@@ -198,7 +201,8 @@ function EnglishAuction({ newAuctionObj, renderNextAuction, totalNumberOfPaintin
       </Button>
       {auctionObj && <RoundsInfo label={`Round ${auctionObj.id} of ${totalNumberOfPaintings}`} />}
       <LeaderBoard hasAuctionTimerEnded={hasAuctionTimerEnded} />
-      {auctionObj && (
+      <div style={{ display: 'flex' }}>
+        {auctionObj && (
         <div className={classes.cardRoot}>
           <Card key={auctionObj.id}>
             <CardHeader className={classes.titlestyle} title={auctionObj.name} subheader={`Created By: ${auctionObj.artist}`} />
@@ -254,7 +258,15 @@ function EnglishAuction({ newAuctionObj, renderNextAuction, totalNumberOfPaintin
             </CardActions>
           </Card>
         </div>
-      )}
+        )}
+        {/* Render bar chart */}
+        { leaderboardData && leaderboardData.totalPointsAvg
+        && (
+        <div style={{ display: 'flex' }}>
+          <BuyingBarChart results={leaderboardData.totalPointsAvg} labels={Object.keys(leaderboardData.totalPointsAvg)} />
+        </div>
+        )}
+      </div>
     </div>
   );
 }
