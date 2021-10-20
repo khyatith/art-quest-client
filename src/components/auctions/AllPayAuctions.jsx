@@ -10,6 +10,8 @@ import CardMedia from '@material-ui/core/CardMedia';
 import CardContent from '@material-ui/core/CardContent';
 import CardActions from '@material-ui/core/CardActions';
 import { Typography, TextField } from '@material-ui/core';
+import AppBar from '@material-ui/core/AppBar';
+import Toolbar from '@material-ui/core/Toolbar';
 import userContext from '../../global/userContext';
 import { socket } from '../../global/socket';
 import LeaderBoard from '../LeaderBoard';
@@ -18,7 +20,7 @@ import RoundsInfo from '../RoundsInfo';
 import leaderboardContext from '../../global/leaderboardContext';
 import BuyingBarChart from '../visualizations/BuyingBarChart';
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
   cardRoot: {
     width: 350,
     padding: 20,
@@ -80,6 +82,21 @@ const useStyles = makeStyles(() => ({
       backgroundColor: '#cccccc',
       color: '#616A6B',
     },
+  },
+  appbar: {
+    backgroundColor: '#0fc',
+    flexGrow: 1,
+    position: 'relative',
+  },
+  timercontent: {
+    display: 'none',
+    margin: '0 auto',
+    fontWeight: '700',
+    [theme.breakpoints.up('sm')]: {
+      display: 'block',
+    },
+    color: '#000000',
+    fontSize: '22px',
   },
 }));
 
@@ -171,6 +188,19 @@ function AllPayAuctions({ newAuctionObj, renderNextAuction, totalNumberOfPaintin
 
   return (
     <div className={classes.root}>
+      {auctionObj && (
+      <AppBar className={classes.appbar}>
+        <Toolbar>
+          <Typography variant="h6" className={classes.timercontent}>
+            Time Remaining in Auction:
+            {' '}
+            {auctionTimer && auctionTimer.minutes}
+            :
+            {auctionTimer && auctionTimer.seconds}
+          </Typography>
+        </Toolbar>
+      </AppBar>
+      )}
       <Button onClick={getNextAuction} size="large" className={classes.nextbtn} fullWidth disabled={isDisableNextBtn}>
         Click for next auction
       </Button>
@@ -210,11 +240,11 @@ function AllPayAuctions({ newAuctionObj, renderNextAuction, totalNumberOfPaintin
                   * The highest bid will win but all teams will pay the price that they bid
                 </p>
               </div>
-              <div className={classes.timercontainer}>
+              {/* <div className={classes.timercontainer}>
                 <p className={classes.timercaption}>Time Remaining</p>
                 <div className={classes.timer}>{auctionTimer && auctionTimer.minutes}</div>
                 <div className={classes.timer}>{auctionTimer && auctionTimer.seconds}</div>
-              </div>
+              </div> */}
             </CardActions>
           </Card>
         </div>
@@ -222,7 +252,7 @@ function AllPayAuctions({ newAuctionObj, renderNextAuction, totalNumberOfPaintin
         {/* Render bar chart */}
         { leaderboardData && leaderboardData.totalPointsAvg
         && (
-        <div style={{ display: 'flex', marginTop: '400px' }}>
+        <div style={{ display: 'flex', marginTop: '350px' }}>
           <BuyingBarChart results={leaderboardData.totalPointsAvg} labels={Object.keys(leaderboardData.totalPointsAvg)} />
         </div>
         )}

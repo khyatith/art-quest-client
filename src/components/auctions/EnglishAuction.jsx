@@ -8,6 +8,8 @@ import CardContent from '@material-ui/core/CardContent';
 import CardActions from '@material-ui/core/CardActions';
 import { Typography, TextField } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
+import AppBar from '@material-ui/core/AppBar';
+import Toolbar from '@material-ui/core/Toolbar';
 import userContext from '../../global/userContext';
 import { socket } from '../../global/socket';
 import LeaderBoard from '../LeaderBoard';
@@ -16,7 +18,7 @@ import RoundsInfo from '../RoundsInfo';
 import leaderboardContext from '../../global/leaderboardContext';
 import BuyingBarChart from '../visualizations/BuyingBarChart';
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
   cardRoot: {
     width: 400,
     padding: 20,
@@ -54,16 +56,29 @@ const useStyles = makeStyles(() => ({
     margin: '20px 0px 0px 0px !important',
     backgroundColor: '#1C2833',
   },
-  timercontainer: {
-    textAlign: 'left',
+  // timercontainer: {
+  //   textAlign: 'left',
+  // },
+  appbar: {
+    backgroundColor: '#0fc',
+    flexGrow: 1,
+    position: 'relative',
+  },
+  timercontent: {
+    display: 'none',
+    margin: '0 auto',
+    fontWeight: '700',
+    [theme.breakpoints.up('sm')]: {
+      display: 'block',
+    },
+    color: '#000000',
+    fontSize: '22px',
   },
   lastbidcontainer: {
     textAlign: 'center',
     flex: '1',
-    marginRight: '20px',
     backgroundColor: '#fff',
-    width: '50px',
-    marginLeft: '80px',
+    width: '100%',
     padding: '0 10px 10px 0',
   },
   lastbidby: {
@@ -76,21 +91,21 @@ const useStyles = makeStyles(() => ({
     fontSize: '16px',
     fontWeight: '700',
   },
-  timercaption: {
-    marginLeft: '10px',
-    color: '#ffffff',
-    lineHeight: '1.2px',
-  },
-  timer: {
-    backgroundColor: '#333',
-    color: '#0fc',
-    fontSize: '40px',
-    width: '50px',
-    marginLeft: '10px',
-    textAlign: 'center',
-    display: 'inline-block',
-    padding: '10px 10px 0px 10px',
-  },
+  // timercaption: {
+  //   marginLeft: '10px',
+  //   color: '#ffffff',
+  //   lineHeight: '1.2px',
+  // },
+  // timer: {
+  //   backgroundColor: '#333',
+  //   color: '#0fc',
+  //   fontSize: '40px',
+  //   width: '50px',
+  //   marginLeft: '10px',
+  //   textAlign: 'center',
+  //   display: 'inline-block',
+  //   padding: '10px 10px 0px 10px',
+  // },
   nextbtn: {
     backgroundColor: '#0fc',
     color: '#000',
@@ -196,6 +211,19 @@ function EnglishAuction({ newAuctionObj, renderNextAuction, totalNumberOfPaintin
 
   return (
     <div className={classes.root}>
+      {auctionObj && (
+      <AppBar className={classes.appbar}>
+        <Toolbar>
+          <Typography variant="h6" className={classes.timercontent}>
+            Time Remaining in Auction:
+            {' '}
+            {auctionTimer && auctionTimer.minutes}
+            :
+            {auctionTimer && auctionTimer.seconds}
+          </Typography>
+        </Toolbar>
+      </AppBar>
+      )}
       <Button onClick={getNextAuction} size="large" className={classes.nextbtn} fullWidth disabled={isDisableNextBtn}>
         Click for next auction
       </Button>
@@ -239,11 +267,11 @@ function EnglishAuction({ newAuctionObj, renderNextAuction, totalNumberOfPaintin
                   )}
               </div>
               <div className={classes.bottomcontainer}>
-                <div className={classes.timercontainer}>
+                {/* <div className={classes.timercontainer}>
                   <p className={classes.timercaption}>Time Remaining</p>
                   <div className={classes.timer}>{auctionTimer && auctionTimer.minutes}</div>
                   <div className={classes.timer}>{auctionTimer && auctionTimer.seconds}</div>
-                </div>
+                </div> */}
                 {previousBidDetails && previousBidDetails.bidTeam && previousBidDetails.bidAmount ? (
                   <div className={classes.lastbidcontainer} style={{ backgroundColor: `${previousBidDetails.bidColor}` }}>
                     <p className={classes.lastbidby}>Last Bid By: {`Team ${previousBidDetails.bidTeam}`}</p>
@@ -262,7 +290,7 @@ function EnglishAuction({ newAuctionObj, renderNextAuction, totalNumberOfPaintin
         {/* Render bar chart */}
         { leaderboardData && leaderboardData.totalPointsAvg
         && (
-        <div style={{ display: 'flex' }}>
+        <div style={{ display: 'flex', marginTop: '350px' }}>
           <BuyingBarChart results={leaderboardData.totalPointsAvg} labels={Object.keys(leaderboardData.totalPointsAvg)} />
         </div>
         )}
