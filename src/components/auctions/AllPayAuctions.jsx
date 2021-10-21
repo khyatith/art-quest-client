@@ -19,6 +19,8 @@ import SimpleRating from '../Rating';
 import RoundsInfo from '../RoundsInfo';
 import leaderboardContext from '../../global/leaderboardContext';
 import BuyingBarChart from '../visualizations/BuyingBarChart';
+import BonusAuctionBanner from '../visualizations/BonusAuctionBanner';
+import { ALL_PAY_AUCTIONS_TEXT } from '../../global/constants';
 
 const useStyles = makeStyles((theme) => ({
   cardRoot: {
@@ -249,13 +251,19 @@ function AllPayAuctions({ newAuctionObj, renderNextAuction, totalNumberOfPaintin
           </Card>
         </div>
         )}
-        {/* Render bar chart */}
-        { leaderboardData && leaderboardData.totalPointsAvg
-        && (
-        <div style={{ display: 'flex', marginTop: '350px' }}>
-          <BuyingBarChart results={leaderboardData.totalPointsAvg} labels={Object.keys(leaderboardData.totalPointsAvg)} />
+        <div style={{ display: 'flex', maxWidth: '400px' }}>
+          {/* Render bar chart */}
+          { leaderboardData && leaderboardData.totalPointsAvg
+          && (
+          <div style={{ marginTop: '350px' }}>
+            <BuyingBarChart results={leaderboardData.totalPointsAvg} labels={Object.keys(leaderboardData.totalPointsAvg)} />
+          </div>
+          )}
+          {/* Render bonus auction banner */}
+          <div style={{ width: '300px', height: '150px', position: 'absolute' }}>
+            <BonusAuctionBanner text={ALL_PAY_AUCTIONS_TEXT} />
+          </div>
         </div>
-        )}
       </div>
     </div>
   );

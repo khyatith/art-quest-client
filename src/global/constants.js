@@ -38,3 +38,7 @@ export const TEAM_COLOR_MAP = {
   Orange: '#E59866',
   Pink: '#FFC0CB',
 };
+
+export const ALL_PAY_AUCTIONS_TEXT = 'The highest bid will win. But all the teams will pay the amount that they bid';
+export const FIRST_PRICED_SEALED_BID_TEXT = 'The highest bid will win. You cannot see the bid of the other teams';
+export const SECOND_PRICED_SEALED_BID_TEXT = 'The highest bid will win. But the winner will pay the amount of the second-highest bid';
