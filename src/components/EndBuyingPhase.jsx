@@ -2,7 +2,7 @@ import React, { useEffect, useState, useContext } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import ImageList from '@material-ui/core/ImageList';
 import ImageListItem from '@material-ui/core/ImageListItem';
-import { leaderboardSocket } from '../global/socket';
+import axios from 'axios';
 import userContext from '../global/userContext';
 
 const useStyles = makeStyles((theme) => ({
@@ -29,18 +29,27 @@ function EndBuyingPhase() {
   const [gameWinner, setGameWinner] = useState({});
   const { player } = useContext(userContext);
 
-  useEffect(() => {
-    leaderboardSocket.on('displayGameWinner', ({ winner, leaderboard }) => {
+  const getWinner = async () => {
+    const { data } = await axios.get(`https://art-quest-server.herokuapp.com/buying/getWinner/${player.hostCode}`);
+    if (data && data.leaderboard) {
       const { teamName } = player;
-      const allTeamArt = leaderboard[teamName];
+      const allTeamArt = data.leaderboard[teamName];
       setArtForTeams(allTeamArt);
-      setGameWinner(winner);
-    });
-  });
+    }
+    if (data && data.winner) {
+      setGameWinner(data.winner);
+    }
+  };
+
+  useEffect(() => {
+    if (Object.keys(gameWinner).length === 0) {
+      getWinner();
+    }
+  }, [gameWinner]);
 
   return (
     <div style={{ textAlign: 'center' }}>
-      <h2 style={{ backgroundColor: '#ffd4db', padding: '20px', color: '#000000' }}>
+      <h2 style={{ backgroundColor: `${player.teamColor}`, padding: '20px', color: '#000000' }}>
         The winner is
         {' '}
         Team
