@@ -30,7 +30,7 @@ function EndBuyingPhase() {
   const { player } = useContext(userContext);
 
   const getWinner = async () => {
-    const { data } = await axios.get(`https://art-quest-server.herokuapp.com/buying/getWinner/${player.hostCode}`);
+    const { data } = await axios.get(`http://localhost:3001/buying/getWinner/${player.hostCode}`);
     if (data && data.leaderboard) {
       const { teamName } = player;
       const allTeamArt = data.leaderboard[teamName];

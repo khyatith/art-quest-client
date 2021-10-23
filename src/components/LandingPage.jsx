@@ -3,14 +3,10 @@ import React, { useEffect, useState, useContext } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import '../global/ImageGallery.module.css';
 import 'react-image-gallery/styles/css/image-gallery.css';
-import Button from '@material-ui/core/Button';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import ImageGallery from 'react-image-gallery';
-import Modal from '@material-ui/core/Modal';
-import Backdrop from '@material-ui/core/Backdrop';
-import Fade from '@material-ui/core/Fade';
 import axios from 'axios';
 import userContext from '../global/userContext';
 import LiveAuctions from './LiveAuctions';
@@ -112,20 +108,14 @@ function LandingPage() {
       artifacts: [],
     },
   });
-  const [startAuctions, setStartAuctions] = useState(false);
-  const [openModal, setOpenModal] = useState(false);
+
   const [isGalleryFullScreen, setIsGalleryFullscreen] = useState(false);
   const [hasLandingPageTimerEnded, setHasLandingPageTimerEnded] = useState(false);
   const [landingPageTimerValue, setLandingPageTimerValue] = useState({});
 
-  const handleOpenModal = () => {
-    setOpenModal(true);
-  };
-
   const getRemainingTime = () => {
     if (Object.keys(landingPageTimerValue).length <= 0) {
       setHasLandingPageTimerEnded(true);
-      handleOpenModal();
       return;
     }
     const total = parseInt(landingPageTimerValue.total, 10) - 1000;
@@ -133,7 +123,6 @@ function LandingPage() {
     const minutes = Math.floor((parseInt(total, 10) / 1000 / 60) % 60);
     if (total < 1000) {
       setHasLandingPageTimerEnded(true);
-      handleOpenModal();
     } else {
       const value = {
         total,
@@ -176,11 +165,6 @@ function LandingPage() {
     });
   }, []);
 
-  const startLiveAuction = (currentAuctionObj) => {
-    setStartAuctions(true);
-    socket.emit('startLiveAuctions', { currentAuctionObj, player });
-  };
-
   const onScreenChange = (fullScreenElement) => {
     setIsGalleryFullscreen(fullScreenElement);
   };
@@ -209,69 +193,47 @@ function LandingPage() {
     );
   };
 
-  const renderStartAuctionModal = () => (
-    <Modal
-      aria-labelledby="transition-modal-title"
-      aria-describedby="transition-modal-description"
-      className={classes.modal}
-      open={openModal}
-      closeAfterTransition
-      BackdropComponent={Backdrop}
-      BackdropProps={{ timeout: 500 }}
-    >
-      <Fade in={openModal}>
-        <div className={classes.paper}>
-          <Button variant="contained" color="secondary" className={classes.startbtn} onClick={() => startLiveAuction(null)}>Start Auctions</Button>
-        </div>
-      </Fade>
-    </Modal>
-  );
-
   return (
     <>
       {
         // eslint-disable-next-line no-nested-ternary
-        !startAuctions
-          ? (
-            hasLandingPageTimerEnded
-              ? renderStartAuctionModal()
-              : (
-                <div>
-                  <AppBar position="fixed" className={classes.appbar}>
-                    <Toolbar>
-                      <Typography variant="h6" className={classes.timercontent}>
-                        Auction starts in:
-                        {' '}
-                        {landingPageTimerValue && landingPageTimerValue.minutes}
-                        :
-                        {landingPageTimerValue && landingPageTimerValue.seconds}
-                      </Typography>
-                      { player
-                  && (
-                  <div className={classes.playerdiv}>
-                    <p>
-                      {player.playerName}
-                      , Team
-                      {' '}
-                      {player.teamName}
-                      ,
-                      {' '}
-                      {player.playerId}
-                    </p>
-                  </div>
-                  )}
-                    </Toolbar>
-                  </AppBar>
-                  <Typography variant="subtitle1" className={classes.titlecontent}>
-                    Welcome to the world&#39;s best painting exhibition. Paintings can be bought once the auction begin.
+        hasLandingPageTimerEnded
+          ? <LiveAuctions totalNumberOfPaintings={totalNumberOfPaintings} allAuctions={gameState} fromLP />
+          : (
+            <div>
+              <AppBar position="fixed" className={classes.appbar}>
+                <Toolbar>
+                  <Typography variant="h6" className={classes.timercontent}>
+                    Auction starts in:
+                    {' '}
+                    {landingPageTimerValue && landingPageTimerValue.minutes}
+                    :
+                    {landingPageTimerValue && landingPageTimerValue.seconds}
                   </Typography>
-                  <div className={classes.imagegallerywrapper}>
-                    {renderArtifacts()}
-                  </div>
-                </div>
-              )
+                  { player
+              && (
+              <div className={classes.playerdiv}>
+                <p>
+                  {player.playerName}
+                  , Team
+                  {' '}
+                  {player.teamName}
+                  ,
+                  {' '}
+                  {player.playerId}
+                </p>
+              </div>
+              )}
+                </Toolbar>
+              </AppBar>
+              <Typography variant="subtitle1" className={classes.titlecontent}>
+                Welcome to the world&#39;s best painting exhibition. Paintings can be bought once the auction begin.
+              </Typography>
+              <div className={classes.imagegallerywrapper}>
+                {renderArtifacts()}
+              </div>
+            </div>
           )
-          : <LiveAuctions getNextAuctionObj={startLiveAuction} totalNumberOfPaintings={totalNumberOfPaintings} />
       }
     </>
   );

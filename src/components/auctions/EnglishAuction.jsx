@@ -1,5 +1,6 @@
 /* eslint-disable react/jsx-one-expression-per-line */
 import React, { useContext, useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
@@ -10,6 +11,7 @@ import { Typography, TextField } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
+import axios from 'axios';
 import userContext from '../../global/userContext';
 import { socket } from '../../global/socket';
 import LeaderBoard from '../LeaderBoard';
@@ -17,6 +19,7 @@ import SimpleRating from '../Rating';
 import RoundsInfo from '../RoundsInfo';
 import leaderboardContext from '../../global/leaderboardContext';
 import BuyingBarChart from '../visualizations/BuyingBarChart';
+import auctionContext from '../../global/auctionContext';
 
 const useStyles = makeStyles((theme) => ({
   cardRoot: {
@@ -56,9 +59,6 @@ const useStyles = makeStyles((theme) => ({
     margin: '20px 0px 0px 0px !important',
     backgroundColor: '#1C2833',
   },
-  // timercontainer: {
-  //   textAlign: 'left',
-  // },
   appbar: {
     backgroundColor: '#0fc',
     flexGrow: 1,
@@ -91,79 +91,74 @@ const useStyles = makeStyles((theme) => ({
     fontSize: '16px',
     fontWeight: '700',
   },
-  // timercaption: {
-  //   marginLeft: '10px',
-  //   color: '#ffffff',
-  //   lineHeight: '1.2px',
-  // },
-  // timer: {
-  //   backgroundColor: '#333',
-  //   color: '#0fc',
-  //   fontSize: '40px',
-  //   width: '50px',
-  //   marginLeft: '10px',
-  //   textAlign: 'center',
-  //   display: 'inline-block',
-  //   padding: '10px 10px 0px 10px',
-  // },
-  nextbtn: {
-    backgroundColor: '#0fc',
-    color: '#000',
-    fontWeight: 700,
-    '& .Mui-disabled': {
-      backgroundColor: '#cccccc',
-      color: '#616A6B',
-    },
-  },
 }));
 
-function EnglishAuction({ newAuctionObj, renderNextAuction, totalNumberOfPaintings }) {
+function EnglishAuction({
+  totalNumberOfPaintings, getNextAuctionObj,
+}) {
   const classes = useStyles();
-  const [live, setLive] = useState(false);
   const { player } = useContext(userContext);
   const [auctionObj, setAuctionObj] = useState();
-  const [auctionTimer, setAuctionTimer] = useState();
+  const [auctionTimer, setAuctionTimer] = useState({});
   const [currentBid, setCurrentBid] = useState();
   const [previousBidDetails, setPreviousBidDetails] = useState();
-  const [isDisableNextBtn, setDisableNextBtn] = useState(true);
   const [hasAuctionTimerEnded, setAuctionTimerEnded] = useState(false);
   const [bidAmtError, setBidAmtError] = useState();
   const { leaderboardData } = useContext(leaderboardContext);
+  const { currentAuctionData } = useContext(auctionContext);
+
+  const getRemainingTime = () => {
+    if (Object.keys(auctionTimer).length <= 0) {
+      setAuctionTimerEnded(true);
+      return;
+    }
+    const total = parseInt(auctionTimer.total, 10) - 1000;
+    const seconds = Math.floor((parseInt(total, 10) / 1000) % 60);
+    const minutes = Math.floor((parseInt(total, 10) / 1000 / 60) % 60);
+    if (total < 1000) {
+      setAuctionTimerEnded(true);
+      setAuctionTimer({});
+    } else {
+      const value = {
+        total,
+        minutes,
+        seconds,
+      };
+      setAuctionTimer(value);
+    }
+  };
 
   useEffect(() => {
-    if (newAuctionObj) {
+    if (currentAuctionData && currentAuctionData.currentAuctionObj) {
       setAuctionTimerEnded(false);
-      setDisableNextBtn(true);
-      setAuctionObj(newAuctionObj);
+      setAuctionObj(currentAuctionData.currentAuctionObj);
       setBidAmtError(null);
     }
-  }, [newAuctionObj]);
+  }, [currentAuctionData]);
 
   useEffect(() => {
-    if (auctionObj) {
-      socket.emit('startAuctionsTimer', { player, currentAuctionId: auctionObj.id });
+    async function fetchTimerValue() {
+      const { data } = await axios.get(`http://localhost:3001/buying/auctionTimer/${player.hostCode}/${auctionObj.id}`);
+      setAuctionTimer(data.currentAuctionObjTimer);
     }
-  }, [auctionObj]);
+    if (auctionObj && Object.keys(auctionTimer).length === 0) {
+      fetchTimerValue();
+    }
+  }, [auctionObj, auctionTimer, player.hostCode]);
 
+  // eslint-disable-next-line consistent-return
   useEffect(() => {
-    socket.on('auctionTimerValue', (timerValue) => {
-      setAuctionTimer(timerValue);
-      setLive(true);
-      setAuctionTimerEnded(false);
-      if (timerValue.total <= 1000) {
-        setAuctionTimerEnded(true);
-        setDisableNextBtn(false);
-      }
-    });
-  }, []);
-
-  useEffect(() => {
-    socket.on('auctionPageTimerEnded', () => {
-      setPreviousBidDetails(null);
-      setLive(false);
-      setAuctionTimerEnded(true);
-    });
+    if (auctionTimer) {
+      const interval = setInterval(() => getRemainingTime(), 1000);
+      return () => clearInterval(interval);
+    }
   });
+
+  useEffect(() => {
+    if (hasAuctionTimerEnded) {
+      getNextAuctionObj(auctionObj.id);
+    }
+  }, [hasAuctionTimerEnded]);
 
   const setCurrentBidAmt = (e) => {
     setCurrentBid(e.target.value);
@@ -200,15 +195,6 @@ function EnglishAuction({ newAuctionObj, renderNextAuction, totalNumberOfPaintin
     }
   };
 
-  const getNextAuction = () => {
-    renderNextAuction();
-    setDisableNextBtn(true);
-    setPreviousBidDetails({
-      bidTeam: null,
-      bidAmount: 0,
-    });
-  };
-
   return (
     <div className={classes.root}>
       {auctionObj && (
@@ -224,9 +210,6 @@ function EnglishAuction({ newAuctionObj, renderNextAuction, totalNumberOfPaintin
         </Toolbar>
       </AppBar>
       )}
-      <Button onClick={getNextAuction} size="large" className={classes.nextbtn} fullWidth disabled={isDisableNextBtn}>
-        Click for next auction
-      </Button>
       {auctionObj && <RoundsInfo label={`Round ${auctionObj.id} of ${totalNumberOfPaintings}`} />}
       <LeaderBoard hasAuctionTimerEnded={hasAuctionTimerEnded} />
       <div style={{ display: 'flex' }}>
@@ -249,14 +232,13 @@ function EnglishAuction({ newAuctionObj, renderNextAuction, totalNumberOfPaintin
                   helperText={bidAmtError && bidAmtError}
                   className={classes.textfieldstyle}
                   size="small"
-                  disabled={!live}
                   type="number"
                   name="bidAmount"
                   placeholder="Bidding Amount"
                   variant="outlined"
                   onChange={setCurrentBidAmt}
                 />
-                <Button disabled={!live} variant="contained" color="secondary" onClick={setBidAmt}>
+                <Button variant="contained" color="secondary" onClick={setBidAmt}>
                   Bid
                 </Button>
                 { previousBidDetails && previousBidDetails.bidAmount
@@ -298,5 +280,15 @@ function EnglishAuction({ newAuctionObj, renderNextAuction, totalNumberOfPaintin
     </div>
   );
 }
+
+EnglishAuction.defaultProps = {
+  totalNumberOfPaintings: 1,
+  getNextAuctionObj: () => {},
+};
+
+EnglishAuction.propTypes = {
+  totalNumberOfPaintings: PropTypes.number,
+  getNextAuctionObj: PropTypes.func,
+};
 
 export default EnglishAuction;

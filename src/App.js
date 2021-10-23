@@ -5,6 +5,7 @@ import StagingScreen from './components/StagingScreen';
 import Game from './components/Game';
 import userContext from './global/userContext';
 import leaderboardContext from './global/leaderboardContext';
+import auctionContext from './global/auctionContext';
 import GameInstructions from './components/GameInstructions';
 
 function App() {
@@ -18,18 +19,23 @@ function App() {
     leaderboard: {},
     totalAmountForAllTeams: {},
   });
+  const [currentAuctionData, setCurrentAuctionData] = useState({
+    currentAuctionObj: {},
+  });
   return (
     <BrowserRouter>
       <userContext.Provider value={{ player, setPlayer }}>
         <leaderboardContext.Provider value={{ leaderboardData, setLeaderboardData }}>
-          <Switch>
-            <Route path="/" exact component={LaunchScreen} />
-            <Route path="/staging/:code" exact component={StagingScreen} />
-            <Route path="/art-quest/instructions" exact component={GameInstructions} />
-            <Route path="/game/:code">
-              <Game />
-            </Route>
-          </Switch>
+          <auctionContext.Provider value={{ currentAuctionData, setCurrentAuctionData }}>
+            <Switch>
+              <Route path="/" exact component={LaunchScreen} />
+              <Route path="/staging/:code" exact component={StagingScreen} />
+              <Route path="/art-quest/instructions" exact component={GameInstructions} />
+              <Route path="/game/:code">
+                <Game />
+              </Route>
+            </Switch>
+          </auctionContext.Provider>
         </leaderboardContext.Provider>
       </userContext.Provider>
     </BrowserRouter>
