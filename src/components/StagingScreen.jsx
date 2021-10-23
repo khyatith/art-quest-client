@@ -44,8 +44,6 @@ function StagingScreen() {
 
   const handleClick = () => {
     history.push('/art-quest/instructions');
-    // socket.emit('startGame', JSON.stringify(player));
-    // history.push(`/game/${location.pathname.substring(9, 29)}`);
   };
 
   const handleChange = (event) => {

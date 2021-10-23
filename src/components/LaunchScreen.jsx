@@ -78,7 +78,6 @@ function LaunchScreen() {
     <>
       <Header />
       <div className={classes.root}>
-        <h1>Auction Game</h1>
         <TextField className={classes.form} name="playerName" label="Player Name" variant="outlined" onChange={handleChange} />
         <Button className={classes.form} variant="contained" color="primary" onClick={handleCreate}>
           Create Game
