@@ -129,10 +129,10 @@ export default function LeaderBoard({ hasAuctionTimerEnded }) {
                     -
                     {totalAmountByTeam
                     && paintingQualityAvg[`${teamName}`]
-                    && parseFloat((parseInt(totalAmountByTeam[`${teamName}`], 10) / paintingQualityAvg[`${teamName}`]) / 1000).toFixed(2)}
+                    && parseFloat((parseInt(totalAmountByTeam[`${teamName}`], 10) / paintingQualityAvg[`${teamName}`])).toFixed(2)}
                   </div>
                   <div style={{ flexGrow: '1', lineHeight: '1.8', marginLeft: '10px' }}>
-                    <h5 style={{ lineHeight: '1.8' }}>Total</h5>
+                    <h5 style={{ lineHeight: '1.8' }}>Total Points</h5>
                     {totalPointsAvg && totalPointsAvg[`${teamName}`]}
                   </div>
                 </ListSubheader>
