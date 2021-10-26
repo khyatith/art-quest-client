@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useContext } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Box from '@material-ui/core/Box';
 import Drawer from '@material-ui/core/Drawer';
@@ -13,15 +13,19 @@ import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import fontawesome from '@fortawesome/fontawesome';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCoins } from '@fortawesome/fontawesome-free-solid';
+import axios from 'axios';
 import leaderboardImg from '../assets/leaderboardimg.png';
-import { leaderboardSocket } from '../global/socket';
 import { TEAM_DETAILS } from '../global/constants';
+import userContext from '../global/userContext';
+import leaderboardContext from '../global/leaderboardContext';
 
 const useStyles = makeStyles((theme) => ({
   drawerStyle: {
     '& .MuiDrawer-paper': {
       top: 'auto',
-      width: '400px',
+      width: '500px',
+      position: 'absolute',
+      overflowY: 'scroll',
     },
   },
   avatar: {
@@ -58,21 +62,28 @@ fontawesome.library.add(faCoins);
 
 export default function LeaderBoard({ hasAuctionTimerEnded }) {
   const classes = useStyles();
-  const [leaderboardData, setLeaderboardData] = useState({});
-  const [totalAmountForAllTeams, setTotalAmountByTeam] = useState([]);
+  const { player } = useContext(userContext);
+  const { leaderboardData, setLeaderboardData } = useContext(leaderboardContext);
 
   useEffect(() => {
+    async function fetchLeaderboard() {
+      const { data } = await axios.get(`http://localhost:3001/buying/getResults/${player.hostCode}`);
+      setLeaderboardData((prevValues) => ({
+        ...prevValues,
+        ...data,
+      }));
+    }
     if (hasAuctionTimerEnded) {
-      leaderboardSocket.on('leaderboard', ({ leaderboard, totalAmountByTeam }) => {
-        setLeaderboardData(leaderboard);
-        setTotalAmountByTeam(totalAmountByTeam);
-      });
+      fetchLeaderboard(player);
     }
   });
 
   const getLeaderboard = () => {
-    if (!leaderboardData) return <></>;
-    return Object.entries(leaderboardData).map((entry) => {
+    const {
+      leaderboard, totalAmountByTeam, paintingQualityAvg, totalPointsAvg,
+    } = leaderboardData;
+    if (!leaderboard) return <></>;
+    return Object.entries(leaderboard).map((entry) => {
       const teamName = entry[0];
       const teamResult = entry[1];
       const winTeam = TEAM_DETAILS.filter((detail) => detail.name === teamName.toString());
@@ -86,13 +97,17 @@ export default function LeaderBoard({ hasAuctionTimerEnded }) {
                   backgroundColor: `${teamColor}`, fontSize: '15px', color: '#000000', display: 'flex',
                 }}
                 >
-                  <div style={{ flexGrow: '1', width: '70%', fontWeight: '700' }}>
+                  <div style={{ flexGrow: '1', width: '20%', fontWeight: '700' }}>
                     Team
                     {' '}
                     {teamName}
                   </div>
-                  <div style={{ flexGrow: '1', lineHeight: '1.8' }}>
-                    <h5 style={{ lineHeight: '0.5' }}>Total Loan:</h5>
+                  <hr width="1" size="90" />
+                  <div style={{
+                    flexGrow: '1', lineHeight: '1.8', marginLeft: '20px',
+                  }}
+                  >
+                    <h5>Cash</h5>
                     <FontAwesomeIcon
                       style={{
                         flex: '1', width: '18px', height: '18px', marginRight: '6px',
@@ -100,7 +115,23 @@ export default function LeaderBoard({ hasAuctionTimerEnded }) {
                       icon="coins"
                     />
                     -
-                    {totalAmountForAllTeams && totalAmountForAllTeams[`${teamName}`]}
+                    {totalAmountByTeam && totalAmountByTeam[`${teamName}`]}
+                  </div>
+                  <div style={{
+                    flexGrow: '1', lineHeight: '1.8', marginLeft: '20px',
+                  }}
+                  >
+                    <h5>Average</h5>
+                    -
+                    {totalAmountByTeam && (parseInt(totalAmountByTeam[`${teamName}`], 10) / 1000)}
+                  </div>
+                  <div style={{ flexGrow: '1', lineHeight: '1.8', marginLeft: '10px' }}>
+                    <h5>Painting Quality</h5>
+                    {paintingQualityAvg && paintingQualityAvg[`${teamName}`]}
+                  </div>
+                  <div style={{ flexGrow: '1', lineHeight: '1.8', marginLeft: '10px' }}>
+                    <h5 style={{ lineHeight: '1.8' }}>Total</h5>
+                    {totalPointsAvg && totalPointsAvg[`${teamName}`]}
                   </div>
                 </ListSubheader>
                 {

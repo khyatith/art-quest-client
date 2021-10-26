@@ -10,14 +10,23 @@ import CardMedia from '@material-ui/core/CardMedia';
 import CardContent from '@material-ui/core/CardContent';
 import CardActions from '@material-ui/core/CardActions';
 import { Typography, TextField } from '@material-ui/core';
+import AppBar from '@material-ui/core/AppBar';
+import Toolbar from '@material-ui/core/Toolbar';
+import axios from 'axios';
 import userContext from '../../global/userContext';
-import { socket, leaderboardSocket } from '../../global/socket';
+import { socket } from '../../global/socket';
 import LeaderBoard from '../LeaderBoard';
 import SimpleRating from '../Rating';
+import RoundsInfo from '../RoundsInfo';
+import leaderboardContext from '../../global/leaderboardContext';
+import BuyingBarChart from '../visualizations/BuyingBarChart';
+import BonusAuctionBanner from '../visualizations/BonusAuctionBanner';
+import { SECOND_PRICED_SEALED_BID_TEXT } from '../../global/constants';
+import auctionContext from '../../global/auctionContext';
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
   cardRoot: {
-    width: 500,
+    width: 400,
     padding: 20,
     // margin: '0 30%',
   },
@@ -77,65 +86,91 @@ const useStyles = makeStyles(() => ({
       color: '#616A6B',
     },
   },
+  appbar: {
+    backgroundColor: '#0fc',
+    flexGrow: 1,
+    position: 'relative',
+  },
+  timercontent: {
+    display: 'none',
+    margin: '0 auto',
+    fontWeight: '700',
+    [theme.breakpoints.up('sm')]: {
+      display: 'block',
+    },
+    color: '#000000',
+    fontSize: '22px',
+  },
 }));
 
-function SecondPriceSealedBid({ newAuctionObj, renderNextAuction }) {
+function SecondPriceSealedBid({
+  totalNumberOfPaintings, getNextAuctionObj,
+}) {
   const classes = useStyles();
   const [live, setLive] = useState(false);
   const { player } = useContext(userContext);
   const [auctionObj, setAuctionObj] = useState();
   const [currentBid, setCurrentBid] = useState();
-  const [auctionTimer, setAuctionTimer] = useState({
-    total: 0,
-    minutes: 0,
-    seconds: 0,
-  });
-  const [isDisableNextBtn, setDisableNextBtn] = useState(true);
+  const [auctionTimer, setAuctionTimer] = useState({});
   const [hasAuctionTimerEnded, setAuctionTimerEnded] = useState(false);
   const [bidAmtError, setBidAmtError] = useState();
+  const { leaderboardData } = useContext(leaderboardContext);
+  const { currentAuctionData } = useContext(auctionContext);
+
+  const getRemainingTime = () => {
+    if (Object.keys(auctionTimer).length <= 0) {
+      setAuctionTimerEnded(true);
+      return;
+    }
+    const total = parseInt(auctionTimer.total, 10) - 1000;
+    const seconds = Math.floor((parseInt(total, 10) / 1000) % 60);
+    const minutes = Math.floor((parseInt(total, 10) / 1000 / 60) % 60);
+    if (total < 1000) {
+      setAuctionTimerEnded(true);
+      setLive(false);
+      setAuctionTimer({});
+    } else {
+      const value = {
+        total,
+        minutes,
+        seconds,
+      };
+      setAuctionTimer(value);
+    }
+  };
 
   useEffect(() => {
-    if (newAuctionObj) {
+    if (currentAuctionData && currentAuctionData.currentAuctionObj) {
       setAuctionTimerEnded(false);
-      setDisableNextBtn(true);
-      setAuctionObj(newAuctionObj);
+      setLive(true);
+      setAuctionObj(currentAuctionData.currentAuctionObj);
       setBidAmtError(null);
     }
-  }, [newAuctionObj]);
+  }, [currentAuctionData]);
 
   useEffect(() => {
-    setLive(false);
-    setTimeout(() => {
-      if (auctionObj) {
-        socket.emit('startAuctionsTimer', { player, currentAuctionId: auctionObj.id });
-        setAuctionTimerEnded(false);
-        setLive(true);
-      }
-    }, 10000);
-  }, [auctionObj, player]);
+    async function fetchTimerValue() {
+      const { data } = await axios.get(`http://localhost:3001/buying/auctionTimer/${player.hostCode}/${auctionObj.id}`);
+      setAuctionTimer(data.currentAuctionObjTimer);
+    }
+    if (auctionObj && Object.keys(auctionTimer).length === 0) {
+      fetchTimerValue();
+    }
+  }, [auctionObj, auctionTimer, player.hostCode]);
 
+  // eslint-disable-next-line consistent-return
   useEffect(() => {
-    socket.on('auctionTimerValue', (timerValue) => {
-      setAuctionTimer(timerValue);
-      setAuctionTimerEnded(false);
-      if (timerValue.total <= 1000) {
-        setDisableNextBtn(false);
-        setAuctionTimerEnded(true);
-      }
-    });
-  }, []);
-
-  useEffect(() => {
-    socket.on('auctionPageTimerEnded', () => {
-      setAuctionTimerEnded(true);
-    });
+    if (auctionTimer) {
+      const interval = setInterval(() => getRemainingTime(), 1000);
+      return () => clearInterval(interval);
+    }
   });
 
   useEffect(() => {
     if (hasAuctionTimerEnded) {
-      leaderboardSocket.emit('getLeaderBoard', player);
+      getNextAuctionObj(auctionObj.id);
     }
-  });
+  }, [hasAuctionTimerEnded]);
 
   useEffect(() => {
     socket.on('setLiveStyles', (team) => {
@@ -153,6 +188,7 @@ function SecondPriceSealedBid({ newAuctionObj, renderNextAuction }) {
       const bidInfo = {
         auctionType: auctionObj.auctionType,
         auctionId: auctionObj.id,
+        paintingQuality: auctionObj.paintingQuality,
         auctionObj,
         bidAmount: currentBid,
         bidAt: +new Date(),
@@ -167,22 +203,31 @@ function SecondPriceSealedBid({ newAuctionObj, renderNextAuction }) {
     setCurrentBid(e.target.value);
   };
 
-  const getNextAuction = () => {
-    renderNextAuction();
-  };
-
   return (
     <div className={classes.root}>
-      <Button onClick={getNextAuction} size="large" className={classes.nextbtn} fullWidth disabled={isDisableNextBtn}>
-        Click for next auction
-      </Button>
-      <LeaderBoard hasAuctionTimerEnded={hasAuctionTimerEnded} />
       {auctionObj && (
+      <AppBar className={classes.appbar}>
+        <Toolbar>
+          <Typography variant="h6" className={classes.timercontent}>
+            Time Remaining in Auction:
+            {' '}
+            {auctionTimer && auctionTimer.minutes}
+            :
+            {auctionTimer && auctionTimer.seconds}
+          </Typography>
+        </Toolbar>
+      </AppBar>
+      )}
+      {auctionObj && <RoundsInfo label={`Round ${auctionObj.id} of ${totalNumberOfPaintings}`} />}
+      <LeaderBoard hasAuctionTimerEnded={hasAuctionTimerEnded} />
+      <div style={{ display: 'flex' }}>
+        {auctionObj && (
         <div className={classes.cardRoot}>
           <Card key={auctionObj.id}>
             <CardHeader className={classes.titlestyle} title={auctionObj.name} subheader={`Created By: ${auctionObj.artist}`} />
             <CardMedia className={classes.media} component="img" image={`${auctionObj.imageURL}`} title={auctionObj.name} />
             <CardContent className={classes.cardcontentstyle}>
+              <p>Painting Quality</p>
               <SimpleRating rating={parseFloat(auctionObj.paintingQuality)} />
               <Typography component="h6" variant="h6">
                 {`Opening bid : $${auctionObj.originalValue}`}
@@ -209,27 +254,36 @@ function SecondPriceSealedBid({ newAuctionObj, renderNextAuction }) {
                   * The highest bid will win but the winner will pay the amount of the second highest bid
                 </p>
               </div>
-              <div className={classes.timercontainer}>
-                <p className={classes.timercaption}>Time Remaining</p>
-                <div className={classes.timer}>{auctionTimer && auctionTimer.minutes}</div>
-                <div className={classes.timer}>{auctionTimer && auctionTimer.seconds}</div>
-              </div>
             </CardActions>
           </Card>
         </div>
-      )}
+        )}
+        <div style={{ display: 'flex', maxWidth: '400px' }}>
+          {/* Render bar chart */}
+          { leaderboardData && leaderboardData.totalPointsAvg
+          && (
+          <div style={{ marginTop: '350px' }}>
+            <BuyingBarChart results={leaderboardData.totalPointsAvg} labels={Object.keys(leaderboardData.totalPointsAvg)} />
+          </div>
+          )}
+          {/* Render bonus auction banner */}
+          <div style={{ width: '300px', height: '150px', position: 'absolute' }}>
+            <BonusAuctionBanner text={SECOND_PRICED_SEALED_BID_TEXT} />
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
 
 SecondPriceSealedBid.defaultProps = {
-  newAuctionObj: {},
-  renderNextAuction: () => {},
+  totalNumberOfPaintings: 1,
+  getNextAuctionObj: () => {},
 };
 
 SecondPriceSealedBid.propTypes = {
-  newAuctionObj: PropTypes.objectOf(PropTypes.any),
-  renderNextAuction: PropTypes.func,
+  totalNumberOfPaintings: PropTypes.number,
+  getNextAuctionObj: PropTypes.func,
 };
 
 export default SecondPriceSealedBid;
