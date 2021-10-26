@@ -136,7 +136,7 @@ function LandingPage() {
   // hooks and methods
   useEffect(() => {
     async function fetchTimerValue() {
-      const { data } = await axios.get(`https://art-quest-server.herokuapp.com/landing-page/timer/${player.hostCode}`);
+      const { data } = await axios.get(`http://localhost:3001/buying/timer/${player.hostCode}`);
       setLandingPageTimerValue(data.landingPageTimerValue);
     }
     if (Object.keys(landingPageTimerValue).length === 0) {
