@@ -1,81 +1,52 @@
 import React, { useEffect, useState, useContext } from 'react';
+import { socket } from '../global/socket';
 import FirstPriceSealedBid from './auctions/FirstPriceSealedBid';
 import EnglishAuction from './auctions/EnglishAuction';
 import EndBuyingPhase from './EndBuyingPhase';
 import SecondPriceSealedBid from './auctions/SecondPriceSealedBid';
 import AllPayAuctions from './auctions/AllPayAuctions';
-import auctionContext from '../global/auctionContext';
-import useSessionStorage from '../hooks/useSessionStorage';
+import userContext from '../global/userContext';
+import LocationPhase from './selling/LocationPhase';
 
-function LiveAuctions({ totalNumberOfPaintings, fromLP, allAuctions }) {
-  const [hasEndedAuctions, setHasEndedAuctions] = useState(false);
-  const [allAuctionsObj] = useSessionStorage('allAuctions', allAuctions);
-  const [isFromLP, getFromLP] = useState(fromLP);
-  const { currentAuctionData, setCurrentAuctionData } = useContext(auctionContext);
-
-  const getNextAuctionObj = async (prevAuctionId) => {
-    const { artifacts } = allAuctionsObj && allAuctionsObj.auctions;
-    let data;
-    if (!hasEndedAuctions && !prevAuctionId) {
-      // eslint-disable-next-line prefer-destructuring
-      data = artifacts[0];
-    } else if (!hasEndedAuctions && prevAuctionId) {
-      const nextAuctionObjId = parseInt(prevAuctionId, 10) + 1;
-      const newAuctionObj = artifacts.filter((item) => parseInt(item.id, 10) === nextAuctionObjId);
-      // eslint-disable-next-line prefer-destructuring
-      data = newAuctionObj[0];
-    }
-    if (data) {
-      setCurrentAuctionData((prevValues) => ({
-        ...prevValues,
-        currentAuctionObj: data,
-      }));
-    } else if (!data) {
-      setHasEndedAuctions(true);
-    }
-  };
+function LiveAuctions({ getNextAuctionObj }) {
+  const [auctionObj, setAuctionObj] = useState();
+  const [hasEndedAuctions, setHasEndedAuctions] = useState(true); // Make it false (IMPORTANT)
+  const { player } = useContext(userContext);
 
   useEffect(() => {
-    if (isFromLP) {
-      getNextAuctionObj();
-      getFromLP(false);
-    }
+    socket.on('startNextAuction', (auctionObjFromServer) => {
+      if (auctionObjFromServer && auctionObjFromServer.auctionState !== 2) {
+        setAuctionObj(auctionObjFromServer);
+      } else if (!auctionObjFromServer) {
+        setAuctionObj(null);
+        setHasEndedAuctions(true);
+        leaderboardSocket.emit('getWinner', player);
+      }
+    });
   }, []);
 
+  const nextAuctionObj = () => {
+    getNextAuctionObj(auctionObj);
+  };
+
   const loadAuction = () => {
-    const { auctionType } = currentAuctionData && currentAuctionData.currentAuctionObj;
+    const { auctionType } = auctionObj;
     switch (auctionType) {
       case '1':
         return (
-          <FirstPriceSealedBid
-            newAuctionObj={currentAuctionData.currentAuctionObj}
-            getNextAuctionObj={getNextAuctionObj}
-            totalNumberOfPaintings={totalNumberOfPaintings}
-          />
+          <FirstPriceSealedBid newAuctionObj={auctionObj} renderNextAuction={nextAuctionObj} />
         );
       case '2':
         return (
-          <EnglishAuction
-            newAuctionObj={currentAuctionData.currentAuctionObj}
-            getNextAuctionObj={getNextAuctionObj}
-            totalNumberOfPaintings={totalNumberOfPaintings}
-          />
+          <EnglishAuction newAuctionObj={auctionObj} renderNextAuction={nextAuctionObj} />
         );
       case '3':
         return (
-          <SecondPriceSealedBid
-            newAuctionObj={currentAuctionData.currentAuctionObj}
-            getNextAuctionObj={getNextAuctionObj}
-            totalNumberOfPaintings={totalNumberOfPaintings}
-          />
+          <SecondPriceSealedBid newAuctionObj={auctionObj} renderNextAuction={nextAuctionObj} />
         );
       case '4':
         return (
-          <AllPayAuctions
-            newAuctionObj={currentAuctionData.currentAuctionObj}
-            getNextAuctionObj={getNextAuctionObj}
-            totalNumberOfPaintings={totalNumberOfPaintings}
-          />
+          <AllPayAuctions newAuctionObj={auctionObj} renderNextAuction={nextAuctionObj} />
         );
       default:
         return null;
@@ -83,9 +54,14 @@ function LiveAuctions({ totalNumberOfPaintings, fromLP, allAuctions }) {
   };
 
   return (
+    /* Enable it (IMPORTANT)
     <>
-      {!hasEndedAuctions && currentAuctionData && currentAuctionData.currentAuctionObj && loadAuction()}
+      {auctionObj && loadAuction()}
+    <>
       {hasEndedAuctions && <EndBuyingPhase />}
+    </>*/
+    <>
+      <LocationPhase />
     </>
   );
 }
