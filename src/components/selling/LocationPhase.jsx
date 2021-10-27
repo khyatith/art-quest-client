@@ -88,7 +88,9 @@ function LocationPhase() {
           </Item>
         </Grid>
         <Grid item xs={6}>
-          <Item>xs=4</Item>
+          <Item>
+            <Details />
+          </Item>
         </Grid>
         <Grid item xs={6}>
           <Item>xs=8</Item>
