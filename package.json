@@ -63,6 +63,5 @@
 	},
 	"devDependencies": {
 		"eslint-config-airbnb": "^18.2.1"
-	},
-	"proxy": "http://localhost:3001"
+	}
 }

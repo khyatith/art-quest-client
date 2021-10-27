@@ -51,12 +51,19 @@ const useStyles = makeStyles(() => ({
     marginTop: '20px',
   },
   startgamebutton: {
-    marginTop: '100px',
+    marginTop: '80px',
     width: '90%',
     backgroundColor: '#0fc',
     color: '#000000',
     fontWeight: '700',
     fontSize: '24px',
+  },
+  p: {
+    fontSize: '18px',
+    fontWeight: '700',
+    '& span': {
+      color: '#EC40D6',
+    },
   },
 }));
 
@@ -73,26 +80,41 @@ function GameInstructions() {
   return (
     <div className={classes.container}>
       <p className={classes.title}>Art Quest</p>
+      <p className={classes.p}>Welcome to the world of art.</p>
+      <p className={classes.p}>Your challenge, should you choose to accept it, is to create your favorite art collection.</p>
+      <p className={classes.p}>
+        How will you do it? By taking part in
+        {' '}
+        <span>AUCTIONS</span>
+        {' '}
+        and by putting
+        {' '}
+        <span>BIDS</span>
+        {' '}
+        on your favorite art pieces.
+      </p>
       <List className={classes.listcontainer} dense>
         <ListItem className={classes.listitem}>
           <div className={classes.listnumber}>
             <h2 style={{ top: '-15px', position: 'relative' }}>1</h2>
           </div>
-          <ListItemText className={classes.listtext} primary="Create your favorite art collection" />
+          <ListItemText className={classes.listtext} primary="Create your FAVORITE art collection" />
         </ListItem>
         <ListItem className={classes.listitem}>
           <div className={classes.listnumber}>
             <h2 style={{ top: '-15px', position: 'relative' }}>2</h2>
           </div>
-          <ListItemText className={classes.listtext} primary="Spend the least gold" />
+          <ListItemText className={classes.listtext} primary="Spend your gold WISELY" />
         </ListItem>
         <ListItem className={classes.listitem}>
           <div className={classes.listnumber}>
-            <h2 style={{ top: '-15px', position: 'relative' }}>2</h2>
+            <h2 style={{ top: '-15px', position: 'relative' }}>3</h2>
           </div>
-          <ListItemText className={classes.listtext} primary="Collect most number of paintings" />
+          <ListItemText className={classes.listtext} primary="Collect most number of HIGH-QUALITY paintings" />
         </ListItem>
       </List>
+      <p className={classes.p}>Let the bidding wars begin!</p>
+      <p className={classes.p}>Click on below button to start the game when your team is ready.</p>
       <Button className={classes.startgamebutton} variant="contained" color="primary" onClick={handleClick}>
         Start Game
       </Button>
