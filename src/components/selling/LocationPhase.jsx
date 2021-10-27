@@ -2,7 +2,21 @@ import React, { useEffect, useState, useContext } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import axios from 'axios';
 import userContext from '../../global/userContext';
-import { ComposableMap, Geographies, Geography, Marker, Line } from "react-simple-maps";
+import { styled } from '@mui/material/styles';
+import Box from '@mui/material/Box';
+import Paper from '@mui/material/Paper';
+import Grid from '@mui/material/Grid';
+import Airport from './Airport';
+import BarGraph from './BarGraph';
+import Details from './Details';
+import Mapping from './Mapping';
+
+const Item = styled(Paper)(({ theme }) => ({
+  ...theme.typography.body2,
+  padding: theme.spacing(1),
+  textAlign: 'center',
+  color: theme.palette.text.secondary,
+}));
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -63,74 +77,24 @@ function LocationPhase() {
 
     return (
       <div>
-        <form>
-        <div style={{width:'17%', marginTop: '2%', marginLeft: '6%', backgroundColor: '#E0E0E0', padding: '2%', paddingTop: '1%'}}>
-          <p>Currently in: {loc}</p>
-          <p>Fly to : </p>
-          {Object.entries(mapValues).map(items => {
-            const totalCon=items[1].allowedToVisit;
-            if(items[1].cityName===loc) {
-            return (
-              <>
-                {totalCon.map(loc => {
-                  let obj = mapValues.find(x => x.cityId === loc);
-                  return (
-                    <div>
-                    <input type="radio" value={obj.cityName} name="location" /> {obj.cityName}
-                    </div>
-                  );
-                })}
-              </>
-            );
-            }
-          })}
-        <button type="submit" style={{padding: '2%', backgroundColor: 'black', color: 'white', width: '22%', marginTop: '8%'}}>
-          Submit
-        </button>
-        </div>
-        </form>
-      <div style={{width:'47%' , marginLeft:'auto', marginRight:'2%', marginTop: '-14%', outline:'4px solid black'}}>  
-        <ComposableMap>
-        <Geographies geography={geoUrl}
-        fill="#D6D6DA"
-        stroke="#FFFFFF"
-        strokeWidth={0.5}>
-          {({ geographies }) =>
-            geographies.map(geo => <Geography key={geo.rsmKey} geography={geo} />)
-          }
-        </Geographies>
-        {Object.entries(mapValues).map(items => {
-            const totalCon=items[1].allowedToVisit;
-            return (
-                <>
-                {totalCon.map(loc => {
-                let obj = mapValues.find(x => x.cityId === loc);
-                return (
-                    <Line className="cline"
-                    coordinates={generateLine(obj.longitude, obj.latitude, items[1].longitude, items[1].latitude)}
-                    stroke="#000000"
-                    strokeWidth={10}
-                />
-                );
-            })}
-            </>
-            );
-        })}
-        {Object.entries(mapValues).map(items => {
-            return (
-                <Marker id={items[1].cityName} coordinates={[items[1].longitude,items[1].latitude]}>
-                    <circle r={items[1].demand+20} fill="#000000" />
-                    <text textAnchor="middle" fill="#FFF" fontSize="12px">
-                        {items[1].cityName}
-                    </text>
-                    <text y="15" textAnchor="middle" fill="#FFF" fontSize="12px">
-                        {items[1].demand+"M"}
-                    </text>
-                </Marker>
-            );
-        })}
-    </ComposableMap>
-      </div>
+        <Box sx={{ flexGrow: 1 }}>
+      <Grid container spacing={2}>
+        <Grid item xs={6}>
+          <Item><Airport /></Item>
+        </Grid>
+        <Grid item xs={6}>
+          <Item>
+            <Mapping />
+          </Item>
+        </Grid>
+        <Grid item xs={6}>
+          <Item>xs=4</Item>
+        </Grid>
+        <Grid item xs={6}>
+          <Item>xs=8</Item>
+        </Grid>
+      </Grid>
+    </Box>
       </div>
     );
   }
