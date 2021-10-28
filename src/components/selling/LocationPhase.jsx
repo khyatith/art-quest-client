@@ -11,6 +11,8 @@ import BarGraph from './BarGraph';
 import Details from './Details';
 import Mapping from './Mapping';
 import { TEAM_COLOR_MAP } from '../../global/constants';
+import './styling.css';
+import load from '../../assets/load.webp';
 
 const Item = styled(Paper)(({ theme }) => ({
   ...theme.typography.body2,
@@ -44,9 +46,15 @@ function createData(team, cash) {
   return {
     label: team, backgroundColor: TEAM_COLOR_MAP[team],
     borderColor: 'rgba(0,0,0,1)',
+    maxBarThickness: 60,
     borderWidth: 2, data: str
   };
 }
+
+function createDataMap(id, team, visits, cash) {
+  return { id, team, visits, cash };
+}
+
 
 function LocationPhase() {
   const classes = useStyles();
@@ -68,53 +76,53 @@ function LocationPhase() {
   useEffect(() => {
     setLoading(true);
     axios.get(`http://localhost:3001/landing-page/getSellingResults/${player.hostCode}`)
-    .then((newData) => {
-      setTeamValues(newData);
-      console.log(newData.data);
-      let x = 1;
-      for (let i of Object.keys(newData.data.amountSpentByTeam)) {
-        let team = i;
-        let cash = newData.data.amountSpentByTeam[i];
-        datasets.push(createData(team, cash));
-        x += 1;
-      }
-      setResult({ labels, datasets });
-      console.log(result);
-    })
-    .finally(() => {
-      setLoading(false);
-    })
+      .then((newData) => {
+        setTeamValues(newData);
+        console.log(newData.data);
+        let x = 1;
+        let tv = [];
+        for (let i of Object.keys(newData.data.amountSpentByTeam)) {
+          let team = i;
+          let cash = newData.data.amountSpentByTeam[i];
+          let vis = 0;
+          for (let j of newData.data.visits) {
+            if (j.teamName === i) {
+              vis = j.visitCount;
+            }
+          }
+
+          datasets.push(createData(team, cash));
+          tv.push(createDataMap(x, team, vis, cash));
+          x += 1;
+        }
+        setResult({ labels, datasets });
+        setRows(tv);
+        console.log(result);
+      })
+      .finally(() => {
+        setLoading(false);
+      })
   }, []);
 
-    if(loading) {
-      return (<div> LOADING... </div>);
-    }
+  if (loading) {
+    return (<div style={{marginTop: '12%', marginLeft: '43%'}}> <img src={load} alt="loading..." /> </div>);
+  }
 
   return (
-    <div>
-      <Box sx={{ flexGrow: 1 }}>
-        <Grid container spacing={2}>
-          <Grid item xs={6}>
-            <Item><Airport /></Item>
-          </Grid>
-          <Grid item xs={6}>
-            <Item>
-              <Mapping />
-            </Item>
-          </Grid>
-          <Grid item xs={6}>
-            <Item>
-              <Details />
-            </Item>
-          </Grid>
-          <Grid item xs={6}>
-            <Item>
-                <BarGraph result={result} />
-            </Item>
-          </Grid>
-        </Grid>
-      </Box>
-    </div>
+      <div class="parent">
+          <div class="child1">
+          <Airport />
+          </div>
+          <div class="child1">
+          <Mapping />
+          </div>
+          <div class="child2">
+          <Details rows={rows} />
+          </div>
+          <div class="child2">
+          <BarGraph result={result} />
+        </div>
+      </div>
   );
 }
 

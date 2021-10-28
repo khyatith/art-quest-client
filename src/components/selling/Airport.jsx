@@ -24,7 +24,7 @@ function Airport() {
 
     return (
         <div>
-            <div>
+            <div style={{backgroundColor: '#D6D6DA' , marginTop: '4%', marginLeft: '35%',paddingLeft: '5%', marginRight: '35%', color:'black', paddingBottom: '15%',paddingTop: '4%', borderRadius: '2%', borderColor: 'black', borderWidth: '2', borderStyle: 'solid' }}>
                 <p>Currently in: {loc}</p>
                 <p>Fly to : </p>
                 {Object.entries(mapValues).map(items => {

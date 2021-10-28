@@ -32,7 +32,7 @@ function Mapping() {
 
     return (
         <div>
-            <div style={{ width: '80%' }}>
+            <div style={{ width: '65%', borderWidth: '2', borderStyle: 'solid', borderColor: 'black',borderRadius: '2%',marginLeft:'10%' }}>
                 <ComposableMap>
                     <Geographies geography={geoUrl}
                         fill="#D6D6DA"
