@@ -1,6 +1,3 @@
-
-// Mapping
-
 import React, { useEffect, useState, useContext } from 'react';
 import axios from 'axios';
 import { ComposableMap, Geographies, Geography, Marker, Line } from "react-simple-maps";
@@ -35,7 +32,7 @@ function Mapping() {
 
     return (
         <div>
-            <div style={{width: '80%'}}> 
+            <div style={{ width: '80%' }}>
                 <ComposableMap>
                     <Geographies geography={geoUrl}
                         fill="#D6D6DA"
@@ -51,13 +48,22 @@ function Mapping() {
                             <>
                                 {totalCon.map(loc => {
                                     let obj = mapValues.find(x => x.cityId === loc);
-                                    return (
-                                        <Line className="cline"
-                                            coordinates={generateLine(obj.longitude, obj.latitude, items[1].longitude, items[1].latitude)}
-                                            stroke="#000000"
-                                            strokeWidth={10}
-                                        />
-                                    );
+                                    if (typeof (obj) == 'undefined') {
+                                        console.log(loc);
+                                        return (
+                                            <>
+                                            </>
+                                        );
+                                    }
+                                    else {
+                                        return (
+                                            <Line className="cline"
+                                                coordinates={generateLine(obj.longitude, obj.latitude, items[1].longitude, items[1].latitude)}
+                                                stroke="#000000"
+                                                strokeWidth={10}
+                                            />
+                                        );
+                                    }
                                 })}
                             </>
                         );

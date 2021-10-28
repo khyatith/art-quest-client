@@ -1,7 +1,3 @@
-
-
-// Airport 
-
 import React, { useEffect, useState, useContext } from 'react';
 import axios from 'axios';
 import userContext from '../../global/userContext';
@@ -19,7 +15,6 @@ function Airport() {
         async function getMapVal() {
             const { data } = await axios.get(`http://localhost:3001/landing-page/getMap`);
             setMapValues(data);
-            console.log(player.currentLocation);
         }
         if (!valRet) {
             getMapVal();

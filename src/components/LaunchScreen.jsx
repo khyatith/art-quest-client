@@ -47,6 +47,7 @@ function LaunchScreen() {
       setPlayer((prevValues) => ({
         ...prevValues,
         [name]: value,
+        currentLocation: 'Delhi',
       }));
       if (player.playerId === '') {
         const uid = getRandomString(6);

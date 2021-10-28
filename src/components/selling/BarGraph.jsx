@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { Bar } from 'react-chartjs-2';
-import { TEAM_COLOR_MAP } from '../../global/constants';
 
 const options = {
   responsive: true,
@@ -20,36 +19,36 @@ const options = {
   },
 };
 
-const BarGraph = (props) => {
-  const { labels, results } = props;
-  const [barChartData, setBarChartData] = useState();
-
-  const parseDataForGroupChart = () => {
-    const chart = {};
-    chart.labels = labels;
-    if (results) {
-      const dataset = Object.entries(results).map(([key, value]) => {
-        const teamName = key;
-        return {
-          label: `${teamName}`,
-          data: [value],
-          backgroundColor: TEAM_COLOR_MAP[teamName],
-          barThickness: 25,
-        };
-      });
-      chart.datasets = dataset;
-      setBarChartData(chart);
+const state = {
+  labels: ['January', 'February', 'March',
+           'April', 'May'],
+  datasets: [
+    {
+      label: 'Rainfall',
+      backgroundColor: 'rgba(75,192,192,1)',
+      borderColor: 'rgba(0,0,0,1)',
+      borderWidth: 2,
+      data: [65, 59, 80, 81, 56]
     }
-  };
+  ]
+}
 
-  useEffect(() => {
-    parseDataForGroupChart();
-  }, [results]);
-
+const BarGraph = (props) => {
+  console.log(props.result);
   return (
     <div style={{ width: '450px', height: '500px' }}>
-      <Bar data={barChartData} options={options} />
-    </div>
+      <Bar data={props.result} options={{
+            title:{
+              display:true,
+              text:'Revenue Generated',
+              fontSize:20
+            },
+            legend:{
+              display:true,
+              position:'right'
+            }
+          }} />
+        </div>
   );
 };
 
