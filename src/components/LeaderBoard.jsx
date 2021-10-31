@@ -14,16 +14,17 @@ import fontawesome from '@fortawesome/fontawesome';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCoins } from '@fortawesome/fontawesome-free-solid';
 import axios from 'axios';
+import { API_URL, TEAM_DETAILS } from '../global/constants';
 import leaderboardImg from '../assets/leaderboardimg.png';
-import { TEAM_DETAILS } from '../global/constants';
 import userContext from '../global/userContext';
+import SimpleRating from './Rating';
 import leaderboardContext from '../global/leaderboardContext';
 
 const useStyles = makeStyles((theme) => ({
   drawerStyle: {
     '& .MuiDrawer-paper': {
       top: 'auto',
-      width: '500px',
+      width: '400px',
       position: 'absolute',
       overflowY: 'scroll',
     },
@@ -67,7 +68,7 @@ export default function LeaderBoard({ hasAuctionTimerEnded }) {
 
   useEffect(() => {
     async function fetchLeaderboard() {
-      const { data } = await axios.get(`https://art-quest-server-new.herokuapp.com/buying/getResults/${player.hostCode}`);
+      const { data } = await axios.get(`${API_URL}/buying/getResults/${player.hostCode}`);
       setLeaderboardData((prevValues) => ({
         ...prevValues,
         ...data,
@@ -80,7 +81,7 @@ export default function LeaderBoard({ hasAuctionTimerEnded }) {
 
   const getLeaderboard = () => {
     const {
-      leaderboard, totalAmountByTeam, paintingQualityAvg, totalPointsAvg,
+      leaderboard, totalAmountByTeam, totalPointsAvg,
     } = leaderboardData;
     if (!leaderboard) return <></>;
     return Object.entries(leaderboard).map((entry) => {
@@ -118,20 +119,6 @@ export default function LeaderBoard({ hasAuctionTimerEnded }) {
                     {totalAmountByTeam && totalAmountByTeam[`${teamName}`]}
                   </div>
                   <div style={{ flexGrow: '1', lineHeight: '1.8', marginLeft: '10px' }}>
-                    <h5>Painting Quality</h5>
-                    {paintingQualityAvg && paintingQualityAvg[`${teamName}`]}
-                  </div>
-                  <div style={{
-                    flexGrow: '1', lineHeight: '1.8', marginLeft: '20px',
-                  }}
-                  >
-                    <h5>Team Average</h5>
-                    -
-                    {totalAmountByTeam
-                    && paintingQualityAvg[`${teamName}`]
-                    && parseFloat((parseInt(totalAmountByTeam[`${teamName}`], 10) / paintingQualityAvg[`${teamName}`])).toFixed(2)}
-                  </div>
-                  <div style={{ flexGrow: '1', lineHeight: '1.8', marginLeft: '10px' }}>
                     <h5 style={{ lineHeight: '1.8' }}>Total Points</h5>
                     {totalPointsAvg && totalPointsAvg[`${teamName}`]}
                   </div>
@@ -141,7 +128,8 @@ export default function LeaderBoard({ hasAuctionTimerEnded }) {
                   const { auctionObj, bidAmount } = result;
                   const paintingImg = auctionObj.imageURL;
                   const paintingName = auctionObj.name;
-                  const paintingArtist = result.auctionObj.artist;
+                  const paintingArtist = auctionObj.artist;
+                  const paintingRating = auctionObj.paintingQuality;
                   return (
                     <div className={classes.listitemscontainer}>
                       <ListItemAvatar>
@@ -159,6 +147,7 @@ export default function LeaderBoard({ hasAuctionTimerEnded }) {
                             >
                               {paintingArtist}
                             </Typography>
+                            <SimpleRating rating={parseFloat(paintingRating)} />
                           </>
                           )}
                       />

@@ -8,6 +8,7 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import ImageGallery from 'react-image-gallery';
 import axios from 'axios';
+import { API_URL } from '../global/constants';
 import userContext from '../global/userContext';
 import LiveAuctions from './LiveAuctions';
 import { socket } from '../global/socket';
@@ -126,8 +127,8 @@ function LandingPage() {
     } else {
       const value = {
         total,
-        minutes,
-        seconds,
+        minutes: minutes.toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }),
+        seconds: seconds.toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }),
       };
       setLandingPageTimerValue(value);
     }
@@ -136,7 +137,7 @@ function LandingPage() {
   // hooks and methods
   useEffect(() => {
     async function fetchTimerValue() {
-      const { data } = await axios.get(`https://art-quest-server-new.herokuapp.com/buying/timer/${player.hostCode}`);
+      const { data } = await axios.get(`${API_URL}/buying/timer/${player.hostCode}`);
       setLandingPageTimerValue(data.landingPageTimerValue);
     }
     if (Object.keys(landingPageTimerValue).length === 0) {

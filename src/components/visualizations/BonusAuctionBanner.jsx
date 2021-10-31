@@ -19,7 +19,7 @@ const useStyles = makeStyles((theme) => ({
   textContainer: {
     textAlign: 'center',
     padding: '20px',
-    maxWidth: '300px',
+    maxWidth: '400px',
   },
 }));
 
