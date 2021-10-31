@@ -55,32 +55,8 @@ const useStyles = makeStyles((theme) => ({
   textfieldstyle: {
     marginRight: '10px',
   },
-  timercontainer: {
-    height: '100px',
-    position: 'static',
-    bottom: '0',
-    borderTop: '1px solid #cccccc',
-    margin: '20px 0px 0px 0px !important',
-    textAlign: 'left',
-    backgroundColor: '#1C2833',
-  },
-  timercaption: {
-    marginLeft: '10px',
-    color: '#ffffff',
-    lineHeight: '1.2px',
-  },
-  timer: {
-    backgroundColor: '#333',
-    color: '#0fc',
-    fontSize: '40px',
-    width: '50px',
-    marginLeft: '10px',
-    textAlign: 'center',
-    display: 'inline-block',
-    padding: '10px 10px 0px 10px',
-  },
   appbar: {
-    backgroundColor: '#0fc',
+    backgroundColor: '#76e246',
     flexGrow: 1,
     position: 'relative',
   },
@@ -91,8 +67,12 @@ const useStyles = makeStyles((theme) => ({
     [theme.breakpoints.up('sm')]: {
       display: 'block',
     },
-    color: '#000000',
+    color: '#051207',
     fontSize: '22px',
+  },
+  playerdiv: {
+    fontWeight: 700,
+    color: '#051207',
   },
 }));
 
@@ -207,6 +187,20 @@ function AllPayAuctions({ totalNumberOfPaintings, getNextAuctionObj }) {
             :
             {auctionTimer && auctionTimer.seconds}
           </Typography>
+          { player
+            && (
+            <div className={classes.playerdiv}>
+              <p>
+                {player.playerName}
+                , Team
+                {' '}
+                {player.teamName}
+                ,
+                {' '}
+                {player.playerId}
+              </p>
+            </div>
+            )}
         </Toolbar>
       </AppBar>
       )}

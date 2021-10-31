@@ -18,6 +18,13 @@ const useStyles = makeStyles(() => ({
     margin: '0 0 20px 0px',
     width: 245,
   },
+  btnform: {
+    backgroundColor: '#051207',
+    margin: '0 0 20px 0px',
+    width: 245,
+    color: '#76e246',
+    fontWeight: 700,
+  },
 }));
 
 function LaunchScreen() {
@@ -79,12 +86,12 @@ function LaunchScreen() {
       <Header />
       <div className={classes.root}>
         <TextField className={classes.form} name="playerName" label="Player Name" variant="outlined" onChange={handleChange} />
-        <Button className={classes.form} variant="contained" color="primary" onClick={handleCreate}>
+        <Button className={classes.btnform} variant="contained" onClick={handleCreate}>
           Create Game
         </Button>
         <Typography className={classes.form}>Or</Typography>
         <TextField className={classes.form} name="hostCode" label="Game Code" variant="outlined" onChange={handleChange} />
-        <Button className={classes.form} variant="contained" color="primary" onClick={handleJoin}>
+        <Button className={classes.btnform} variant="contained" onClick={handleJoin}>
           Join Game
         </Button>
       </div>

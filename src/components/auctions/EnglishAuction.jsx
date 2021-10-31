@@ -62,7 +62,7 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: '#1C2833',
   },
   appbar: {
-    backgroundColor: '#0fc',
+    backgroundColor: '#76e246',
     flexGrow: 1,
     position: 'relative',
   },
@@ -73,7 +73,7 @@ const useStyles = makeStyles((theme) => ({
     [theme.breakpoints.up('sm')]: {
       display: 'block',
     },
-    color: '#000000',
+    color: '#051207',
     fontSize: '22px',
   },
   lastbidcontainer: {
@@ -92,6 +92,10 @@ const useStyles = makeStyles((theme) => ({
     color: '#333',
     fontSize: '16px',
     fontWeight: '700',
+  },
+  playerdiv: {
+    fontWeight: 700,
+    color: '#051207', // green color
   },
 }));
 
@@ -209,12 +213,26 @@ function EnglishAuction({
             :
             {auctionTimer && auctionTimer.seconds}
           </Typography>
+          { player
+            && (
+            <div className={classes.playerdiv}>
+              <p>
+                {player.playerName}
+                , Team
+                {' '}
+                {player.teamName}
+                ,
+                {' '}
+                {player.playerId}
+              </p>
+            </div>
+            )}
         </Toolbar>
       </AppBar>
       )}
       <div style={{ display: 'flex' }}>
         {auctionObj && <RoundsInfo label={`Round ${auctionObj.id} of ${totalNumberOfPaintings}`} />}
-        {player && <TeamInfo label={`You are playing in ${player.teamName}`} labelColor={`${player.teamColor}`} />}
+        {player && <TeamInfo label={`You are playing in Team ${player.teamName}`} labelColor={`${player.teamColor}`} />}
       </div>
       <LeaderBoard hasAuctionTimerEnded={hasAuctionTimerEnded} />
       <div style={{ display: 'flex' }}>
@@ -254,11 +272,6 @@ function EnglishAuction({
                   )}
               </div>
               <div className={classes.bottomcontainer}>
-                {/* <div className={classes.timercontainer}>
-                  <p className={classes.timercaption}>Time Remaining</p>
-                  <div className={classes.timer}>{auctionTimer && auctionTimer.minutes}</div>
-                  <div className={classes.timer}>{auctionTimer && auctionTimer.seconds}</div>
-                </div> */}
                 {previousBidDetails && previousBidDetails.bidTeam && previousBidDetails.bidAmount ? (
                   <div className={classes.lastbidcontainer} style={{ backgroundColor: `${previousBidDetails.bidColor}` }}>
                     <p className={classes.lastbidby}>Last Bid By: {`Team ${previousBidDetails.bidTeam}`}</p>

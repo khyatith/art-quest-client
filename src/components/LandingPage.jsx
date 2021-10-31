@@ -11,6 +11,7 @@ import axios from 'axios';
 import { API_URL } from '../global/constants';
 import userContext from '../global/userContext';
 import LiveAuctions from './LiveAuctions';
+import Header from './Header';
 import { socket } from '../global/socket';
 
 const useStyles = makeStyles((theme) => ({
@@ -30,7 +31,7 @@ const useStyles = makeStyles((theme) => ({
     height: '200px', // 16:9
   },
   appbar: {
-    backgroundColor: '#0fc',
+    backgroundColor: '#76e246',
     flexGrow: 1,
   },
   startbtn: {
@@ -48,11 +49,12 @@ const useStyles = makeStyles((theme) => ({
     [theme.breakpoints.up('sm')]: {
       display: 'block',
     },
-    color: '#000000',
+    color: '#051207',
     fontSize: '22px',
   },
   playerdiv: {
     fontWeight: 700,
+    color: '#051207',
   },
   imagegallerywrapper: {
     marginTop: '50px',
@@ -202,6 +204,7 @@ function LandingPage() {
           ? <LiveAuctions totalNumberOfPaintings={totalNumberOfPaintings} allAuctions={gameState} fromLP />
           : (
             <div>
+              <Header />
               <AppBar position="fixed" className={classes.appbar}>
                 <Toolbar>
                   <Typography variant="h6" className={classes.timercontent}>
