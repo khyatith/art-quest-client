@@ -13,10 +13,12 @@ import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import axios from 'axios';
 import userContext from '../../global/userContext';
+import { API_URL } from '../../global/constants';
 import { socket } from '../../global/socket';
 import LeaderBoard from '../LeaderBoard';
 import SimpleRating from '../Rating';
 import RoundsInfo from '../RoundsInfo';
+import TeamInfo from '../TeamInfo';
 import leaderboardContext from '../../global/leaderboardContext';
 import BuyingBarChart from '../visualizations/BuyingBarChart';
 import auctionContext from '../../global/auctionContext';
@@ -121,8 +123,8 @@ function EnglishAuction({
     } else {
       const value = {
         total,
-        minutes,
-        seconds,
+        minutes: minutes.toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }),
+        seconds: seconds.toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }),
       };
       setAuctionTimer(value);
     }
@@ -138,7 +140,7 @@ function EnglishAuction({
 
   useEffect(() => {
     async function fetchTimerValue() {
-      const { data } = await axios.get(`https://art-quest-server-new.herokuapp.com/buying/auctionTimer/${player.hostCode}/${auctionObj.id}`);
+      const { data } = await axios.get(`${API_URL}/buying/auctionTimer/${player.hostCode}/${auctionObj.id}`);
       setAuctionTimer(data.currentAuctionObjTimer);
     }
     if (auctionObj && Object.keys(auctionTimer).length === 0) {
@@ -210,7 +212,10 @@ function EnglishAuction({
         </Toolbar>
       </AppBar>
       )}
-      {auctionObj && <RoundsInfo label={`Round ${auctionObj.id} of ${totalNumberOfPaintings}`} />}
+      <div style={{ display: 'flex' }}>
+        {auctionObj && <RoundsInfo label={`Round ${auctionObj.id} of ${totalNumberOfPaintings}`} />}
+        {player && <TeamInfo label={`You are playing in ${player.teamName}`} labelColor={`${player.teamColor}`} />}
+      </div>
       <LeaderBoard hasAuctionTimerEnded={hasAuctionTimerEnded} />
       <div style={{ display: 'flex' }}>
         {auctionObj && (
@@ -272,7 +277,7 @@ function EnglishAuction({
         {/* Render bar chart */}
         { leaderboardData && leaderboardData.totalPointsAvg
         && (
-        <div style={{ display: 'flex', marginTop: '350px' }}>
+        <div style={{ display: 'flex', marginTop: '380px' }}>
           <BuyingBarChart results={leaderboardData.totalPointsAvg} labels={Object.keys(leaderboardData.totalPointsAvg)} />
         </div>
         )}

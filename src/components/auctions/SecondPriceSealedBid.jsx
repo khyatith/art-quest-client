@@ -18,10 +18,11 @@ import { socket } from '../../global/socket';
 import LeaderBoard from '../LeaderBoard';
 import SimpleRating from '../Rating';
 import RoundsInfo from '../RoundsInfo';
+import TeamInfo from '../TeamInfo';
 import leaderboardContext from '../../global/leaderboardContext';
 import BuyingBarChart from '../visualizations/BuyingBarChart';
 import BonusAuctionBanner from '../visualizations/BonusAuctionBanner';
-import { SECOND_PRICED_SEALED_BID_TEXT } from '../../global/constants';
+import { SECOND_PRICED_SEALED_BID_TEXT, API_URL } from '../../global/constants';
 import auctionContext from '../../global/auctionContext';
 
 const useStyles = makeStyles((theme) => ({
@@ -132,8 +133,8 @@ function SecondPriceSealedBid({
     } else {
       const value = {
         total,
-        minutes,
-        seconds,
+        minutes: minutes.toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }),
+        seconds: seconds.toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }),
       };
       setAuctionTimer(value);
     }
@@ -150,7 +151,7 @@ function SecondPriceSealedBid({
 
   useEffect(() => {
     async function fetchTimerValue() {
-      const { data } = await axios.get(`https://art-quest-server-new.herokuapp.com/buying/auctionTimer/${player.hostCode}/${auctionObj.id}`);
+      const { data } = await axios.get(`${API_URL}/buying/auctionTimer/${player.hostCode}/${auctionObj.id}`);
       setAuctionTimer(data.currentAuctionObjTimer);
     }
     if (auctionObj && Object.keys(auctionTimer).length === 0) {
@@ -218,7 +219,10 @@ function SecondPriceSealedBid({
         </Toolbar>
       </AppBar>
       )}
-      {auctionObj && <RoundsInfo label={`Round ${auctionObj.id} of ${totalNumberOfPaintings}`} />}
+      <div style={{ display: 'flex' }}>
+        {auctionObj && <RoundsInfo label={`Round ${auctionObj.id} of ${totalNumberOfPaintings}`} />}
+        {player && <TeamInfo label={`You are playing in Team ${player.teamName}`} labelColor={`${player.teamColor}`} />}
+      </div>
       <LeaderBoard hasAuctionTimerEnded={hasAuctionTimerEnded} />
       <div style={{ display: 'flex' }}>
         {auctionObj && (
@@ -262,7 +266,7 @@ function SecondPriceSealedBid({
           {/* Render bar chart */}
           { leaderboardData && leaderboardData.totalPointsAvg
           && (
-          <div style={{ marginTop: '350px' }}>
+          <div style={{ marginTop: '380px' }}>
             <BuyingBarChart results={leaderboardData.totalPointsAvg} labels={Object.keys(leaderboardData.totalPointsAvg)} />
           </div>
           )}

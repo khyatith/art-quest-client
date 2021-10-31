@@ -1,4 +1,5 @@
 /* eslint-disable import/prefer-default-export */
+export const API_URL = 'https://art-quest-server-new.herokuapp.com';
 export const TEAM_DETAILS = [{
   id: 0,
   name: 'Blue',

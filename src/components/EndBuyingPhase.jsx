@@ -3,6 +3,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import ImageList from '@material-ui/core/ImageList';
 import ImageListItem from '@material-ui/core/ImageListItem';
 import axios from 'axios';
+import { API_URL } from '../global/constants';
 import userContext from '../global/userContext';
 
 const useStyles = makeStyles((theme) => ({
@@ -30,7 +31,7 @@ function EndBuyingPhase() {
   const { player } = useContext(userContext);
 
   const getWinner = async () => {
-    const { data } = await axios.get(`https://art-quest-server-new.herokuapp.com/buying/getWinner/${player.hostCode}`);
+    const { data } = await axios.get(`${API_URL}/buying/getWinner/${player.hostCode}`);
     if (data && data.leaderboard) {
       const { teamName } = player;
       const allTeamArt = data.leaderboard[teamName];
