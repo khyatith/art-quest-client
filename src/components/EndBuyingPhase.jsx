@@ -117,28 +117,29 @@ function EndBuyingPhase() {
   };
 
   const showTeamWinner = () => {
-    console.log('player', player);
-    if (player.teamName.toLowerCase() === gameWinner.team.toLowerCase()) {
+    const { teamName } = player;
+    const { team } = gameWinner;
+    if (teamName === team) {
       return (
-        <h2 style={{ backgroundColor: `${TEAM_COLOR_MAP[gameWinner.team]}`, padding: '20px', color: '#000000' }}>
+        <h2 style={{ backgroundColor: `${TEAM_COLOR_MAP[team]}`, padding: '20px', color: '#000000' }}>
           Congratulations! You are the winner!
         </h2>
       );
     }
     return (
-      <h2 style={{ backgroundColor: `${TEAM_COLOR_MAP[gameWinner.team]}`, padding: '20px', color: '#000000' }}>
+      <h2 style={{ backgroundColor: `${TEAM_COLOR_MAP[team]}`, padding: '20px', color: '#000000' }}>
         The winner is
         {' '}
         Team
         {' '}
-        {gameWinner.team}
+        {team}
       </h2>
     );
   };
 
   return (
     <div style={{ textAlign: 'center' }}>
-      {showTeamWinner()}
+      {player && gameWinner && showTeamWinner()}
       {renderLeaderboardData()}
       <h3>Your art collection</h3>
       <div className={classes.root}>
