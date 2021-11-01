@@ -21,7 +21,7 @@ const useStyles = makeStyles(() => ({
   title: {
     fontSize: '36px',
     fontWeight: '700',
-    color: '#EC40D6',
+    color: '#76e246',
   },
   listcontainer: {
     textAlign: 'center',
@@ -38,14 +38,14 @@ const useStyles = makeStyles(() => ({
     },
   },
   listnumber: {
-    border: '3px solid #EC40D6',
-    borderRadius: '50%',
+    border: '3px solid #76e246',
+    // borderRadius: '50%',
     width: '30px',
     height: '30px',
     textAlign: 'center',
     padding: '8px',
     marginRight: '20px',
-    color: '#EC40D6',
+    color: '#76e246',
   },
   listitem: {
     marginTop: '20px',
@@ -53,7 +53,7 @@ const useStyles = makeStyles(() => ({
   startgamebutton: {
     marginTop: '80px',
     width: '90%',
-    backgroundColor: '#0fc',
+    backgroundColor: '#76e246',
     color: '#000000',
     fontWeight: '700',
     fontSize: '24px',
@@ -62,7 +62,7 @@ const useStyles = makeStyles(() => ({
     fontSize: '18px',
     fontWeight: '700',
     '& span': {
-      color: '#EC40D6',
+      color: '#76e246',
     },
   },
 }));
@@ -115,7 +115,7 @@ function GameInstructions() {
       </List>
       <p className={classes.p}>Let the bidding wars begin!</p>
       <p className={classes.p}>Click on below button to start the game when your team is ready.</p>
-      <Button className={classes.startgamebutton} variant="contained" color="primary" onClick={handleClick}>
+      <Button className={classes.startgamebutton} variant="contained" onClick={handleClick}>
         Start Game
       </Button>
     </div>

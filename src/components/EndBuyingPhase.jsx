@@ -1,10 +1,17 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, withStyles } from '@material-ui/core/styles';
 import ImageList from '@material-ui/core/ImageList';
 import ImageListItem from '@material-ui/core/ImageListItem';
 import axios from 'axios';
-import { API_URL } from '../global/constants';
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableContainer from '@material-ui/core/TableContainer';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
+import Paper from '@material-ui/core/Paper';
 import userContext from '../global/userContext';
+import { API_URL, TEAM_COLOR_MAP } from '../global/constants';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -22,12 +29,31 @@ const useStyles = makeStyles((theme) => ({
   icon: {
     color: 'rgba(255, 255, 255, 0.54)',
   },
+  table: {
+    maxWidth: 700,
+  },
+  paper: {
+    maxWidth: 700,
+    margin: '0 auto',
+  },
 }));
+
+const StyledTableCell = withStyles((theme) => ({
+  head: {
+    backgroundColor: theme.palette.common.black,
+    color: theme.palette.common.white,
+  },
+  body: {
+    fontSize: 14,
+  },
+}))(TableCell);
 
 function EndBuyingPhase() {
   const classes = useStyles();
   const [artforTeams, setArtForTeams] = useState();
   const [gameWinner, setGameWinner] = useState({});
+  const [totalAmountsByTeam, setTotalAmountsByTeam] = useState({});
+  const [totalPointsAvgByTeam, setTotalPointsAvgByTeam] = useState({});
   const { player } = useContext(userContext);
 
   const getWinner = async () => {
@@ -40,6 +66,12 @@ function EndBuyingPhase() {
     if (data && data.winner) {
       setGameWinner(data.winner);
     }
+    if (data && data.totalAmountSpentByTeam) {
+      setTotalAmountsByTeam(data.totalAmountSpentByTeam);
+    }
+    if (data && data.totalPointsAvg) {
+      setTotalPointsAvgByTeam(data.totalPointsAvg);
+    }
   };
 
   useEffect(() => {
@@ -48,16 +80,68 @@ function EndBuyingPhase() {
     }
   }, [gameWinner]);
 
-  return (
-    <div style={{ textAlign: 'center' }}>
-      <h2 style={{ backgroundColor: `${player.teamColor}`, padding: '20px', color: '#000000' }}>
+  const renderLeaderboardData = () => {
+    const tableData = Object.entries(totalAmountsByTeam).map(([key, value]) => {
+      const totalPoints = totalPointsAvgByTeam[key];
+      return { key, value, totalPoints: parseFloat(totalPoints) };
+    });
+    const sortedData = tableData.sort((a, b) => parseFloat(b.totalPoints) - parseFloat(a.totalPoints));
+    return (
+      <TableContainer className={classes.paper} component={Paper}>
+        <Table className={classes.table} aria-label="customized table">
+          <TableHead>
+            <TableRow>
+              <StyledTableCell>Rank</StyledTableCell>
+              <StyledTableCell>Team</StyledTableCell>
+              <StyledTableCell align="right">Total Cash Spent</StyledTableCell>
+              <StyledTableCell align="right">Total Points Earned</StyledTableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {sortedData.map((row, index) => (
+              <TableRow key={row.key} style={{ backgroundColor: `${TEAM_COLOR_MAP[row.key]}` }}>
+                <StyledTableCell align="right">
+                  {parseInt(index, 10) + 1}
+                </StyledTableCell>
+                <StyledTableCell component="th" scope="row">
+                  {row.key}
+                </StyledTableCell>
+                <StyledTableCell align="right">{row.value}</StyledTableCell>
+                <StyledTableCell align="right">{row.totalPoints}</StyledTableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    );
+  };
+
+  const showTeamWinner = () => {
+    const { teamName } = player;
+    const { team } = gameWinner;
+    if (teamName === team) {
+      return (
+        <h2 style={{ backgroundColor: `${TEAM_COLOR_MAP[team]}`, padding: '20px', color: '#000000' }}>
+          Congratulations! You are the winner!
+        </h2>
+      );
+    }
+    return (
+      <h2 style={{ backgroundColor: `${TEAM_COLOR_MAP[team]}`, padding: '20px', color: '#000000' }}>
         The winner is
         {' '}
         Team
         {' '}
-        {gameWinner.team}
+        {team}
       </h2>
-      <h3>Congratulations! For creating your favorite art collection!</h3>
+    );
+  };
+
+  return (
+    <div style={{ textAlign: 'center' }}>
+      {player && gameWinner && showTeamWinner()}
+      {renderLeaderboardData()}
+      <h3>Your art collection</h3>
       <div className={classes.root}>
         <ImageList rowHeight={300} className={classes.imageList}>
           {

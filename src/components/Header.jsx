@@ -13,12 +13,17 @@ const useStyles = makeStyles((theme) => ({
     display: 'none',
     margin: '0 auto',
     fontWeight: '700',
+    color: '#76e246',
     [theme.breakpoints.up('sm')]: {
       display: 'block',
     },
   },
   playerdiv: {
     fontWeight: 700,
+    color: '#76e246', // green color
+  },
+  appbar: {
+    background: '#051207', // black color
   },
 }));
 
@@ -27,7 +32,7 @@ function Header() {
   const { player } = useContext(userContext);
   return (
     <div className={classes.grow}>
-      <AppBar position="static">
+      <AppBar className={classes.appbar} position="static">
         <Toolbar>
           <Typography variant="h6" className={classes.title}>
             ART QUEST

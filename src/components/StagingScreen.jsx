@@ -24,6 +24,13 @@ const useStyles = makeStyles(() => ({
     margin: '0 0 20px 0px',
     width: 400,
   },
+  btnform: {
+    backgroundColor: '#051207',
+    margin: '0 0 20px 0px',
+    width: 400,
+    color: '#76e246',
+    fontWeight: 700,
+  },
 }));
 
 function StagingScreen() {
@@ -85,14 +92,14 @@ function StagingScreen() {
           </FormControl>
         </div>
         <form>
-          <Button className={classes.form} variant="contained" color="primary" onClick={handleClick}>
+          <Button className={classes.btnform} variant="contained" color="primary" onClick={handleClick}>
             Play
           </Button>
         </form>
         {isAdmin && (
           <>
             <TextField className={classes.form} placeholder="Number Of Teams" name="numberOfTeams" variant="outlined" onChange={handleTeams} />
-            <Button className={classes.form} variant="contained" color="primary" onClick={setTeams}>
+            <Button className={classes.btnform} variant="contained" onClick={setTeams}>
               Set Teams
             </Button>
           </>
