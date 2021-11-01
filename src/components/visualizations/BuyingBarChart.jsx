@@ -16,6 +16,9 @@ const options = {
       grid: {
         offset: true,
       },
+      ticks: {
+        display: false, // this will remove only the label
+      },
     },
   },
 };
