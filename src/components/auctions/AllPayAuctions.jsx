@@ -121,7 +121,7 @@ function AllPayAuctions({ totalNumberOfPaintings, getNextAuctionObj }) {
 
   useEffect(() => {
     async function fetchTimerValue() {
-      const { data } = await axios.get(`${API_URL}/buying/auctionTimer/${player.hostCode}/${auctionObj.id}`);
+      const { data } = await axios.get(`http://localhost:3001/buying/auctionTimer/${player.hostCode}/${auctionObj.id}`);
       setAuctionTimer(data.currentAuctionObjTimer);
     }
     if (auctionObj && Object.keys(auctionTimer).length === 0) {

@@ -6,6 +6,7 @@ const userContext = React.createContext({
   playerId: '',
   hostCode: '',
   teamColor: '',
+  currentLocation: '',
 });
 
 export default userContext;

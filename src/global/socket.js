@@ -4,4 +4,4 @@ import { API_URL } from './constants';
 
 // eslint-disable-next-line import/prefer-default-export
 
-export const socket = io.connect(`${API_URL}/`);
+export const socket = io.connect('http://localhost:3001/');

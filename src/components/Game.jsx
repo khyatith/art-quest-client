@@ -1,10 +1,14 @@
 import React from 'react';
 import LandingPage from './LandingPage';
+import Header from './Header';
+import LocationPhase from './selling/LocationPhase';
 
 function Game() {
   return (
     <div>
-      <LandingPage />
+      <Header />
+      {/*<LandingPage />*/}
+      <LocationPhase />
     </div>
   );
 }
