@@ -39,9 +39,10 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function createData(team, cash) {
+function createData(team, cash, vis) {
   let str = [];
-  str.push(cash);
+  str.push(cash/10000);
+  str.push(vis);
   console.log(str);
   return {
     label: team, backgroundColor: TEAM_COLOR_MAP[team],
@@ -58,16 +59,12 @@ function createDataMap(id, team, visits, cash) {
 
 function LocationPhase() {
   const classes = useStyles();
-  const [mapValues, setMapValues] = useState({});
   const [teamValues, setTeamValues] = useState({});
-  const [valRet, setValRet] = useState(false);
-  const [visited, setVisits] = useState({});
   const [rows, setRows] = useState([]);
-  const [labels, setLabel] = useState(['Revenue']);
+  const [labels, setLabel] = useState(['Cash','Visits']);
   const [result, setResult] = useState({});
   const { player } = useContext(userContext);
   const [loading, setLoading] = useState(true);
-  const loc = player.currentLocation;
   let datasets = [];
   const geoUrl = "https://raw.githubusercontent.com/zcreativelabs/react-simple-maps/master/topojson-maps/world-110m.json";
 
@@ -75,10 +72,10 @@ function LocationPhase() {
   //Hooks and methods
   useEffect(() => {
     setLoading(true);
-    axios.get(`http://localhost:3001/landing-page/getSellingResults/${player.hostCode}`)
+    axios.get(`http://localhost:3001/buying/getSellingResults?roomId=${player.hostCode}`)
       .then((newData) => {
         setTeamValues(newData);
-        console.log(newData.data);
+        console.log(newData);
         let x = 1;
         let tv = [];
         for (let i of Object.keys(newData.data.amountSpentByTeam)) {
@@ -90,14 +87,12 @@ function LocationPhase() {
               vis = j.visitCount;
             }
           }
-
-          datasets.push(createData(team, cash));
+          datasets.push(createData(team, cash, vis));
           tv.push(createDataMap(x, team, vis, cash));
           x += 1;
         }
         setResult({ labels, datasets });
         setRows(tv);
-        console.log(result);
       })
       .finally(() => {
         setLoading(false);

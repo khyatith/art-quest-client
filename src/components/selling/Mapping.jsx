@@ -21,7 +21,7 @@ function Mapping() {
     //Hooks and methods
     useEffect(() => {
         async function getMapVal() {
-            const { data } = await axios.get(`http://localhost:3001/landing-page/getMap`);
+            const { data } = await axios.get(`http://localhost:3001/buying/getMap`);
             setMapValues(data);
         }
         if (!valRet) {

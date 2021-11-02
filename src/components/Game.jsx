@@ -7,8 +7,7 @@ function Game() {
   return (
     <div>
       <Header />
-      {//<LandingPage />
-      }
+      {/*<LandingPage />*/}
       <LocationPhase />
     </div>
   );
