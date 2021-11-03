@@ -12,25 +12,25 @@ import Button from '@material-ui/core/Button';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import axios from 'axios';
+import Grid from '@material-ui/core/Grid';
 import userContext from '../../global/userContext';
 import { API_URL } from '../../global/constants';
 import { socket } from '../../global/socket';
-import LeaderBoard from '../LeaderBoard';
+import NewLeaderboard from '../NewLeaderboard';
 import SimpleRating from '../Rating';
 import RoundsInfo from '../RoundsInfo';
 import TeamInfo from '../TeamInfo';
 import leaderboardContext from '../../global/leaderboardContext';
 import BuyingBarChart from '../visualizations/BuyingBarChart';
 import auctionContext from '../../global/auctionContext';
+import BuyingGroupedBarChart from '../visualizations/BuyingGroupedBarChart';
 
 const useStyles = makeStyles((theme) => ({
-  cardRoot: {
-    width: 400,
-    padding: 20,
-    // margin: '0 30%',
-  },
   media: {
-    height: '350px', // 16:9
+    height: '250px', // 16:9
+  },
+  maingrid: {
+    padding: '20px',
   },
   titlestyle: {
     textAlign: 'center',
@@ -230,14 +230,13 @@ function EnglishAuction({
         </Toolbar>
       </AppBar>
       )}
-      <div style={{ display: 'flex' }}>
+      <div style={{ display: 'flex', marginBottom: '20px' }}>
         {auctionObj && <RoundsInfo label={`Round ${auctionObj.id} of ${totalNumberOfPaintings}`} />}
         {player && <TeamInfo label={`You are playing in Team ${player.teamName}`} labelColor={`${player.teamColor}`} />}
       </div>
-      <LeaderBoard hasAuctionTimerEnded={hasAuctionTimerEnded} />
-      <div style={{ display: 'flex' }}>
+      <Grid className={classes.maingrid} container spacing={3}>
         {auctionObj && (
-        <div className={classes.cardRoot}>
+        <Grid item xs={4}>
           <Card key={auctionObj.id}>
             <CardHeader className={classes.titlestyle} title={auctionObj.name} subheader={`Created By: ${auctionObj.artist}`} />
             <CardMedia className={classes.media} component="img" image={`${auctionObj.imageURL}`} title={auctionObj.name} />
@@ -285,16 +284,30 @@ function EnglishAuction({
               </div>
             </CardActions>
           </Card>
-        </div>
+        </Grid>
         )}
-        {/* Render bar chart */}
-        { leaderboardData && leaderboardData.totalPointsAvg
-        && (
-        <div style={{ display: 'flex', marginTop: '380px' }}>
-          <BuyingBarChart results={leaderboardData.totalPointsAvg} labels={Object.keys(leaderboardData.totalPointsAvg)} />
-        </div>
-        )}
-      </div>
+        <Grid item xs={12} sm container spacing={4}>
+          <Grid item xs={10}>
+            <NewLeaderboard hasAuctionTimerEnded={hasAuctionTimerEnded} />
+          </Grid>
+          <Grid item xs={8}>
+            { leaderboardData && leaderboardData.totalAmountByTeam
+              && (
+                <BuyingGroupedBarChart leaderboardData={leaderboardData} />
+              )}
+          </Grid>
+          <Grid item xs={7}>
+            { leaderboardData && leaderboardData.totalPaintingsWonByTeams
+            && (
+              <BuyingBarChart
+                results={leaderboardData.totalPaintingsWonByTeams}
+                labels={Object.keys(leaderboardData.totalPaintingsWonByTeams)}
+                labelDesc="total paintings"
+              />
+            )}
+          </Grid>
+        </Grid>
+      </Grid>
     </div>
   );
 }
