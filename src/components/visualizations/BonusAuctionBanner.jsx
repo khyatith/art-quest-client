@@ -5,9 +5,6 @@ import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 
 const useStyles = makeStyles((theme) => ({
-  root: {
-    height: 180,
-  },
   container: {
     display: 'flex',
   },
@@ -18,7 +15,7 @@ const useStyles = makeStyles((theme) => ({
   },
   textContainer: {
     textAlign: 'center',
-    padding: '20px',
+    padding: '18px',
     maxWidth: '400px',
   },
 }));
@@ -27,7 +24,7 @@ const BonusAuctionBanner = ({ text }) => {
   const classes = useStyles();
 
   return (
-    <div className={classes.root}>
+    <div>
       <div className={classes.container}>
         <Zoom in>
           <Paper elevation={4} variant="outlined" className={classes.paper}>

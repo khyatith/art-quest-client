@@ -24,7 +24,7 @@ const options = {
 };
 
 const BuyingBarChart = (props) => {
-  const { labels, results } = props;
+  const { labels, results, labelDesc } = props;
   const [barChartData, setBarChartData] = useState();
 
   const parseDataForGroupChart = () => {
@@ -34,7 +34,7 @@ const BuyingBarChart = (props) => {
       const dataset = Object.entries(results).map(([key, value]) => {
         const teamName = key;
         return {
-          label: `${teamName}`,
+          label: `Team ${teamName} ${labelDesc}`,
           data: [value],
           backgroundColor: TEAM_COLOR_MAP[teamName],
           barThickness: 25,
@@ -50,7 +50,7 @@ const BuyingBarChart = (props) => {
   }, [results]);
 
   return (
-    <div style={{ width: '450px', height: '500px' }}>
+    <div style={{ width: '450px', marginTop: '30px' }}>
       <Bar data={barChartData} options={options} />
     </div>
   );
