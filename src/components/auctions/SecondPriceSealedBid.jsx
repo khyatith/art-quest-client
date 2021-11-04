@@ -26,10 +26,11 @@ import BonusAuctionBanner from '../visualizations/BonusAuctionBanner';
 import { SECOND_PRICED_SEALED_BID_TEXT, API_URL } from '../../global/constants';
 import auctionContext from '../../global/auctionContext';
 import BuyingGroupedBarChart from '../visualizations/BuyingGroupedBarChart';
+import formatNumberToCurrency from '../../global/helpers';
 
 const useStyles = makeStyles((theme) => ({
   media: {
-    height: '250px', // 16:9
+    height: '200px', // 16:9
   },
   maingrid: {
     padding: '20px',
@@ -218,7 +219,7 @@ function SecondPriceSealedBid({
               <p>Painting Quality</p>
               <SimpleRating rating={parseFloat(auctionObj.paintingQuality)} />
               <Typography component="h6" variant="h6">
-                {`Opening bid : $${auctionObj.originalValue}`}
+                {`Opening bid : ${formatNumberToCurrency(auctionObj.originalValue)}`}
               </Typography>
             </CardContent>
             <CardActions className={classes.cardactionsstyle}>
@@ -231,16 +232,13 @@ function SecondPriceSealedBid({
                   disabled={!live}
                   type="number"
                   name="bidAmount"
-                  placeholder="Bidding Amount"
+                  placeholder="Enter your bid"
                   variant="outlined"
                   onChange={setCurrentBidAmt}
                 />
-                <Button disabled={!live} variant="contained" color="secondary" onClick={setBidAmt}>
+                <Button disabled={!live} variant="contained" color="secondary" onClick={setBidAmt} style={{ marginBottom: '10px' }}>
                   Bid
                 </Button>
-                <p>
-                  * The highest bid will win but the winner will pay the amount of the second highest bid
-                </p>
               </div>
             </CardActions>
           </Card>

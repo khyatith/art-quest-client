@@ -5,6 +5,8 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import Button from '@material-ui/core/Button';
 import { useHistory } from 'react-router-dom';
+import StarIcon from '@material-ui/icons/Star';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
 import { socket } from '../global/socket';
 import userContext from '../global/userContext';
 
@@ -28,25 +30,6 @@ const useStyles = makeStyles(() => ({
     margin: '0 auto',
     width: '50%',
   },
-  icon: {
-    color: '#ffffff',
-  },
-  listtext: {
-    '& .MuiListItemText-primary': {
-      fontSize: '20px',
-      fontWeight: '700',
-    },
-  },
-  listnumber: {
-    border: '3px solid #76e246',
-    // borderRadius: '50%',
-    width: '30px',
-    height: '30px',
-    textAlign: 'center',
-    padding: '8px',
-    marginRight: '20px',
-    color: '#76e246',
-  },
   listitem: {
     marginTop: '20px',
   },
@@ -65,6 +48,12 @@ const useStyles = makeStyles(() => ({
       color: '#76e246',
     },
   },
+  listtext: {
+    '& .MuiListItemText-primary': {
+      fontSize: '20px',
+      fontWeight: '700',
+    },
+  },
 }));
 
 function GameInstructions() {
@@ -80,7 +69,6 @@ function GameInstructions() {
   return (
     <div className={classes.container}>
       <p className={classes.title}>Art Quest</p>
-      <p className={classes.p}>Welcome to the world of art.</p>
       <p className={classes.p}>Your challenge, should you choose to accept it, is to create your favorite art collection.</p>
       <p className={classes.p}>
         How will you do it? By taking part in
@@ -95,21 +83,21 @@ function GameInstructions() {
       </p>
       <List className={classes.listcontainer} dense>
         <ListItem className={classes.listitem}>
-          <div className={classes.listnumber}>
-            <h2 style={{ top: '-15px', position: 'relative' }}>1</h2>
-          </div>
+          <ListItemIcon>
+            <StarIcon style={{ color: '#76e246' }} />
+          </ListItemIcon>
           <ListItemText className={classes.listtext} primary="Create your FAVORITE art collection" />
         </ListItem>
         <ListItem className={classes.listitem}>
-          <div className={classes.listnumber}>
-            <h2 style={{ top: '-15px', position: 'relative' }}>2</h2>
-          </div>
+          <ListItemIcon>
+            <StarIcon style={{ color: '#76e246' }} />
+          </ListItemIcon>
           <ListItemText className={classes.listtext} primary="Spend your gold WISELY" />
         </ListItem>
         <ListItem className={classes.listitem}>
-          <div className={classes.listnumber}>
-            <h2 style={{ top: '-15px', position: 'relative' }}>3</h2>
-          </div>
+          <ListItemIcon>
+            <StarIcon style={{ color: '#76e246' }} />
+          </ListItemIcon>
           <ListItemText className={classes.listtext} primary="Collect most number of HIGH-QUALITY paintings" />
         </ListItem>
       </List>

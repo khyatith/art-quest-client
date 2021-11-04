@@ -1,9 +1,6 @@
-/* eslint-disable import/prefer-default-export */
-import axios from 'axios';
+const formatNumberToCurrency = (value) => new Intl.NumberFormat('en-IN', {
+  style: 'currency',
+  currency: 'usd',
+}).format(value);
 
-export const getNextAuctionObj = async (currentAuctionObj, player) => {
-  const currentAuctionId = currentAuctionObj && currentAuctionObj.id;
-  const { data } = await axios.get(`https://art-quest-server-new.herokuapp.com/buying/getNextAuction/${player.hostCode}/${currentAuctionId}`);
-  return data;
-  // socket.emit('startLiveAuctions', { currentAuctionObj, player });
-};
+export default formatNumberToCurrency;

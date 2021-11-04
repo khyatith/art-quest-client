@@ -24,10 +24,11 @@ import leaderboardContext from '../../global/leaderboardContext';
 import BuyingBarChart from '../visualizations/BuyingBarChart';
 import auctionContext from '../../global/auctionContext';
 import BuyingGroupedBarChart from '../visualizations/BuyingGroupedBarChart';
+import formatNumberToCurrency from '../../global/helpers';
 
 const useStyles = makeStyles((theme) => ({
   media: {
-    height: '250px', // 16:9
+    height: '200px', // 16:9
   },
   maingrid: {
     padding: '20px',
@@ -244,7 +245,7 @@ function EnglishAuction({
               <p>Painting Quality</p>
               <SimpleRating rating={parseFloat(auctionObj.paintingQuality)} />
               <Typography component="h6" variant="h6">
-                {`Opening bid : $${auctionObj.originalValue}`}
+                {`Opening bid : ${formatNumberToCurrency(auctionObj.originalValue)}`}
               </Typography>
             </CardContent>
             <CardActions className={classes.cardactionsstyle}>
@@ -256,7 +257,7 @@ function EnglishAuction({
                   size="small"
                   type="number"
                   name="bidAmount"
-                  placeholder="Bidding Amount"
+                  placeholder="Enter your bid"
                   variant="outlined"
                   onChange={setCurrentBidAmt}
                 />
@@ -266,7 +267,7 @@ function EnglishAuction({
                 { previousBidDetails && previousBidDetails.bidAmount
                   && (
                   <p>
-                    * Your bid cannot be less than {parseInt(previousBidDetails.bidAmount, 10) + 5000}
+                    * Your bid cannot be less than {formatNumberToCurrency(parseInt(previousBidDetails.bidAmount, 10) + 5000)}
                   </p>
                   )}
               </div>
@@ -274,7 +275,7 @@ function EnglishAuction({
                 {previousBidDetails && previousBidDetails.bidTeam && previousBidDetails.bidAmount ? (
                   <div className={classes.lastbidcontainer} style={{ backgroundColor: `${previousBidDetails.bidColor}` }}>
                     <p className={classes.lastbidby}>Last Bid By: {`Team ${previousBidDetails.bidTeam}`}</p>
-                    <p className={classes.lastbidamount}>Last Bid Amount: {previousBidDetails.bidAmount}</p>
+                    <p className={classes.lastbidamount}>Last Bid Amount: {formatNumberToCurrency(parseInt(previousBidDetails.bidAmount, 10))}</p>
                   </div>
                 ) : (
                   <div className={classes.lastbidcontainer}>

@@ -13,6 +13,7 @@ import Paper from '@material-ui/core/Paper';
 import userContext from '../global/userContext';
 import Header from './Header';
 import { API_URL, TEAM_COLOR_MAP } from '../global/constants';
+import formatNumberToCurrency from '../global/helpers';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -125,9 +126,9 @@ function EndBuyingPhase() {
                   <StyledTableCell component="th" scope="row">
                     {row.teamName}
                   </StyledTableCell>
-                  <StyledTableCell align="right">{row.debt}</StyledTableCell>
+                  <StyledTableCell align="right">{formatNumberToCurrency(parseFloat(row.debt))}</StyledTableCell>
                   <StyledTableCell align="right">{row.totalPaintings}</StyledTableCell>
-                  <StyledTableCell align="right">{row.efficiency}</StyledTableCell>
+                  <StyledTableCell align="right">{formatNumberToCurrency(parseFloat(row.efficiency))}</StyledTableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -140,7 +141,6 @@ function EndBuyingPhase() {
   const showTeamWinner = () => {
     const { teamName } = player;
     if (teamName === gameWinner) {
-      console.log('inside ----');
       return (
         <h2 style={{ backgroundColor: '#000000', padding: '20px', color: '#76e246' }}>
           Congratulations! You are the winner!
