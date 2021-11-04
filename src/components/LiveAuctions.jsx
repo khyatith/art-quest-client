@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react';
+import PropTypes from 'prop-types';
 import FirstPriceSealedBid from './auctions/FirstPriceSealedBid';
 import EnglishAuction from './auctions/EnglishAuction';
 import EndBuyingPhase from './EndBuyingPhase';
@@ -89,5 +90,17 @@ function LiveAuctions({ totalNumberOfPaintings, fromLP, allAuctions }) {
     </>
   );
 }
+
+LiveAuctions.defaultProps = {
+  totalNumberOfPaintings: 1,
+  fromLP: true,
+  allAuctions: [],
+};
+
+LiveAuctions.propTypes = {
+  totalNumberOfPaintings: PropTypes.number,
+  fromLP: PropTypes.bool,
+  allAuctions: PropTypes.array,
+};
 
 export default LiveAuctions;

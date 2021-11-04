@@ -2,6 +2,7 @@ import React from 'react';
 import { emphasize, withStyles } from '@material-ui/core/styles';
 import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import Chip from '@material-ui/core/Chip';
+import PropTypes from 'prop-types';
 
 const StyledBreadcrumb = withStyles((theme) => ({
   root: {
@@ -28,5 +29,13 @@ const RoundsInfo = ({ label }) => (
     <StyledBreadcrumb component="a" label={label} />
   </Breadcrumbs>
 );
+
+RoundsInfo.defaultProps = {
+  label: '',
+};
+
+RoundsInfo.propTypes = {
+  label: PropTypes.string,
+};
 
 export default RoundsInfo;

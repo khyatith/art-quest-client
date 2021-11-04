@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import Rating from '@material-ui/lab/Rating';
 import Box from '@material-ui/core/Box';
 
@@ -14,3 +15,11 @@ export default function SimpleRating({ rating }) {
     )
   );
 }
+
+SimpleRating.defaultProps = {
+  rating: 3,
+};
+
+SimpleRating.propTypes = {
+  rating: PropTypes.number,
+};

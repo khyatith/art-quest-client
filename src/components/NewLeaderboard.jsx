@@ -1,17 +1,5 @@
 import React, { useEffect, useContext } from 'react';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
-// import Box from '@material-ui/core/Box';
-// import Drawer from '@material-ui/core/Drawer';
-// import Avatar from '@material-ui/core/Avatar';
-// import Toolbar from '@material-ui/core/Toolbar';
-// // import List from '@material-ui/core/List';
-// import Typography from '@material-ui/core/Typography';
-// import Divider from '@material-ui/core/Divider';
-// import ListItemText from '@material-ui/core/ListItemText';
-// import ListSubheader from '@material-ui/core/ListSubheader';
-// import ListItemAvatar from '@material-ui/core/ListItemAvatar';
-// import fontawesome from '@fortawesome/fontawesome';
-// import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import axios from 'axios';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -23,6 +11,7 @@ import Paper from '@material-ui/core/Paper';
 import leaderboardContext from '../global/leaderboardContext';
 import userContext from '../global/userContext';
 import { API_URL, TEAM_COLOR_MAP } from '../global/constants';
+import formatNumberToCurrency from '../global/helpers';
 
 const useStyles = makeStyles(() => ({
   avatar: {
@@ -99,10 +88,10 @@ export default function NewLeaderboard({ hasAuctionTimerEnded }) {
                     {teamName}
                   </StyledTableCell>
                   <StyledTableCell component="th" scope="row">
-                    {totalAmountByTeam[`${teamName}`]}
+                    {formatNumberToCurrency(parseFloat(totalAmountByTeam[`${teamName}`]))}
                   </StyledTableCell>
                   <StyledTableCell align="right">{teamResult.length}</StyledTableCell>
-                  <StyledTableCell align="right">{teamEfficiency[`${teamName}`]}</StyledTableCell>
+                  <StyledTableCell align="right">{formatNumberToCurrency(parseFloat(teamEfficiency[`${teamName}`]))}</StyledTableCell>
                 </TableRow>
               );
             })}
