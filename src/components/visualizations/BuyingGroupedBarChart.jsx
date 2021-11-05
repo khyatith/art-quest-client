@@ -32,14 +32,16 @@ const BuyingGroupedBarChart = (props) => {
 
   const parseDataForGroupChart = (results) => {
     const chart = {};
-    chart.labels = ['Debt', 'Efficiency'];
+    chart.labels = ['Total Paintings', 'Debt', 'Efficiency'];
     if (results) {
       const dataset = Object.entries(results).map(([key, value]) => {
         const teamName = key;
-        const { debt, efficiency } = value;
+        const { debt, efficiency, totalPaintings } = value;
+        const formattedDebt = debt ? parseInt(debt, 10) / 10000 : 0;
+        const formattedEfficiency = efficiency ? parseInt(efficiency, 10) / 10000 : 0;
         return {
           label: `${teamName}`,
-          data: [debt, efficiency],
+          data: [parseInt(totalPaintings, 10), formattedDebt, formattedEfficiency],
           backgroundColor: TEAM_COLOR_MAP[teamName],
           barThickness: 30,
         };
@@ -51,12 +53,15 @@ const BuyingGroupedBarChart = (props) => {
 
   useEffect(() => {
     if (leaderboardData && leaderboardData.totalAmountByTeam && leaderboardData.teamEfficiency && leaderboardData.leaderboard) {
-      const { totalAmountByTeam, teamEfficiency, leaderboard } = leaderboardData;
+      const {
+        totalAmountByTeam, teamEfficiency, leaderboard, totalPaintingsWonByTeams,
+      } = leaderboardData;
       const result = Object.entries(leaderboard).reduce((acc, entry) => {
         const teamName = entry[0];
         acc[teamName] = {
           debt: totalAmountByTeam[teamName],
           efficiency: teamEfficiency[teamName],
+          totalPaintings: totalPaintingsWonByTeams[teamName],
         };
         return acc;
       }, {});

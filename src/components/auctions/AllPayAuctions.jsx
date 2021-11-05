@@ -22,7 +22,6 @@ import RoundsInfo from '../RoundsInfo';
 import TeamInfo from '../TeamInfo';
 import leaderboardContext from '../../global/leaderboardContext';
 import auctionContext from '../../global/auctionContext';
-import BuyingBarChart from '../visualizations/BuyingBarChart';
 import BonusAuctionBanner from '../visualizations/BonusAuctionBanner';
 import { ALL_PAY_AUCTIONS_TEXT, API_URL } from '../../global/constants';
 import BuyingGroupedBarChart from '../visualizations/BuyingGroupedBarChart';
@@ -251,13 +250,13 @@ function AllPayAuctions({ totalNumberOfPaintings, getNextAuctionObj }) {
           <Grid item xs={7}>
             <NewLeaderboard hasAuctionTimerEnded={hasAuctionTimerEnded} />
           </Grid>
-          <Grid item xs={8}>
+          <Grid item xs={12}>
             { leaderboardData && leaderboardData.totalAmountByTeam
               && (
                 <BuyingGroupedBarChart leaderboardData={leaderboardData} />
               )}
           </Grid>
-          <Grid item xs={7}>
+          {/* <Grid item xs={7}>
             { leaderboardData && leaderboardData.totalPaintingsWonByTeams
             && (
               <BuyingBarChart
@@ -266,7 +265,7 @@ function AllPayAuctions({ totalNumberOfPaintings, getNextAuctionObj }) {
                 labelDesc="total paintings"
               />
             )}
-          </Grid>
+          </Grid> */}
         </Grid>
       </Grid>
     </div>

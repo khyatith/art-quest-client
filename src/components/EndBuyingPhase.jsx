@@ -10,6 +10,7 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
+import Grid from '@material-ui/core/Grid';
 import userContext from '../global/userContext';
 import Header from './Header';
 import { API_URL, TEAM_COLOR_MAP } from '../global/constants';
@@ -36,11 +37,12 @@ const useStyles = makeStyles((theme) => ({
   },
   paper: {
     maxWidth: 700,
-    margin: '0 auto',
   },
   toptwoteams: {
     maxWidth: 300,
-    margin: '0 auto',
+  },
+  maingrid: {
+    padding: '20px 40px 20px 40px',
   },
 }));
 
@@ -63,6 +65,7 @@ function EndBuyingPhase() {
   const [topTwoTeams, setTopTwoTeams] = useState({});
   const [totalDebtByTeam, setTotalDebtByTeam] = useState({});
   const [sortedTeamsByPaintingsWon, setSortedTeamsByPaintingsWon] = useState({});
+  const [avgPaintingQualityByTeam, setAvgPaintingQualityByTeam] = useState({});
   const [showWinner, setShowWinner] = useState(false);
   const { player } = useContext(userContext);
 
@@ -75,6 +78,9 @@ function EndBuyingPhase() {
     }
     if (data && data.winner) {
       setGameWinner(data.winner);
+    }
+    if (data && data.avgPaintingQualityByTeam && Object.keys(data.avgPaintingQualityByTeam).length !== 0) {
+      setAvgPaintingQualityByTeam(data.avgPaintingQualityByTeam);
     }
     if (data && data.topTwo) {
       setTopTwoTeams(data.topTwo);
@@ -105,29 +111,28 @@ function EndBuyingPhase() {
     });
     return (
       <>
-        <h2>Results</h2>
+        <h2 style={{ textAlign: 'center' }}>All teams</h2>
         <TableContainer className={classes.paper} component={Paper}>
           <Table className={classes.table} aria-label="customized table">
             <TableHead>
               <TableRow>
-                <StyledTableCell>Rank</StyledTableCell>
                 <StyledTableCell>Team</StyledTableCell>
-                <StyledTableCell align="right">Debt</StyledTableCell>
                 <StyledTableCell align="right">Total paintings</StyledTableCell>
+                { Object.keys(avgPaintingQualityByTeam).length > 0 && <StyledTableCell align="right">Average painting quality</StyledTableCell>}
+                <StyledTableCell align="right">Debt</StyledTableCell>
                 <StyledTableCell align="right">Efficiency</StyledTableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {tableData.map((row, index) => (
+              {tableData.map((row) => (
                 <TableRow key={row.key} style={{ backgroundColor: `${TEAM_COLOR_MAP[row.key]}` }}>
-                  <StyledTableCell align="right">
-                    {parseInt(index, 10) + 1}
-                  </StyledTableCell>
                   <StyledTableCell component="th" scope="row">
                     {row.teamName}
                   </StyledTableCell>
-                  <StyledTableCell align="right">{formatNumberToCurrency(parseFloat(row.debt))}</StyledTableCell>
                   <StyledTableCell align="right">{row.totalPaintings}</StyledTableCell>
+                  { Object.keys(avgPaintingQualityByTeam).length > 0
+                  && <StyledTableCell align="right">{ parseFloat(avgPaintingQualityByTeam[row.teamName]) }</StyledTableCell>}
+                  <StyledTableCell align="right">{formatNumberToCurrency(parseFloat(row.debt))}</StyledTableCell>
                   <StyledTableCell align="right">{formatNumberToCurrency(parseFloat(row.efficiency))}</StyledTableCell>
                 </TableRow>
               ))}
@@ -166,7 +171,7 @@ function EndBuyingPhase() {
 
   const renderTopTwoTeams = () => (
     <>
-      <h3>Top 2 teams are </h3>
+      <h2 style={{ textAlign: 'center' }}>Top 2 teams</h2>
       <TableContainer className={classes.toptwoteams} component={Paper}>
         <Table className={classes.toptwoteams} aria-label="customized table">
           <TableBody>
@@ -188,9 +193,18 @@ function EndBuyingPhase() {
   return (
     <>
       <Header />
+      <Grid className={classes.maingrid} container spacing={2}>
+        <Grid item xs={8}>
+          {renderLeaderboardData()}
+        </Grid>
+        <Grid item xs={2}>
+          <span style={{ fontSize: '50px' }}>&#8594;</span>
+        </Grid>
+        <Grid item xs={2}>
+          {renderTopTwoTeams()}
+        </Grid>
+      </Grid>
       <div style={{ textAlign: 'center', marginTop: '40px' }}>
-        {renderLeaderboardData()}
-        {renderTopTwoTeams()}
         {!showWinner && <h2>And the winner is ....</h2>}
         {showWinner && showTeamWinner()}
         <h3>Your art collection</h3>
