@@ -21,7 +21,6 @@ import SimpleRating from '../Rating';
 import RoundsInfo from '../RoundsInfo';
 import TeamInfo from '../TeamInfo';
 import leaderboardContext from '../../global/leaderboardContext';
-import BuyingBarChart from '../visualizations/BuyingBarChart';
 import auctionContext from '../../global/auctionContext';
 import BuyingGroupedBarChart from '../visualizations/BuyingGroupedBarChart';
 import formatNumberToCurrency from '../../global/helpers';
@@ -291,13 +290,13 @@ function EnglishAuction({
           <Grid item xs={10}>
             <NewLeaderboard hasAuctionTimerEnded={hasAuctionTimerEnded} />
           </Grid>
-          <Grid item xs={8}>
+          <Grid item xs={12}>
             { leaderboardData && leaderboardData.totalAmountByTeam
               && (
                 <BuyingGroupedBarChart leaderboardData={leaderboardData} />
               )}
           </Grid>
-          <Grid item xs={7}>
+          {/* <Grid item xs={7}>
             { leaderboardData && leaderboardData.totalPaintingsWonByTeams
             && (
               <BuyingBarChart
@@ -306,7 +305,7 @@ function EnglishAuction({
                 labelDesc="total paintings"
               />
             )}
-          </Grid>
+          </Grid> */}
         </Grid>
       </Grid>
     </div>

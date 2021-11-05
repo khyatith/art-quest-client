@@ -73,8 +73,8 @@ export default function NewLeaderboard({ hasAuctionTimerEnded }) {
           <TableHead>
             <TableRow>
               <StyledTableCell>Team</StyledTableCell>
-              <StyledTableCell>Debt</StyledTableCell>
               <StyledTableCell align="right">Total Paintings</StyledTableCell>
+              <StyledTableCell align="right">Debt</StyledTableCell>
               <StyledTableCell align="right">Efficiency</StyledTableCell>
             </TableRow>
           </TableHead>
@@ -87,10 +87,10 @@ export default function NewLeaderboard({ hasAuctionTimerEnded }) {
                   <StyledTableCell align="right">
                     {teamName}
                   </StyledTableCell>
+                  <StyledTableCell align="right">{teamResult.length}</StyledTableCell>
                   <StyledTableCell component="th" scope="row">
                     {formatNumberToCurrency(parseFloat(totalAmountByTeam[`${teamName}`]))}
                   </StyledTableCell>
-                  <StyledTableCell align="right">{teamResult.length}</StyledTableCell>
                   <StyledTableCell align="right">{formatNumberToCurrency(parseFloat(teamEfficiency[`${teamName}`]))}</StyledTableCell>
                 </TableRow>
               );
