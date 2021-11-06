@@ -92,7 +92,7 @@ function GameInstructions() {
           <ListItemIcon>
             <StarIcon style={{ color: '#76e246' }} />
           </ListItemIcon>
-          <ListItemText className={classes.listtext} primary="Spend your gold WISELY" />
+          <ListItemText className={classes.listtext} primary="Spend your cash WISELY" />
         </ListItem>
         <ListItem className={classes.listitem}>
           <ListItemIcon>

@@ -181,7 +181,7 @@ function FirstPriceSealedBid({
       <AppBar className={classes.appbar}>
         <Toolbar>
           <Typography variant="h6" className={classes.timercontent}>
-            Time Remaining in Auction:
+            Time Remaining in Auction
             {' '}
             {auctionTimer && auctionTimer.minutes}
             :
