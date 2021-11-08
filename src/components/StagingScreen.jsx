@@ -4,15 +4,11 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
-import InputLabel from '@material-ui/core/InputLabel';
-import FormControl from '@material-ui/core/FormControl';
 import TextField from '@material-ui/core/TextField';
-import Select from '@material-ui/core/Select';
 import { useHistory, useLocation } from 'react-router-dom';
 import { socket } from '../global/socket';
 import userContext from '../global/userContext';
 import Header from './Header';
-import { TEAM_DETAILS } from '../global/constants';
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -53,15 +49,6 @@ function StagingScreen() {
     history.push('/art-quest/instructions');
   };
 
-  const handleChange = (event) => {
-    const { value } = event.target;
-    const selectedTeam = TEAM_DETAILS.filter((team) => team.id === parseInt(value, 10))[0];
-    const teamColor = selectedTeam.color;
-    const teamName = selectedTeam.name;
-    setPlayer((prevValues) => ({ ...prevValues, teamName, teamColor }));
-    sessionStorage.setItem('user', JSON.stringify(player));
-  };
-
   const handleTeams = (event) => {
     const { value } = event.target;
     setNoOfTeams(value);
@@ -78,18 +65,6 @@ function StagingScreen() {
         <div>
           <h1 className={classes.form}>Your game code is: {location.pathname.substring(9, 29)}</h1>
           <h1 className={classes.form}>Your UID is: {player.playerId}</h1>
-          <FormControl variant="outlined" className={classes.form}>
-            <InputLabel htmlFor="outlined-age-native-simple">Team Colour</InputLabel>
-            <Select
-              native
-              onChange={handleChange}
-              label="teamColours">
-              <option aria-label="None" value="" />
-              {
-                TEAM_DETAILS.map((team) => (<option key={team.id} value={team.id}>{team.name}</option>))
-              }
-            </Select>
-          </FormControl>
         </div>
         <form>
           <Button className={classes.btnform} variant="contained" color="primary" onClick={handleClick}>
