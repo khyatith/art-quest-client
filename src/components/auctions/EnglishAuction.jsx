@@ -177,7 +177,6 @@ function EnglishAuction({
           bidTeam: previousBid.bidTeam,
           bidColor: previousBid.bidColor,
         };
-        // setPreviousBidDetails({ bidAmount: previousBid.bidAmount, bidTeam: previousBid.bidTeam, bidColor: previousBid.bidColor });
       }
     });
   });
