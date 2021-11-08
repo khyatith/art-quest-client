@@ -11,7 +11,7 @@ import Paper from '@material-ui/core/Paper';
 import leaderboardContext from '../global/leaderboardContext';
 import userContext from '../global/userContext';
 import { API_URL, TEAM_COLOR_MAP } from '../global/constants';
-import formatNumberToCurrency from '../global/helpers';
+import { formatNumberToCurrency } from '../global/helpers';
 
 const useStyles = makeStyles(() => ({
   avatar: {

@@ -1,6 +1,8 @@
 /* eslint-disable react/jsx-closing-bracket-location */
 /* eslint-disable react-perf/jsx-no-new-function-as-prop */
-import React, { useContext, useEffect, useState } from 'react';
+import React, {
+  useContext, useEffect, useState, useRef,
+} from 'react';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
@@ -25,7 +27,7 @@ import auctionContext from '../../global/auctionContext';
 import BonusAuctionBanner from '../visualizations/BonusAuctionBanner';
 import { ALL_PAY_AUCTIONS_TEXT, API_URL } from '../../global/constants';
 import BuyingGroupedBarChart from '../visualizations/BuyingGroupedBarChart';
-import formatNumberToCurrency from '../../global/helpers';
+import { formatNumberToCurrency, validateCurrentBid } from '../../global/helpers';
 
 const useStyles = makeStyles((theme) => ({
   media: {
@@ -78,10 +80,10 @@ const useStyles = makeStyles((theme) => ({
 
 function AllPayAuctions({ totalNumberOfPaintings, getNextAuctionObj }) {
   const classes = useStyles();
+  const bidInputRef = useRef();
   const [live, setLive] = useState(true);
   const { player } = useContext(userContext);
   const [auctionObj, setAuctionObj] = useState();
-  const [currentBid, setCurrentBid] = useState();
   const [auctionTimer, setAuctionTimer] = useState({});
   const [hasAuctionTimerEnded, setAuctionTimerEnded] = useState(false);
   const [bidAmtError, setBidAmtError] = useState();
@@ -152,8 +154,14 @@ function AllPayAuctions({ totalNumberOfPaintings, getNextAuctionObj }) {
   }, [player.teamName]);
 
   const setBidAmt = () => {
-    if (currentBid < auctionObj.originalValue) {
-      setBidAmtError(`Your bid should be more than ${currentBid}`);
+    const bidInput = bidInputRef.current.value;
+    const isValidCurrentBid = validateCurrentBid(bidInput);
+    if (!isValidCurrentBid) {
+      setBidAmtError('Your bid should be a valid number');
+      return;
+    }
+    if (bidInput < auctionObj.originalValue) {
+      setBidAmtError(`Your bid should be more than ${bidInput}`);
     } else {
       setBidAmtError(null);
       const bidInfo = {
@@ -161,7 +169,7 @@ function AllPayAuctions({ totalNumberOfPaintings, getNextAuctionObj }) {
         auctionId: auctionObj.id,
         paintingQuality: auctionObj.paintingQuality,
         auctionObj,
-        bidAmount: currentBid,
+        bidAmount: bidInput,
         bidAt: +new Date(),
         bidTeam: player.teamName,
         player,
@@ -169,10 +177,6 @@ function AllPayAuctions({ totalNumberOfPaintings, getNextAuctionObj }) {
       socket.emit('addNewBid', bidInfo);
       setLive(false);
     }
-  };
-
-  const setCurrentBidAmt = (e) => {
-    setCurrentBid(e.target.value);
   };
 
   return (
@@ -224,20 +228,25 @@ function AllPayAuctions({ totalNumberOfPaintings, getNextAuctionObj }) {
             <CardActions className={classes.cardactionsstyle}>
               <div>
                 <TextField
+                  inputRef={bidInputRef}
                   error={!!bidAmtError}
                   helperText={bidAmtError && bidAmtError}
                   className={classes.textfieldstyle}
                   size="small"
                   disabled={!live}
-                  type="number"
                   name="bidAmount"
                   placeholder="Enter your bid"
                   variant="outlined"
-                  onChange={setCurrentBidAmt}
                 />
                 <Button disabled={!live} variant="contained" color="secondary" onClick={setBidAmt} style={{ marginBottom: '10px' }}>
                   Bid
                 </Button>
+                { !live
+                  && (
+                  <p>
+                    * Your team has already bid. Results will be displayed after the auction ends.
+                  </p>
+                  )}
               </div>
             </CardActions>
           </Card>

@@ -1,12 +1,16 @@
 import React, { useContext } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
+import InputLabel from '@material-ui/core/InputLabel';
+import FormControl from '@material-ui/core/FormControl';
+import Select from '@material-ui/core/Select';
 import { Typography } from '@material-ui/core';
 import TextField from '@material-ui/core/TextField';
 import { useHistory } from 'react-router';
 import { socket } from '../global/socket';
 import userContext from '../global/userContext';
 import Header from './Header';
+import { TEAM_COLOR_MAP } from '../global/constants';
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -73,6 +77,14 @@ function LaunchScreen() {
     }
   };
 
+  const handleTeamSelect = (event) => {
+    const { value } = event.target;
+    const teamColor = TEAM_COLOR_MAP[value];
+    const teamName = value;
+    setPlayer((prevValues) => ({ ...prevValues, teamName, teamColor }));
+    // sessionStorage.setItem('user', JSON.stringify(player));
+  };
+
   const handleJoin = () => {
     if (sessionStorage.getItem('user') === null) {
       sessionStorage.setItem('user', JSON.stringify(player));
@@ -86,13 +98,26 @@ function LaunchScreen() {
       <Header />
       <div className={classes.root}>
         <TextField className={classes.form} name="playerName" label="Player Name" variant="outlined" onChange={handleChange} />
-        <Button className={classes.btnform} variant="contained" onClick={handleCreate}>
-          Create Game
-        </Button>
-        <Typography className={classes.form}>Or</Typography>
+        <FormControl variant="outlined" className={classes.form}>
+          <InputLabel htmlFor="outlined-age-native-simple">Team Colour</InputLabel>
+          <Select
+            native
+            onChange={handleTeamSelect}
+            label="teamColours"
+          >
+            <option aria-label="None" value="" />
+            {
+                Object.entries(TEAM_COLOR_MAP).map(([key]) => (<option key={key} value={key}>{key}</option>))
+              }
+          </Select>
+        </FormControl>
         <TextField className={classes.form} name="hostCode" label="Game Code" variant="outlined" onChange={handleChange} />
         <Button className={classes.btnform} variant="contained" onClick={handleJoin}>
           Join Game
+        </Button>
+        <Typography className={classes.form}>Or</Typography>
+        <Button className={classes.btnform} variant="contained" onClick={handleCreate}>
+          Create Game
         </Button>
       </div>
     </>

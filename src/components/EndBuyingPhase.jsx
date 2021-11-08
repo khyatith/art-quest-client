@@ -14,7 +14,7 @@ import Grid from '@material-ui/core/Grid';
 import userContext from '../global/userContext';
 import Header from './Header';
 import { API_URL, TEAM_COLOR_MAP } from '../global/constants';
-import formatNumberToCurrency from '../global/helpers';
+import { formatNumberToCurrency } from '../global/helpers';
 
 const useStyles = makeStyles((theme) => ({
   root: {

@@ -1,5 +1,7 @@
 /* eslint-disable react/jsx-one-expression-per-line */
-import React, { useContext, useEffect, useState } from 'react';
+import React, {
+  useContext, useEffect, useState, useRef,
+} from 'react';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
@@ -23,7 +25,7 @@ import TeamInfo from '../TeamInfo';
 import leaderboardContext from '../../global/leaderboardContext';
 import auctionContext from '../../global/auctionContext';
 import BuyingGroupedBarChart from '../visualizations/BuyingGroupedBarChart';
-import formatNumberToCurrency from '../../global/helpers';
+import { formatNumberToCurrency, validateCurrentBid } from '../../global/helpers';
 
 const useStyles = makeStyles((theme) => ({
   media: {
@@ -103,11 +105,11 @@ function EnglishAuction({
   totalNumberOfPaintings, getNextAuctionObj,
 }) {
   const classes = useStyles();
+  const bidInputRef = useRef();
+  const previousBidDetails = useRef();
   const { player } = useContext(userContext);
   const [auctionObj, setAuctionObj] = useState();
   const [auctionTimer, setAuctionTimer] = useState({});
-  const [currentBid, setCurrentBid] = useState();
-  const [previousBidDetails, setPreviousBidDetails] = useState();
   const [hasAuctionTimerEnded, setAuctionTimerEnded] = useState(false);
   const [bidAmtError, setBidAmtError] = useState();
   const { leaderboardData } = useContext(leaderboardContext);
@@ -164,25 +166,31 @@ function EnglishAuction({
     if (hasAuctionTimerEnded) {
       getNextAuctionObj(auctionObj.id);
     }
-  }, [hasAuctionTimerEnded]);
-
-  const setCurrentBidAmt = (e) => {
-    setCurrentBid(e.target.value);
-  };
+  }, [hasAuctionTimerEnded, auctionObj, getNextAuctionObj]);
 
   useEffect(() => {
     socket.on('setPreviousBid', (previousBid) => {
       setAuctionTimerEnded(false);
       if (previousBid) {
-        setPreviousBidDetails({ bidAmount: previousBid.bidAmount, bidTeam: previousBid.bidTeam, bidColor: previousBid.bidColor });
+        previousBidDetails.current = {
+          bidAmount: previousBid.bidAmount,
+          bidTeam: previousBid.bidTeam,
+          bidColor: previousBid.bidColor,
+        };
       }
     });
   });
 
   const setBidAmt = () => {
-    const prevBidAmt = previousBidDetails && previousBidDetails.bidAmount;
-    const desiredBid = parseInt(prevBidAmt, 10) + 5000;
-    if (prevBidAmt && currentBid < desiredBid) {
+    const bidInput = bidInputRef.current.value;
+    const isValidCurrentBid = validateCurrentBid(bidInput);
+    if (!isValidCurrentBid) {
+      setBidAmtError('Your bid should be a valid number');
+      return;
+    }
+    const prevBidAmt = previousBidDetails.current && previousBidDetails.current.bidAmount;
+    const desiredBid = prevBidAmt ? parseInt(prevBidAmt, 10) + 5000 : auctionObj.originalValue;
+    if (bidInput < desiredBid) {
       setBidAmtError(`Your bid should be more than ${desiredBid}`);
     } else {
       setBidAmtError(null);
@@ -192,7 +200,7 @@ function EnglishAuction({
         paintingQuality: auctionObj.paintingQuality,
         auctionObj,
         player,
-        bidAmount: currentBid,
+        bidAmount: bidInput,
         bidAt: +new Date(),
         bidTeam: player.teamName,
         bidColor: player.teamColor,
@@ -250,31 +258,42 @@ function EnglishAuction({
             <CardActions className={classes.cardactionsstyle}>
               <div>
                 <TextField
+                  inputRef={bidInputRef}
                   error={!!bidAmtError}
                   helperText={bidAmtError && bidAmtError}
                   className={classes.textfieldstyle}
                   size="small"
-                  type="number"
                   name="bidAmount"
                   placeholder="Enter your bid"
                   variant="outlined"
-                  onChange={setCurrentBidAmt}
+                  disabled={previousBidDetails.current && (previousBidDetails.current.bidTeam === player.teamName)}
                 />
-                <Button variant="contained" color="secondary" onClick={setBidAmt}>
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  onClick={setBidAmt}
+                  disabled={previousBidDetails.current && (previousBidDetails.current.bidTeam === player.teamName)}
+                >
                   Bid
                 </Button>
-                { previousBidDetails && previousBidDetails.bidAmount
+                { (previousBidDetails.current && previousBidDetails.current.bidAmount && (previousBidDetails.current.bidTeam !== player.teamName))
                   && (
                   <p>
-                    * Your bid cannot be less than {formatNumberToCurrency(parseInt(previousBidDetails.bidAmount, 10) + 5000)}
+                    * Your bid cannot be less than {formatNumberToCurrency(parseInt(previousBidDetails.current.bidAmount, 10) + 5000)}
+                  </p>
+                  )}
+                { (previousBidDetails.current && previousBidDetails.current.bidAmount && (previousBidDetails.current.bidTeam === player.teamName))
+                  && (
+                  <p>
+                    * Waiting for bids from other teams
                   </p>
                   )}
               </div>
               <div className={classes.bottomcontainer}>
-                {previousBidDetails && previousBidDetails.bidTeam && previousBidDetails.bidAmount ? (
-                  <div className={classes.lastbidcontainer} style={{ backgroundColor: `${previousBidDetails.bidColor}` }}>
-                    <p className={classes.lastbidby}>Last Bid By: {`Team ${previousBidDetails.bidTeam}`}</p>
-                    <p className={classes.lastbidamount}>Last Bid Amount: {formatNumberToCurrency(parseInt(previousBidDetails.bidAmount, 10))}</p>
+                {previousBidDetails.current && previousBidDetails.current.bidTeam && previousBidDetails.current.bidAmount ? (
+                  <div className={classes.lastbidcontainer} style={{ backgroundColor: `${previousBidDetails.current.bidColor}` }}>
+                    <p className={classes.lastbidby}>Last Bid By: {`Team ${previousBidDetails.current.bidTeam}`}</p>
+                    <p className={classes.lastbidamount}>Last Bid Amount: {formatNumberToCurrency(parseInt(previousBidDetails.current.bidAmount, 10))}</p>
                   </div>
                 ) : (
                   <div className={classes.lastbidcontainer}>
