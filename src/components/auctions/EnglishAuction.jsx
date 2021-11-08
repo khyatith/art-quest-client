@@ -106,13 +106,12 @@ function EnglishAuction({
 }) {
   const classes = useStyles();
   const bidInputRef = useRef();
+  const previousBidDetails = useRef();
   const { player } = useContext(userContext);
   const [auctionObj, setAuctionObj] = useState();
   const [auctionTimer, setAuctionTimer] = useState({});
-  const [previousBidDetails, setPreviousBidDetails] = useState();
   const [hasAuctionTimerEnded, setAuctionTimerEnded] = useState(false);
   const [bidAmtError, setBidAmtError] = useState();
-  const [isLive, setLive] = useState(true);
   const { leaderboardData } = useContext(leaderboardContext);
   const { currentAuctionData } = useContext(auctionContext);
 
@@ -173,13 +172,12 @@ function EnglishAuction({
     socket.on('setPreviousBid', (previousBid) => {
       setAuctionTimerEnded(false);
       if (previousBid) {
-        setPreviousBidDetails({ bidAmount: previousBid.bidAmount, bidTeam: previousBid.bidTeam, bidColor: previousBid.bidColor });
-        if (previousBid.bidTeam === player.teamName) {
-          console.log('inside live');
-          setLive(false);
-        } else {
-          setLive(true);
-        }
+        previousBidDetails.current = {
+          bidAmount: previousBid.bidAmount,
+          bidTeam: previousBid.bidTeam,
+          bidColor: previousBid.bidColor,
+        };
+        // setPreviousBidDetails({ bidAmount: previousBid.bidAmount, bidTeam: previousBid.bidTeam, bidColor: previousBid.bidColor });
       }
     });
   });
@@ -191,7 +189,7 @@ function EnglishAuction({
       setBidAmtError('Your bid should be a valid number');
       return;
     }
-    const prevBidAmt = previousBidDetails && previousBidDetails.bidAmount;
+    const prevBidAmt = previousBidDetails.current && previousBidDetails.current.bidAmount;
     const desiredBid = prevBidAmt ? parseInt(prevBidAmt, 10) + 5000 : auctionObj.originalValue;
     if (bidInput < desiredBid) {
       setBidAmtError(`Your bid should be more than ${desiredBid}`);
@@ -269,18 +267,23 @@ function EnglishAuction({
                   name="bidAmount"
                   placeholder="Enter your bid"
                   variant="outlined"
-                  disabled={!isLive}
+                  disabled={previousBidDetails.current && (previousBidDetails.current.bidTeam === player.teamName)}
                 />
-                <Button variant="contained" color="secondary" onClick={setBidAmt} disabled={!isLive}>
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  onClick={setBidAmt}
+                  disabled={previousBidDetails.current && (previousBidDetails.current.bidTeam === player.teamName)}
+                >
                   Bid
                 </Button>
-                { previousBidDetails && previousBidDetails.bidAmount && isLive
+                { (previousBidDetails.current && previousBidDetails.current.bidAmount && (previousBidDetails.current.bidTeam !== player.teamName))
                   && (
                   <p>
-                    * Your bid cannot be less than {formatNumberToCurrency(parseInt(previousBidDetails.bidAmount, 10) + 5000)}
+                    * Your bid cannot be less than {formatNumberToCurrency(parseInt(previousBidDetails.current.bidAmount, 10) + 5000)}
                   </p>
                   )}
-                { previousBidDetails && previousBidDetails.bidAmount && !isLive
+                { (previousBidDetails.current && previousBidDetails.current.bidAmount && (previousBidDetails.current.bidTeam === player.teamName))
                   && (
                   <p>
                     * Waiting for bids from other teams
@@ -288,10 +291,10 @@ function EnglishAuction({
                   )}
               </div>
               <div className={classes.bottomcontainer}>
-                {previousBidDetails && previousBidDetails.bidTeam && previousBidDetails.bidAmount ? (
-                  <div className={classes.lastbidcontainer} style={{ backgroundColor: `${previousBidDetails.bidColor}` }}>
-                    <p className={classes.lastbidby}>Last Bid By: {`Team ${previousBidDetails.bidTeam}`}</p>
-                    <p className={classes.lastbidamount}>Last Bid Amount: {formatNumberToCurrency(parseInt(previousBidDetails.bidAmount, 10))}</p>
+                {previousBidDetails.current && previousBidDetails.current.bidTeam && previousBidDetails.current.bidAmount ? (
+                  <div className={classes.lastbidcontainer} style={{ backgroundColor: `${previousBidDetails.current.bidColor}` }}>
+                    <p className={classes.lastbidby}>Last Bid By: {`Team ${previousBidDetails.current.bidTeam}`}</p>
+                    <p className={classes.lastbidamount}>Last Bid Amount: {formatNumberToCurrency(parseInt(previousBidDetails.current.bidAmount, 10))}</p>
                   </div>
                 ) : (
                   <div className={classes.lastbidcontainer}>
