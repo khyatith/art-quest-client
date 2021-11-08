@@ -1,4 +1,6 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, {
+  useEffect, useState, useContext, useCallback,
+} from 'react';
 import PropTypes from 'prop-types';
 import FirstPriceSealedBid from './auctions/FirstPriceSealedBid';
 import EnglishAuction from './auctions/EnglishAuction';
@@ -14,7 +16,7 @@ function LiveAuctions({ totalNumberOfPaintings, fromLP, allAuctions }) {
   const [isFromLP, getFromLP] = useState(fromLP);
   const { currentAuctionData, setCurrentAuctionData } = useContext(auctionContext);
 
-  const getNextAuctionObj = async (prevAuctionId) => {
+  const getNextAuctionObj = useCallback((prevAuctionId) => {
     const { artifacts } = allAuctionsObj && allAuctionsObj.auctions;
     let data;
     if (!hasEndedAuctions && !prevAuctionId) {
@@ -34,14 +36,14 @@ function LiveAuctions({ totalNumberOfPaintings, fromLP, allAuctions }) {
     } else if (!data) {
       setHasEndedAuctions(true);
     }
-  };
+  }, [hasEndedAuctions, setCurrentAuctionData, allAuctionsObj]);
 
   useEffect(() => {
     if (isFromLP) {
       getNextAuctionObj();
       getFromLP(false);
     }
-  }, []);
+  }, [isFromLP, getNextAuctionObj]);
 
   const loadAuction = () => {
     const { auctionType } = currentAuctionData && currentAuctionData.currentAuctionObj;
