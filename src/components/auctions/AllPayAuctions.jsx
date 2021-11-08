@@ -244,7 +244,7 @@ function AllPayAuctions({ totalNumberOfPaintings, getNextAuctionObj }) {
                 { !live
                   && (
                   <p>
-                    * Results will be displayed after the auction ends.
+                    * Your team has already bid. Results will be displayed after the auction ends.
                   </p>
                   )}
               </div>
