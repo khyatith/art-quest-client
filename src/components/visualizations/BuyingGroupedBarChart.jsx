@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Bar } from 'react-chartjs-2';
 import { TEAM_COLOR_MAP } from '../../global/constants';
+import load from '../../assets/load.webp';
 
 const options = {
   responsive: true,
@@ -76,7 +77,7 @@ const BuyingGroupedBarChart = (props) => {
   }, [leaderboardData]);
 
   if (loading) {
-    return (<div>Nothing Just Loading</div>);
+    return (<div style={{marginTop: '12%', marginLeft: '43%'}}> <img src={load} alt="loading..." /> </div>);
   }
 
   return (

@@ -12,6 +12,7 @@ import userContext from '../global/userContext';
 import LiveAuctions from './LiveAuctions';
 import Header from './Header';
 import { socket } from '../global/socket';
+import load from '../assets/load.webp'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -168,7 +169,7 @@ function LandingPage() {
 
   const renderArtifacts = () => {
     if (JSON.parse(sessionStorage.getItem('allAuction')) === null) {
-      return (<div>Loading</div>);
+      return (<div style={{marginTop: '12%', marginLeft: '43%'}}> <img src={load} alt="loading..." /> </div>);
     }
     const { auctions } = JSON.parse(sessionStorage.getItem('allAuction'));
     const imageGalleryArr = auctions.artifacts.reduce((acc, item) => {
