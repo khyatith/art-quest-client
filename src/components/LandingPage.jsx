@@ -8,7 +8,6 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import ImageGallery from 'react-image-gallery';
 import axios from 'axios';
-import { API_URL } from '../global/constants';
 import userContext from '../global/userContext';
 import LiveAuctions from './LiveAuctions';
 import Header from './Header';
@@ -106,11 +105,6 @@ function LandingPage() {
   const [totalNumberOfPaintings, setTotalNumberOfPaintings] = useState();
 
   // states
-  const [gameState, setGameState] = useState({
-    auctions: {
-      artifacts: [],
-    },
-  });
 
   const [isGalleryFullScreen, setIsGalleryFullscreen] = useState(false);
   const [hasLandingPageTimerEnded, setHasLandingPageTimerEnded] = useState(false);
@@ -139,7 +133,8 @@ function LandingPage() {
   // hooks and methods
   useEffect(() => {
     async function fetchTimerValue() {
-      const { data } = await axios.get(`${API_URL}/buying/timer/${player.hostCode}`);
+      const sesStr = JSON.parse(sessionStorage.getItem('user'));
+      const { data } = await axios.get(`http://localhost:3001/buying/timer/${sesStr.hostCode}`);
       setLandingPageTimerValue(data.landingPageTimerValue);
     }
     if (Object.keys(landingPageTimerValue).length === 0) {
@@ -156,10 +151,9 @@ function LandingPage() {
   });
 
   useEffect(() => {
-    socket.on('gameState', (newGameState) => {
-      setGameState(newGameState);
-      setTotalNumberOfPaintings(newGameState.auctions.artifacts.length);
-    });
+    if (JSON.parse(sessionStorage.getItem('allAuction')) !== null) {
+      setTotalNumberOfPaintings(JSON.parse(sessionStorage.getItem('allAuction')).auctions.artifacts.length);
+    }
   }, []);
 
   useEffect(() => {
@@ -173,7 +167,10 @@ function LandingPage() {
   };
 
   const renderArtifacts = () => {
-    const { auctions } = gameState;
+    if (JSON.parse(sessionStorage.getItem('allAuction')) === null) {
+      return (<div>Loading</div>);
+    }
+    const { auctions } = JSON.parse(sessionStorage.getItem('allAuction'));
     const imageGalleryArr = auctions.artifacts.reduce((acc, item) => {
       const {
         imageURL, artist, name,
@@ -201,7 +198,7 @@ function LandingPage() {
       {
         // eslint-disable-next-line no-nested-ternary
         hasLandingPageTimerEnded
-          ? <LiveAuctions totalNumberOfPaintings={totalNumberOfPaintings} allAuctions={gameState} fromLP />
+          ? <LiveAuctions totalNumberOfPaintings={totalNumberOfPaintings} allAuctions={JSON.parse(sessionStorage.getItem('allAuction'))} fromLP />
           : (
             <div>
               <Header />
@@ -214,20 +211,20 @@ function LandingPage() {
                     :
                     {landingPageTimerValue && landingPageTimerValue.seconds}
                   </Typography>
-                  { player
-              && (
-              <div className={classes.playerdiv}>
-                <p>
-                  {player.playerName}
-                  , Team
-                  {' '}
-                  {player.teamName}
-                  ,
-                  {' '}
-                  {player.playerId}
-                </p>
-              </div>
-              )}
+                  {player
+                    && (
+                      <div className={classes.playerdiv}>
+                        <p>
+                          {JSON.parse(sessionStorage.getItem('user')).playerName}
+                          , Team
+                          {' '}
+                          {JSON.parse(sessionStorage.getItem('user')).teamName}
+                          ,
+                          {' '}
+                          {JSON.parse(sessionStorage.getItem('user')).playerId}
+                        </p>
+                      </div>
+                    )}
                 </Toolbar>
               </AppBar>
               <Typography variant="subtitle1" className={classes.titlecontent}>

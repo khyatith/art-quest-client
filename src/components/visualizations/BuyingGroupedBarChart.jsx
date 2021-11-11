@@ -29,6 +29,7 @@ const options = {
 const BuyingGroupedBarChart = (props) => {
   const { leaderboardData } = props;
   const [barChartData, setBarChartData] = useState();
+  const [loading, setLoading] = useState(true);
 
   const parseDataForGroupChart = (results) => {
     const chart = {};
@@ -49,6 +50,11 @@ const BuyingGroupedBarChart = (props) => {
       chart.datasets = dataset;
       setBarChartData(chart);
     }
+    if (barChartData === undefined) {
+      setLoading(true);
+    } else {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -68,6 +74,10 @@ const BuyingGroupedBarChart = (props) => {
       parseDataForGroupChart(result);
     }
   }, [leaderboardData]);
+
+  if (loading) {
+    return (<div>Nothing Just Loading</div>);
+  }
 
   return (
     <div style={{ width: '500px', marginTop: '30px' }}>

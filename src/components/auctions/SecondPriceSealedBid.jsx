@@ -16,7 +16,6 @@ import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import axios from 'axios';
 import Grid from '@material-ui/core/Grid';
-import userContext from '../../global/userContext';
 import { socket } from '../../global/socket';
 import NewLeaderboard from '../NewLeaderboard';
 import SimpleRating from '../Rating';
@@ -28,6 +27,7 @@ import { SECOND_PRICED_SEALED_BID_TEXT, API_URL } from '../../global/constants';
 import auctionContext from '../../global/auctionContext';
 import BuyingGroupedBarChart from '../visualizations/BuyingGroupedBarChart';
 import { formatNumberToCurrency, validateCurrentBid } from '../../global/helpers';
+import useSessionStorage from '../../hooks/useSessionStorage';
 
 const useStyles = makeStyles((theme) => ({
   media: {
@@ -83,7 +83,7 @@ function SecondPriceSealedBid({
   const classes = useStyles();
   const bidInputRef = useRef();
   const [live, setLive] = useState(false);
-  const { player } = useContext(userContext);
+  const player = JSON.parse(sessionStorage.getItem('user'));
   const [auctionObj, setAuctionObj] = useState();
   const [auctionTimer, setAuctionTimer] = useState({});
   const [hasAuctionTimerEnded, setAuctionTimerEnded] = useState(false);
@@ -118,6 +118,7 @@ function SecondPriceSealedBid({
       setAuctionTimerEnded(false);
       setLive(true);
       setAuctionObj(currentAuctionData.currentAuctionObj);
+      setAuctionTimerEnded(currentAuctionData.currentAuctionObj.hasAuctionTimerEnded);
       setBidAmtError(null);
     }
   }, [currentAuctionData]);
@@ -142,6 +143,9 @@ function SecondPriceSealedBid({
 
   useEffect(() => {
     if (hasAuctionTimerEnded) {
+      let val = JSON.parse(sessionStorage.getItem('allAuction'));
+      val.auctions.artifacts[auctionObj.id-1].hasAuctionTimerEnded = true;
+      sessionStorage.setItem('allAuction', JSON.stringify(val));
       getNextAuctionObj(auctionObj.id);
     }
   }, [hasAuctionTimerEnded]);
@@ -157,6 +161,7 @@ function SecondPriceSealedBid({
   const setBidAmt = () => {
     const bidInput = bidInputRef.current.value;
     const isValidCurrentBid = validateCurrentBid(bidInput);
+    console.log(player);
     if (!isValidCurrentBid) {
       setBidAmtError('Your bid should be a valid number');
       return;

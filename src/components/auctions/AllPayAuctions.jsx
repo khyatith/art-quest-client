@@ -16,7 +16,6 @@ import { Typography, TextField } from '@material-ui/core';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import axios from 'axios';
-import userContext from '../../global/userContext';
 import { socket } from '../../global/socket';
 import NewLeaderboard from '../NewLeaderboard';
 import SimpleRating from '../Rating';
@@ -28,6 +27,7 @@ import BonusAuctionBanner from '../visualizations/BonusAuctionBanner';
 import { ALL_PAY_AUCTIONS_TEXT, API_URL } from '../../global/constants';
 import BuyingGroupedBarChart from '../visualizations/BuyingGroupedBarChart';
 import { formatNumberToCurrency, validateCurrentBid } from '../../global/helpers';
+import useSessionStorage from '../../hooks/useSessionStorage';
 
 const useStyles = makeStyles((theme) => ({
   media: {
@@ -82,7 +82,7 @@ function AllPayAuctions({ totalNumberOfPaintings, getNextAuctionObj }) {
   const classes = useStyles();
   const bidInputRef = useRef();
   const [live, setLive] = useState(true);
-  const { player } = useContext(userContext);
+  const player = JSON.parse(sessionStorage.getItem('user'));
   const [auctionObj, setAuctionObj] = useState();
   const [auctionTimer, setAuctionTimer] = useState({});
   const [hasAuctionTimerEnded, setAuctionTimerEnded] = useState(false);
@@ -117,6 +117,8 @@ function AllPayAuctions({ totalNumberOfPaintings, getNextAuctionObj }) {
       setAuctionTimerEnded(false);
       setLive(true);
       setAuctionObj(currentAuctionData.currentAuctionObj);
+      console.log(currentAuctionData.currentAuctionObj);
+      setAuctionTimerEnded(currentAuctionData.currentAuctionObj.hasAuctionTimerEnded);
       setBidAmtError(null);
     }
   }, [currentAuctionData]);
@@ -141,6 +143,9 @@ function AllPayAuctions({ totalNumberOfPaintings, getNextAuctionObj }) {
 
   useEffect(() => {
     if (hasAuctionTimerEnded) {
+      let val = JSON.parse(sessionStorage.getItem('allAuction'));
+      val.auctions.artifacts[auctionObj.id-1].hasAuctionTimerEnded = true;
+      sessionStorage.setItem('allAuction', JSON.stringify(val));
       getNextAuctionObj(auctionObj.id);
     }
   }, [hasAuctionTimerEnded]);
@@ -155,6 +160,7 @@ function AllPayAuctions({ totalNumberOfPaintings, getNextAuctionObj }) {
 
   const setBidAmt = () => {
     const bidInput = bidInputRef.current.value;
+    console.log(player);
     const isValidCurrentBid = validateCurrentBid(bidInput);
     if (!isValidCurrentBid) {
       setBidAmtError('Your bid should be a valid number');
@@ -174,6 +180,7 @@ function AllPayAuctions({ totalNumberOfPaintings, getNextAuctionObj }) {
         bidTeam: player.teamName,
         player,
       };
+      console.log(bidInfo);
       socket.emit('addNewBid', bidInfo);
       setLive(false);
     }
@@ -239,7 +246,7 @@ function AllPayAuctions({ totalNumberOfPaintings, getNextAuctionObj }) {
                   variant="outlined"
                 />
                 <Button disabled={!live} variant="contained" color="secondary" onClick={setBidAmt} style={{ marginBottom: '10px' }}>
-                  Bid
+                  Bi
                 </Button>
                 { !live
                   && (

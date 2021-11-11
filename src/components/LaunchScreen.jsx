@@ -1,18 +1,38 @@
-import React, { useContext } from 'react';
+import React, { useEffect, useContext } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import InputLabel from '@material-ui/core/InputLabel';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
-import { Typography } from '@material-ui/core';
+import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
 import { useHistory } from 'react-router';
 import { socket } from '../global/socket';
 import userContext from '../global/userContext';
-import Header from './Header';
 import { TEAM_COLOR_MAP } from '../global/constants';
+import AppBar from '@material-ui/core/AppBar';
+import Toolbar from '@material-ui/core/Toolbar';
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
+  grow: {
+    flexGrow: 1,
+  },
+  title: {
+    display: 'none',
+    margin: '0 auto',
+    fontWeight: '700',
+    color: '#76e246',
+    [theme.breakpoints.up('sm')]: {
+      display: 'block',
+    },
+  },
+  playerdiv: {
+    fontWeight: 700,
+    color: '#76e246', // green color
+  },
+  appbar: {
+    background: '#051207', // black color
+  },
   root: {
     width: 300,
     padding: 100,
@@ -41,6 +61,12 @@ function LaunchScreen() {
     socket.emit('createRoom', JSON.stringify(player));
     history.push(`/staging/${player.playerId}`);
   };
+
+  useEffect(() => {
+    socket.on('gameState', (newGameState) => {
+      sessionStorage.setItem('allAuction', JSON.stringify(newGameState));
+    });
+  }, []);
 
   function getRandomString(length) {
     const randomChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -95,7 +121,15 @@ function LaunchScreen() {
 
   return (
     <>
-      <Header />
+      <div className={classes.grow}>
+        <AppBar className={classes.appbar} position="static">
+          <Toolbar>
+            <Typography variant="h6" className={classes.title}>
+              ART QUEST
+            </Typography>
+          </Toolbar>
+        </AppBar>
+      </div>
       <div className={classes.root}>
         <TextField className={classes.form} name="playerName" label="Player Name" variant="outlined" onChange={handleChange} />
         <FormControl variant="outlined" className={classes.form}>
@@ -107,8 +141,8 @@ function LaunchScreen() {
           >
             <option aria-label="None" value="" />
             {
-                Object.entries(TEAM_COLOR_MAP).map(([key]) => (<option key={key} value={key}>{key}</option>))
-              }
+              Object.entries(TEAM_COLOR_MAP).map(([key]) => (<option key={key} value={key}>{key}</option>))
+            }
           </Select>
         </FormControl>
         <TextField className={classes.form} name="hostCode" label="Game Code" variant="outlined" onChange={handleChange} />

@@ -12,7 +12,7 @@ import useSessionStorage from '../hooks/useSessionStorage';
 
 function LiveAuctions({ totalNumberOfPaintings, fromLP, allAuctions }) {
   const [hasEndedAuctions, setHasEndedAuctions] = useState(false);
-  const [allAuctionsObj] = useSessionStorage('allAuctions', allAuctions);
+  const allAuctionsObj = useSessionStorage('allAuction')[0];
   const [isFromLP, getFromLP] = useState(fromLP);
   const { currentAuctionData, setCurrentAuctionData } = useContext(auctionContext);
 

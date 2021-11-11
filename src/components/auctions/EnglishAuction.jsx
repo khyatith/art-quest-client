@@ -107,7 +107,7 @@ function EnglishAuction({
   const classes = useStyles();
   const bidInputRef = useRef();
   const previousBidDetails = useRef();
-  const { player } = useContext(userContext);
+  const player = JSON.parse(sessionStorage.getItem('user'));
   const [auctionObj, setAuctionObj] = useState();
   const [auctionTimer, setAuctionTimer] = useState({});
   const [hasAuctionTimerEnded, setAuctionTimerEnded] = useState(false);
@@ -140,6 +140,7 @@ function EnglishAuction({
     if (currentAuctionData && currentAuctionData.currentAuctionObj) {
       setAuctionTimerEnded(false);
       setAuctionObj(currentAuctionData.currentAuctionObj);
+      setAuctionTimerEnded(currentAuctionData.currentAuctionObj.hasAuctionTimerEnded);
       setBidAmtError(null);
     }
   }, [currentAuctionData]);
@@ -164,6 +165,9 @@ function EnglishAuction({
 
   useEffect(() => {
     if (hasAuctionTimerEnded) {
+      let val = JSON.parse(sessionStorage.getItem('allAuction'));
+      val.auctions.artifacts[auctionObj.id-1].hasAuctionTimerEnded = true;
+      sessionStorage.setItem('allAuction', JSON.stringify(val));
       getNextAuctionObj(auctionObj.id);
     }
   }, [hasAuctionTimerEnded, auctionObj, getNextAuctionObj]);
@@ -184,6 +188,7 @@ function EnglishAuction({
   const setBidAmt = () => {
     const bidInput = bidInputRef.current.value;
     const isValidCurrentBid = validateCurrentBid(bidInput);
+    console.log(player);
     if (!isValidCurrentBid) {
       setBidAmtError('Your bid should be a valid number');
       return;
@@ -205,6 +210,7 @@ function EnglishAuction({
         bidTeam: player.teamName,
         bidColor: player.teamColor,
       };
+      console.log(bidInfo);
       socket.emit('addNewBid', bidInfo);
     }
   };

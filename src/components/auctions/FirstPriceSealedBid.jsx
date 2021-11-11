@@ -83,7 +83,7 @@ function FirstPriceSealedBid({
   const classes = useStyles();
   const bidInputRef = useRef();
   const [live, setLive] = useState(false);
-  const { player } = useContext(userContext);
+  const player = JSON.parse(sessionStorage.getItem('user'));
   const [auctionObj, setAuctionObj] = useState();
   const [auctionTimer, setAuctionTimer] = useState({});
   const [hasAuctionTimerEnded, setAuctionTimerEnded] = useState(false);
@@ -118,6 +118,8 @@ function FirstPriceSealedBid({
       setAuctionTimerEnded(false);
       setLive(true);
       setAuctionObj(currentAuctionData.currentAuctionObj);
+      console.log(currentAuctionData.currentAuctionObj);
+      setAuctionTimerEnded(currentAuctionData.currentAuctionObj.hasAuctionTimerEnded);
       setBidAmtError(null);
     }
   }, [currentAuctionData]);
@@ -142,6 +144,9 @@ function FirstPriceSealedBid({
 
   useEffect(() => {
     if (hasAuctionTimerEnded) {
+      let val = JSON.parse(sessionStorage.getItem('allAuction'));
+      val.auctions.artifacts[auctionObj.id-1].hasAuctionTimerEnded = true;
+      sessionStorage.setItem('allAuction', JSON.stringify(val));
       getNextAuctionObj(auctionObj.id);
     }
   }, [hasAuctionTimerEnded]);
@@ -157,6 +162,7 @@ function FirstPriceSealedBid({
   const setBidAmt = () => {
     const bidInput = bidInputRef.current.value;
     const isValidCurrentBid = validateCurrentBid(bidInput);
+    console.log(player);
     if (!isValidCurrentBid) {
       setBidAmtError('Your bid should be a valid number');
       return;
@@ -175,6 +181,7 @@ function FirstPriceSealedBid({
         bidTeam: player.teamName,
         player,
       };
+      console.log(bidInfo);
       socket.emit('addNewBid', bidInfo);
     }
   };

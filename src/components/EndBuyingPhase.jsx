@@ -11,10 +11,10 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
-import userContext from '../global/userContext';
 import Header from './Header';
 import { API_URL, TEAM_COLOR_MAP } from '../global/constants';
 import { formatNumberToCurrency } from '../global/helpers';
+import useSessionStorage from '../hooks/useSessionStorage';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -67,7 +67,8 @@ function EndBuyingPhase() {
   const [sortedTeamsByPaintingsWon, setSortedTeamsByPaintingsWon] = useState({});
   const [avgPaintingQualityByTeam, setAvgPaintingQualityByTeam] = useState({});
   const [showWinner, setShowWinner] = useState(false);
-  const { player } = useContext(userContext);
+  const player = useSessionStorage('user')[0];
+  console.log(player);
 
   const getWinner = async () => {
     const { data } = await axios.get(`${API_URL}/buying/getWinner/${player.hostCode}`);

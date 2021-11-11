@@ -68,7 +68,8 @@ export default function LeaderBoard({ hasAuctionTimerEnded }) {
 
   useEffect(() => {
     async function fetchLeaderboard() {
-      const { data } = await axios.get(`${API_URL}/buying/getResults/${player.hostCode}`);
+      const sesStr = JSON.parse(sessionStorage.getItem('user'));
+      const { data } = await axios.get(`${API_URL}/buying/getResults/${sesStr.hostCode}`);
       setLeaderboardData((prevValues) => ({
         ...prevValues,
         ...data,

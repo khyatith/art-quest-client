@@ -70,10 +70,13 @@ function GameInstructions({ playersJoinedInfo }) {
   };
 
   useEffect(() => {
+    console.log(playersJoinedInfo);
     if (playersJoinedInfo) {
       const { numberOfPlayers, playersJoined } = playersJoinedInfo;
+      console.log(numberOfPlayers);
+      console.log(playersJoined);
       if (numberOfPlayers === (playersJoined - 1)) {
-        setTimeout(() => startGame(), 5000);
+        setTimeout(() => startGame(), 1);
       }
     }
   }, [playersJoinedInfo]);
