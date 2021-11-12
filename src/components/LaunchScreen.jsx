@@ -1,4 +1,5 @@
 import React, { useEffect, useContext } from 'react';
+import axios from 'axios';
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import InputLabel from '@material-ui/core/InputLabel';
@@ -11,7 +12,8 @@ import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import { socket } from '../global/socket';
 import userContext from '../global/userContext';
-import { TEAM_COLOR_MAP } from '../global/constants';
+import Header from './Header';
+import { TEAM_COLOR_MAP, API_URL } from '../global/constants';
 
 const useStyles = makeStyles((theme) => ({
   grow: {
@@ -68,15 +70,9 @@ function LaunchScreen() {
     });
   }, []);
 
-  function getRandomString(length) {
-    const randomChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    let result = '';
-    // eslint-disable-next-line no-plusplus
-    for (let i = 0; i < length; i++) {
-      result += randomChars.charAt(Math.floor(Math.random() * randomChars.length));
-    }
-    return result;
-  }
+  const getUID = async () => {
+    await axios.get(`${API_URL}/getUID/`);
+  };
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -86,7 +82,7 @@ function LaunchScreen() {
         [name]: value,
       }));
       if (player.playerId === '') {
-        const uid = getRandomString(6);
+        const uid = getUID();
         setPlayer((prevValues) => ({
           ...prevValues,
           playerId: uid,
