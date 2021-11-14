@@ -1,9 +1,9 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
-import userContext from '../global/userContext';
+import useSessionStorage from '../hooks/useSessionStorage';
 
 const useStyles = makeStyles((theme) => ({
   grow: {
@@ -29,7 +29,7 @@ const useStyles = makeStyles((theme) => ({
 
 function Header() {
   const classes = useStyles();
-  const { player } = useContext(userContext);
+  const player = useSessionStorage('user')[0];
   return (
     <div className={classes.grow}>
       <AppBar className={classes.appbar} position="static">

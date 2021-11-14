@@ -70,9 +70,14 @@ const BuyingGroupedBarChart = (props) => {
   }, [leaderboardData]);
 
   return (
-    <div style={{ width: '500px', marginTop: '30px' }}>
-      <Bar data={barChartData} options={options} />
-    </div>
+    <>
+      { barChartData
+        && (
+        <div style={{ width: '500px', marginTop: '30px' }}>
+          <Bar data={barChartData} options={options} />
+        </div>
+        )}
+    </>
   );
 };
 

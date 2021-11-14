@@ -16,7 +16,6 @@ import { Typography, TextField } from '@material-ui/core';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import axios from 'axios';
-import userContext from '../../global/userContext';
 import { socket } from '../../global/socket';
 import NewLeaderboard from '../NewLeaderboard';
 import SimpleRating from '../Rating';
@@ -82,7 +81,7 @@ function AllPayAuctions({ totalNumberOfPaintings, getNextAuctionObj }) {
   const classes = useStyles();
   const bidInputRef = useRef();
   const [live, setLive] = useState(true);
-  const { player } = useContext(userContext);
+  const player = JSON.parse(sessionStorage.getItem('user'));
   const [auctionObj, setAuctionObj] = useState();
   const [auctionTimer, setAuctionTimer] = useState({});
   const [hasAuctionTimerEnded, setAuctionTimerEnded] = useState(false);
@@ -117,6 +116,7 @@ function AllPayAuctions({ totalNumberOfPaintings, getNextAuctionObj }) {
       setAuctionTimerEnded(false);
       setLive(true);
       setAuctionObj(currentAuctionData.currentAuctionObj);
+      setAuctionTimerEnded(currentAuctionData.currentAuctionObj.hasAuctionTimerEnded);
       setBidAmtError(null);
     }
   }, [currentAuctionData]);
@@ -141,6 +141,9 @@ function AllPayAuctions({ totalNumberOfPaintings, getNextAuctionObj }) {
 
   useEffect(() => {
     if (hasAuctionTimerEnded) {
+      const val = JSON.parse(sessionStorage.getItem('allAuction'));
+      val.auctions.artifacts[auctionObj.id - 1].hasAuctionTimerEnded = true;
+      sessionStorage.setItem('allAuction', JSON.stringify(val));
       getNextAuctionObj(auctionObj.id);
     }
   }, [hasAuctionTimerEnded]);
@@ -239,7 +242,7 @@ function AllPayAuctions({ totalNumberOfPaintings, getNextAuctionObj }) {
                   variant="outlined"
                 />
                 <Button disabled={!live} variant="contained" color="secondary" onClick={setBidAmt} style={{ marginBottom: '10px' }}>
-                  Bid
+                  Bi
                 </Button>
                 { !live
                   && (

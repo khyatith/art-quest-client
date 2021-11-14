@@ -73,7 +73,7 @@ function GameInstructions({ playersJoinedInfo }) {
     if (playersJoinedInfo) {
       const { numberOfPlayers, playersJoined } = playersJoinedInfo;
       if (numberOfPlayers === (playersJoined - 1)) {
-        setTimeout(() => startGame(), 5000);
+        setTimeout(() => startGame(), 1);
       }
     }
   }, [playersJoinedInfo]);
