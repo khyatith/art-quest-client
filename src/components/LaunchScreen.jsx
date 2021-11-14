@@ -12,7 +12,6 @@ import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import { socket } from '../global/socket';
 import userContext from '../global/userContext';
-import Header from './Header';
 import { TEAM_COLOR_MAP, API_URL } from '../global/constants';
 
 const useStyles = makeStyles((theme) => ({
@@ -71,10 +70,11 @@ function LaunchScreen() {
   }, []);
 
   const getUID = async () => {
-    await axios.get(`${API_URL}/getUID/`);
+    const { data } = await axios.get(`${API_URL}/buying/getUID/`);
+    return data;
   };
 
-  const handleChange = (event) => {
+  const handleChange = async (event) => {
     const { name, value } = event.target;
     if (sessionStorage.getItem('user') === null) {
       setPlayer((prevValues) => ({
@@ -82,7 +82,7 @@ function LaunchScreen() {
         [name]: value,
       }));
       if (player.playerId === '') {
-        const uid = getUID();
+        const uid = await getUID();
         setPlayer((prevValues) => ({
           ...prevValues,
           playerId: uid,
