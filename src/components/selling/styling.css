@@ -1,0 +1,32 @@
+.parent {
+    display: flex;
+    flex-wrap: wrap;
+  }
+  
+  .child1 {
+    flex: 0 2 50%; /* explanation below */
+    margin-top: 0.5%;
+    padding-bottom: 0.5%;
+    border-bottom: 0.8%;
+    border-top: 0;
+    border-left: 0;
+    border-right: 0;
+    border-color: rgb(214,214,218);
+    border-style: solid;
+  }
+
+  .child2 {
+    flex: 0 2 48%; /* explanation below */
+    margin-top: 1%;
+  }
+
+  .child3 {
+    flex: 0 2 50%; /* explanation below */
+    margin-top: 0.5%;
+    border: 0;
+  }
+
+  .child4 {
+    flex: 0 2 48%; /* explanation below */
+    margin-top: 1%;
+  }

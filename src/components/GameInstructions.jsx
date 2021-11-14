@@ -11,6 +11,7 @@ import StarIcon from '@material-ui/icons/Star';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import { socket } from '../global/socket';
 import userContext from '../global/userContext';
+import LocationPhase from './selling/LocationPhase';
 
 const useStyles = makeStyles(() => ({
   container: {
@@ -72,14 +73,15 @@ function GameInstructions({ playersJoinedInfo }) {
   useEffect(() => {
     if (playersJoinedInfo) {
       const { numberOfPlayers, playersJoined } = playersJoinedInfo;
-      if (numberOfPlayers === (playersJoined - 1)) {
+      if (numberOfPlayers < (playersJoined - 1)) {
         setTimeout(() => startGame(), 1);
       }
     }
   }, [playersJoinedInfo]);
 
   return (
-    <div className={classes.container}>
+    <>
+      {/*<div className={classes.container}>
       <p className={classes.title}>Art Quest</p>
       <p className={classes.p}>Your challenge, should you choose to accept it, is to create your favorite art collection.</p>
       <p className={classes.p}>
@@ -134,7 +136,9 @@ function GameInstructions({ playersJoinedInfo }) {
             <h3>All players Joined. Starting game ...</h3>
           </div>
         )}
-    </div>
+        </div>*/}
+      <LocationPhase />
+    </>
   );
 }
 
