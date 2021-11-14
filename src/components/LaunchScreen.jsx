@@ -7,11 +7,11 @@ import Select from '@material-ui/core/Select';
 import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
 import { useHistory } from 'react-router';
+import AppBar from '@material-ui/core/AppBar';
+import Toolbar from '@material-ui/core/Toolbar';
 import { socket } from '../global/socket';
 import userContext from '../global/userContext';
 import { TEAM_COLOR_MAP } from '../global/constants';
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
 
 const useStyles = makeStyles((theme) => ({
   grow: {

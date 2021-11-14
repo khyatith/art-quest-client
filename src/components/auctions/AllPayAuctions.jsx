@@ -27,7 +27,6 @@ import BonusAuctionBanner from '../visualizations/BonusAuctionBanner';
 import { ALL_PAY_AUCTIONS_TEXT, API_URL } from '../../global/constants';
 import BuyingGroupedBarChart from '../visualizations/BuyingGroupedBarChart';
 import { formatNumberToCurrency, validateCurrentBid } from '../../global/helpers';
-import useSessionStorage from '../../hooks/useSessionStorage';
 
 const useStyles = makeStyles((theme) => ({
   media: {
@@ -117,7 +116,6 @@ function AllPayAuctions({ totalNumberOfPaintings, getNextAuctionObj }) {
       setAuctionTimerEnded(false);
       setLive(true);
       setAuctionObj(currentAuctionData.currentAuctionObj);
-      console.log(currentAuctionData.currentAuctionObj);
       setAuctionTimerEnded(currentAuctionData.currentAuctionObj.hasAuctionTimerEnded);
       setBidAmtError(null);
     }
@@ -143,8 +141,8 @@ function AllPayAuctions({ totalNumberOfPaintings, getNextAuctionObj }) {
 
   useEffect(() => {
     if (hasAuctionTimerEnded) {
-      let val = JSON.parse(sessionStorage.getItem('allAuction'));
-      val.auctions.artifacts[auctionObj.id-1].hasAuctionTimerEnded = true;
+      const val = JSON.parse(sessionStorage.getItem('allAuction'));
+      val.auctions.artifacts[auctionObj.id - 1].hasAuctionTimerEnded = true;
       sessionStorage.setItem('allAuction', JSON.stringify(val));
       getNextAuctionObj(auctionObj.id);
     }
@@ -160,7 +158,6 @@ function AllPayAuctions({ totalNumberOfPaintings, getNextAuctionObj }) {
 
   const setBidAmt = () => {
     const bidInput = bidInputRef.current.value;
-    console.log(player);
     const isValidCurrentBid = validateCurrentBid(bidInput);
     if (!isValidCurrentBid) {
       setBidAmtError('Your bid should be a valid number');
@@ -180,7 +177,6 @@ function AllPayAuctions({ totalNumberOfPaintings, getNextAuctionObj }) {
         bidTeam: player.teamName,
         player,
       };
-      console.log(bidInfo);
       socket.emit('addNewBid', bidInfo);
       setLive(false);
     }

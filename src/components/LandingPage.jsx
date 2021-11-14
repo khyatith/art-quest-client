@@ -12,7 +12,8 @@ import userContext from '../global/userContext';
 import LiveAuctions from './LiveAuctions';
 import Header from './Header';
 import { socket } from '../global/socket';
-import load from '../assets/load.webp'
+import load from '../assets/load.webp';
+import { API_URL } from '../global/constants';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -135,7 +136,7 @@ function LandingPage() {
   useEffect(() => {
     async function fetchTimerValue() {
       const sesStr = JSON.parse(sessionStorage.getItem('user'));
-      const { data } = await axios.get(`http://localhost:3001/buying/timer/${sesStr.hostCode}`);
+      const { data } = await axios.get(`${API_URL}/buying/timer/${sesStr.hostCode}`);
       setLandingPageTimerValue(data.landingPageTimerValue);
     }
     if (Object.keys(landingPageTimerValue).length === 0) {
@@ -169,7 +170,13 @@ function LandingPage() {
 
   const renderArtifacts = () => {
     if (JSON.parse(sessionStorage.getItem('allAuction')) === null) {
-      return (<div style={{marginTop: '12%', marginLeft: '43%'}}> <img src={load} alt="loading..." /> </div>);
+      return (
+        <div style={{ marginTop: '12%', marginLeft: '43%' }}>
+          {' '}
+          <img src={load} alt="loading..." />
+          {' '}
+        </div>
+      );
     }
     const { auctions } = JSON.parse(sessionStorage.getItem('allAuction'));
     const imageGalleryArr = auctions.artifacts.reduce((acc, item) => {

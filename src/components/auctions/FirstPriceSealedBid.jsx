@@ -16,7 +16,6 @@ import Grid from '@material-ui/core/Grid';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import axios from 'axios';
-import userContext from '../../global/userContext';
 import { socket } from '../../global/socket';
 import NewLeaderboard from '../NewLeaderboard';
 import SimpleRating from '../Rating';
@@ -118,7 +117,6 @@ function FirstPriceSealedBid({
       setAuctionTimerEnded(false);
       setLive(true);
       setAuctionObj(currentAuctionData.currentAuctionObj);
-      console.log(currentAuctionData.currentAuctionObj);
       setAuctionTimerEnded(currentAuctionData.currentAuctionObj.hasAuctionTimerEnded);
       setBidAmtError(null);
     }
@@ -144,8 +142,8 @@ function FirstPriceSealedBid({
 
   useEffect(() => {
     if (hasAuctionTimerEnded) {
-      let val = JSON.parse(sessionStorage.getItem('allAuction'));
-      val.auctions.artifacts[auctionObj.id-1].hasAuctionTimerEnded = true;
+      const val = JSON.parse(sessionStorage.getItem('allAuction'));
+      val.auctions.artifacts[auctionObj.id - 1].hasAuctionTimerEnded = true;
       sessionStorage.setItem('allAuction', JSON.stringify(val));
       getNextAuctionObj(auctionObj.id);
     }
@@ -162,7 +160,6 @@ function FirstPriceSealedBid({
   const setBidAmt = () => {
     const bidInput = bidInputRef.current.value;
     const isValidCurrentBid = validateCurrentBid(bidInput);
-    console.log(player);
     if (!isValidCurrentBid) {
       setBidAmtError('Your bid should be a valid number');
       return;
@@ -181,7 +178,6 @@ function FirstPriceSealedBid({
         bidTeam: player.teamName,
         player,
       };
-      console.log(bidInfo);
       socket.emit('addNewBid', bidInfo);
     }
   };

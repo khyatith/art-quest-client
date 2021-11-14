@@ -10,7 +10,7 @@ import AllPayAuctions from './auctions/AllPayAuctions';
 import auctionContext from '../global/auctionContext';
 import useSessionStorage from '../hooks/useSessionStorage';
 
-function LiveAuctions({ totalNumberOfPaintings, fromLP, allAuctions }) {
+function LiveAuctions({ totalNumberOfPaintings, fromLP }) {
   const [hasEndedAuctions, setHasEndedAuctions] = useState(false);
   const allAuctionsObj = useSessionStorage('allAuction')[0];
   const [isFromLP, getFromLP] = useState(fromLP);
@@ -96,13 +96,11 @@ function LiveAuctions({ totalNumberOfPaintings, fromLP, allAuctions }) {
 LiveAuctions.defaultProps = {
   totalNumberOfPaintings: 1,
   fromLP: true,
-  allAuctions: [],
 };
 
 LiveAuctions.propTypes = {
   totalNumberOfPaintings: PropTypes.number,
   fromLP: PropTypes.bool,
-  allAuctions: PropTypes.array,
 };
 
 export default LiveAuctions;

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useEffect, useState } from 'react';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import ImageList from '@material-ui/core/ImageList';
 import ImageListItem from '@material-ui/core/ImageListItem';
@@ -68,7 +68,6 @@ function EndBuyingPhase() {
   const [avgPaintingQualityByTeam, setAvgPaintingQualityByTeam] = useState({});
   const [showWinner, setShowWinner] = useState(false);
   const player = useSessionStorage('user')[0];
-  console.log(player);
 
   const getWinner = async () => {
     const { data } = await axios.get(`${API_URL}/buying/getWinner/${player.hostCode}`);

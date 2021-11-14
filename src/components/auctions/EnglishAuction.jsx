@@ -15,7 +15,6 @@ import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import axios from 'axios';
 import Grid from '@material-ui/core/Grid';
-import userContext from '../../global/userContext';
 import { API_URL } from '../../global/constants';
 import { socket } from '../../global/socket';
 import NewLeaderboard from '../NewLeaderboard';
@@ -165,8 +164,8 @@ function EnglishAuction({
 
   useEffect(() => {
     if (hasAuctionTimerEnded) {
-      let val = JSON.parse(sessionStorage.getItem('allAuction'));
-      val.auctions.artifacts[auctionObj.id-1].hasAuctionTimerEnded = true;
+      const val = JSON.parse(sessionStorage.getItem('allAuction'));
+      val.auctions.artifacts[auctionObj.id - 1].hasAuctionTimerEnded = true;
       sessionStorage.setItem('allAuction', JSON.stringify(val));
       getNextAuctionObj(auctionObj.id);
     }
@@ -183,12 +182,11 @@ function EnglishAuction({
         };
       }
     });
-  });
+  }, [previousBidDetails]);
 
   const setBidAmt = () => {
     const bidInput = bidInputRef.current.value;
     const isValidCurrentBid = validateCurrentBid(bidInput);
-    console.log(player);
     if (!isValidCurrentBid) {
       setBidAmtError('Your bid should be a valid number');
       return;
@@ -210,7 +208,6 @@ function EnglishAuction({
         bidTeam: player.teamName,
         bidColor: player.teamColor,
       };
-      console.log(bidInfo);
       socket.emit('addNewBid', bidInfo);
     }
   };

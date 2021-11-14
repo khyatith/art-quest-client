@@ -27,7 +27,6 @@ import { SECOND_PRICED_SEALED_BID_TEXT, API_URL } from '../../global/constants';
 import auctionContext from '../../global/auctionContext';
 import BuyingGroupedBarChart from '../visualizations/BuyingGroupedBarChart';
 import { formatNumberToCurrency, validateCurrentBid } from '../../global/helpers';
-import useSessionStorage from '../../hooks/useSessionStorage';
 
 const useStyles = makeStyles((theme) => ({
   media: {
@@ -143,8 +142,8 @@ function SecondPriceSealedBid({
 
   useEffect(() => {
     if (hasAuctionTimerEnded) {
-      let val = JSON.parse(sessionStorage.getItem('allAuction'));
-      val.auctions.artifacts[auctionObj.id-1].hasAuctionTimerEnded = true;
+      const val = JSON.parse(sessionStorage.getItem('allAuction'));
+      val.auctions.artifacts[auctionObj.id - 1].hasAuctionTimerEnded = true;
       sessionStorage.setItem('allAuction', JSON.stringify(val));
       getNextAuctionObj(auctionObj.id);
     }
@@ -161,7 +160,6 @@ function SecondPriceSealedBid({
   const setBidAmt = () => {
     const bidInput = bidInputRef.current.value;
     const isValidCurrentBid = validateCurrentBid(bidInput);
-    console.log(player);
     if (!isValidCurrentBid) {
       setBidAmtError('Your bid should be a valid number');
       return;

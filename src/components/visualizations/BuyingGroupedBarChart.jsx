@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Bar } from 'react-chartjs-2';
 import { TEAM_COLOR_MAP } from '../../global/constants';
-import load from '../../assets/load.webp';
 
 const options = {
   responsive: true,
@@ -30,7 +29,6 @@ const options = {
 const BuyingGroupedBarChart = (props) => {
   const { leaderboardData } = props;
   const [barChartData, setBarChartData] = useState();
-  const [loading, setLoading] = useState(true);
 
   const parseDataForGroupChart = (results) => {
     const chart = {};
@@ -50,11 +48,6 @@ const BuyingGroupedBarChart = (props) => {
       });
       chart.datasets = dataset;
       setBarChartData(chart);
-    }
-    if (barChartData === undefined) {
-      setLoading(true);
-    } else {
-      setLoading(false);
     }
   };
 
@@ -76,14 +69,15 @@ const BuyingGroupedBarChart = (props) => {
     }
   }, [leaderboardData]);
 
-  if (loading) {
-    return (<div style={{marginTop: '12%', marginLeft: '43%'}}> <img src={load} alt="loading..." /> </div>);
-  }
-
   return (
-    <div style={{ width: '500px', marginTop: '30px' }}>
-      <Bar data={barChartData} options={options} />
-    </div>
+    <>
+      { barChartData
+        && (
+        <div style={{ width: '500px', marginTop: '30px' }}>
+          <Bar data={barChartData} options={options} />
+        </div>
+        )}
+    </>
   );
 };
 
