@@ -4,7 +4,7 @@ import React, {
 import PropTypes from 'prop-types';
 import FirstPriceSealedBid from './auctions/FirstPriceSealedBid';
 import EnglishAuction from './auctions/EnglishAuction';
-import EndBuyingPhase from './EndBuyingPhase';
+// import EndBuyingPhase from './EndBuyingPhase';
 import SecondPriceSealedBid from './auctions/SecondPriceSealedBid';
 import AllPayAuctions from './auctions/AllPayAuctions';
 import auctionContext from '../global/auctionContext';

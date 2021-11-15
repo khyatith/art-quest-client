@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Bar } from 'react-chartjs-2';
 
 const options = {
@@ -17,23 +17,25 @@ const options = {
       },
     },
   },
-  title:{
-    display:true,
-    text:'Revenue Generated',
-    fontSize:20
+  title: {
+    display: true,
+    text: 'Revenue Generated',
+    fontSize: 20,
   },
-  legend:{
-    display:true,
-    position:'right'
+  legend: {
+    display: true,
+    position: 'right',
   },
 };
 
 const BarGraph = (props) => {
-  console.log(props.result);
+  const { result } = props;
   return (
-    <div style={{ width: '70%',marginLeft:'10%' }}>
-      <Bar data={props.result} options={options} />
-        </div>
+    result && (
+      <div style={{ width: '70%', marginLeft: '10%' }}>
+        <Bar data={result} options={options} />
+      </div>
+    )
   );
 };
 

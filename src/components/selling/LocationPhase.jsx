@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
 import axios from 'axios';
+import { makeStyles } from '@material-ui/core/styles';
 import userContext from '../../global/userContext';
 import Airport from './Airport';
 import BarGraph from './BarGraph';
@@ -8,108 +8,122 @@ import Details from './Details';
 import Header from '../Header';
 import Mapping from './Mapping';
 import { API_URL, TEAM_COLOR_MAP } from '../../global/constants';
-import './styling.css';
 import load from '../../assets/load.webp';
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    marginTop: '40px',
+const useStyles = makeStyles(() => ({
+  parent: {
     display: 'flex',
     flexWrap: 'wrap',
-    justifyContent: 'space-around',
-    overflow: 'hidden',
-    backgroundColor: theme.palette.background.paper,
   },
-  imageList: {
-    width: 500,
-    height: 450,
+  child1: {
+    flex: '0 2 50%', /* explanation below */
+    marginTop: '0.5%',
+    paddingBottom: '0.5%',
+    borderBottom: '0.8%',
+    borderTop: '0',
+    borderLeft: '0',
+    borderRight: '0',
+    borderColor: 'rgb(214,214,218)',
+    borderStyle: 'solid',
   },
-  icon: {
-    color: 'rgba(255, 255, 255, 0.54)',
+  child2: {
+    flex: '0 2 48%', /* explanation below */
+    marginTop: '1%',
+    marginBottom: '30px',
+  },
+  resultsText: {
+    display: 'block',
+    textAlign: 'center',
+    fontSize: '20px',
+    fontWeight: '700',
   },
 }));
 
 function createData(team, cash, vis) {
-  let str = [];
-  str.push(cash/10000);
+  const str = [];
+  str.push(cash / 10000);
   str.push(vis);
-  console.log(str);
   return {
-    label: team, backgroundColor: TEAM_COLOR_MAP[team],
-    borderColor: 'rgba(0,0,0,1)',
-    maxBarThickness: 60,
-    borderWidth: 2, data: str
+    label: team,
+    backgroundColor: TEAM_COLOR_MAP[team],
+    data: str,
+    barThickness: 25,
   };
 }
 
 function createDataMap(id, team, visits, cash) {
-  return { id, team, visits, cash };
+  return {
+    id, team, visits, cash,
+  };
 }
-
 
 function LocationPhase() {
   const classes = useStyles();
   const [rows, setRows] = useState([]);
-  const [labels, setLabel] = useState(['Cash','Visits']);
   const [result, setResult] = useState({});
   const { player } = useContext(userContext);
   const [loading, setLoading] = useState(true);
-  let datasets = [];
 
-  //Hooks and methods
+  // Hooks and methods
   useEffect(() => {
     setLoading(true);
+    const datasets = [];
     axios.get(`${API_URL}/buying/getSellingResults?roomId=${player.hostCode}`)
       .then((newData) => {
-        console.log(newData);
+        const { amountSpentByTeam, visits } = newData.data;
         let x = 1;
-        let tv = [];
-        for (let i of Object.keys(newData.data.amountSpentByTeam)) {
-          let team = i;
-          let cash = newData.data.amountSpentByTeam[i];
+        const tv = [];
+        const labels = ['Cash', 'Visits'];
+        Object.entries(amountSpentByTeam).forEach(([key, value]) => {
+          const team = key;
+          const cash = value;
           let vis = 0;
-          for (let j of newData.data.visits) {
-            if (j.teamName === i) {
-              vis = j.visitCount;
-            }
-          }
+          const teamVisits = visits.filter((v) => v.teamName === key);
+          vis = teamVisits ? teamVisits[0].visitCount : 0;
           datasets.push(createData(team, cash, vis));
           tv.push(createDataMap(x, team, vis, cash));
           x += 1;
-        }
+        });
         setResult({ labels, datasets });
         setRows(tv);
       })
       .finally(() => {
         setLoading(false);
-      })
-  }, []);
+      });
+  }, [player]);
 
   if (loading) {
-    return (<div style={{marginTop: '12%', marginLeft: '43%'}}> <img src={load} alt="loading..." /> </div>);
+    return (
+      <div style={{ marginTop: '12%', marginLeft: '43%' }}>
+        {' '}
+        <img src={load} alt="loading..." />
+        {' '}
+      </div>
+    );
   }
 
   return (
     <>
       <Header />
-      <div class="parent">
-          <div class="child1">
-          <Airport />
-          </div>
-          <div class="child1">
+      <div className={classes.parent}>
+        <div className={classes.child1}>
           <Mapping />
-          </div>
-          <div class="child2">
+        </div>
+        <div className={classes.child1}>
+          <Airport />
+        </div>
+      </div>
+      <p className={classes.resultsText}>Results</p>
+      <div className={classes.parent}>
+        <div className={classes.child2}>
           <Details rows={rows} />
-          </div>
-          <div class="child2">
+        </div>
+        <div className={classes.child2}>
           <BarGraph result={result} />
         </div>
       </div>
     </>
   );
 }
-
-
 
 export default LocationPhase;
