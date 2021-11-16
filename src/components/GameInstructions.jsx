@@ -70,6 +70,9 @@ function GameInstructions({ playersJoinedInfo }) {
     history.push(`/game/${player.playerId}`);
   };
 
+  // IMPORTANT (KOGNITI CHANGE)
+
+  /*
   useEffect(() => {
     if (playersJoinedInfo) {
       const { numberOfPlayers, playersJoined } = playersJoinedInfo;
@@ -77,7 +80,8 @@ function GameInstructions({ playersJoinedInfo }) {
         setTimeout(() => startGame(), 1);
       }
     }
-  }, [playersJoinedInfo]);
+  }, [playersJoinedInfo]);*/
+
 
   return (
     <>

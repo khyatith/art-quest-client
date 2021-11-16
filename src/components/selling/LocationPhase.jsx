@@ -9,6 +9,7 @@ import Header from '../Header';
 import Mapping from './Mapping';
 import { API_URL, TEAM_COLOR_MAP } from '../../global/constants';
 import load from '../../assets/load.webp';
+import ExpoBegining from './ExpoBegining';
 
 const useStyles = makeStyles(() => ({
   parent: {
@@ -16,7 +17,7 @@ const useStyles = makeStyles(() => ({
     flexWrap: 'wrap',
   },
   child1: {
-    flex: '0 2 50%', /* explanation below */
+    flex: '0 2 50%' /* explanation below */,
     marginTop: '0.5%',
     paddingBottom: '0.5%',
     borderBottom: '0.8%',
@@ -27,7 +28,7 @@ const useStyles = makeStyles(() => ({
     borderStyle: 'solid',
   },
   child2: {
-    flex: '0 2 48%', /* explanation below */
+    flex: '0 2 48%' /* explanation below */,
     marginTop: '1%',
     marginBottom: '30px',
   },
@@ -53,7 +54,10 @@ function createData(team, cash, vis) {
 
 function createDataMap(id, team, visits, cash) {
   return {
-    id, team, visits, cash,
+    id,
+    team,
+    visits,
+    cash,
   };
 }
 
@@ -68,7 +72,8 @@ function LocationPhase() {
   useEffect(() => {
     setLoading(true);
     const datasets = [];
-    axios.get(`${API_URL}/buying/getSellingResults?roomId=${player.hostCode}`)
+    axios
+      .get(`${API_URL}/buying/getSellingResults?roomId=${player.hostCode}`)
       .then((newData) => {
         const { amountSpentByTeam, visits } = newData.data;
         let x = 1;
@@ -102,9 +107,11 @@ function LocationPhase() {
     );
   }
 
+  // IMPORTANT (KOGNITI CHANGE)
+
   return (
     <>
-      <Header />
+      {/*<Header />
       <div className={classes.parent}>
         <div className={classes.child1}>
           <Mapping />
@@ -121,7 +128,8 @@ function LocationPhase() {
         <div className={classes.child2}>
           <BarGraph result={result} />
         </div>
-      </div>
+      </div>*/}
+      <ExpoBegining />
     </>
   );
 }
