@@ -8,6 +8,7 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import { formatNumberToCurrency } from '../../global/helpers';
+import { TEAM_COLOR_MAP } from '../../global/constants';
 
 const StyledTableCell = withStyles((theme) => ({
   head: {
@@ -40,7 +41,7 @@ const Details = (props) => {
               const cashRounded = -Math.floor(row.cash / 10000);
               const total = cashRounded + row.visits;
               return (
-                <TableRow key={row.id}>
+                <TableRow key={row.id} style={{ backgroundColor: `${TEAM_COLOR_MAP[row.team]}` }}>
                   <StyledTableCell component="th" scope="row">
                     {row.id}
                   </StyledTableCell>

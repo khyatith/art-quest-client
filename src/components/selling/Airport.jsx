@@ -1,4 +1,6 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, {
+  useEffect, useState, useContext,
+} from 'react';
 import axios from 'axios';
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
@@ -35,8 +37,9 @@ const Airport = () => {
   const [mapValues, setMapValues] = useState({});
   // const [teamValues, setTeamValues] = useState({});
   const [valRet, setValRet] = useState(false);
-  const { player } = useContext(userContext);
-  let loc = player.currentLocation;
+  const { player, setPlayer } = useContext(userContext);
+  const [selectedLocation, setSelectedLocation] = useState(2);
+  let locName = 'Delhi';
 
   // Hooks and methods
   useEffect(() => {
@@ -48,33 +51,48 @@ const Airport = () => {
       getMapVal();
       setValRet(true);
     }
-  }, []);
+  }, [valRet]);
 
-  function setVisitLocation(e) {
-    loc = e.target.value;
-    console.log(loc);
-  }
+  const updateSelectedLocation = (e) => {
+    setSelectedLocation(parseInt(e.target.value, 10));
+  };
+
+  const setVisitLocation = async () => {
+    Object.entries(mapValues).forEach((val) => {
+      if (parseInt(val[1], 10) === selectedLocation) {
+        locName = val[1].cityName;
+      }
+    });
+    setPlayer((prevValues) => ({
+      ...prevValues,
+      currentLocation: selectedLocation,
+    }));
+    // Send current location to api
+    // await axios.post(`${API_URL}/buying/putCurrentLocation`, )
+  };
 
   return (
     <div>
       <div className={classes.root}>
-        <RoundsInfo label={`You are currently in ${loc}`} />
+        <RoundsInfo label={`You are currently in ${locName}`} />
         <p style={{ marginTop: '40px' }}>Fly to : </p>
-        <div className={classes.radio}>
-          <input type="radio" value={player.currentLocation} name="location" onChange={setVisitLocation} />
-          {' '}
-          {player.currentLocation}
-        </div>
         {Object.entries(mapValues).map((items) => {
           const totalCon = items[1].allowedToVisit;
-          if (items[1].cityName === loc) {
+          if (items[1].cityId === player.currentLocation) {
             return (
               <>
                 {totalCon.map((tloc) => {
                   const obj = mapValues.find((x) => x.cityId === tloc);
                   return (
-                    <div className={classes.radio}>
-                      <input type="radio" value={obj.cityName} name="location" onChange={setVisitLocation} />
+                    <div className={classes.radio} key={obj.cityId}>
+                      <input
+                        type="radio"
+                        value={obj.cityId}
+                        key={obj.cityId}
+                        name="location"
+                        checked={parseInt(selectedLocation, 10) === parseInt(obj.cityId, 10)}
+                        onChange={updateSelectedLocation}
+                      />
                       {' '}
                       {obj.cityName}
                     </div>
