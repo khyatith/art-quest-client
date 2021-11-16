@@ -9,7 +9,7 @@ import Header from '../Header';
 import Mapping from './Mapping';
 import { API_URL, TEAM_COLOR_MAP } from '../../global/constants';
 import load from '../../assets/load.webp';
-import ExpoBegining from './ExpoBegining';
+// import ExpoBegining from './ExpoBegining';
 
 const useStyles = makeStyles(() => ({
   parent: {
@@ -111,7 +111,7 @@ function LocationPhase() {
 
   return (
     <>
-      {/*<Header />
+      <Header />
       <div className={classes.parent}>
         <div className={classes.child1}>
           <Mapping />
@@ -128,8 +128,8 @@ function LocationPhase() {
         <div className={classes.child2}>
           <BarGraph result={result} />
         </div>
-      </div>*/}
-      <ExpoBegining />
+      </div>
+      {/* <ExpoBegining /> */}
     </>
   );
 }

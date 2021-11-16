@@ -6,8 +6,8 @@ import Card from '@mui/material/Card';
 import CardMedia from '@mui/material/CardMedia';
 import { Button, CardActionArea, CardActions } from '@mui/material';
 import userContext from '../../global/userContext';
-import { API_URL, TEAM_COLOR_MAP } from '../../global/constants';
-import Header from '../Header';
+import { API_URL } from '../../global/constants';
+// import Header from '../Header';
 import load from '../../assets/load.webp';
 import SimpleRating from '../Rating';
 

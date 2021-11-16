@@ -1,16 +1,14 @@
-import React, {
-  useContext, useEffect,
-} from 'react';
+import React from 'react';
 // import { makeStyles } from '@material-ui/core/styles';
 // import List from '@material-ui/core/List';
 // import ListItem from '@material-ui/core/ListItem';
 // import ListItemText from '@material-ui/core/ListItemText';
 // import Button from '@material-ui/core/Button';
-import { useHistory } from 'react-router-dom';
+// import { useHistory } from 'react-router-dom';
 // import StarIcon from '@material-ui/icons/Star';
 // import ListItemIcon from '@material-ui/core/ListItemIcon';
-import { socket } from '../global/socket';
-import userContext from '../global/userContext';
+// import { socket } from '../global/socket';
+// import userContext from '../global/userContext';
 import LocationPhase from './selling/LocationPhase';
 
 // const useStyles = makeStyles(() => ({
@@ -59,16 +57,16 @@ import LocationPhase from './selling/LocationPhase';
 //   },
 // }));
 
-function GameInstructions({ playersJoinedInfo }) {
+function GameInstructions() {
   // const classes = useStyles();
-  const history = useHistory();
+  // const history = useHistory();
 
-  const { player } = useContext(userContext);
+  // const { player } = useContext(userContext);
 
-  const startGame = () => {
-    socket.emit('startGame', JSON.stringify(player));
-    history.push(`/game/${player.playerId}`);
-  };
+  // const startGame = () => {
+  //   socket.emit('startGame', JSON.stringify(player));
+  //   history.push(`/game/${player.playerId}`);
+  // };
 
   // IMPORTANT (KOGNITI CHANGE)
 
@@ -80,8 +78,7 @@ function GameInstructions({ playersJoinedInfo }) {
         setTimeout(() => startGame(), 1);
       }
     }
-  }, [playersJoinedInfo]);*/
-
+  }, [playersJoinedInfo]); */
 
   return (
     <>

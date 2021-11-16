@@ -67,7 +67,8 @@ const Airport = () => {
       ...prevValues,
       currentLocation: selectedLocation,
     }));
-    // Send current location to api
+    // 1. update session storage
+    // 2. Send current location to api
     // await axios.post(`${API_URL}/buying/putCurrentLocation`, )
   };
 
