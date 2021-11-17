@@ -88,6 +88,7 @@ function LaunchScreen() {
           playerId: uid,
           hostCode: uid,
           currentLocation: 2,
+          currentLocationName: 'Delhi',
         }));
       }
     } else {
@@ -97,6 +98,7 @@ function LaunchScreen() {
         ...gamer,
         [name]: value,
         currentLocation: 2,
+        currentLocationName: 'Delhi',
       }));
     }
   };
