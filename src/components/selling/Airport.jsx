@@ -66,6 +66,7 @@ const Airport = () => {
     setPlayer((prevValues) => ({
       ...prevValues,
       currentLocation: selectedLocation,
+      currentLocationName: locName,
     }));
     // 1. update session storage
     // 2. Send current location to api
