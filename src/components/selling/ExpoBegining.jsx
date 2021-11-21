@@ -17,12 +17,17 @@ import Typography from '@material-ui/core/Typography';
 import Collapse from '@material-ui/core/Collapse';
 import clsx from 'clsx';
 import { TextField } from '@material-ui/core';
+import InputAdornment from '@material-ui/core/InputAdornment';
 import { API_URL } from '../../global/constants';
 import userContext from '../../global/userContext';
 import SimpleRating from '../Rating';
 
 const useStyles = makeStyles((theme) => ({
   paintOpt: {
+    backgroundColor: '#ffffff',
+    textAlign: 'center',
+  },
+  nominateBtn: {
     backgroundColor: '#76e246',
   },
   contentstyle: {
@@ -50,12 +55,6 @@ const useStyles = makeStyles((theme) => ({
     lineHeight: '24px',
     padding: '10px',
   },
-  fontSty2: {
-    fontSize: '27px',
-    fontWeight: 'bold',
-    paddingTop: '30px',
-    paddingLeft: '50px',
-  },
   parent: {
     display: 'flex',
     flexWrap: 'wrap',
@@ -67,14 +66,6 @@ const useStyles = makeStyles((theme) => ({
   },
   child2: {
     flex: '0 2 29.84%' /* explanation below */,
-    borderLeft: '1%',
-    borderTop: '0',
-    borderBottom: '0',
-    borderRight: '0',
-    borderStyle: 'solid',
-  },
-  child3: {
-    flex: '0 2 28%' /* explanation below */,
     borderLeft: '1%',
     borderTop: '0',
     borderBottom: '0',
@@ -130,13 +121,11 @@ function ExpoBeginning() {
     // setLoading(true);
     async function getSellingInfo() {
       const { data } = await axios.get(`${API_URL}/buying/getSellingInfo?roomId=${player.hostCode}&locationId=1&teamName=${player.teamName}`);
-      console.log('data', data);
       const { artifacts, otherteams, city } = data;
       if (artifacts) {
         setPaintings(artifacts);
       }
       if (otherteams) {
-        console.log('otherteam', otherteams);
         setOtherTeams(otherteams);
       }
       if (city) {
@@ -144,19 +133,6 @@ function ExpoBeginning() {
       }
     }
     getSellingInfo();
-
-    // .then((newData) => {
-    //   console.log('newData', newData);
-    //   setPaintings(newData.data.artifacts);
-    //   console.log(newData);
-    //   const ot = newData.data.otherteams;
-    //   ot.push(player.teamName);
-    //   setTeams(ot);
-    //   console.log(ot);
-    // })
-    // .finally(() => {
-    //   setLoading(false);
-    // });
   }, []);
 
   // if (loading) {
@@ -172,7 +148,12 @@ function ExpoBeginning() {
   const renderCityStats = () => {
     const { interestInArt, demand } = cityData;
     // eslint-disable-next-line no-nested-ternary
-    const peopleInterestedInArt = parseInt(interestInArt, 10) < 100 ? 'Low' : parseInt(interestInArt, 10) > 100 && parseInt(interestInArt, 10) < 200 ? 'Medium' : 'High';
+    const peopleInterestedInArt = parseInt(interestInArt, 10) < 100
+      ? 'Low'
+      : parseInt(interestInArt, 10) > 100
+    && parseInt(interestInArt, 10) < 200
+        ? 'Medium'
+        : 'High';
     return (
       <>
         <h2 style={{ textAlign: 'center' }}>
@@ -204,8 +185,22 @@ function ExpoBeginning() {
 
   const loadCardContent = (index) => (
     <CardContent className={classes.paintOpt}>
-      <Typography>What is the ticket price to see your painting in the museum?</Typography>
-      <TextField id="outlined-basic" label="Ticket Price" variant="outlined" style={{ alignSelf: 'center' }} />
+      <p style={{ color: '#000000', fontWeight: '700', marginBottom: '25px' }}>
+        How much would you charge 1 person to see your painting in
+        {' '}
+        {player.currentLocationName}
+        {' '}
+        museum?
+      </p>
+      <TextField
+        id="outlined-basic"
+        label="Enter Ticket Price"
+        variant="outlined"
+        style={{ color: '#76e246', marginBottom: '20px' }}
+        InputProps={{
+          startAdornment: <InputAdornment position="start">$</InputAdornment>,
+        }}
+      />
       <Button
         size="small"
         style={{
@@ -216,7 +211,7 @@ function ExpoBeginning() {
         }}
         onClick={() => handleSelectPainting(index)}
       >
-        Submit
+        Submit ticket price for 1 person
       </Button>
     </CardContent>
   );
@@ -234,6 +229,7 @@ function ExpoBeginning() {
         <div className={classes.child2} style={{ backgroundColor: player.teamColor }}>
           <p className={classes.fontSty}>
             You are in
+            {' '}
             {player.currentLocationName}
           </p>
           {otherTeams.length !== 0 ? (
@@ -249,6 +245,7 @@ function ExpoBeginning() {
           ) : (
             <p className={classes.fontSty}>
               There are no other teams with you in
+              {' '}
               {player.currentLocationName}
             </p>
           )}
@@ -264,6 +261,7 @@ function ExpoBeginning() {
                   paddingLeft: '20px',
                   paddingRight: '20px',
                 }}
+                // eslint-disable-next-line no-nested-ternary
                 display={paintingSelected === -1 ? 'block' : paintingSelected === index ? 'block' : 'none'}
               >
                 <Card
@@ -279,7 +277,7 @@ function ExpoBeginning() {
                   <CardActionArea>
                     <CardMedia sx={{ height: 398 }} component="img" image={arg.auctionObj.imageURL} alt="green iguana" />
                   </CardActionArea>
-                  <CardActions className={classes.paintOpt}>
+                  <CardActions className={classes.nominateBtn}>
                     <Button
                       size="small"
                       style={{ color: '#000000', fontWeight: 'bold', width: '100%' }}
