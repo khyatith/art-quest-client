@@ -7,6 +7,7 @@ import userContext from './global/userContext';
 import leaderboardContext from './global/leaderboardContext';
 import auctionContext from './global/auctionContext';
 import GameInstructions from './components/GameInstructions';
+import ExpoBegining from './components/selling/ExpoBegining';
 
 function App() {
   const [player, setPlayer] = useState({
@@ -34,6 +35,7 @@ function App() {
               <Route path="/game/:code">
                 <Game />
               </Route>
+              <Route path="/sell/:code" exact component={ExpoBegining} />
             </Switch>
           </auctionContext.Provider>
         </leaderboardContext.Provider>
