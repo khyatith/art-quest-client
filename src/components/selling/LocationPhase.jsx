@@ -91,6 +91,8 @@ function LocationPhase() {
   const [loading, setLoading] = useState(true);
   const [hasLocationPageTimerEnded, setHasLocationPageTimerEnded] = useState(false);
   const [locationPageTimerValue, setLocationPageTimerValue] = useState({});
+  const [roundId, setRoundId] = useState(1);
+  const [hasLocationSelected, setSelectedLocation] = useState(false);
 
   // Hooks and methods
   useEffect(() => {
@@ -99,7 +101,9 @@ function LocationPhase() {
     axios
       .get(`${API_URL}/buying/getSellingResults?roomId=${player.hostCode}`)
       .then((newData) => {
-        const { amountSpentByTeam, visits, locationPhaseTimerValue } = newData.data;
+        const {
+          amountSpentByTeam, visits, locationPhaseTimerValue, roundNumber,
+        } = newData.data;
         let x = 1;
         const tv = [];
         const labels = ['Cash', 'Visits'];
@@ -116,6 +120,9 @@ function LocationPhase() {
         setResult({ labels, datasets });
         setRows(tv);
         setLocationPageTimerValue(locationPhaseTimerValue);
+        if (roundNumber) {
+          setRoundId(roundNumber);
+        }
       })
       .finally(() => {
         setLoading(false);
@@ -166,6 +173,10 @@ function LocationPhase() {
     );
   }
 
+  const setLocationSelectedForCurrentRound = (value) => {
+    setSelectedLocation(value);
+  };
+
   // IMPORTANT (KOGNITI CHANGE)
 
   return (
@@ -200,7 +211,7 @@ function LocationPhase() {
           <Mapping />
         </div>
         <div className={classes.child1}>
-          <Airport />
+          <Airport roundNumber={roundId} setLocationSelectedForCurrentRound={setLocationSelectedForCurrentRound} hasLocationSelected={hasLocationSelected} />
         </div>
       </div>
       <p className={classes.resultsText}>Results</p>

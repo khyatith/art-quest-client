@@ -18,6 +18,8 @@ import Collapse from '@material-ui/core/Collapse';
 import clsx from 'clsx';
 import { TextField } from '@material-ui/core';
 import InputAdornment from '@material-ui/core/InputAdornment';
+import AppBar from '@material-ui/core/AppBar';
+import Toolbar from '@material-ui/core/Toolbar';
 import { API_URL } from '../../global/constants';
 import userContext from '../../global/userContext';
 import SimpleRating from '../Rating';
@@ -82,6 +84,25 @@ const useStyles = makeStyles((theme) => ({
   cityData: {
     flex: '20 2 30%',
   },
+  appbar: {
+    backgroundColor: '#76e246',
+    flexGrow: 1,
+    position: 'relative',
+  },
+  timercontent: {
+    display: 'none',
+    margin: '0 auto',
+    fontWeight: '700',
+    [theme.breakpoints.up('sm')]: {
+      display: 'block',
+    },
+    color: '#051207',
+    fontSize: '22px',
+  },
+  playerdiv: {
+    fontWeight: 700,
+    color: '#051207', // green color
+  },
 }));
 
 const StyledTableCell = withStyles((theme) => ({
@@ -106,6 +127,8 @@ function ExpoBeginning() {
   const [expanded, setExpanded] = React.useState(-1);
   const [paintingSelected, setPaintingSelected] = React.useState(-1);
   const [selectionDone, setSelectionDone] = React.useState(false);
+  const [hasTimerEnded, setTimerEnded] = useState(false);
+  const [timerValue, setTimerValue] = useState({});
 
   const handleExpandClick = (index) => {
     setExpanded(index);
@@ -121,7 +144,9 @@ function ExpoBeginning() {
     // setLoading(true);
     async function getSellingInfo() {
       const { data } = await axios.get(`${API_URL}/buying/getSellingInfo?roomId=${player.hostCode}&locationId=1&teamName=${player.teamName}`);
-      const { artifacts, otherteams, city } = data;
+      const {
+        artifacts, otherteams, city, sellPaintingTimerValue,
+      } = data;
       if (artifacts) {
         setPaintings(artifacts);
       }
@@ -131,9 +156,10 @@ function ExpoBeginning() {
       if (city) {
         setCityData(city);
       }
+      setTimerValue(sellPaintingTimerValue);
     }
     getSellingInfo();
-  }, []);
+  }, [player]);
 
   // if (loading) {
   //   return (
@@ -144,6 +170,35 @@ function ExpoBeginning() {
   //     </div>
   //   );
   // }
+
+  const getRemainingTime = () => {
+    console.log(hasTimerEnded);
+    if (Object.keys(timerValue).length <= 0) {
+      setTimerEnded(true);
+      return;
+    }
+    const total = parseInt(timerValue.total, 10) - 1000;
+    const seconds = Math.floor((parseInt(total, 10) / 1000) % 60);
+    const minutes = Math.floor((parseInt(total, 10) / 1000 / 60) % 60);
+    if (total < 1000) {
+      setTimerEnded(true);
+    } else {
+      const value = {
+        total,
+        minutes: minutes.toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }),
+        seconds: seconds.toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }),
+      };
+      setTimerValue(value);
+    }
+  };
+
+  // eslint-disable-next-line consistent-return
+  useEffect(() => {
+    if (timerValue) {
+      const interval = setInterval(() => getRemainingTime(), 1000);
+      return () => clearInterval(interval);
+    }
+  });
 
   const renderCityStats = () => {
     const { interestInArt, demand } = cityData;
@@ -224,6 +279,31 @@ function ExpoBeginning() {
 
   return (
     <>
+      <AppBar className={classes.appbar}>
+        <Toolbar>
+          <Typography variant="h6" className={classes.timercontent}>
+            Time left
+            {' '}
+            {timerValue && timerValue.minutes}
+            :
+            {timerValue && timerValue.seconds}
+          </Typography>
+          { player
+            && (
+            <div className={classes.playerdiv}>
+              <p>
+                {player.playerName}
+                , Team
+                {' '}
+                {player.teamName}
+                ,
+                {' '}
+                {player.playerId}
+              </p>
+            </div>
+            )}
+        </Toolbar>
+      </AppBar>
       <div className={classes.parent}>
         <div className={classes.child1}>{cityData && <div className={classes.cityData}>{renderCityStats()}</div>}</div>
         <div className={classes.child2} style={{ backgroundColor: player.teamColor }}>

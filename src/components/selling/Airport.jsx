@@ -7,6 +7,7 @@ import Button from '@material-ui/core/Button';
 import userContext from '../../global/userContext';
 import { API_URL } from '../../global/constants';
 import RoundsInfo from '../RoundsInfo';
+import { socket } from '../../global/socket';
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -32,7 +33,7 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-const Airport = () => {
+const Airport = ({ roundNumber, setLocationSelectedForCurrentRound, hasLocationSelected }) => {
   const classes = useStyles();
   const [mapValues, setMapValues] = useState({});
   // const [teamValues, setTeamValues] = useState({});
@@ -47,64 +48,88 @@ const Airport = () => {
       const { data } = await axios.get(`${API_URL}/buying/getMap`);
       setMapValues(data);
     }
-    if (!valRet) {
+    if (!valRet && !hasLocationSelected) {
       getMapVal();
       setValRet(true);
     }
-  }, [valRet]);
+  }, [valRet, hasLocationSelected]);
+
+  useEffect(() => {
+    socket.on('locationUpdatedForTeam', (data) => {
+      console.log('inside socket');
+      if (data.roundId === roundNumber && data.teamName === player.teamName) {
+        setLocationSelectedForCurrentRound(true);
+      }
+    });
+  });
 
   const updateSelectedLocation = (e) => {
-    setSelectedLocation(parseInt(e.target.value, 10));
+    if (!hasLocationSelected) {
+      console.log('inside updateSelectedLocation');
+      setSelectedLocation(parseInt(e.target.value, 10));
+    }
   };
 
   const setVisitLocation = async () => {
-    Object.entries(mapValues).forEach((val) => {
-      if (parseInt(val[1], 10) === selectedLocation) {
-        locName = val[1].cityName;
-      }
-    });
-    setPlayer((prevValues) => ({
-      ...prevValues,
-      currentLocation: selectedLocation,
-      currentLocationName: locName,
-    }));
-    // 1. update session storage
-    // 2. Send current location to api
-    // await axios.post(`${API_URL}/buying/putCurrentLocation`, )
+    if (!hasLocationSelected) {
+      Object.entries(mapValues).forEach((val) => {
+        if (parseInt(val[1], 10) === selectedLocation) {
+          locName = val[1].cityName;
+        }
+      });
+      setPlayer((prevValues) => ({
+        ...prevValues,
+        currentLocation: selectedLocation,
+        currentLocationName: locName,
+      }));
+      // 1. update session storage
+      sessionStorage.setItem('user', JSON.stringify(player));
+      // 2. Send current location to api
+      socket.emit('putCurrentLocation', {
+        roomId: player.hostCode, locationId: selectedLocation, teamName: player.teamName, roundId: roundNumber,
+      });
+    }
   };
 
   return (
     <div>
       <div className={classes.root}>
         <RoundsInfo label={`You are currently in ${locName}`} />
-        <p style={{ marginTop: '40px' }}>Fly to : </p>
-        {Object.entries(mapValues).map((items) => {
-          const totalCon = items[1].allowedToVisit;
-          if (items[1].cityId === player.currentLocation) {
-            return (
-              <>
-                {totalCon.map((tloc) => {
-                  const obj = mapValues.find((x) => x.cityId === tloc);
+        {!hasLocationSelected
+          ? (
+            <>
+              <p style={{ marginTop: '40px' }}>Fly to : </p>
+              {Object.entries(mapValues).map((items) => {
+                const totalCon = items[1].allowedToVisit;
+                if (items[1].cityId === player.currentLocation) {
                   return (
-                    <div className={classes.radio} key={obj.cityId}>
-                      <input
-                        type="radio"
-                        value={obj.cityId}
-                        key={obj.cityId}
-                        name="location"
-                        checked={parseInt(selectedLocation, 10) === parseInt(obj.cityId, 10)}
-                        onChange={updateSelectedLocation}
-                      />
-                      {' '}
-                      {obj.cityName}
-                    </div>
+                    <>
+                      {totalCon.map((tloc) => {
+                        const obj = mapValues.find((x) => x.cityId === tloc);
+                        return (
+                          <div className={classes.radio} key={obj.cityId}>
+                            <input
+                              type="radio"
+                              value={obj.cityId}
+                              key={obj.cityId}
+                              disabled={hasLocationSelected}
+                              name="location"
+                              checked={parseInt(selectedLocation, 10) === parseInt(obj.cityId, 10)}
+                              onChange={updateSelectedLocation}
+                            />
+                            {' '}
+                            {obj.cityName}
+                          </div>
+                        );
+                      })}
+                    </>
                   );
-                })}
-              </>
-            );
-          } return <></>;
-        })}
-        <Button className={classes.btnform} variant="contained" onClick={setVisitLocation}>
+                } return <></>;
+              })}
+            </>
+          )
+          : <p>You will be in your selected city after the timer ends</p>}
+        <Button className={classes.btnform} variant="contained" onClick={setVisitLocation} disabled={hasLocationSelected}>
           Fly
         </Button>
       </div>

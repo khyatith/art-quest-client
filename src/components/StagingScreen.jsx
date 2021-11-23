@@ -71,30 +71,32 @@ function StagingScreen() {
 
   return (
     <>
-      <Header />
       { !loadInstructions && (
-      <div className={classes.root}>
-        <div>
-          <h1 className={classes.form}>Your game code is: {location.pathname.substring(9, 29)}</h1>
-          <h1 className={classes.form}>Your UID is: {player.playerId}</h1>
-        </div>
-        {!isAdmin
-          && (
-          <form>
-            <Button className={classes.btnform} variant="contained" color="primary" onClick={handleClick}>
-              Play
+      <>
+        <Header />
+        <div className={classes.root}>
+          <div>
+            <h1 className={classes.form}>Your game code is: {location.pathname.substring(9, 29)}</h1>
+            <h1 className={classes.form}>Your UID is: {player.playerId}</h1>
+          </div>
+          {!isAdmin
+            && (
+            <form>
+              <Button className={classes.btnform} variant="contained" color="primary" onClick={handleClick}>
+                Play
+              </Button>
+            </form>
+            )}
+          {isAdmin && (
+          <>
+            <TextField className={classes.form} placeholder="Number Of Teams" name="numberOfTeams" variant="outlined" onChange={handleTeams} />
+            <Button className={classes.btnform} variant="contained" onClick={setTeams}>
+              Set number of players
             </Button>
-          </form>
+          </>
           )}
-        {isAdmin && (
-        <>
-          <TextField className={classes.form} placeholder="Number Of Teams" name="numberOfTeams" variant="outlined" onChange={handleTeams} />
-          <Button className={classes.btnform} variant="contained" onClick={setTeams}>
-            Set number of players
-          </Button>
-        </>
-        )}
-      </div>
+        </div>
+      </>
       )}
       {
         loadInstructions && <GameInstructions playersJoinedInfo={playersJoinedInfo} />
