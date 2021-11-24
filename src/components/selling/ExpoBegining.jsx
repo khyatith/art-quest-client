@@ -65,12 +65,7 @@ const useStyles = makeStyles((theme) => ({
     paddingBottom: '0.5%',
   },
   child2: {
-    flex: '0 2 29.84%' /* explanation below */,
-    borderLeft: '1%',
-    borderTop: '0',
-    borderBottom: '0',
-    borderRight: '0',
-    borderStyle: 'solid',
+    flex: '0 2 30%',
   },
   paper: {
     maxWidth: 600,
@@ -106,6 +101,8 @@ function ExpoBeginning() {
   const [expanded, setExpanded] = React.useState(-1);
   const [paintingSelected, setPaintingSelected] = React.useState(-1);
   const [selectionDone, setSelectionDone] = React.useState(false);
+  const [ticketPrice, setTicketPrice] = useState();
+  const [revenue, setRevenue] = useState();
 
   const handleExpandClick = (index) => {
     setExpanded(index);
@@ -148,12 +145,7 @@ function ExpoBeginning() {
   const renderCityStats = () => {
     const { interestInArt, demand } = cityData;
     // eslint-disable-next-line no-nested-ternary
-    const peopleInterestedInArt = parseInt(interestInArt, 10) < 100
-      ? 'Low'
-      : parseInt(interestInArt, 10) > 100
-    && parseInt(interestInArt, 10) < 200
-        ? 'Medium'
-        : 'High';
+    const peopleInterestedInArt = parseInt(interestInArt, 10) < 100 ? 'Low' : parseInt(interestInArt, 10) > 100 && parseInt(interestInArt, 10) < 200 ? 'Medium' : 'High';
     return (
       <>
         <h2 style={{ textAlign: 'center' }}>
@@ -200,6 +192,7 @@ function ExpoBeginning() {
         InputProps={{
           startAdornment: <InputAdornment position="start">$</InputAdornment>,
         }}
+        onChange={(e) => setTicketPrice(e.target.value)}
       />
       <Button
         size="small"
@@ -216,11 +209,23 @@ function ExpoBeginning() {
     </CardContent>
   );
 
-  const loadCardSelection = () => (
-    <CardContent className={classes.paintOpt}>
-      <Typography>You selected this painting for auction</Typography>
-    </CardContent>
-  );
+  const loadCardSelection = (index) => {
+    const { interestInArt, demand } = cityData;
+    const val=paintings[index].auctionObj.paintingQuality;
+    axios.get(`${API_URL}/buying/calculateRevenue?roomCode=${player.hostCode}&ticketPrice=${parseInt(ticketPrice)}&teamName=${player.teamName}&population=${demand}&cityId=${player.currentLocationName}&paintingQuality=${val}&interestInArt=${interestInArt}`)
+    .then((response) => {
+      setRevenue(response.data.calculatedRevenue);
+    });
+    return (
+      <CardContent className={classes.paintOpt}>
+        <Typography>You selected this painting.</Typography>
+        <Typography>
+          Ticket price: $
+          {revenue}
+        </Typography>
+      </CardContent>
+    );
+  };
 
   return (
     <>
@@ -229,7 +234,6 @@ function ExpoBeginning() {
         <div className={classes.child2} style={{ backgroundColor: player.teamColor }}>
           <p className={classes.fontSty}>
             You are in
-            {' '}
             {player.currentLocationName}
           </p>
           {otherTeams.length !== 0 ? (
@@ -245,7 +249,6 @@ function ExpoBeginning() {
           ) : (
             <p className={classes.fontSty}>
               There are no other teams with you in
-              {' '}
               {player.currentLocationName}
             </p>
           )}
@@ -293,7 +296,7 @@ function ExpoBeginning() {
                   </CardActions>
                   <Collapse in={index === expanded} timeout="auto" unmountOnExit>
                     {!selectionDone && loadCardContent(index)}
-                    {selectionDone && loadCardSelection()}
+                    {selectionDone && loadCardSelection(index)}
                   </Collapse>
                 </Card>
                 <div className={classes.contentstyle}>
@@ -303,7 +306,7 @@ function ExpoBeginning() {
               </Box>
             ))}
         </Box>
-        <div className={classes.child2}>
+        <div className={classes.child2} style={{backgroundColor: '#D09B69'}}>
           <div>Place where we will include Bonus Auction</div>
         </div>
       </div>
