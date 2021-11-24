@@ -123,7 +123,7 @@ function ExpoBeginning() {
   const [paintingSelected, setPaintingSelected] = React.useState(-1);
   const [selectionDone, setSelectionDone] = React.useState(false);
   const [ticketPrice, setTicketPrice] = useState();
-  const [revenue, setRevenue] = useState();
+  const [revenue, setRevenue] = useState(-1);
   const [hasTimerEnded, setTimerEnded] = useState(false);
   const [timerValue, setTimerValue] = useState({});
 
@@ -271,15 +271,15 @@ function ExpoBeginning() {
   const loadCardSelection = (index) => {
     const { interestInArt, demand } = cityData;
     const val = paintings[index].auctionObj.paintingQuality;
-    axios
-      .get(
-        `${API_URL}/buying/calculateRevenue?roomCode=${player.hostCode}&ticketPrice=${parseInt(ticketPrice)}&teamName=${
-          player.teamName
-        }&population=${demand}&cityId=${player.currentLocationName}&paintingQuality=${val}&interestInArt=${interestInArt}`,
-      )
-      .then((response) => {
-        setRevenue(response.data.calculatedRevenue);
-      });
+    if (revenue === -1) {
+      axios
+        .get(
+          `${API_URL}/buying/calculateRevenue?roomCode=${player.hostCode}&ticketPrice=${ticketPrice}&teamName=${player.teamName}&population=${demand}&cityId=${player.currentLocationName}&paintingQuality=${val}&interestInArt=${interestInArt}`,
+        )
+        .then((response) => {
+          setRevenue(response.data.calculatedRevenue);
+        });
+    }
     return (
       <CardContent className={classes.paintOpt}>
         <Typography>You selected this painting.</Typography>
