@@ -1,5 +1,5 @@
 import React, {
-  useEffect, useState, useContext,
+  useEffect, useState, useContext, useCallback,
 } from 'react';
 import axios from 'axios';
 import { makeStyles } from '@material-ui/core/styles';
@@ -7,6 +7,7 @@ import Button from '@material-ui/core/Button';
 import userContext from '../../global/userContext';
 import { API_URL } from '../../global/constants';
 import RoundsInfo from '../RoundsInfo';
+import { socket } from '../../global/socket';
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -32,14 +33,39 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-const Airport = () => {
+const Airport = ({
+  roundNumber, hasLocationSelected, selectedLocationId,
+}) => {
   const classes = useStyles();
   const [mapValues, setMapValues] = useState({});
   // const [teamValues, setTeamValues] = useState({});
   const [valRet, setValRet] = useState(false);
   const { player, setPlayer } = useContext(userContext);
-  const [selectedLocation, setSelectedLocation] = useState(2);
-  let locName = 'Delhi';
+  const [selectedRadio, setSelectedRadio] = useState();
+  const [updatedLocation, setUpdatedLocation] = useState(false);
+
+  const setVisitLocation = async () => {
+    socket.emit('putCurrentLocation', {
+      roomId: player.hostCode, locationId: selectedRadio, teamName: player.teamName, roundId: roundNumber,
+    });
+  };
+
+  const updateLocName = useCallback(() => {
+    let locName;
+    Object.entries(mapValues).forEach((val) => {
+      if (parseInt(val[1].cityId, 10) === selectedLocationId) {
+        locName = val[1].cityName;
+      }
+    });
+    const updatedPlayer = {
+      ...player,
+      currentLocation: selectedLocationId,
+      currentLocationName: locName,
+    };
+    setPlayer(updatedPlayer);
+    // 1. update session storage
+    sessionStorage.setItem('user', JSON.stringify(updatedPlayer));
+  }, [selectedLocationId]);
 
   // Hooks and methods
   useEffect(() => {
@@ -47,64 +73,69 @@ const Airport = () => {
       const { data } = await axios.get(`${API_URL}/buying/getMap`);
       setMapValues(data);
     }
-    if (!valRet) {
+    if (!valRet && !hasLocationSelected) {
       getMapVal();
       setValRet(true);
     }
-  }, [valRet]);
+  }, [valRet, hasLocationSelected]);
+
+  useEffect(() => {
+    if (hasLocationSelected && selectedLocationId && !updatedLocation) {
+      updateLocName();
+      setUpdatedLocation(true);
+    }
+  }, [hasLocationSelected, selectedLocationId, updateLocName, updatedLocation]);
 
   const updateSelectedLocation = (e) => {
-    setSelectedLocation(parseInt(e.target.value, 10));
-  };
-
-  const setVisitLocation = async () => {
-    Object.entries(mapValues).forEach((val) => {
-      if (parseInt(val[1], 10) === selectedLocation) {
-        locName = val[1].cityName;
-      }
-    });
-    setPlayer((prevValues) => ({
-      ...prevValues,
-      currentLocation: selectedLocation,
-      currentLocationName: locName,
-    }));
-    // 1. update session storage
-    // 2. Send current location to api
-    // await axios.post(`${API_URL}/buying/putCurrentLocation`, )
+    setSelectedRadio(parseInt(e.target.value, 10));
   };
 
   return (
     <div>
       <div className={classes.root}>
-        <RoundsInfo label={`You are currently in ${locName}`} />
-        <p style={{ marginTop: '40px' }}>Fly to : </p>
-        {Object.entries(mapValues).map((items) => {
-          const totalCon = items[1].allowedToVisit;
-          if (items[1].cityId === player.currentLocation) {
-            return (
-              <>
-                {totalCon.map((tloc) => {
-                  const obj = mapValues.find((x) => x.cityId === tloc);
+        <RoundsInfo label={`You are currently in ${player.previousLocationName}`} />
+        {!hasLocationSelected
+          ? (
+            <>
+              <p style={{ marginTop: '40px' }}>Fly to : </p>
+              {Object.entries(mapValues).map((items) => {
+                const totalCon = items[1].allowedToVisit;
+                if (items[1].cityId === player.currentLocation) {
                   return (
-                    <div className={classes.radio} key={obj.cityId}>
-                      <input
-                        type="radio"
-                        value={obj.cityId}
-                        key={obj.cityId}
-                        name="location"
-                        checked={parseInt(selectedLocation, 10) === parseInt(obj.cityId, 10)}
-                        onChange={updateSelectedLocation}
-                      />
-                      {' '}
-                      {obj.cityName}
-                    </div>
+                    <>
+                      {totalCon.map((tloc) => {
+                        const obj = mapValues.find((x) => x.cityId === tloc);
+                        return (
+                          <div className={classes.radio} key={obj.cityId}>
+                            <input
+                              type="radio"
+                              value={obj.cityId}
+                              key={obj.cityId}
+                              disabled={hasLocationSelected}
+                              name="location"
+                              checked={parseInt(selectedRadio, 10) === parseInt(obj.cityId, 10)}
+                              onChange={updateSelectedLocation}
+                            />
+                            {' '}
+                            {obj.cityName}
+                          </div>
+                        );
+                      })}
+                    </>
                   );
-                })}
-              </>
-            );
-          } return <></>;
-        })}
-        <Button className={classes.btnform} variant="contained" onClick={setVisitLocation}>
+                } return <></>;
+              })}
+            </>
+          )
+          : hasLocationSelected && (
+          <p>
+            Your team's next destination:
+            {' '}
+            {player.currentLocationName}
+            {' '}
+          </p>
+          )}
+        <Button className={classes.btnform} variant="contained" onClick={setVisitLocation} disabled={hasLocationSelected}>
           Fly
         </Button>
       </div>
