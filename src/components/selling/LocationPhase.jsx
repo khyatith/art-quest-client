@@ -12,6 +12,7 @@ import Details from './Details';
 import Mapping from './Mapping';
 import { API_URL, TEAM_COLOR_MAP } from '../../global/constants';
 import load from '../../assets/load.webp';
+import { socket } from '../../global/socket';
 
 const useStyles = makeStyles((theme) => ({
   parent: {
@@ -93,40 +94,44 @@ function LocationPhase() {
   const [locationPageTimerValue, setLocationPageTimerValue] = useState({});
   const [roundId, setRoundId] = useState(1);
   const [hasLocationSelected, setSelectedLocation] = useState(false);
+  const [selectedLocationId, setSelectedLocId] = useState();
 
   // Hooks and methods
   useEffect(() => {
-    setLoading(true);
-    const datasets = [];
-    axios
-      .get(`${API_URL}/buying/getSellingResults?roomId=${player.hostCode}`)
-      .then((newData) => {
-        const {
-          amountSpentByTeam, visits, locationPhaseTimerValue, roundNumber,
-        } = newData.data;
-        let x = 1;
-        const tv = [];
-        const labels = ['Cash', 'Visits'];
-        Object.entries(amountSpentByTeam).forEach(([key, value]) => {
-          const team = key;
-          const cash = value;
-          let vis = 0;
-          const teamVisits = visits.filter((v) => v.teamName === key);
-          vis = teamVisits ? teamVisits[0].visitCount : 0;
-          datasets.push(createData(team, cash, vis));
-          tv.push(createDataMap(x, team, vis, cash));
-          x += 1;
+    if (!hasLocationSelected) {
+      setLoading(true);
+      const datasets = [];
+      axios
+        .get(`${API_URL}/buying/getSellingResults?roomId=${player.hostCode}`)
+        .then((newData) => {
+          const {
+            amountSpentByTeam, visits, locationPhaseTimerValue, roundNumber,
+          } = newData.data;
+          let x = 1;
+          const tv = [];
+          const labels = ['Cash', 'Visits'];
+          Object.entries(amountSpentByTeam).forEach(([key, value]) => {
+            const team = key;
+            const cash = value;
+            let vis = 0;
+            const teamVisits = visits.filter((v) => v.teamName === key);
+            console.log('teamVisits', teamVisits);
+            vis = teamVisits.length > 0 ? teamVisits[0].visitCount : 0;
+            datasets.push(createData(team, cash, vis));
+            tv.push(createDataMap(x, team, vis, cash));
+            x += 1;
+          });
+          setResult({ labels, datasets });
+          setRows(tv);
+          setLocationPageTimerValue(locationPhaseTimerValue);
+          if (roundNumber) {
+            setRoundId(roundNumber);
+          }
+        })
+        .finally(() => {
+          setLoading(false);
         });
-        setResult({ labels, datasets });
-        setRows(tv);
-        setLocationPageTimerValue(locationPhaseTimerValue);
-        if (roundNumber) {
-          setRoundId(roundNumber);
-        }
-      })
-      .finally(() => {
-        setLoading(false);
-      });
+    }
   }, [player]);
 
   const getRemainingTime = () => {
@@ -163,6 +168,19 @@ function LocationPhase() {
     }
   }, [hasLocationPageTimerEnded]);
 
+  const setLocationSelectedForCurrentRound = (value, locId) => {
+    setSelectedLocation(value);
+    setSelectedLocId(locId);
+  };
+
+  useEffect(() => {
+    socket.on('locationUpdatedForTeam', (data) => {
+      if (data.roundId === roundId && data.teamName === player.teamName) {
+        setLocationSelectedForCurrentRound(true, data.locationId);
+      }
+    });
+  });
+
   if (loading) {
     return (
       <div style={{ marginTop: '12%', marginLeft: '43%' }}>
@@ -172,10 +190,6 @@ function LocationPhase() {
       </div>
     );
   }
-
-  const setLocationSelectedForCurrentRound = (value) => {
-    setSelectedLocation(value);
-  };
 
   // IMPORTANT (KOGNITI CHANGE)
 
@@ -211,7 +225,11 @@ function LocationPhase() {
           <Mapping />
         </div>
         <div className={classes.child1}>
-          <Airport roundNumber={roundId} setLocationSelectedForCurrentRound={setLocationSelectedForCurrentRound} hasLocationSelected={hasLocationSelected} />
+          <Airport
+            roundNumber={roundId}
+            hasLocationSelected={hasLocationSelected}
+            selectedLocationId={selectedLocationId}
+          />
         </div>
       </div>
       <p className={classes.resultsText}>Results</p>

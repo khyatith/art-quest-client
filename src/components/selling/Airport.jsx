@@ -1,5 +1,5 @@
 import React, {
-  useEffect, useState, useContext,
+  useEffect, useState, useContext, useCallback,
 } from 'react';
 import axios from 'axios';
 import { makeStyles } from '@material-ui/core/styles';
@@ -33,14 +33,39 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-const Airport = ({ roundNumber, setLocationSelectedForCurrentRound, hasLocationSelected }) => {
+const Airport = ({
+  roundNumber, hasLocationSelected, selectedLocationId,
+}) => {
   const classes = useStyles();
   const [mapValues, setMapValues] = useState({});
   // const [teamValues, setTeamValues] = useState({});
   const [valRet, setValRet] = useState(false);
   const { player, setPlayer } = useContext(userContext);
-  const [selectedLocation, setSelectedLocation] = useState(2);
-  let locName = 'Delhi';
+  const [selectedRadio, setSelectedRadio] = useState();
+  const [updatedLocation, setUpdatedLocation] = useState(false);
+
+  const setVisitLocation = async () => {
+    socket.emit('putCurrentLocation', {
+      roomId: player.hostCode, locationId: selectedRadio, teamName: player.teamName, roundId: roundNumber,
+    });
+  };
+
+  const updateLocName = useCallback(() => {
+    let locName;
+    Object.entries(mapValues).forEach((val) => {
+      if (parseInt(val[1].cityId, 10) === selectedLocationId) {
+        locName = val[1].cityName;
+      }
+    });
+    const updatedPlayer = {
+      ...player,
+      currentLocation: selectedLocationId,
+      currentLocationName: locName,
+    };
+    setPlayer(updatedPlayer);
+    // 1. update session storage
+    sessionStorage.setItem('user', JSON.stringify(updatedPlayer));
+  }, [selectedLocationId]);
 
   // Hooks and methods
   useEffect(() => {
@@ -55,46 +80,20 @@ const Airport = ({ roundNumber, setLocationSelectedForCurrentRound, hasLocationS
   }, [valRet, hasLocationSelected]);
 
   useEffect(() => {
-    socket.on('locationUpdatedForTeam', (data) => {
-      console.log('inside socket');
-      if (data.roundId === roundNumber && data.teamName === player.teamName) {
-        setLocationSelectedForCurrentRound(true);
-      }
-    });
-  });
+    if (hasLocationSelected && selectedLocationId && !updatedLocation) {
+      updateLocName();
+      setUpdatedLocation(true);
+    }
+  }, [hasLocationSelected, selectedLocationId, updateLocName, updatedLocation]);
 
   const updateSelectedLocation = (e) => {
-    if (!hasLocationSelected) {
-      console.log('inside updateSelectedLocation');
-      setSelectedLocation(parseInt(e.target.value, 10));
-    }
-  };
-
-  const setVisitLocation = async () => {
-    if (!hasLocationSelected) {
-      Object.entries(mapValues).forEach((val) => {
-        if (parseInt(val[1], 10) === selectedLocation) {
-          locName = val[1].cityName;
-        }
-      });
-      setPlayer((prevValues) => ({
-        ...prevValues,
-        currentLocation: selectedLocation,
-        currentLocationName: locName,
-      }));
-      // 1. update session storage
-      sessionStorage.setItem('user', JSON.stringify(player));
-      // 2. Send current location to api
-      socket.emit('putCurrentLocation', {
-        roomId: player.hostCode, locationId: selectedLocation, teamName: player.teamName, roundId: roundNumber,
-      });
-    }
+    setSelectedRadio(parseInt(e.target.value, 10));
   };
 
   return (
     <div>
       <div className={classes.root}>
-        <RoundsInfo label={`You are currently in ${locName}`} />
+        <RoundsInfo label={`You are currently in ${player.previousLocationName}`} />
         {!hasLocationSelected
           ? (
             <>
@@ -114,7 +113,7 @@ const Airport = ({ roundNumber, setLocationSelectedForCurrentRound, hasLocationS
                               key={obj.cityId}
                               disabled={hasLocationSelected}
                               name="location"
-                              checked={parseInt(selectedLocation, 10) === parseInt(obj.cityId, 10)}
+                              checked={parseInt(selectedRadio, 10) === parseInt(obj.cityId, 10)}
                               onChange={updateSelectedLocation}
                             />
                             {' '}
@@ -128,7 +127,14 @@ const Airport = ({ roundNumber, setLocationSelectedForCurrentRound, hasLocationS
               })}
             </>
           )
-          : <p>You will be in your selected city after the timer ends</p>}
+          : hasLocationSelected && (
+          <p>
+            Your team's next destination:
+            {' '}
+            {player.currentLocationName}
+            {' '}
+          </p>
+          )}
         <Button className={classes.btnform} variant="contained" onClick={setVisitLocation} disabled={hasLocationSelected}>
           Fly
         </Button>

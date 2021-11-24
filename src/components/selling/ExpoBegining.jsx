@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useEffect, useState } from 'react';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import axios from 'axios';
 import Box from '@mui/material/Box';
@@ -21,7 +21,7 @@ import InputAdornment from '@material-ui/core/InputAdornment';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import { API_URL } from '../../global/constants';
-import userContext from '../../global/userContext';
+// import userContext from '../../global/userContext';
 import SimpleRating from '../Rating';
 
 const useStyles = makeStyles((theme) => ({
@@ -122,7 +122,7 @@ function ExpoBeginning() {
   const classes = useStyles();
   const [paintings, setPaintings] = useState([]);
   const [cityData, setCityData] = useState();
-  const { player } = useContext(userContext);
+  const player = JSON.parse(sessionStorage.getItem('user'));
   const [otherTeams, setOtherTeams] = useState([]);
   const [expanded, setExpanded] = React.useState(-1);
   const [paintingSelected, setPaintingSelected] = React.useState(-1);
@@ -143,7 +143,9 @@ function ExpoBeginning() {
   useEffect(() => {
     // setLoading(true);
     async function getSellingInfo() {
-      const { data } = await axios.get(`${API_URL}/buying/getSellingInfo?roomId=${player.hostCode}&locationId=1&teamName=${player.teamName}`);
+      const { data } = await axios.get(
+        `${API_URL}/buying/getSellingInfo?roomId=${player.hostCode}&locationId=${player.currentLocation}&teamName=${player.teamName}`,
+      );
       const {
         artifacts, otherteams, city, sellPaintingTimerValue,
       } = data;
@@ -158,7 +160,9 @@ function ExpoBeginning() {
       }
       setTimerValue(sellPaintingTimerValue);
     }
-    getSellingInfo();
+    if (!paintings || !cityData) {
+      getSellingInfo();
+    }
   }, [player]);
 
   // if (loading) {
