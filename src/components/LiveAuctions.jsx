@@ -9,7 +9,7 @@ import SecondPriceSealedBid from './auctions/SecondPriceSealedBid';
 import AllPayAuctions from './auctions/AllPayAuctions';
 import auctionContext from '../global/auctionContext';
 import useSessionStorage from '../hooks/useSessionStorage';
-import LocationPhase from './selling/LocationPhase';
+import SellingGameInstructions from './selling/SellingGameInstructions';
 
 function LiveAuctions({ totalNumberOfPaintings, fromLP }) {
   const [hasEndedAuctions, setHasEndedAuctions] = useState(false);
@@ -89,7 +89,7 @@ function LiveAuctions({ totalNumberOfPaintings, fromLP }) {
   return (
     <>
       {!hasEndedAuctions && currentAuctionData && currentAuctionData.currentAuctionObj && loadAuction()}
-      {hasEndedAuctions && <LocationPhase />}
+      {hasEndedAuctions && <SellingGameInstructions />}
     </>
   );
 }
