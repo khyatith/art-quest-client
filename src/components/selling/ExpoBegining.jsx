@@ -1,4 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, {
+  useEffect, useState, useCallback,
+} from 'react';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import axios from 'axios';
 import Box from '@mui/material/Box';
@@ -20,8 +22,8 @@ import { TextField } from '@material-ui/core';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
+import { useHistory } from 'react-router-dom';
 import { API_URL } from '../../global/constants';
-// import userContext from '../../global/userContext';
 import SimpleRating from '../Rating';
 
 const useStyles = makeStyles((theme) => ({
@@ -117,7 +119,8 @@ function ExpoBeginning() {
   const classes = useStyles();
   const [paintings, setPaintings] = useState([]);
   const [cityData, setCityData] = useState();
-  const player = JSON.parse(sessionStorage.getItem('user'));
+  const user = JSON.parse(sessionStorage.getItem('user'));
+  // const { player, setPlayer } = useContext(userContext);
   const [otherTeams, setOtherTeams] = useState([]);
   const [expanded, setExpanded] = React.useState(-1);
   const [paintingSelected, setPaintingSelected] = React.useState(-1);
@@ -126,6 +129,7 @@ function ExpoBeginning() {
   const [revenue, setRevenue] = useState(-1);
   const [hasTimerEnded, setTimerEnded] = useState(false);
   const [timerValue, setTimerValue] = useState({});
+  const history = useHistory();
 
   const handleExpandClick = (index) => {
     setExpanded(index);
@@ -141,7 +145,7 @@ function ExpoBeginning() {
     // setLoading(true);
     async function getSellingInfo() {
       const { data } = await axios.get(
-        `${API_URL}/buying/getSellingInfo?roomId=${player.hostCode}&locationId=${player.currentLocation}&teamName=${player.teamName}`,
+        `${API_URL}/buying/getSellingInfo?roomId=${user.hostCode}&locationId=${user.currentLocation}&teamName=${user.teamName}`,
       );
       const {
         artifacts, otherteams, city, sellPaintingTimerValue,
@@ -160,7 +164,7 @@ function ExpoBeginning() {
     if (!paintings || !cityData) {
       getSellingInfo();
     }
-  }, [player]);
+  }, [user]);
 
   // if (loading) {
   //   return (
@@ -171,6 +175,23 @@ function ExpoBeginning() {
   //     </div>
   //   );
   // }
+
+  const updateRoundIdAndRedirect = useCallback(async () => {
+    // update round number and locations in session storage and context
+    // call /putRoundId to update round number in rooms collection
+    // redirect to landing page
+    console.log('inside rounds info');
+    await axios.post(
+      `${API_URL}/buying/updateRoundId`, { roomId: user.hostCode, roundId: user.roundId },
+    );
+    history.push(`/sell/location/${user.playerId}`);
+  }, [user]);
+
+  useEffect(() => {
+    if (hasTimerEnded) {
+      updateRoundIdAndRedirect();
+    }
+  }, [hasTimerEnded, updateRoundIdAndRedirect]);
 
   const getRemainingTime = () => {
     console.log(hasTimerEnded);
@@ -204,12 +225,15 @@ function ExpoBeginning() {
   const renderCityStats = () => {
     const { interestInArt, demand } = cityData;
     // eslint-disable-next-line no-nested-ternary
-    const peopleInterestedInArt = parseInt(interestInArt, 10) < 100 ? 'Low' : parseInt(interestInArt, 10) > 100 && parseInt(interestInArt, 10) < 200 ? 'Medium' : 'High';
+    const peopleInterestedInArt = parseInt(interestInArt, 10) < 100
+      ? 'Low' : parseInt(interestInArt, 10) > 100 && parseInt(interestInArt, 10) < 200
+        ? 'Medium'
+        : 'High';
     return (
       <>
         <h2 style={{ textAlign: 'center' }}>
-          About
-          {player.currentLocationName}
+          About&nbsp;
+          {user.currentLocationName}
         </h2>
         <TableContainer className={classes.paper} component={Paper}>
           <Table className={classes.table} aria-label="customized table">
@@ -239,7 +263,7 @@ function ExpoBeginning() {
       <p style={{ color: '#000000', fontWeight: '700', marginBottom: '25px' }}>
         How much would you charge 1 person to see your painting in
         {' '}
-        {player.currentLocationName}
+        {user.currentLocationName}
         {' '}
         museum?
       </p>
@@ -273,9 +297,8 @@ function ExpoBeginning() {
     const val = paintings[index].auctionObj.paintingQuality;
     if (revenue === -1) {
       axios
-        .get(
-          `${API_URL}/buying/calculateRevenue?roomCode=${player.hostCode}&ticketPrice=${ticketPrice}&teamName=${player.teamName}&population=${demand}&cityId=${player.currentLocationName}&paintingQuality=${val}&interestInArt=${interestInArt}`,
-        )
+        // eslint-disable-next-line max-len
+        .get(`${API_URL}/buying/calculateRevenue?roomCode=${user.hostCode}&ticketPrice=${ticketPrice}&teamName=${user.teamName}&population=${demand}&cityId=${user.currentLocationName}&paintingQuality=${val}&interestInArt=${interestInArt}`)
         .then((response) => {
           setRevenue(response.data.calculatedRevenue);
         });
@@ -302,14 +325,14 @@ function ExpoBeginning() {
             :
             {timerValue && timerValue.seconds}
           </Typography>
-          {player && (
+          {user && (
             <div className={classes.playerdiv}>
               <p>
-                {player.playerName}
+                {user.playerName}
                 , Team
-                {player.teamName}
+                {user.teamName}
                 ,
-                {player.playerId}
+                {user.playerId}
               </p>
             </div>
           )}
@@ -317,16 +340,16 @@ function ExpoBeginning() {
       </AppBar>
       <div className={classes.parent}>
         <div className={classes.child1}>{cityData && <div className={classes.cityData}>{renderCityStats()}</div>}</div>
-        <div className={classes.child2} style={{ backgroundColor: player.teamColor }}>
+        <div className={classes.child2} style={{ backgroundColor: user.teamColor }}>
           <p className={classes.fontSty}>
-            You are in
-            {player.currentLocationName}
+            You are in&nbsp;
+            {user.currentLocationName}
           </p>
           {otherTeams.length !== 0 ? (
             <>
               <p className={classes.fontSty}>
-                Other teams in
-                {player.currentLocationName}
+                Other teams in&nbsp;
+                {user.currentLocationName}
               </p>
               {otherTeams.map((arg) => (
                 <div className={classes.teammark} style={{ backgroundColor: arg, borderRadius: '100%' }} />
@@ -334,8 +357,8 @@ function ExpoBeginning() {
             </>
           ) : (
             <p className={classes.fontSty}>
-              There are no other teams with you in
-              {player.currentLocationName}
+              There are no other teams with you in&nbsp;
+              {user.currentLocationName}
             </p>
           )}
         </div>

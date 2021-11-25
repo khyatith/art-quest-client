@@ -34,7 +34,7 @@ const useStyles = makeStyles(() => ({
 }));
 
 const Airport = ({
-  roundNumber, hasLocationSelected, selectedLocationId,
+  roundNumber, hasLocationSelected, selectedLocationId, previousLocationId,
 }) => {
   const classes = useStyles();
   const [mapValues, setMapValues] = useState({});
@@ -90,17 +90,28 @@ const Airport = ({
     setSelectedRadio(parseInt(e.target.value, 10));
   };
 
+  const getLocationNameById = () => {
+    let result;
+    Object.entries(mapValues).forEach((val) => {
+      if (parseInt(val[1].cityId, 10) === previousLocationId) {
+        result = val[1].cityName;
+      }
+    });
+    console.log('result', result);
+    return result;
+  };
+
   return (
     <div>
       <div className={classes.root}>
-        <RoundsInfo label={`You are currently in ${player.previousLocationName}`} />
+        {mapValues && previousLocationId && <RoundsInfo label={`You are currently in ${getLocationNameById()}`} />}
         {!hasLocationSelected
           ? (
             <>
               <p style={{ marginTop: '40px' }}>Fly to : </p>
               {Object.entries(mapValues).map((items) => {
                 const totalCon = items[1].allowedToVisit;
-                if (items[1].cityId === player.currentLocation) {
+                if (items[1].cityId === player.previousLocation) {
                   return (
                     <>
                       {totalCon.map((tloc) => {
@@ -131,7 +142,7 @@ const Airport = ({
           <p>
             Your team's next destination:
             {' '}
-            {player.currentLocationName}
+            {player.currentLocationName && player.currentLocationName}
             {' '}
           </p>
           )}

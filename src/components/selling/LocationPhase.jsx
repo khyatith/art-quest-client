@@ -13,6 +13,7 @@ import Mapping from './Mapping';
 import { API_URL, TEAM_COLOR_MAP } from '../../global/constants';
 import load from '../../assets/load.webp';
 import { socket } from '../../global/socket';
+import RoundsInfo from '../RoundsInfo';
 
 const useStyles = makeStyles((theme) => ({
   parent: {
@@ -87,14 +88,15 @@ function LocationPhase() {
   const classes = useStyles();
   const [rows, setRows] = useState([]);
   const [result, setResult] = useState({});
-  const { player } = useContext(userContext);
+  const { player, setPlayer } = useContext(userContext);
   const history = useHistory();
   const [loading, setLoading] = useState(true);
   const [hasLocationPageTimerEnded, setHasLocationPageTimerEnded] = useState(false);
   const [locationPageTimerValue, setLocationPageTimerValue] = useState({});
-  const [roundId, setRoundId] = useState(1);
+  const [roundId, setRoundId] = useState();
   const [hasLocationSelected, setSelectedLocation] = useState(false);
   const [selectedLocationId, setSelectedLocId] = useState();
+  const [currentLocationId, setCurrentLocationId] = useState();
 
   // Hooks and methods
   useEffect(() => {
@@ -115,8 +117,10 @@ function LocationPhase() {
             const cash = value;
             let vis = 0;
             const teamVisits = visits.filter((v) => v.teamName === key);
-            console.log('teamVisits', teamVisits);
             vis = teamVisits.length > 0 ? teamVisits[0].visitCount : 0;
+            // eslint-disable-next-line no-nested-ternary
+            const currentLocation = teamVisits.length === 0 ? 2 : teamVisits[0].currentLocation;
+            setCurrentLocationId(currentLocation);
             datasets.push(createData(team, cash, vis));
             tv.push(createDataMap(x, team, vis, cash));
             x += 1;
@@ -133,6 +137,24 @@ function LocationPhase() {
         });
     }
   }, [player]);
+
+  useEffect(() => {
+    if (roundId || currentLocationId) {
+      const user = JSON.parse(sessionStorage.getItem('user'));
+      const updatedUser = {
+        ...user,
+        roundId,
+        previousLocation: currentLocationId,
+      };
+      console.log('updatedUser', updatedUser);
+      setPlayer((prevValues) => ({
+        ...prevValues,
+        ...updatedUser,
+      }));
+      console.log('player', player);
+      sessionStorage.setItem('user', JSON.stringify(updatedUser));
+    }
+  }, [roundId]);
 
   const getRemainingTime = () => {
     if (Object.keys(locationPageTimerValue).length <= 0) {
@@ -164,6 +186,7 @@ function LocationPhase() {
 
   useEffect(() => {
     if (hasLocationPageTimerEnded) {
+      setSelectedLocation(false);
       history.push(`/sell/${player.playerId}`);
     }
   }, [hasLocationPageTimerEnded]);
@@ -176,6 +199,7 @@ function LocationPhase() {
   useEffect(() => {
     socket.on('locationUpdatedForTeam', (data) => {
       if (data.roundId === roundId && data.teamName === player.teamName) {
+        console.log('inside locationId', data);
         setLocationSelectedForCurrentRound(true, data.locationId);
       }
     });
@@ -220,6 +244,7 @@ function LocationPhase() {
             )}
         </Toolbar>
       </AppBar>
+      <RoundsInfo label={`Round ${roundId} of 10`} />
       <div className={classes.parent}>
         <div className={classes.child1}>
           <Mapping />
@@ -229,6 +254,7 @@ function LocationPhase() {
             roundNumber={roundId}
             hasLocationSelected={hasLocationSelected}
             selectedLocationId={selectedLocationId}
+            previousLocationId={currentLocationId}
           />
         </div>
       </div>
