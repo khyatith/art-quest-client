@@ -45,6 +45,10 @@ const useStyles = makeStyles((theme) => ({
   expandOpen: {
     backgroundColor: '#000000',
   },
+  cardStyle : {
+    transition: 'width 2s',
+    transitionTimingFunction: 'linear',
+  },
   teammark: {
     height: '35px',
     width: '35px',
@@ -362,6 +366,7 @@ function ExpoBeginning() {
                     margin: 'auto',
                     marginTop: '3%',
                   }}
+                  className = {classes.cardStyle}
                 >
                   <CardActionArea>
                     <CardMedia sx={{ height: 398 }} component="img" image={arg.auctionObj.imageURL} alt="green iguana" />
