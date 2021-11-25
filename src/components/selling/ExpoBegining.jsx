@@ -47,7 +47,7 @@ const useStyles = makeStyles((theme) => ({
   expandOpen: {
     backgroundColor: '#000000',
   },
-  cardStyle : {
+  cardStyle: {
     transition: 'width 2s',
     transitionTimingFunction: 'linear',
   },
@@ -132,7 +132,7 @@ function ExpoBeginning() {
   const [ticketPrice, setTicketPrice] = useState();
   const [revenue, setRevenue] = useState(-1);
   const [hasTimerEnded, setTimerEnded] = useState(false);
-  const [timerValue, setTimerValue] = useState({});
+  const [timerValue, setTimerValue] = useState();
   const history = useHistory();
 
   const handleExpandClick = (index) => {
@@ -184,7 +184,6 @@ function ExpoBeginning() {
     // update round number and locations in session storage and context
     // call /putRoundId to update round number in rooms collection
     // redirect to landing page
-    console.log('inside rounds info');
     await axios.post(
       `${API_URL}/buying/updateRoundId`, { roomId: user.hostCode, roundId: user.roundId },
     );
@@ -198,7 +197,6 @@ function ExpoBeginning() {
   }, [hasTimerEnded, updateRoundIdAndRedirect]);
 
   const getRemainingTime = () => {
-    console.log(hasTimerEnded);
     if (Object.keys(timerValue).length <= 0) {
       setTimerEnded(true);
       return;
@@ -389,7 +387,7 @@ function ExpoBeginning() {
                     margin: 'auto',
                     marginTop: '3%',
                   }}
-                  className = {classes.cardStyle}
+                  className={classes.cardStyle}
                 >
                   <CardActionArea>
                     <CardMedia sx={{ height: 398 }} component="img" image={arg.auctionObj.imageURL} alt="green iguana" />

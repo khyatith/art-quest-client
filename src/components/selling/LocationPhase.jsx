@@ -92,7 +92,7 @@ function LocationPhase() {
   const history = useHistory();
   const [loading, setLoading] = useState(true);
   const [hasLocationPageTimerEnded, setHasLocationPageTimerEnded] = useState(false);
-  const [locationPageTimerValue, setLocationPageTimerValue] = useState({});
+  const [locationPageTimerValue, setLocationPageTimerValue] = useState();
   const [roundId, setRoundId] = useState();
   const [hasLocationSelected, setSelectedLocation] = useState(false);
   const [selectedLocationId, setSelectedLocId] = useState();
@@ -199,7 +199,6 @@ function LocationPhase() {
   useEffect(() => {
     socket.on('locationUpdatedForTeam', (data) => {
       if (data.roundId === roundId && data.teamName === player.teamName) {
-        console.log('inside locationId', data);
         setLocationSelectedForCurrentRound(true, data.locationId);
       }
     });
