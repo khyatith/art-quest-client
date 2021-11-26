@@ -119,12 +119,14 @@ function LocationPhase() {
             const teamVisits = visits.filter((v) => v.teamName === key);
             vis = teamVisits.length > 0 ? teamVisits[0].visitCount : 0;
             // eslint-disable-next-line no-nested-ternary
-            const currentLocation = teamVisits.length === 0 ? 2 : teamVisits[0].currentLocation;
-            setCurrentLocationId(currentLocation);
             datasets.push(createData(team, cash, vis));
             tv.push(createDataMap(x, team, vis, cash));
             x += 1;
           });
+          const currentTeamVisits = visits.filter((v) => v.teamName === player.teamName);
+          console.log('currentTeamVisits', currentTeamVisits);
+          const currentLocationForTeam = currentTeamVisits.length === 0 ? 2 : currentTeamVisits[0].currentLocation;
+          setCurrentLocationId(currentLocationForTeam);
           setResult({ labels, datasets });
           setRows(tv);
           setLocationPageTimerValue(locationPhaseTimerValue);
@@ -136,7 +138,7 @@ function LocationPhase() {
           setLoading(false);
         });
     }
-  }, [player]);
+  }, [player, hasLocationSelected]);
 
   useEffect(() => {
     if (roundId || currentLocationId) {
@@ -146,15 +148,13 @@ function LocationPhase() {
         roundId,
         previousLocation: currentLocationId,
       };
-      console.log('updatedUser', updatedUser);
       setPlayer((prevValues) => ({
         ...prevValues,
         ...updatedUser,
       }));
-      console.log('player', player);
       sessionStorage.setItem('user', JSON.stringify(updatedUser));
     }
-  }, [roundId]);
+  }, [roundId, currentLocationId, setPlayer]);
 
   const getRemainingTime = () => {
     if (Object.keys(locationPageTimerValue).length <= 0) {
