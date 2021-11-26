@@ -1,5 +1,5 @@
 import React, {
-  useEffect, useState, useCallback,
+  useEffect, useState,
 } from 'react';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import axios from 'axios';
@@ -25,6 +25,7 @@ import Toolbar from '@material-ui/core/Toolbar';
 import { useHistory } from 'react-router-dom';
 import { API_URL } from '../../global/constants';
 import SimpleRating from '../Rating';
+import { socket } from '../../global/socket';
 
 const useStyles = makeStyles((theme) => ({
   paintOpt: {
@@ -130,9 +131,10 @@ function ExpoBeginning() {
   const [paintingSelected, setPaintingSelected] = React.useState(-1);
   const [selectionDone, setSelectionDone] = React.useState(false);
   const [ticketPrice, setTicketPrice] = useState();
-  const [revenue, setRevenue] = useState(-1);
+  // const [revenue, setRevenue] = useState(-1);
   const [hasTimerEnded, setTimerEnded] = useState(false);
   const [timerValue, setTimerValue] = useState();
+  const [nominatedPaintings, setNominatedPaintings] = useState([]);
   const history = useHistory();
 
   const handleExpandClick = (index) => {
@@ -180,21 +182,26 @@ function ExpoBeginning() {
   //   );
   // }
 
-  const updateRoundIdAndRedirect = useCallback(async () => {
-    // update round number and locations in session storage and context
-    // call /putRoundId to update round number in rooms collection
-    // redirect to landing page
-    await axios.post(
-      `${API_URL}/buying/updateRoundId`, { roomId: user.hostCode, roundId: user.roundId },
-    );
-    history.push(`/sell/location/${user.playerId}`);
-  }, [user]);
+  // useEffect(() => {
+  //   if (!hasTimerEnded) {
+  //     socket.on('calculatedRevenueForTeam', (data) => {
+  //       console.log('calculated revenue', data);
+  //     });
+  //   }
+  // });
 
   useEffect(() => {
+    const updateRoundIdAndRedirect = async () => {
+      await axios.post(
+        `${API_URL}/buying/updateRoundId`, { roomId: user.hostCode, roundId: user.roundId },
+      );
+      history.push(`/sell/location/${user.playerId}`);
+    };
     if (hasTimerEnded) {
+      console.log('inside timer ended');
       updateRoundIdAndRedirect();
     }
-  }, [hasTimerEnded, updateRoundIdAndRedirect]);
+  }, [hasTimerEnded]);
 
   const getRemainingTime = () => {
     if (Object.keys(timerValue).length <= 0) {
@@ -223,6 +230,15 @@ function ExpoBeginning() {
       return () => clearInterval(interval);
     }
   });
+
+  useEffect(() => {
+    socket.on('emitNominatedPainting', (paintingId) => {
+      if (paintingId && !nominatedPaintings.includes(paintingId)) {
+        console.log('paintingId', paintingId);
+        setNominatedPaintings((existingValues) => [paintingId, ...existingValues]);
+      }
+    });
+  }, [setPaintingSelected]);
 
   const renderCityStats = () => {
     const { interestInArt, demand } = cityData;
@@ -295,23 +311,29 @@ function ExpoBeginning() {
   );
 
   const loadCardSelection = (index) => {
-    const { interestInArt, demand } = cityData;
-    const val = paintings[index].auctionObj.paintingQuality;
-    if (revenue === -1) {
-      axios
-        // eslint-disable-next-line max-len
-        .get(`${API_URL}/buying/calculateRevenue?roomCode=${user.hostCode}&ticketPrice=${ticketPrice}&teamName=${user.teamName}&population=${demand}&cityId=${user.currentLocationName}&paintingQuality=${val}&interestInArt=${interestInArt}`)
-        .then((response) => {
-          setRevenue(response.data.calculatedRevenue);
-        });
-    }
+    // const { interestInArt, demand } = cityData;
+    // const val = paintings[index].auctionObj.paintingQuality;
+    const paintingId = paintings[index].auctionId;
+    socket.emit('paintingNominated', { paintingId, roomId: user.hostCode });
+    console.log(ticketPrice);
+    // if (revenue === -1) {
+    // socket.emit('calculateTeamRevenue', {
+    //   interestInArt,
+    //   population: demand,
+    //   cityId: user.currentLocationName,
+    //   teamName: user.teamName,
+    //   roomCode: user.hostCode,
+    //   paintingQuality: val,
+    //   artifactId: paintingId,
+    //   ticketPrice,
+    // });
     return (
       <CardContent className={classes.paintOpt}>
         <Typography>You selected this painting.</Typography>
-        <Typography>
+        {/* <Typography>
           Ticket price: $
           {revenue}
-        </Typography>
+        </Typography> */}
       </CardContent>
     );
   };
