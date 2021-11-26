@@ -37,6 +37,16 @@ const useStyles = makeStyles((theme) => ({
   contentstyle: {
     textAlign: 'center',
   },
+  "@keyframes fadeIn": {
+    "0%": {
+      opacity: 0,
+      transform: "translateY(5rem)"
+    },
+    "100%": {
+      opacity: 1,
+      transform: "translateY(0)"
+    }
+  },
   expand: {
     transform: 'rotate(0deg)',
     marginLeft: 'auto',
@@ -50,6 +60,7 @@ const useStyles = makeStyles((theme) => ({
   cardStyle: {
     transition: 'width 2s',
     transitionTimingFunction: 'linear',
+    animation: '$fadeIn .2s ease-in-out',
   },
   teammark: {
     height: '35px',
