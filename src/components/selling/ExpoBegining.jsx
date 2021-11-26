@@ -1,12 +1,10 @@
-import React, {
-  useEffect, useState,
-} from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import axios from 'axios';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import CardMedia from '@mui/material/CardMedia';
-import { Button, CardActionArea, CardActions } from '@mui/material';
+import { Button, CardActions } from '@mui/material';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -35,18 +33,21 @@ const useStyles = makeStyles((theme) => ({
   nominateBtn: {
     backgroundColor: '#76e246',
   },
+  nominateBtnDone: {
+    backgroundColor: 'gray',
+  },
   contentstyle: {
     textAlign: 'center',
   },
-  "@keyframes fadeIn": {
-    "0%": {
+  '@keyframes fadeIn': {
+    '0%': {
       opacity: 0,
-      transform: "translateY(5rem)"
+      transform: 'translateY(5rem)',
     },
-    "100%": {
+    '100%': {
       opacity: 1,
-      transform: "translateY(0)"
-    }
+      transform: 'translateY(0)',
+    },
   },
   expand: {
     transform: 'rotate(0deg)',
@@ -139,9 +140,7 @@ function ExpoBeginning() {
   // const { player, setPlayer } = useContext(userContext);
   const [otherTeams, setOtherTeams] = useState([]);
   const [expanded, setExpanded] = React.useState(-1);
-  const [paintingSelected, setPaintingSelected] = React.useState(-1);
-  const [selectionDone, setSelectionDone] = React.useState(false);
-  const [ticketPrice, setTicketPrice] = useState();
+  const ticketPrice = useRef();
   // const [revenue, setRevenue] = useState(-1);
   const [hasTimerEnded, setTimerEnded] = useState(false);
   const [timerValue, setTimerValue] = useState();
@@ -153,8 +152,7 @@ function ExpoBeginning() {
   };
 
   const handleSelectPainting = (index) => {
-    setPaintingSelected(index);
-    setSelectionDone(true);
+    const ticketVal = ticketPrice.current.value;
     const { interestInArt, demand } = cityData;
     const val = paintings[index].auctionObj.paintingQuality;
     const paintingId = paintings[index].auctionId;
@@ -167,7 +165,7 @@ function ExpoBeginning() {
       teamName: user.teamName,
       paintingQuality: val,
       artifactId: paintingId,
-      ticketPrice,
+      ticketVal,
     });
   };
 
@@ -175,9 +173,7 @@ function ExpoBeginning() {
   useEffect(() => {
     // setLoading(true);
     async function getSellingInfo() {
-      const { data } = await axios.get(
-        `${API_URL}/buying/getSellingInfo?roomId=${user.hostCode}&locationId=${user.currentLocation}&teamName=${user.teamName}`,
-      );
+      const { data } = await axios.get(`${API_URL}/buying/getSellingInfo?roomId=${user.hostCode}&locationId=${user.currentLocation}&teamName=${user.teamName}`);
       const {
         artifacts, otherteams, city, sellPaintingTimerValue,
       } = data;
@@ -217,13 +213,10 @@ function ExpoBeginning() {
 
   useEffect(() => {
     const updateRoundIdAndRedirect = async () => {
-      await axios.post(
-        `${API_URL}/buying/updateRoundId`, { roomId: user.hostCode, roundId: user.roundId },
-      );
+      await axios.post(`${API_URL}/buying/updateRoundId`, { roomId: user.hostCode, roundId: user.roundId });
       history.push(`/sell/location/${user.playerId}`);
     };
     if (hasTimerEnded) {
-      console.log('inside timer ended');
       updateRoundIdAndRedirect();
     }
   }, [hasTimerEnded]);
@@ -259,19 +252,15 @@ function ExpoBeginning() {
   useEffect(() => {
     socket.on('emitNominatedPainting', (paintingId) => {
       if (paintingId && !nominatedPaintings.includes(paintingId)) {
-        console.log('paintingId', paintingId);
         setNominatedPaintings((existingValues) => [paintingId, ...existingValues]);
       }
     });
-  }, [setPaintingSelected]);
+  }, []);
 
   const renderCityStats = () => {
     const { interestInArt, demand } = cityData;
     // eslint-disable-next-line no-nested-ternary
-    const peopleInterestedInArt = parseInt(interestInArt, 10) < 100
-      ? 'Low' : parseInt(interestInArt, 10) > 100 && parseInt(interestInArt, 10) < 200
-        ? 'Medium'
-        : 'High';
+    const intInArt = parseInt(interestInArt, 10) < 100 ? 'Low' : parseInt(interestInArt, 10) > 100 && parseInt(interestInArt, 10) < 200 ? 'Medium' : 'High';
     return (
       <>
         <h2 style={{ textAlign: 'center' }}>
@@ -292,7 +281,7 @@ function ExpoBeginning() {
                   {demand}
                   M
                 </StyledTableCell>
-                <StyledTableCell align="right">{peopleInterestedInArt}</StyledTableCell>
+                <StyledTableCell align="right">{intInArt}</StyledTableCell>
               </TableRow>
             </TableBody>
           </Table>
@@ -301,49 +290,55 @@ function ExpoBeginning() {
     );
   };
 
-  const loadCardContent = (index) => (
-    <CardContent className={classes.paintOpt}>
-      <p style={{ color: '#000000', fontWeight: '700', marginBottom: '25px' }}>
-        How much would you charge 1 person to see your painting in
-        {' '}
-        {user.currentLocationName}
-        {' '}
-        museum?
-      </p>
-      <TextField
-        id="outlined-basic"
-        label="Enter Ticket Price"
-        variant="outlined"
-        style={{ color: '#76e246', marginBottom: '20px' }}
-        InputProps={{
-          startAdornment: <InputAdornment position="start">$</InputAdornment>,
-        }}
-        onChange={(e) => setTicketPrice(e.target.value)}
-      />
-      <Button
-        size="small"
-        style={{
-          color: '#76e246',
-          fontWeight: 'bold',
-          width: '100%',
-          backgroundColor: '#000000',
-        }}
-        onClick={() => handleSelectPainting(index)}
-      >
-        Submit ticket price for 1 person
-      </Button>
-    </CardContent>
-  );
+  const loadCardContent = (index) => {
+    console.log(paintings);
+    return (
+      <CardContent className={classes.paintOpt}>
+        <p style={{ color: '#000000', fontWeight: '700', marginBottom: '25px' }}>
+          How much would you charge 1 person to see your painting in
+          {' '}
+          {user.currentLocationName}
+          {' '}
+          museum?
+        </p>
+        <TextField
+          inputRef={ticketPrice}
+          id="outlined-basic"
+          label="Enter Ticket Price"
+          variant="outlined"
+          style={{ color: '#76e246', marginBottom: '20px' }}
+          InputProps={{
+            startAdornment: <InputAdornment position="start">$</InputAdornment>,
+          }}
+        />
+        <Button
+          size="small"
+          style={{
+            color: '#76e246',
+            fontWeight: 'bold',
+            width: '100%',
+            backgroundColor: '#000000',
+          }}
+          onClick={() => handleSelectPainting(index)}
+        >
+          Submit ticket price for 1 person
+        </Button>
+      </CardContent>
+    );
+  };
 
-  const loadCardSelection = () => (
-    <CardContent className={classes.paintOpt}>
-      <Typography>You selected this painting.</Typography>
-      {/* <Typography>
+  const loadCardSelection = () => {
+    console.log(nominatedPaintings);
+    return (
+      <CardContent className={classes.paintOpt}>
+        <Typography>You selected this painting.</Typography>
+        {/* <Typography>
         Ticket price: $
         {revenue}
       </Typography> */}
-    </CardContent>
-  );
+      </CardContent>
+    );
+  };
 
   return (
     <>
@@ -357,15 +352,15 @@ function ExpoBeginning() {
             {timerValue && timerValue.seconds}
           </Typography>
           {user && (
-          <div className={classes.playerdiv}>
-            <p>
-              {user.playerName}
-              , Team
-              {user.teamName}
-              ,
-              {user.playerId}
-            </p>
-          </div>
+            <div className={classes.playerdiv}>
+              <p>
+                {user.playerName}
+                , Team
+                {user.teamName}
+                ,
+                {user.playerId}
+              </p>
+            </div>
           )}
         </Toolbar>
       </AppBar>
@@ -405,7 +400,7 @@ function ExpoBeginning() {
                   paddingRight: '20px',
                 }}
                 // eslint-disable-next-line no-nested-ternary
-                display={paintingSelected === -1 ? 'block' : paintingSelected === index ? 'block' : 'none'}
+                // display={paintingSelected === -1 ? 'block' : paintingSelected === index ? 'block' : 'none'}
               >
                 <Card
                   sx={{
@@ -417,27 +412,32 @@ function ExpoBeginning() {
                     marginTop: '3%',
                   }}
                   className={classes.cardStyle}
+                  disabled
                 >
-                  <CardActionArea>
-                    <CardMedia sx={{ height: 398 }} component="img" image={arg.auctionObj.imageURL} alt="green iguana" />
-                  </CardActionArea>
-                  <CardActions className={classes.nominateBtn}>
+                  <CardMedia
+                    sx={nominatedPaintings.includes(paintings[index].auctionId) ? { height: 398, filter: 'grayscale(100%)' } : { height: 398 }}
+                    component="img"
+                    image={arg.auctionObj.imageURL}
+                    alt="green iguana"
+                  />
+                  <CardActions className={nominatedPaintings.includes(paintings[index].auctionId) ? classes.nominateBtnDone : classes.nominateBtn}>
                     <Button
                       size="small"
                       style={{ color: '#000000', fontWeight: 'bold', width: '100%' }}
                       className={clsx(classes.expand, {
-                        [classes.expandOpen]: index === expanded,
+                        [classes.expandOpen]: true,
                       })}
                       onClick={() => handleExpandClick(index)}
-                      aria-expanded={index === expanded}
+                      aria-expanded
                       aria-label="show more"
+                      disabled={nominatedPaintings.includes(paintings[index].auctionId)}
                     >
                       Nominate
                     </Button>
                   </CardActions>
                   <Collapse in={index === expanded} timeout="auto" unmountOnExit>
-                    {!selectionDone && loadCardContent(index)}
-                    {selectionDone && loadCardSelection(index)}
+                    {!nominatedPaintings.includes(paintings[index].auctionId) && loadCardContent(index)}
+                    {nominatedPaintings.includes(paintings[index].auctionId) && loadCardSelection()}
                   </Collapse>
                 </Card>
                 <div className={classes.contentstyle}>
