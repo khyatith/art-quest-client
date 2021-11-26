@@ -144,6 +144,20 @@ function ExpoBeginning() {
   const handleSelectPainting = (index) => {
     setPaintingSelected(index);
     setSelectionDone(true);
+    const { interestInArt, demand } = cityData;
+    const val = paintings[index].auctionObj.paintingQuality;
+    const paintingId = paintings[index].auctionId;
+    socket.emit('paintingNominated', {
+      paintingId,
+      roomCode: user.hostCode,
+      interestInArt,
+      population: demand,
+      cityId: user.currentLocationName,
+      teamName: user.teamName,
+      paintingQuality: val,
+      artifactId: paintingId,
+      ticketPrice,
+    });
   };
 
   // Hooks and methods
@@ -310,33 +324,15 @@ function ExpoBeginning() {
     </CardContent>
   );
 
-  const loadCardSelection = (index) => {
-    // const { interestInArt, demand } = cityData;
-    // const val = paintings[index].auctionObj.paintingQuality;
-    const paintingId = paintings[index].auctionId;
-    socket.emit('paintingNominated', { paintingId, roomId: user.hostCode });
-    console.log(ticketPrice);
-    // if (revenue === -1) {
-    // socket.emit('calculateTeamRevenue', {
-    //   interestInArt,
-    //   population: demand,
-    //   cityId: user.currentLocationName,
-    //   teamName: user.teamName,
-    //   roomCode: user.hostCode,
-    //   paintingQuality: val,
-    //   artifactId: paintingId,
-    //   ticketPrice,
-    // });
-    return (
-      <CardContent className={classes.paintOpt}>
-        <Typography>You selected this painting.</Typography>
-        {/* <Typography>
-          Ticket price: $
-          {revenue}
-        </Typography> */}
-      </CardContent>
-    );
-  };
+  const loadCardSelection = () => (
+    <CardContent className={classes.paintOpt}>
+      <Typography>You selected this painting.</Typography>
+      {/* <Typography>
+        Ticket price: $
+        {revenue}
+      </Typography> */}
+    </CardContent>
+  );
 
   return (
     <>
@@ -350,15 +346,15 @@ function ExpoBeginning() {
             {timerValue && timerValue.seconds}
           </Typography>
           {user && (
-            <div className={classes.playerdiv}>
-              <p>
-                {user.playerName}
-                , Team
-                {user.teamName}
-                ,
-                {user.playerId}
-              </p>
-            </div>
+          <div className={classes.playerdiv}>
+            <p>
+              {user.playerName}
+              , Team
+              {user.teamName}
+              ,
+              {user.playerId}
+            </p>
+          </div>
           )}
         </Toolbar>
       </AppBar>
