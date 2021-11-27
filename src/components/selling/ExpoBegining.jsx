@@ -165,7 +165,8 @@ function ExpoBeginning() {
       teamName: user.teamName,
       paintingQuality: val,
       artifactId: paintingId,
-      ticketVal,
+      ticketPrice: ticketVal,
+      roundId: user.roundId,
     });
   };
 
@@ -212,12 +213,12 @@ function ExpoBeginning() {
   // });
 
   useEffect(() => {
-    const updateRoundIdAndRedirect = async () => {
-      await axios.post(`${API_URL}/buying/updateRoundId`, { roomId: user.hostCode, roundId: user.roundId });
-      history.push(`/sell/location/${user.playerId}`);
+    const redirectToRevenueScreen = async () => {
+      // await axios.post(`${API_URL}/buying/updateRoundId`, { roomId: user.hostCode, roundId: user.roundId });
+      history.push(`/sell/result/${user.playerId}`);
     };
     if (hasTimerEnded) {
-      updateRoundIdAndRedirect();
+      redirectToRevenueScreen();
     }
   }, [hasTimerEnded]);
 
@@ -255,7 +256,7 @@ function ExpoBeginning() {
         setNominatedPaintings((existingValues) => [paintingId, ...existingValues]);
       }
     });
-  }, []);
+  }, [nominatedPaintings]);
 
   const renderCityStats = () => {
     const { interestInArt, demand } = cityData;
