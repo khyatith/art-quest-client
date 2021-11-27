@@ -43,10 +43,10 @@ function SellingResults() {
       setEarnings(data.calculatedRevenueForRound);
       setTimerValue(data.sellingResultsTimerValue);
     };
-    if (user && !earnings) {
+    if (user && (!earnings || !timerValue)) {
       getEarnings();
     }
-  }, [earnings, user]);
+  }, [earnings, user, timerValue]);
 
   useEffect(() => {
     const redirectToRevenueScreen = async () => {

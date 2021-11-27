@@ -40,18 +40,18 @@ const Details = (props) => {
           <TableBody>
             {rows.map((row) => {
               const rowCash = parseFloat(row.cash);
-              const cashRounded = parseFloat(rowCash / 1000).toFixed(2);
-              const total = cashRounded + row.visits;
+              const cashRounded = parseFloat(rowCash / 1000);
+              const total = cashRounded + parseFloat(row.visits);
               return (
                 <TableRow key={row.id} style={{ backgroundColor: `${TEAM_COLOR_MAP[row.team]}` }}>
                   <StyledTableCell component="th" scope="row">
                     {row.id}
                   </StyledTableCell>
                   <StyledTableCell align="right">{row.team}</StyledTableCell>
-                  <StyledTableCell align="right">{row.visits}</StyledTableCell>
+                  <StyledTableCell align="right">{parseFloat(row.visits).toFixed(2)}</StyledTableCell>
                   <StyledTableCell align="right">{formatNumberToCurrency(`${row.cash}`)}</StyledTableCell>
                   <StyledTableCell align="right">{cashRounded}</StyledTableCell>
-                  <StyledTableCell align="right">{total}</StyledTableCell>
+                  <StyledTableCell align="right">{total.toFixed(2)}</StyledTableCell>
                 </TableRow>
               );
             })}

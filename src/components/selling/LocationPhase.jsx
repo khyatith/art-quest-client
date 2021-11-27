@@ -117,7 +117,7 @@ function LocationPhase() {
             const cash = value;
             let vis = 0;
             const teamVisits = visits.filter((v) => v.teamName === key);
-            vis = teamVisits.length > 0 ? teamVisits[0].visitCount : 0;
+            vis = teamVisits.length > 0 ? teamVisits[0].visitCount : 0.00;
             // eslint-disable-next-line no-nested-ternary
             datasets.push(createData(team, cash, vis));
             tv.push(createDataMap(x, team, vis, cash));
