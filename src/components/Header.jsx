@@ -42,8 +42,7 @@ function Header() {
             <div className={classes.playerdiv}>
               <p>
                 {player.playerName}
-                , Team
-                {' '}
+                , Team&nbsp;
                 {player.teamName}
                 ,
                 {' '}

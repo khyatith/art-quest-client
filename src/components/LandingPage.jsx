@@ -190,8 +190,7 @@ function LandingPage() {
                       <div className={classes.playerdiv}>
                         <p>
                           {JSON.parse(sessionStorage.getItem('user')).playerName}
-                          , Team
-                          {' '}
+                          , Team&nbsp;
                           {JSON.parse(sessionStorage.getItem('user')).teamName}
                           ,
                           {' '}

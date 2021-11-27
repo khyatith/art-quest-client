@@ -100,7 +100,7 @@ function SellingResults() {
             <div className={classes.playerdiv}>
               <p>
                 {user.playerName}
-                , Team
+                , Team&nbsp;
                 {user.teamName}
                 ,
                 {user.playerId}

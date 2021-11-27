@@ -35,7 +35,6 @@ function SellingGameInstructions() {
   const history = useHistory();
 
   const startGame = useCallback(() => {
-    console.log('inside start game');
     history.push(`/sell/location/${player.playerId}`);
   }, [player, history]);
 

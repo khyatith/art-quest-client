@@ -231,8 +231,7 @@ function LocationPhase() {
             <div className={classes.playerdiv}>
               <p>
                 {player.playerName}
-                , Team
-                {' '}
+                , Team&nbsp;
                 {player.teamName}
                 ,
                 {' '}
