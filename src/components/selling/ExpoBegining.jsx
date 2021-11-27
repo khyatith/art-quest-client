@@ -69,6 +69,7 @@ const useStyles = makeStyles((theme) => ({
     width: '35px',
     borderRadius: '50%',
     display: 'inline-block',
+    margin: '20px',
   },
   fontSty: {
     fontSize: 'large',
@@ -192,7 +193,7 @@ function ExpoBeginning() {
     if (!paintings || !cityData) {
       getSellingInfo();
     }
-  }, [user]);
+  }, [user, cityData, paintings]);
 
   // if (loading) {
   //   return (
@@ -220,7 +221,7 @@ function ExpoBeginning() {
     if (hasTimerEnded) {
       redirectToRevenueScreen();
     }
-  }, [hasTimerEnded]);
+  }, [hasTimerEnded, user, history]);
 
   const getRemainingTime = () => {
     if (Object.keys(timerValue).length <= 0) {
@@ -291,55 +292,49 @@ function ExpoBeginning() {
     );
   };
 
-  const loadCardContent = (index) => {
-    console.log(paintings);
-    return (
-      <CardContent className={classes.paintOpt}>
-        <p style={{ color: '#000000', fontWeight: '700', marginBottom: '25px' }}>
-          How much would you charge 1 person to see your painting in
-          {' '}
-          {user.currentLocationName}
-          {' '}
-          museum?
-        </p>
-        <TextField
-          inputRef={ticketPrice}
-          id="outlined-basic"
-          label="Enter Ticket Price"
-          variant="outlined"
-          style={{ color: '#76e246', marginBottom: '20px' }}
-          InputProps={{
-            startAdornment: <InputAdornment position="start">$</InputAdornment>,
-          }}
-        />
-        <Button
-          size="small"
-          style={{
-            color: '#76e246',
-            fontWeight: 'bold',
-            width: '100%',
-            backgroundColor: '#000000',
-          }}
-          onClick={() => handleSelectPainting(index)}
-        >
-          Submit ticket price for 1 person
-        </Button>
-      </CardContent>
-    );
-  };
+  const loadCardContent = (index) => (
+    <CardContent className={classes.paintOpt}>
+      <p style={{ color: '#000000', fontWeight: '700', marginBottom: '25px' }}>
+        How much would you charge 1 person to see your painting in
+        {' '}
+        {user.currentLocationName}
+        {' '}
+        museum?
+      </p>
+      <TextField
+        inputRef={ticketPrice}
+        id="outlined-basic"
+        label="Enter Ticket Price"
+        variant="outlined"
+        style={{ color: '#76e246', marginBottom: '20px' }}
+        InputProps={{
+          startAdornment: <InputAdornment position="start">$</InputAdornment>,
+        }}
+      />
+      <Button
+        size="small"
+        style={{
+          color: '#76e246',
+          fontWeight: 'bold',
+          width: '100%',
+          backgroundColor: '#000000',
+        }}
+        onClick={() => handleSelectPainting(index)}
+      >
+        Submit ticket price for 1 person
+      </Button>
+    </CardContent>
+  );
 
-  const loadCardSelection = () => {
-    console.log(nominatedPaintings);
-    return (
-      <CardContent className={classes.paintOpt}>
-        <Typography>You selected this painting.</Typography>
-        {/* <Typography>
+  const loadCardSelection = () => (
+    <CardContent className={classes.paintOpt}>
+      <Typography>You selected this painting.</Typography>
+      {/* <Typography>
         Ticket price: $
         {revenue}
       </Typography> */}
-      </CardContent>
-    );
-  };
+    </CardContent>
+  );
 
   return (
     <>
@@ -367,7 +362,7 @@ function ExpoBeginning() {
       </AppBar>
       <div className={classes.parent}>
         <div className={classes.child1}>{cityData && <div className={classes.cityData}>{renderCityStats()}</div>}</div>
-        <div className={classes.child2} style={{ backgroundColor: user.teamColor }}>
+        <div className={classes.child2} style={{ backgroundColor: '#ffffff' }}>
           <p className={classes.fontSty}>
             You are in&nbsp;
             {user.currentLocationName}

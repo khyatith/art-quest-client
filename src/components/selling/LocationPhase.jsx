@@ -124,7 +124,6 @@ function LocationPhase() {
             x += 1;
           });
           const currentTeamVisits = visits.filter((v) => v.teamName === player.teamName);
-          console.log('currentTeamVisits', currentTeamVisits);
           const currentLocationForTeam = currentTeamVisits.length === 0 ? 2 : currentTeamVisits[0].currentLocation;
           setCurrentLocationId(currentLocationForTeam);
           setResult({ labels, datasets });
@@ -189,7 +188,7 @@ function LocationPhase() {
       setSelectedLocation(false);
       history.push(`/sell/${player.playerId}`);
     }
-  }, [hasLocationPageTimerEnded]);
+  }, [hasLocationPageTimerEnded, player.playerId, history]);
 
   const setLocationSelectedForCurrentRound = (value, locId) => {
     setSelectedLocation(value);

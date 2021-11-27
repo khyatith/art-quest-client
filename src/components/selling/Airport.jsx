@@ -1,6 +1,7 @@
 import React, {
   useEffect, useState, useContext, useCallback,
 } from 'react';
+// import PropTypes from 'prop-types';
 import axios from 'axios';
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
@@ -65,7 +66,7 @@ const Airport = ({
     setPlayer(updatedPlayer);
     // 1. update session storage
     sessionStorage.setItem('user', JSON.stringify(updatedPlayer));
-  }, [selectedLocationId]);
+  }, [selectedLocationId, mapValues, player, setPlayer]);
 
   // Hooks and methods
   useEffect(() => {
@@ -97,7 +98,6 @@ const Airport = ({
         result = val[1].cityName;
       }
     });
-    console.log('result', result);
     return result;
   };
 
@@ -140,7 +140,7 @@ const Airport = ({
           )
           : hasLocationSelected && (
           <p>
-            Your team's next destination:
+            Your team&apos;s next destination:
             {' '}
             {player.currentLocationName && player.currentLocationName}
             {' '}
@@ -153,5 +153,19 @@ const Airport = ({
     </div>
   );
 };
+
+// Airport.defaultProps = {
+//   roundNumber: 1,
+//   hasLocationSelected: false,
+//   selectedLocationId: 1,
+//   previousLocationId: 1,
+// };
+
+// Airport.propTypes = {
+//   roundNumber: PropTypes.number.isRequired,
+//   hasLocationSelected: PropTypes.bool.isRequired,
+//   selectedLocationId: PropTypes.number.isRequired,
+//   previousLocationId: PropTypes.number.isRequired,
+// };
 
 export default Airport;

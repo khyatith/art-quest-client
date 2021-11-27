@@ -46,7 +46,7 @@ function SellingResults() {
     if (user && !earnings) {
       getEarnings();
     }
-  }, []);
+  }, [earnings, user]);
 
   useEffect(() => {
     const redirectToRevenueScreen = async () => {
@@ -56,7 +56,7 @@ function SellingResults() {
     if (hasTimerEnded) {
       redirectToRevenueScreen();
     }
-  }, [hasTimerEnded]);
+  }, [hasTimerEnded, history, user]);
 
   const getRemainingTime = () => {
     if (Object.keys(timerValue).length <= 0) {

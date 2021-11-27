@@ -108,7 +108,7 @@ function LandingPage() {
     if (Object.keys(landingPageTimerValue).length === 0) {
       fetchTimerValue();
     }
-  }, []);
+  }, [landingPageTimerValue]);
 
   // eslint-disable-next-line consistent-return
   useEffect(() => {

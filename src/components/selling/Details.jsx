@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -38,7 +39,8 @@ const Details = (props) => {
           </TableHead>
           <TableBody>
             {rows.map((row) => {
-              const cashRounded = -Math.floor(row.cash / 10000);
+              const rowCash = parseFloat(row.cash);
+              const cashRounded = parseFloat(rowCash / 1000).toFixed(2);
               const total = cashRounded + row.visits;
               return (
                 <TableRow key={row.id} style={{ backgroundColor: `${TEAM_COLOR_MAP[row.team]}` }}>
@@ -47,7 +49,7 @@ const Details = (props) => {
                   </StyledTableCell>
                   <StyledTableCell align="right">{row.team}</StyledTableCell>
                   <StyledTableCell align="right">{row.visits}</StyledTableCell>
-                  <StyledTableCell align="right">{formatNumberToCurrency(`-${row.cash}`)}</StyledTableCell>
+                  <StyledTableCell align="right">{formatNumberToCurrency(`${row.cash}`)}</StyledTableCell>
                   <StyledTableCell align="right">{cashRounded}</StyledTableCell>
                   <StyledTableCell align="right">{total}</StyledTableCell>
                 </TableRow>
@@ -58,6 +60,14 @@ const Details = (props) => {
       </TableContainer>
     </div>
   );
+};
+
+Details.defaultProps = {
+  rows: [],
+};
+
+Details.propTypes = {
+  rows: PropTypes.object,
 };
 
 export default Details;

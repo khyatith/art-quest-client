@@ -1,4 +1,5 @@
 import React, { useEffect, useContext } from 'react';
+import PropTypes from 'prop-types';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import axios from 'axios';
 import Table from '@material-ui/core/Table';
@@ -108,3 +109,11 @@ export default function NewLeaderboard({ hasAuctionTimerEnded }) {
     </div>
   );
 }
+
+NewLeaderboard.defaultProps = {
+  hasAuctionTimerEnded: false,
+};
+
+NewLeaderboard.propTypes = {
+  hasAuctionTimerEnded: PropTypes.bool,
+};

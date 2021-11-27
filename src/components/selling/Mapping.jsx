@@ -28,7 +28,7 @@ function Mapping() {
       getMapVal();
       setValRet(true);
     }
-  }, []);
+  }, [valRet]);
 
   return (
     <div>
