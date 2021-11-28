@@ -1,4 +1,6 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, {
+  useEffect, useRef, useState, useCallback,
+} from 'react';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import axios from 'axios';
 import Box from '@mui/material/Box';
@@ -148,6 +150,8 @@ function ExpoBeginning() {
   const [timerValue, setTimerValue] = useState();
   const [nominatedPaintings, setNominatedPaintings] = useState([]);
   const [bidAmtError, setBidAmtError] = useState();
+  const [currentAuctionObj, setCurrentAuctionObj] = useState();
+  const [hasSentEnglishAuctionRequest, setHasSentEnglishAuctionRequest] = useState(false);
   const history = useHistory();
 
   const handleExpandClick = (index) => {
@@ -220,9 +224,22 @@ function ExpoBeginning() {
   //   }
   // });
 
+  const renderEnglishAuction = useCallback(async () => {
+    setHasSentEnglishAuctionRequest(true);
+    const { data } = await axios.get(`${API_URL}/buying/getEnglishAuctionForSelling?roomCode=${user.hostCode}&roundId=${user.roundId}`);
+    setCurrentAuctionObj(data.auctionObj);
+  }, [user]);
+
+  useEffect(() => {
+    setTimeout(() => {
+      if (!hasSentEnglishAuctionRequest && !currentAuctionObj) {
+        renderEnglishAuction();
+      }
+    }, 5000);
+  }, [hasSentEnglishAuctionRequest, renderEnglishAuction]);
+
   useEffect(() => {
     const redirectToRevenueScreen = async () => {
-      // await axios.post(`${API_URL}/buying/updateRoundId`, { roomId: user.hostCode, roundId: user.roundId });
       history.push(`/sell/result/${user.playerId}`);
     };
     if (hasTimerEnded) {
