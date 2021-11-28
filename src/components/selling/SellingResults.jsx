@@ -5,7 +5,10 @@ import axios from 'axios';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
-import { API_URL } from '../../global/constants';
+import Box from '@mui/material/Box';
+import Card from '@mui/material/Card';
+import CardMedia from '@mui/material/CardMedia';
+import { API_URL, TEAM_COLOR_MAP } from '../../global/constants';
 
 const useStyles = makeStyles((theme) => ({
   appbar: {
@@ -27,20 +30,57 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: 700,
     color: '#051207', // green color
   },
+  typomid: {
+    textAlign: 'center',
+    marginTop: '1%',
+    marginRight: '9%',
+  },
+  typomidnew: {
+    textAlign: 'center',
+    marginTop: '1%',
+  },
+  windowView: {
+    display: 'flex',
+    overflowX: 'scroll',
+    whiteSpace: 'nowrap',
+  },
+  colouredDiv: {
+    minWidth: '31.33%',
+    height: '700px',
+    margin: '1%',
+  },
+  windowViewDown: {
+    overflowY: 'scroll',
+    whiteSpace: 'nowrap',
+    minHeight: '600px',
+    maxHeight: '600px',
+  },
+  colouredDivNew: {
+    flex: 'column',
+    minHeight: '400px',
+    margin: '1%',
+  },
+  cardStyle: {
+    transition: 'width 2s',
+    transitionTimingFunction: 'linear',
+    animation: '$fadeIn .2s ease-in-out',
+  },
 }));
 
-function SellingResults() {
+function SellingResults(props) {
   const classes = useStyles();
   const history = useHistory();
   const user = JSON.parse(sessionStorage.getItem('user'));
   const [hasTimerEnded, setTimerEnded] = useState(false);
   const [timerValue, setTimerValue] = useState();
   const [earnings, setEarnings] = useState();
+  const [paintings, setPaintings] = useState();
 
   useEffect(() => {
     const getEarnings = async () => {
       const { data } = await axios.get(`${API_URL}/buying/getSellingResultForRound?roomCode=${user.hostCode}&roundId=${user.roundId}`);
       setEarnings(data.calculatedRevenueForRound);
+      console.log(data);
       setTimerValue(data.sellingResultsTimerValue);
     };
     if (user && (!earnings || !timerValue)) {
@@ -67,7 +107,7 @@ function SellingResults() {
     const seconds = Math.floor((parseInt(total, 10) / 1000) % 60);
     const minutes = Math.floor((parseInt(total, 10) / 1000 / 60) % 60);
     if (total < 1000) {
-      setTimerEnded(true);
+      setTimerEnded(false);
     } else {
       const value = {
         total,
@@ -76,6 +116,62 @@ function SellingResults() {
       };
       setTimerValue(value);
     }
+  };
+
+  const loadRevenue = (teamColor, revenueGenerated) => {
+    const ns = props.location.state;
+    console.log(paintings);
+    return (
+      <div>
+        <div>
+          <Typography className={classes.typomidnew}>
+            Team&nbsp;
+            {teamColor}
+          </Typography>
+          <Typography className={classes.typomidnew}>
+            Round&nbsp;
+            {user.roundId}
+            &nbsp;Earnings : $&nbsp;
+            {revenueGenerated}
+          </Typography>
+        </div>
+        <div className={classes.windowViewDown}>
+          {ns
+            && ns.map((arg) => (
+              <Box
+              p={1}
+                style={{
+                  paddingLeft: '20px',
+                  paddingRight: '20px',
+                }}
+                className={classes.colouredDivNew}
+                // eslint-disable-next-line no-nested-ternary
+                // display={paintingSelected === -1 ? 'block' : paintingSelected === index ? 'block' : 'none'}
+              >
+                <Card
+                  sx={{
+                    minHeight: 445,
+                    minWidth: 355,
+                    maxWidth: 355,
+                    backgroundColor: 'white',
+                    margin: 'auto',
+                    marginTop: '3%',
+                  }}
+                  className={classes.cardStyle}
+                  disabled
+                >
+                  <CardMedia
+                    sx={{ height: 445 }}
+                    component="img"
+                    image={arg.auctionObj.imageURL}
+                    alt="green iguana"
+                  />
+                </Card>
+              </Box>
+            ))}
+        </div>
+      </div>
+    );
   };
 
   // eslint-disable-next-line consistent-return
@@ -109,6 +205,21 @@ function SellingResults() {
           )}
         </Toolbar>
       </AppBar>
+      <div className={classes.headIntro}>
+        <Typography variant="h4" className={classes.typomid}>
+          Round&nbsp;
+          {user.roundId}
+          &nbsp;earnings
+        </Typography>
+      </div>
+      <div className={classes.windowView}>
+        {earnings
+          && Object.keys(earnings).map((arg) => (
+            <div className={classes.colouredDiv} style={{ backgroundColor: TEAM_COLOR_MAP[arg] }}>
+              {loadRevenue(arg, earnings[arg])}
+            </div>
+          ))}
+      </div>
     </>
   );
 }

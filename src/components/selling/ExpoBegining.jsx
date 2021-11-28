@@ -216,7 +216,10 @@ function ExpoBeginning() {
   useEffect(() => {
     const redirectToRevenueScreen = async () => {
       // await axios.post(`${API_URL}/buying/updateRoundId`, { roomId: user.hostCode, roundId: user.roundId });
-      history.push(`/sell/result/${user.playerId}`);
+      history.push({
+        pathname: `/sell/result/${user.playerId}`,
+        state: paintings
+      });
     };
     if (hasTimerEnded) {
       redirectToRevenueScreen();
