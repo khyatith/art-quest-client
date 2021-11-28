@@ -243,7 +243,7 @@ function ExpoBeginning() {
       // await axios.post(`${API_URL}/buying/updateRoundId`, { roomId: user.hostCode, roundId: user.roundId });
       history.push({
         pathname: `/sell/result/${user.playerId}`,
-        state: paintings
+        state: nominatedPaintings,
       });
     };
     if (hasTimerEnded) {

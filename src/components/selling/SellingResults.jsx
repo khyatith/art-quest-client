@@ -80,10 +80,10 @@ function SellingResults(props) {
     const getEarnings = async () => {
       const { data } = await axios.get(`${API_URL}/buying/getSellingResultForRound?roomCode=${user.hostCode}&roundId=${user.roundId}`);
       setEarnings(data.calculatedRevenueForRound);
-      console.log(data);
+      setPaintings(data.allTeamPaintings);
       setTimerValue(data.sellingResultsTimerValue);
     };
-    if (user && (!earnings || !timerValue)) {
+    if (user && (!earnings || !timerValue || !paintings)) {
       getEarnings();
     }
   }, [earnings, user, timerValue]);
@@ -107,7 +107,7 @@ function SellingResults(props) {
     const seconds = Math.floor((parseInt(total, 10) / 1000) % 60);
     const minutes = Math.floor((parseInt(total, 10) / 1000 / 60) % 60);
     if (total < 1000) {
-      setTimerEnded(false);
+      setTimerEnded(true);
     } else {
       const value = {
         total,
@@ -120,7 +120,11 @@ function SellingResults(props) {
 
   const loadRevenue = (teamColor, revenueGenerated) => {
     const ns = props.location.state;
-    console.log(paintings);
+    if (paintings === undefined) {
+      return <div />;
+    }
+    const teamPaintings = paintings[teamColor];
+    console.log(teamPaintings);
     return (
       <div>
         <div>
@@ -136,17 +140,17 @@ function SellingResults(props) {
           </Typography>
         </div>
         <div className={classes.windowViewDown}>
-          {ns
-            && ns.map((arg) => (
+          {teamPaintings
+            && teamPaintings.map((arg) => (
               <Box
-              p={1}
+                p={1}
                 style={{
                   paddingLeft: '20px',
                   paddingRight: '20px',
                 }}
                 className={classes.colouredDivNew}
                 // eslint-disable-next-line no-nested-ternary
-                // display={paintingSelected === -1 ? 'block' : paintingSelected === index ? 'block' : 'none'}
+                display={ns.includes(arg.id) ? 'block' : 'none'}
               >
                 <Card
                   sx={{
@@ -160,12 +164,7 @@ function SellingResults(props) {
                   className={classes.cardStyle}
                   disabled
                 >
-                  <CardMedia
-                    sx={{ height: 445 }}
-                    component="img"
-                    image={arg.auctionObj.imageURL}
-                    alt="green iguana"
-                  />
+                  <CardMedia sx={{ height: 445 }} component="img" image={arg.imageURL} alt="green iguana" />
                 </Card>
               </Box>
             ))}
