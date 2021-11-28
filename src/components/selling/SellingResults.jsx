@@ -40,6 +40,7 @@ function SellingResults() {
   useEffect(() => {
     const getEarnings = async () => {
       const { data } = await axios.get(`${API_URL}/buying/getSellingResultForRound?roomCode=${user.hostCode}&roundId=${user.roundId}`);
+      console.log('data in selling result', data);
       setEarnings(data.calculatedRevenueForRound);
       setTimerValue(data.sellingResultsTimerValue);
     };

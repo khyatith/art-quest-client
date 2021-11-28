@@ -24,6 +24,7 @@ import { useHistory } from 'react-router-dom';
 import { API_URL } from '../../global/constants';
 import SimpleRating from '../Rating';
 import { socket } from '../../global/socket';
+import { validateCurrentBid } from '../../global/helpers';
 
 const useStyles = makeStyles((theme) => ({
   paintOpt: {
@@ -146,6 +147,7 @@ function ExpoBeginning() {
   const [hasTimerEnded, setTimerEnded] = useState(false);
   const [timerValue, setTimerValue] = useState();
   const [nominatedPaintings, setNominatedPaintings] = useState([]);
+  const [bidAmtError, setBidAmtError] = useState();
   const history = useHistory();
 
   const handleExpandClick = (index) => {
@@ -154,6 +156,11 @@ function ExpoBeginning() {
 
   const handleSelectPainting = (index) => {
     const ticketVal = ticketPrice.current.value;
+    const isValidatedTicketVal = validateCurrentBid(ticketVal);
+    if (!isValidatedTicketVal) {
+      setBidAmtError('Ticket value should be within the specified range');
+      return;
+    }
     const { interestInArt, demand } = cityData;
     const val = paintings[index].auctionObj.paintingQuality;
     const paintingId = paintings[index].auctionId;
@@ -303,7 +310,9 @@ function ExpoBeginning() {
       </p>
       <TextField
         inputRef={ticketPrice}
-        id="outlined-basic"
+        id="textfield"
+        error={!!bidAmtError}
+        helperText={bidAmtError && bidAmtError}
         label="Enter Ticket Price"
         variant="outlined"
         style={{ color: '#76e246', marginBottom: '20px' }}
@@ -311,6 +320,9 @@ function ExpoBeginning() {
           startAdornment: <InputAdornment position="start">$</InputAdornment>,
         }}
       />
+      <p>
+        * Ticket price can be between $1 to $999
+      </p>
       <Button
         size="small"
         style={{
@@ -321,14 +333,14 @@ function ExpoBeginning() {
         }}
         onClick={() => handleSelectPainting(index)}
       >
-        Submit ticket price for 1 person
+        Submit ticket price
       </Button>
     </CardContent>
   );
 
   const loadCardSelection = () => (
     <CardContent className={classes.paintOpt}>
-      <Typography>You selected this painting.</Typography>
+      <Typography>Thank you for nominating this painting. You will see your earnings when the timer ends.</Typography>
       {/* <Typography>
         Ticket price: $
         {revenue}
@@ -428,7 +440,7 @@ function ExpoBeginning() {
                       aria-label="show more"
                       disabled={nominatedPaintings.includes(paintings[index].auctionId)}
                     >
-                      Nominate
+                      Nominate painting
                     </Button>
                   </CardActions>
                   <Collapse in={index === expanded} timeout="auto" unmountOnExit>
