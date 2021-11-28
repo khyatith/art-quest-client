@@ -59,6 +59,7 @@ function Mapping() {
                   }
                   return (
                     <Line
+                      key={loc}
                       className="cline"
                       coordinates={generateLine(obj.longitude, obj.latitude, items[1].longitude, items[1].latitude)}
                       stroke="#000000"
@@ -70,7 +71,7 @@ function Mapping() {
             );
           })}
           {Object.entries(mapValues).map((items) => (
-            <Marker id={items[1].cityName} coordinates={[items[1].longitude, items[1].latitude]}>
+            <Marker id={items[1].cityName} key={items[1].cityId} coordinates={[items[1].longitude, items[1].latitude]}>
               <circle r={items[1].demand + 30} fill="#000000" margin="45px" style={{ margin: '45px' }} />
               <text textAnchor="middle" fill="#FFF" fontSize="12px" fontWeight="700">
                 {items[1].cityName}

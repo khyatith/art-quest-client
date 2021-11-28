@@ -89,7 +89,7 @@ function StagingScreen() {
             )}
           {isAdmin && (
           <>
-            <TextField className={classes.form} placeholder="Number Of Teams" name="numberOfTeams" variant="outlined" onChange={handleTeams} />
+            <TextField className={classes.form} placeholder="Enter total number Of Players" name="numberOfTeams" variant="outlined" onChange={handleTeams} />
             <Button className={classes.btnform} variant="contained" onClick={setTeams}>
               Set number of players
             </Button>

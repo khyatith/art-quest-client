@@ -7,6 +7,6 @@ export const validateCurrentBid = (value) => {
   if (!value) return false;
   const regex = /^[0-9]+$/;
   if (!value.match(regex)) return false;
-  if (value > 10000000) return false;
+  if (value > 999) return false;
   return true;
 };
