@@ -8,7 +8,6 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
-import { formatNumberToCurrency } from '../../global/helpers';
 import { TEAM_COLOR_MAP } from '../../global/constants';
 
 const StyledTableCell = withStyles((theme) => ({
@@ -39,19 +38,17 @@ const Details = (props) => {
           </TableHead>
           <TableBody>
             {rows.map((row) => {
-              const rowCash = parseFloat(row.cash);
-              const cashRounded = parseFloat(rowCash / 1000);
-              const total = cashRounded + parseFloat(row.visits);
+              const total = row.cash + row.visits;
               return (
                 <TableRow key={row.id} style={{ backgroundColor: `${TEAM_COLOR_MAP[row.team]}` }}>
                   <StyledTableCell component="th" scope="row">
                     {row.id}
                   </StyledTableCell>
                   <StyledTableCell align="right">{row.team}</StyledTableCell>
-                  <StyledTableCell align="right">{parseFloat(row.visits).toFixed(2)}</StyledTableCell>
-                  <StyledTableCell align="right">{formatNumberToCurrency(`${row.cash}`)}</StyledTableCell>
-                  <StyledTableCell align="right">{cashRounded}</StyledTableCell>
-                  <StyledTableCell align="right">{total.toFixed(2)}</StyledTableCell>
+                  <StyledTableCell align="right">{row.visits}</StyledTableCell>
+                  <StyledTableCell align="right">{`$${row.cash}M`}</StyledTableCell>
+                  <StyledTableCell align="right">{row.cash}</StyledTableCell>
+                  <StyledTableCell align="right">{total}</StyledTableCell>
                 </TableRow>
               );
             })}

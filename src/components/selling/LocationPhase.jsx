@@ -155,8 +155,16 @@ function LocationPhase() {
     }
   }, [roundId, currentLocationId, setPlayer]);
 
+  const setLocationSelectedForCurrentRound = (value, locId) => {
+    setSelectedLocation(value);
+    setSelectedLocId(locId);
+  };
+
   const getRemainingTime = () => {
     if (Object.keys(locationPageTimerValue).length <= 0) {
+      if (!selectedLocationId) {
+        setLocationSelectedForCurrentRound(true, currentLocationId);
+      }
       setHasLocationPageTimerEnded(true);
       return;
     }
@@ -164,6 +172,9 @@ function LocationPhase() {
     const seconds = Math.floor((parseInt(total, 10) / 1000) % 60);
     const minutes = Math.floor((parseInt(total, 10) / 1000 / 60) % 60);
     if (total < 1000) {
+      if (!selectedLocationId) {
+        setLocationSelectedForCurrentRound(true, currentLocationId);
+      }
       setHasLocationPageTimerEnded(true);
     } else {
       const value = {
@@ -189,11 +200,6 @@ function LocationPhase() {
       history.push(`/sell/${player.playerId}`);
     }
   }, [hasLocationPageTimerEnded, player.playerId, history]);
-
-  const setLocationSelectedForCurrentRound = (value, locId) => {
-    setSelectedLocation(value);
-    setSelectedLocId(locId);
-  };
 
   useEffect(() => {
     socket.on('locationUpdatedForTeam', (data) => {

@@ -15,6 +15,7 @@ import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import axios from 'axios';
 import Grid from '@material-ui/core/Grid';
+import InputAdornment from '@material-ui/core/InputAdornment';
 import { API_URL } from '../../global/constants';
 import { socket } from '../../global/socket';
 import NewLeaderboard from '../NewLeaderboard';
@@ -24,7 +25,7 @@ import TeamInfo from '../TeamInfo';
 import leaderboardContext from '../../global/leaderboardContext';
 import auctionContext from '../../global/auctionContext';
 import BuyingGroupedBarChart from '../visualizations/BuyingGroupedBarChart';
-import { formatNumberToCurrency, validateCurrentBid } from '../../global/helpers';
+import { validateCurrentBid } from '../../global/helpers';
 
 const useStyles = makeStyles((theme) => ({
   media: {
@@ -192,7 +193,7 @@ function EnglishAuction({
       return;
     }
     const prevBidAmt = previousBidDetails.current && previousBidDetails.current.bidAmount;
-    const desiredBid = prevBidAmt ? parseInt(prevBidAmt, 10) + 5000 : auctionObj.originalValue;
+    const desiredBid = prevBidAmt ? parseInt(prevBidAmt, 10) + 2 : auctionObj.originalValue;
     if (bidInput < desiredBid) {
       setBidAmtError(`Your bid should be more than ${desiredBid}`);
     } else {
@@ -255,7 +256,7 @@ function EnglishAuction({
               <p>Painting Quality</p>
               <SimpleRating rating={parseFloat(auctionObj.paintingQuality)} />
               <Typography component="h6" variant="h6">
-                {`Opening bid : ${formatNumberToCurrency(auctionObj.originalValue)}`}
+                {`Opening bid : $${auctionObj.originalValue}M`}
               </Typography>
             </CardContent>
             <CardActions className={classes.cardactionsstyle}>
@@ -270,6 +271,10 @@ function EnglishAuction({
                   placeholder="Enter your bid"
                   variant="outlined"
                   disabled={previousBidDetails.current && (previousBidDetails.current.bidTeam === player.teamName)}
+                  InputProps={{
+                    startAdornment: <InputAdornment position="start">$</InputAdornment>,
+                    endAdornment: <InputAdornment position="end">M</InputAdornment>,
+                  }}
                 />
                 <Button
                   variant="contained"
@@ -282,7 +287,7 @@ function EnglishAuction({
                 { (previousBidDetails.current && previousBidDetails.current.bidAmount && (previousBidDetails.current.bidTeam !== player.teamName))
                   && (
                   <p>
-                    * Your bid cannot be less than {formatNumberToCurrency(parseInt(previousBidDetails.current.bidAmount, 10) + 5000)}
+                    * Your bid cannot be less than {`$${parseInt(previousBidDetails.current.bidAmount, 10) + 2}M`}
                   </p>
                   )}
                 { (previousBidDetails.current && previousBidDetails.current.bidAmount && (previousBidDetails.current.bidTeam === player.teamName))
@@ -296,7 +301,7 @@ function EnglishAuction({
                 {previousBidDetails.current && previousBidDetails.current.bidTeam && previousBidDetails.current.bidAmount ? (
                   <div className={classes.lastbidcontainer} style={{ backgroundColor: `${previousBidDetails.current.bidColor}` }}>
                     <p className={classes.lastbidby}>Last Bid By: {`Team ${previousBidDetails.current.bidTeam}`}</p>
-                    <p className={classes.lastbidamount}>Last Bid Amount: {formatNumberToCurrency(parseInt(previousBidDetails.current.bidAmount, 10))}</p>
+                    <p className={classes.lastbidamount}>Last Bid Amount: {`$${parseInt(previousBidDetails.current.bidAmount, 10)}M`}</p>
                   </div>
                 ) : (
                   <div className={classes.lastbidcontainer}>
