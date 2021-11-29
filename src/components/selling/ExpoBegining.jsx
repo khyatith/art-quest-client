@@ -27,6 +27,7 @@ import { API_URL } from '../../global/constants';
 import SimpleRating from '../Rating';
 import { socket } from '../../global/socket';
 import { validateCurrentBid } from '../../global/helpers';
+import NewBonusAuction from './NewBonusAuction';
 
 const useStyles = makeStyles((theme) => ({
   paintOpt: {
@@ -362,10 +363,6 @@ function ExpoBeginning() {
   const loadCardSelection = () => (
     <CardContent className={classes.paintOpt}>
       <Typography>Thank you for nominating this painting. You will see your earnings when the timer ends.</Typography>
-      {/* <Typography>
-        Ticket price: $
-        {revenue}
-      </Typography> */}
     </CardContent>
   );
 
@@ -477,7 +474,7 @@ function ExpoBeginning() {
             ))}
         </Box>
         <div className={classes.child2} style={{ backgroundColor: '#D09B69' }}>
-          <div>Place where we will include Bonus Auction</div>
+          <NewBonusAuction auctionObj={currentAuctionObj} />
         </div>
       </div>
     </>

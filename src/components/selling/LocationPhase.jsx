@@ -97,6 +97,7 @@ function LocationPhase() {
   const [hasLocationSelected, setSelectedLocation] = useState(false);
   const [selectedLocationId, setSelectedLocId] = useState();
   const [currentLocationId, setCurrentLocationId] = useState();
+  const [teamsCurrentLocation, setTeamsCurrentLocation] = useState();
 
   // Hooks and methods
   useEffect(() => {
@@ -109,6 +110,7 @@ function LocationPhase() {
           const {
             amountSpentByTeam, visits, locationPhaseTimerValue, roundNumber,
           } = newData.data;
+          setTeamsCurrentLocation(newData.data.visits);
           let x = 1;
           const tv = [];
           const labels = ['Cash', 'Visits'];
@@ -258,6 +260,7 @@ function LocationPhase() {
             hasLocationSelected={hasLocationSelected}
             selectedLocationId={selectedLocationId}
             previousLocationId={currentLocationId}
+            allLocationDetails={teamsCurrentLocation}
           />
         </div>
       </div>

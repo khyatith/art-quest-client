@@ -6,7 +6,7 @@ import axios from 'axios';
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import userContext from '../../global/userContext';
-import { API_URL } from '../../global/constants';
+import { API_URL, TEAM_COLOR_MAP } from '../../global/constants';
 import RoundsInfo from '../RoundsInfo';
 import { socket } from '../../global/socket';
 
@@ -32,10 +32,25 @@ const useStyles = makeStyles(() => ({
     color: '#76e246',
     fontWeight: 700,
   },
+  teammark: {
+    height: '35px',
+    width: '35px',
+    borderRadius: '50%',
+    display: 'inline-block',
+    margin: '20px',
+  },
+  parent: {
+    display: 'flex',
+    flexWrap: 'wrap',
+  },
+  child1: {
+    marginTop: '0.5%',
+    paddingBottom: '0.5%',
+  },
 }));
 
 const Airport = ({
-  roundNumber, hasLocationSelected, selectedLocationId, previousLocationId,
+  roundNumber, hasLocationSelected, selectedLocationId, previousLocationId, allLocationDetails,
 }) => {
   const classes = useStyles();
   const [mapValues, setMapValues] = useState({});
@@ -47,12 +62,16 @@ const Airport = ({
 
   const setVisitLocation = async () => {
     socket.emit('putCurrentLocation', {
-      roomId: player.hostCode, locationId: selectedRadio, teamName: player.teamName, roundId: roundNumber,
+      roomId: player.hostCode,
+      locationId: selectedRadio,
+      teamName: player.teamName,
+      roundId: roundNumber,
     });
   };
 
   const updateLocName = useCallback(() => {
     let locName;
+    console.log(mapValues);
     Object.entries(mapValues).forEach((val) => {
       if (parseInt(val[1].cityId, 10) === selectedLocationId) {
         locName = val[1].cityName;
@@ -105,50 +124,68 @@ const Airport = ({
     <div>
       <div className={classes.root}>
         {mapValues && previousLocationId && <RoundsInfo label={`You are currently in ${getLocationNameById()}`} />}
-        {!hasLocationSelected
-          ? (
-            <>
-              <p style={{ marginTop: '40px' }}>Fly to : </p>
-              {Object.entries(mapValues).map((items) => {
-                const totalCon = items[1].allowedToVisit;
-                if (items[1].cityId === player.previousLocation) {
-                  return (
-                    <>
-                      {totalCon.map((tloc) => {
-                        const obj = mapValues.find((x) => x.cityId === tloc);
-                        return (
-                          <div className={classes.radio} key={obj.cityId}>
-                            <input
-                              type="radio"
-                              value={obj.cityId}
-                              key={obj.cityId}
-                              disabled={hasLocationSelected}
-                              name="location"
-                              checked={parseInt(selectedRadio, 10) === parseInt(obj.cityId, 10)}
-                              onChange={updateSelectedLocation}
-                            />
-                            {' '}
-                            {obj.cityName}
-                          </div>
-                        );
-                      })}
-                    </>
-                  );
-                } return <></>;
-              })}
-            </>
+        {!hasLocationSelected ? (
+          <>
+            <p style={{ marginTop: '40px' }}>Fly to : </p>
+            {Object.entries(mapValues).map((items) => {
+              const totalCon = items[1].allowedToVisit;
+              if (items[1].cityId === player.previousLocation) {
+                return (
+                  <>
+                    {totalCon.map((tloc) => {
+                      const obj = mapValues.find((x) => x.cityId === tloc);
+                      return (
+                        <div className={classes.radio} key={obj.cityId}>
+                          <input
+                            type="radio"
+                            value={obj.cityId}
+                            key={obj.cityId}
+                            disabled={hasLocationSelected}
+                            name="location"
+                            checked={parseInt(selectedRadio, 10) === parseInt(obj.cityId, 10)}
+                            onChange={updateSelectedLocation}
+                          />
+                          {' '}
+                          {obj.cityName}
+                        </div>
+                      );
+                    })}
+                  </>
+                );
+              }
+              return <></>;
+            })}
+          </>
+        ) : (
+          hasLocationSelected && (
+            <p>
+              Your team&apos;s next destination:
+              {player.currentLocationName && player.currentLocationName}
+            </p>
           )
-          : hasLocationSelected && (
-          <p>
-            Your team&apos;s next destination:
-            {' '}
-            {player.currentLocationName && player.currentLocationName}
-            {' '}
-          </p>
-          )}
+        )}
         <Button className={classes.btnform} variant="contained" onClick={setVisitLocation} disabled={hasLocationSelected}>
           Fly
         </Button>
+        <div className={classes.parent}>
+          {allLocationDetails
+            && mapValues
+            && allLocationDetails.map((arg) => {
+              let ind = -1;
+              for (let i = 0; i < mapValues.length; i++) {
+                if (mapValues[i].cityId === arg.currentLocation) {
+                  ind = i;
+                  break;
+                }
+              }
+              return (
+                <div className={classes.child1}>
+                  <div className={classes.teammark} style={{ backgroundColor: TEAM_COLOR_MAP[arg.teamName], borderRadius: '100%' }} />
+                  <div style={{ margin: 'auto', textAlign: 'center' }}>{ind !== -1 && mapValues[ind].cityName}</div>
+                </div>
+              );
+            })}
+        </div>
       </div>
     </div>
   );
