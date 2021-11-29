@@ -150,7 +150,7 @@ function SellingResults(props) {
                 }}
                 className={classes.colouredDivNew}
                 // eslint-disable-next-line no-nested-ternary
-                display={ns.includes(arg.id) ? 'block' : 'none'}
+                display={ns.includes(arg.auctionId) ? 'block' : 'none'}
               >
                 <Card
                   sx={{
@@ -164,7 +164,7 @@ function SellingResults(props) {
                   className={classes.cardStyle}
                   disabled
                 >
-                  <CardMedia sx={{ height: 445 }} component="img" image={arg.imageURL} alt="green iguana" />
+                  <CardMedia sx={{ height: 445 }} component="img" image={arg.paintingURL} alt="green iguana" />
                 </Card>
               </Box>
             ))}
