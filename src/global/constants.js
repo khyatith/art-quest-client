@@ -1,6 +1,6 @@
 /* eslint-disable import/prefer-default-export */
-// export const API_URL = 'https://art-quest-server-new.herokuapp.com';
-export const API_URL = 'http://localhost:3001';
+export const API_URL = 'https://art-quest-server-new.herokuapp.com';
+// export const API_URL = 'http://localhost:3001';
 export const TEAM_DETAILS = [{
   id: 0,
   name: 'Blue',
