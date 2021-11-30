@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -57,9 +57,10 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-function GameInstructions({ playersJoinedInfo }) {
+function GameInstructions() {
   const classes = useStyles();
   const history = useHistory();
+  const [playersJoinedInfo, setPlayersJoinedInfo] = useState();
 
   const { player } = useContext(userContext);
 
@@ -71,10 +72,21 @@ function GameInstructions({ playersJoinedInfo }) {
 
   // // // IMPORTANT (KOGNITI CHANGE)
 
+  // useEffect(() => {
+  //   socket.emit('getPlayersJoinedInfo', { roomCode: player.hostCode });
+  // });
+
+  useEffect(() => {
+    socket.on('numberOfPlayersJoined', (data) => {
+      console.log('data', data);
+      setPlayersJoinedInfo(data);
+    });
+  });
+
   useEffect(() => {
     if (playersJoinedInfo) {
       const { numberOfPlayers, playersJoined } = playersJoinedInfo;
-      if (numberOfPlayers <= (playersJoined - 1)) {
+      if (numberOfPlayers <= playersJoined) {
         setTimeout(() => startGame(), 20000);
       }
     }
@@ -118,13 +130,13 @@ function GameInstructions({ playersJoinedInfo }) {
           </ListItem>
         </List>
         <p className={classes.p}>Let the bidding wars begin!</p>
-        { playersJoinedInfo && (playersJoinedInfo.playersJoined - 1) !== playersJoinedInfo.numberOfPlayers
+        { playersJoinedInfo && (playersJoinedInfo.playersJoined !== playersJoinedInfo.numberOfPlayers)
           ? (
             <div style={{ border: '5px solid #76e246' }}>
               <h3>
                 Player
                 {' '}
-                {(playersJoinedInfo.playersJoined - 1)}
+                {playersJoinedInfo.playersJoined}
                 {' '}
                 of
                 {' '}

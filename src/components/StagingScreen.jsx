@@ -34,12 +34,12 @@ const useStyles = makeStyles(() => ({
 
 function StagingScreen() {
   const classes = useStyles();
-  const history = useHistory();
+  // const history = useHistory();
   const location = useLocation();
   const { player } = useContext(userContext);
   const [isAdmin, setAdmin] = useState(false);
-  const [loadInstructions, setLoadInstructions] = useState(false);
-  const [playersJoinedInfo, setPlayersJoinedInfo] = useState();
+  // const [loadInstructions, setLoadInstructions] = useState(false);
+  // const [playersJoinedInfo, setPlayersJoinedInfo] = useState();
   const [noOfPlayers, setNumberOfPlayers] = useState(0);
 
   useEffect(() => {
@@ -50,9 +50,9 @@ function StagingScreen() {
     }
   }, [player]);
 
-  const handleClick = () => {
-    setLoadInstructions(true);
-  };
+  // const handleClick = () => {
+  //   setLoadInstructions(true);
+  // };
 
   const handleTeams = (event) => {
     const { value } = event.target;
@@ -63,44 +63,40 @@ function StagingScreen() {
     socket.emit('setTeams', { numberOfPlayers: noOfPlayers, roomCode: player.hostCode });
   };
 
-  useEffect(() => {
-    socket.on('numberOfPlayersJoined', (data) => {
-      setPlayersJoinedInfo(data);
-    });
-  });
+  // useEffect(() => {
+  //   socket.on('numberOfPlayersJoined', (data) => {
+  //     setPlayersJoinedInfo(data);
+  //   });
+  // });
 
   return (
     <>
-      { !loadInstructions && (
-      <>
-        <Header />
-        <div className={classes.root}>
-          <div>
-            <h1 className={classes.form}>Your game code is: {location.pathname.substring(9, 29)}</h1>
-            <h1 className={classes.form}>Your UID is: {player.playerId}</h1>
-          </div>
-          {!isAdmin
-            && (
-            <form>
-              <Button className={classes.btnform} variant="contained" color="primary" onClick={handleClick}>
-                Play
-              </Button>
-            </form>
-            )}
-          {isAdmin && (
-          <>
-            <TextField className={classes.form} placeholder="Enter total number Of Players" name="numberOfTeams" variant="outlined" onChange={handleTeams} />
-            <Button className={classes.btnform} variant="contained" onClick={setTeams}>
-              Set number of players
-            </Button>
-          </>
-          )}
+      <Header />
+      <div className={classes.root}>
+        <div>
+          <h1 className={classes.form}>Your game code is: {location.pathname.substring(9, 29)}</h1>
+          <h1 className={classes.form}>Your UID is: {player.playerId}</h1>
         </div>
-      </>
-      )}
-      {
+        {/* {!isAdmin
+          && (
+          <form>
+            <Button className={classes.btnform} variant="contained" color="primary" onClick={handleClick}>
+              Play
+            </Button>
+          </form>
+          )} */}
+        {isAdmin && (
+        <>
+          <TextField className={classes.form} placeholder="Enter total number Of Players" name="numberOfTeams" variant="outlined" onChange={handleTeams} />
+          <Button className={classes.btnform} variant="contained" onClick={setTeams}>
+            Set number of players
+          </Button>
+        </>
+        )}
+      </div>
+      {/* {
         loadInstructions && <GameInstructions playersJoinedInfo={playersJoinedInfo} />
-      }
+      } */}
     </>
   );
 }

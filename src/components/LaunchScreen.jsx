@@ -1,4 +1,4 @@
-import React, { useEffect, useContext } from 'react';
+import React, { useEffect, useContext, useState } from 'react';
 import axios from 'axios';
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
@@ -12,6 +12,7 @@ import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import { socket } from '../global/socket';
 import userContext from '../global/userContext';
+import GameInstructions from './GameInstructions';
 import { TEAM_COLOR_MAP, API_URL } from '../global/constants';
 
 const useStyles = makeStyles((theme) => ({
@@ -55,6 +56,7 @@ const useStyles = makeStyles((theme) => ({
 function LaunchScreen() {
   const classes = useStyles();
   const history = useHistory();
+  const [loadInstructions, setLoadInstructions] = useState(false);
   const { player, setPlayer } = useContext(userContext);
 
   const handleCreate = () => {
@@ -104,7 +106,6 @@ function LaunchScreen() {
     const teamColor = TEAM_COLOR_MAP[value];
     const teamName = value;
     setPlayer((prevValues) => ({ ...prevValues, teamName, teamColor }));
-    // sessionStorage.setItem('user', JSON.stringify(player));
   };
 
   const handleJoin = () => {
@@ -112,44 +113,53 @@ function LaunchScreen() {
       sessionStorage.setItem('user', JSON.stringify(player));
     }
     socket.emit('joinRoom', JSON.stringify(player));
-    history.push(`/staging/${player.hostCode}`);
+    setLoadInstructions(true);
+    socket.emit('getPlayersJoinedInfo', { roomCode: player.hostCode });
+    // history.push(`/staging/${player.hostCode}`);
   };
 
   return (
     <>
-      <div className={classes.grow}>
-        <AppBar className={classes.appbar} position="static">
-          <Toolbar>
-            <Typography variant="h6" className={classes.title}>
-              ART QUEST
-            </Typography>
-          </Toolbar>
-        </AppBar>
-      </div>
-      <div className={classes.root}>
-        <TextField className={classes.form} name="playerName" label="Player Name" variant="outlined" onChange={handleChange} />
-        <FormControl variant="outlined" className={classes.form}>
-          <InputLabel htmlFor="outlined-age-native-simple">Team Colour</InputLabel>
-          <Select
-            native
-            onChange={handleTeamSelect}
-            label="teamColours"
-          >
-            <option aria-label="None" value="" />
-            {
-              Object.entries(TEAM_COLOR_MAP).map(([key]) => (<option key={key} value={key}>{key}</option>))
-            }
-          </Select>
-        </FormControl>
-        <TextField className={classes.form} name="hostCode" label="Game Code" variant="outlined" onChange={handleChange} />
-        <Button className={classes.btnform} variant="contained" onClick={handleJoin}>
-          Join Game
-        </Button>
-        <Typography className={classes.form}>Or</Typography>
-        <Button className={classes.btnform} variant="contained" onClick={handleCreate}>
-          Create Game
-        </Button>
-      </div>
+      {!loadInstructions && (
+      <>
+        <div className={classes.grow}>
+          <AppBar className={classes.appbar} position="static">
+            <Toolbar>
+              <Typography variant="h6" className={classes.title}>
+                ART QUEST
+              </Typography>
+            </Toolbar>
+          </AppBar>
+        </div>
+        <div className={classes.root}>
+          <TextField className={classes.form} name="playerName" label="Player Name" variant="outlined" onChange={handleChange} />
+          <FormControl variant="outlined" className={classes.form}>
+            <InputLabel htmlFor="outlined-age-native-simple">Team Colour</InputLabel>
+            <Select
+              native
+              onChange={handleTeamSelect}
+              label="teamColours"
+            >
+              <option aria-label="None" value="" />
+              {
+                Object.entries(TEAM_COLOR_MAP).map(([key]) => (<option key={key} value={key}>{key}</option>))
+              }
+            </Select>
+          </FormControl>
+          <TextField className={classes.form} name="hostCode" label="Game Code" variant="outlined" onChange={handleChange} />
+          <Button className={classes.btnform} variant="contained" onClick={handleJoin}>
+            Join Game
+          </Button>
+          <Typography className={classes.form}>Or</Typography>
+          <Button className={classes.btnform} variant="contained" onClick={handleCreate}>
+            Create Game
+          </Button>
+        </div>
+      </>
+      )}
+      {
+        loadInstructions && <GameInstructions />
+      }
     </>
   );
 }
