@@ -16,32 +16,9 @@ import load from '../assets/load.webp';
 import { API_URL } from '../global/constants';
 
 const useStyles = makeStyles((theme) => ({
-  root: {
-    display: 'flex',
-    flexWrap: 'wrap',
-    justifyContent: 'space-around',
-    overflow: 'hidden',
-    backgroundColor: theme.palette.background.paper,
-    padding: 50,
-  },
-  imageList: {
-    width: 900,
-    height: 800,
-  },
-  media: {
-    height: '200px', // 16:9
-  },
   appbar: {
     backgroundColor: '#76e246',
     flexGrow: 1,
-  },
-  startbtn: {
-    width: '200px',
-    height: '60px',
-    '&.MuiButton-label': {
-      fontWeight: '700',
-      fontSize: '18px',
-    },
   },
   timercontent: {
     display: 'none',
@@ -68,17 +45,6 @@ const useStyles = makeStyles((theme) => ({
     color: '#922B21',
     backgroundColor: '#FADBD8',
     padding: '15px',
-  },
-  modal: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  paper: {
-    backgroundColor: theme.palette.background.paper,
-    border: '2px solid #000',
-    boxShadow: theme.shadows[5],
-    padding: theme.spacing(10, 10, 10),
   },
 }));
 
@@ -142,7 +108,7 @@ function LandingPage() {
     if (Object.keys(landingPageTimerValue).length === 0) {
       fetchTimerValue();
     }
-  }, []);
+  }, [landingPageTimerValue]);
 
   // eslint-disable-next-line consistent-return
   useEffect(() => {
@@ -224,8 +190,7 @@ function LandingPage() {
                       <div className={classes.playerdiv}>
                         <p>
                           {JSON.parse(sessionStorage.getItem('user')).playerName}
-                          , Team
-                          {' '}
+                          , Team&nbsp;
                           {JSON.parse(sessionStorage.getItem('user')).teamName}
                           ,
                           {' '}

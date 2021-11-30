@@ -16,6 +16,7 @@ import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import axios from 'axios';
 import Grid from '@material-ui/core/Grid';
+import InputAdornment from '@material-ui/core/InputAdornment';
 import { socket } from '../../global/socket';
 import NewLeaderboard from '../NewLeaderboard';
 import SimpleRating from '../Rating';
@@ -26,7 +27,7 @@ import BonusAuctionBanner from '../visualizations/BonusAuctionBanner';
 import { SECOND_PRICED_SEALED_BID_TEXT, API_URL } from '../../global/constants';
 import auctionContext from '../../global/auctionContext';
 import BuyingGroupedBarChart from '../visualizations/BuyingGroupedBarChart';
-import { formatNumberToCurrency, validateCurrentBid } from '../../global/helpers';
+import { validateCurrentBid } from '../../global/helpers';
 
 const useStyles = makeStyles((theme) => ({
   media: {
@@ -165,7 +166,7 @@ function SecondPriceSealedBid({
       return;
     }
     if (bidInput < auctionObj.originalValue) {
-      setBidAmtError(`Your bid should be more than ${bidInput}`);
+      setBidAmtError(`Your bid should be more than $${auctionObj.originalValue}M`);
     } else {
       setBidAmtError(null);
       const bidInfo = {
@@ -225,7 +226,7 @@ function SecondPriceSealedBid({
               <p>Painting Quality</p>
               <SimpleRating rating={parseFloat(auctionObj.paintingQuality)} />
               <Typography component="h6" variant="h6">
-                {`Opening bid : ${formatNumberToCurrency(auctionObj.originalValue)}`}
+                {`Opening bid : $${auctionObj.originalValue}M`}
               </Typography>
             </CardContent>
             <CardActions className={classes.cardactionsstyle}>
@@ -240,6 +241,10 @@ function SecondPriceSealedBid({
                   name="bidAmount"
                   placeholder="Enter your bid"
                   variant="outlined"
+                  InputProps={{
+                    startAdornment: <InputAdornment position="start">$</InputAdornment>,
+                    endAdornment: <InputAdornment position="end">M</InputAdornment>,
+                  }}
                 />
                 <Button disabled={!live} variant="contained" color="secondary" onClick={setBidAmt} style={{ marginBottom: '10px' }}>
                   Bid

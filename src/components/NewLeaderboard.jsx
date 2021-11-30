@@ -1,4 +1,5 @@
 import React, { useEffect, useContext } from 'react';
+import PropTypes from 'prop-types';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import axios from 'axios';
 import Table from '@material-ui/core/Table';
@@ -11,7 +12,6 @@ import Paper from '@material-ui/core/Paper';
 import leaderboardContext from '../global/leaderboardContext';
 import userContext from '../global/userContext';
 import { API_URL, TEAM_COLOR_MAP } from '../global/constants';
-import { formatNumberToCurrency } from '../global/helpers';
 
 const useStyles = makeStyles(() => ({
   avatar: {
@@ -90,9 +90,15 @@ export default function NewLeaderboard({ hasAuctionTimerEnded }) {
                   </StyledTableCell>
                   <StyledTableCell align="right">{teamResult.length}</StyledTableCell>
                   <StyledTableCell component="th" scope="row">
-                    {formatNumberToCurrency(parseFloat(totalAmountByTeam[`${teamName}`]))}
+                    $
+                    {parseFloat(totalAmountByTeam[`${teamName}`])}
+                    M
                   </StyledTableCell>
-                  <StyledTableCell align="right">{formatNumberToCurrency(parseFloat(teamEfficiency[`${teamName}`]))}</StyledTableCell>
+                  <StyledTableCell align="right">
+                    $
+                    {parseFloat(teamEfficiency[`${teamName}`])}
+                    M
+                  </StyledTableCell>
                 </TableRow>
               );
             })}
@@ -108,3 +114,11 @@ export default function NewLeaderboard({ hasAuctionTimerEnded }) {
     </div>
   );
 }
+
+NewLeaderboard.defaultProps = {
+  hasAuctionTimerEnded: false,
+};
+
+NewLeaderboard.propTypes = {
+  hasAuctionTimerEnded: PropTypes.bool,
+};

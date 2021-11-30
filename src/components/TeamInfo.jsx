@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import Chip from '@material-ui/core/Chip';
@@ -21,5 +22,10 @@ const TeamInfo = ({ label, labelColor }) => (
     <StyledBreadcrumb component="a" label={label} style={{ backgroundColor: labelColor }} />
   </Breadcrumbs>
 );
+
+TeamInfo.propTypes = {
+  label: PropTypes.string.isRequired,
+  labelColor: PropTypes.string.isRequired,
+};
 
 export default TeamInfo;

@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import Paper from '@material-ui/core/Paper';
 import Zoom from '@material-ui/core/Zoom';
 import { makeStyles } from '@material-ui/core/styles';
@@ -37,6 +38,10 @@ const BonusAuctionBanner = ({ text }) => {
       </div>
     </div>
   );
+};
+
+BonusAuctionBanner.propTypes = {
+  text: PropTypes.string.isRequired,
 };
 
 export default BonusAuctionBanner;
