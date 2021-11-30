@@ -4,12 +4,12 @@ import React, {
 import PropTypes from 'prop-types';
 import FirstPriceSealedBid from './auctions/FirstPriceSealedBid';
 import EnglishAuction from './auctions/EnglishAuction';
-// import EndBuyingPhase from './EndBuyingPhase';
+import EndBuyingPhase from './EndBuyingPhase';
 import SecondPriceSealedBid from './auctions/SecondPriceSealedBid';
 import AllPayAuctions from './auctions/AllPayAuctions';
 import auctionContext from '../global/auctionContext';
 import useSessionStorage from '../hooks/useSessionStorage';
-import SellingGameInstructions from './selling/SellingGameInstructions';
+// import SellingGameInstructions from './selling/SellingGameInstructions';
 
 function LiveAuctions({ totalNumberOfPaintings, fromLP }) {
   const [hasEndedAuctions, setHasEndedAuctions] = useState(false);
@@ -89,7 +89,7 @@ function LiveAuctions({ totalNumberOfPaintings, fromLP }) {
   return (
     <>
       {!hasEndedAuctions && currentAuctionData && currentAuctionData.currentAuctionObj && loadAuction()}
-      {hasEndedAuctions && <SellingGameInstructions />}
+      {hasEndedAuctions && <EndBuyingPhase />}
     </>
   );
 }
