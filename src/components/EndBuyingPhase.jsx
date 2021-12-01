@@ -38,9 +38,9 @@ const useStyles = makeStyles((theme) => ({
   paper: {
     maxWidth: 700,
   },
-  toptwoteams: {
-    maxWidth: 300,
-  },
+  // toptwoteams: {
+  //   maxWidth: 300,
+  // },
   maingrid: {
     padding: '20px 40px 20px 40px',
   },
@@ -62,7 +62,7 @@ function EndBuyingPhase() {
   const [artforTeams, setArtForTeams] = useState();
   const [gameWinner, setGameWinner] = useState();
   const [teamEfficiency, setTeamEfficiency] = useState({});
-  const [topTwoTeams, setTopTwoTeams] = useState({});
+  // const [topTwoTeams, setTopTwoTeams] = useState({});
   const [totalDebtByTeam, setTotalDebtByTeam] = useState({});
   const [sortedTeamsByPaintingsWon, setSortedTeamsByPaintingsWon] = useState({});
   const [avgPaintingQualityByTeam, setAvgPaintingQualityByTeam] = useState({});
@@ -82,9 +82,9 @@ function EndBuyingPhase() {
     if (data && data.avgPaintingQualityByTeam && Object.keys(data.avgPaintingQualityByTeam).length !== 0) {
       setAvgPaintingQualityByTeam(data.avgPaintingQualityByTeam);
     }
-    if (data && data.topTwo) {
-      setTopTwoTeams(data.topTwo);
-    }
+    // if (data && data.topTwo) {
+    //   setTopTwoTeams(data.topTwo);
+    // }
     if (data && data.teamEfficiency) {
       setTeamEfficiency(data.teamEfficiency);
     }
@@ -169,26 +169,26 @@ function EndBuyingPhase() {
     }, 5000);
   });
 
-  const renderTopTwoTeams = () => (
-    <>
-      <h2 style={{ textAlign: 'center' }}>Top 2 teams</h2>
-      <TableContainer className={classes.toptwoteams} component={Paper}>
-        <Table className={classes.toptwoteams} aria-label="customized table">
-          <TableBody>
-            {Object.entries(topTwoTeams).map(([key]) => (
-              <TableRow key={key} style={{ backgroundColor: `${TEAM_COLOR_MAP[key]}` }}>
-                <StyledTableCell align="center">
-                  Team
-                  {' '}
-                  {key}
-                </StyledTableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    </>
-  );
+  // const renderTopTwoTeams = () => (
+  //   <>
+  //     <h2 style={{ textAlign: 'center' }}>Top 2 teams</h2>
+  //     <TableContainer className={classes.toptwoteams} component={Paper}>
+  //       <Table className={classes.toptwoteams} aria-label="customized table">
+  //         <TableBody>
+  //           {Object.entries(topTwoTeams).map(([key]) => (
+  //             <TableRow key={key} style={{ backgroundColor: `${TEAM_COLOR_MAP[key]}` }}>
+  //               <StyledTableCell align="center">
+  //                 Team
+  //                 {' '}
+  //                 {key}
+  //               </StyledTableCell>
+  //             </TableRow>
+  //           ))}
+  //         </TableBody>
+  //       </Table>
+  //     </TableContainer>
+  //   </>
+  // );
 
   return (
     <>
@@ -197,12 +197,12 @@ function EndBuyingPhase() {
         <Grid item xs={8}>
           {renderLeaderboardData()}
         </Grid>
-        <Grid item xs={2}>
+        {/* <Grid item xs={2}>
           <span style={{ fontSize: '50px' }}>&#8594;</span>
-        </Grid>
-        <Grid item xs={2}>
+        </Grid> */}
+        {/* <Grid item xs={2}>
           {renderTopTwoTeams()}
-        </Grid>
+        </Grid> */}
       </Grid>
       <div style={{ textAlign: 'center', marginTop: '40px' }}>
         {!showWinner && <h2>And the winner is ....</h2>}

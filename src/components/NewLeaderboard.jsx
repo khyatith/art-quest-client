@@ -65,7 +65,7 @@ export default function NewLeaderboard({ hasAuctionTimerEnded }) {
 
   const renderLeaderboard = () => {
     const {
-      leaderboard, totalAmountByTeam, teamEfficiency,
+      totalAmountByTeam, teamEfficiency, totalPaintingsWonByTeams, teamRanks,
     } = leaderboardData;
     // if (!leaderboard) return <></>;
     return (
@@ -73,6 +73,7 @@ export default function NewLeaderboard({ hasAuctionTimerEnded }) {
         <Table className={classes.table} aria-label="customized table">
           <TableHead>
             <TableRow>
+              <StyledTableCell>Rank</StyledTableCell>
               <StyledTableCell>Team</StyledTableCell>
               <StyledTableCell align="right">Total Paintings</StyledTableCell>
               <StyledTableCell align="right">Debt</StyledTableCell>
@@ -80,15 +81,17 @@ export default function NewLeaderboard({ hasAuctionTimerEnded }) {
             </TableRow>
           </TableHead>
           <TableBody>
-            {leaderboard && Object.entries(leaderboard).map((entry) => {
+            {teamRanks && Object.entries(teamRanks).map((entry, i) => {
               const teamName = entry[0];
-              const teamResult = entry[1];
               return (
                 <TableRow key={teamName} style={{ backgroundColor: `${TEAM_COLOR_MAP[teamName]}` }}>
                   <StyledTableCell align="right">
+                    {i + 1}
+                  </StyledTableCell>
+                  <StyledTableCell align="right">
                     {teamName}
                   </StyledTableCell>
-                  <StyledTableCell align="right">{teamResult.length}</StyledTableCell>
+                  <StyledTableCell align="right">{totalPaintingsWonByTeams[`${teamName}`]}</StyledTableCell>
                   <StyledTableCell component="th" scope="row">
                     $
                     {parseFloat(totalAmountByTeam[`${teamName}`])}
