@@ -126,7 +126,7 @@ function LaunchScreen() {
           <AppBar className={classes.appbar} position="static">
             <Toolbar>
               <Typography variant="h6" className={classes.title}>
-                ART QUEST NEW CODE IS RUNNING
+                ART QUEST NEW CODE IS RUNNING 2
               </Typography>
             </Toolbar>
           </AppBar>
