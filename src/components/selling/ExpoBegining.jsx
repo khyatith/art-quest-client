@@ -23,7 +23,7 @@ import InputAdornment from '@material-ui/core/InputAdornment';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import { useHistory } from 'react-router-dom';
-import { API_URL } from '../../global/constants';
+import { API_URL, TEAM_COLOR_MAP } from '../../global/constants';
 import SimpleRating from '../Rating';
 import { socket } from '../../global/socket';
 import { validateCurrentBid } from '../../global/helpers';
@@ -91,7 +91,11 @@ const useStyles = makeStyles((theme) => ({
     paddingBottom: '0.5%',
   },
   child2: {
-    flex: '0 2 30%',
+    flex: '0 2 0.15%',
+    backgroundColor: '#000',
+  },
+  child3: {
+    flex: '0 2 29.85%',
   },
   paper: {
     maxWidth: 600,
@@ -342,9 +346,7 @@ function ExpoBeginning() {
           startAdornment: <InputAdornment position="start">$</InputAdornment>,
         }}
       />
-      <p>
-        * Ticket price can be between $1 to $999
-      </p>
+      <p>* Ticket price can be between $1 to $999</p>
       <Button
         size="small"
         style={{
@@ -392,7 +394,8 @@ function ExpoBeginning() {
       </AppBar>
       <div className={classes.parent}>
         <div className={classes.child1}>{cityData && <div className={classes.cityData}>{renderCityStats()}</div>}</div>
-        <div className={classes.child2} style={{ backgroundColor: '#ffffff' }}>
+        <div className={classes.child2} />
+        <div className={classes.child3} style={{ backgroundColor: '#D3D3D3', textAlign: 'center' }}>
           <p className={classes.fontSty}>
             You are in&nbsp;
             {user.currentLocationName}
@@ -404,7 +407,7 @@ function ExpoBeginning() {
                 {user.currentLocationName}
               </p>
               {otherTeams.map((arg) => (
-                <div className={classes.teammark} style={{ backgroundColor: arg, borderRadius: '100%' }} />
+                <div className={classes.teammark} style={{ backgroundColor: TEAM_COLOR_MAP[arg], borderRadius: '100%' }} />
               ))}
             </>
           ) : (
@@ -473,7 +476,8 @@ function ExpoBeginning() {
               </Box>
             ))}
         </Box>
-        <div className={classes.child2} style={{ backgroundColor: '#D09B69' }}>
+        <div className={classes.child2} />
+        <div className={classes.child3} style={{ backgroundColor: '#D3D3D3' }}>
           <NewBonusAuction auctionObj={currentAuctionObj} />
         </div>
       </div>

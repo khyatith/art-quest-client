@@ -19,7 +19,8 @@ const useStyles = makeStyles((theme) => ({
     height: '200px', // 16:9
   },
   root: {
-    width: '100%',
+    width: '85%',
+    margin: 'auto',
   },
   maingrid: {
     padding: '20px',
@@ -148,8 +149,6 @@ const NewBonusAuction = ({ auctionObj }) => {
               <CardHeader className={classes.titlestyle} title={auctionObj.name} subheader={`Created By: ${auctionObj.artist}`} />
               <CardMedia className={classes.media} component="img" image={`${auctionObj.imageURL}`} title={auctionObj.name} />
               <CardContent className={classes.cardcontentstyle}>
-                <p>Painting Quality</p>
-                <SimpleRating rating={parseFloat(auctionObj.paintingQuality)} />
                 <Typography component="h6" variant="h6">
                   {`Opening bid : $${auctionObj.originalValue}M`}
                 </Typography>
@@ -200,6 +199,13 @@ const NewBonusAuction = ({ auctionObj }) => {
                 </div>
               </CardActions>
             </Card>
+            <div style={{
+              backgroundColor: '#FFF', textAlign: 'center', borderRadius: '20px', boxShadow: '2px 2px 2px 1px rgba(0, 0, 0, 0.2)',
+            }}
+            >
+              <p>Painting Quality</p>
+              <SimpleRating rating={parseFloat(auctionObj.paintingQuality)} />
+            </div>
           </Grid>
         )}
       </Grid>
