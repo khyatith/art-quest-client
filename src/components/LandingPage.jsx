@@ -76,7 +76,7 @@ function LandingPage() {
 
   const [isGalleryFullScreen, setIsGalleryFullscreen] = useState(false);
   const [hasLandingPageTimerEnded, setHasLandingPageTimerEnded] = useState(false);
-  const [landingPageTimerValue, setLandingPageTimerValue] = useState({});
+  const [landingPageTimerValue, setLandingPageTimerValue] = useState();
 
   const getRemainingTime = () => {
     if (Object.keys(landingPageTimerValue).length <= 0) {
@@ -105,7 +105,7 @@ function LandingPage() {
       const { data } = await axios.get(`${API_URL}/buying/timer/${sesStr.hostCode}`);
       setLandingPageTimerValue(data.landingPageTimerValue);
     }
-    if (Object.keys(landingPageTimerValue).length === 0) {
+    if (!landingPageTimerValue) {
       fetchTimerValue();
     }
   }, [landingPageTimerValue]);
