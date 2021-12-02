@@ -11,7 +11,6 @@ import axios from 'axios';
 import userContext from '../global/userContext';
 import LiveAuctions from './LiveAuctions';
 import Header from './Header';
-import { socket } from '../global/socket';
 import load from '../assets/load.webp';
 import { API_URL } from '../global/constants';
 
