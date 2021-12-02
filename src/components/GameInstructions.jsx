@@ -96,7 +96,7 @@ function GameInstructions() {
     <>
       <div className={classes.container}>
         <Header />
-        <p className={classes.title}>Art Quest 1111</p>
+        <p className={classes.title}>Art Quest</p>
         <p className={classes.p}>Your challenge, should you choose to accept it, is to create your favorite art collection.</p>
         <p className={classes.p}>
           How will you do it? By taking part in

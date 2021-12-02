@@ -78,16 +78,10 @@ function LandingPage() {
   const [landingPageTimerValue, setLandingPageTimerValue] = useState();
 
   const getRemainingTime = () => {
-    // if (Object.keys(landingPageTimerValue).length <= 0) {
-    //   setHasLandingPageTimerEnded(true);
-    //   return;
-    // }
-    console.log('landingPageTimerValue inside get remaining time', landingPageTimerValue);
     const total = parseInt(landingPageTimerValue.total, 10) - 1000;
     const seconds = Math.floor((parseInt(total, 10) / 1000) % 60);
     const minutes = Math.floor((parseInt(total, 10) / 1000 / 60) % 60);
     if (total < 1000) {
-      console.log('hastimerended value is true');
       setHasLandingPageTimerEnded(true);
     } else {
       const value = {
@@ -114,7 +108,6 @@ function LandingPage() {
   // eslint-disable-next-line consistent-return
   useEffect(() => {
     if (landingPageTimerValue) {
-      console.log('landingPageTimerValue', landingPageTimerValue);
       const interval = setInterval(() => getRemainingTime(), 1000);
       return () => clearInterval(interval);
     }
@@ -125,13 +118,6 @@ function LandingPage() {
       setTotalNumberOfPaintings(JSON.parse(sessionStorage.getItem('allAuction')).auctions.artifacts.length);
     }
   }, []);
-
-  // useEffect(() => {
-  //   socket.on('landingPageTimerValue', ({ timerValue }) => {
-  //     console.log('timerValue', timerValue);
-  //     setLandingPageTimerValue(timerValue);
-  //   });
-  // }, []);
 
   const onScreenChange = (fullScreenElement) => {
     setIsGalleryFullscreen(fullScreenElement);
