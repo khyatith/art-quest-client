@@ -245,7 +245,9 @@ function ExpoBeginning() {
 
   useEffect(() => {
     const redirectToRevenueScreen = async () => {
-      // await axios.post(`${API_URL}/buying/updateRoundId`, { roomId: user.hostCode, roundId: user.roundId });
+      if (currentAuctionObj) {
+        await axios.post(`${API_URL}/buying/updateEnglishAuctionResults`, { roomId: user.hostCode, auctionId: currentAuctionObj.id });
+      }
       history.push({
         pathname: `/sell/result/${user.playerId}`,
         state: nominatedPaintings,

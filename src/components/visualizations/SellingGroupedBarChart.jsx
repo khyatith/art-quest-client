@@ -47,9 +47,15 @@ const SellingGroupedBarChart = (props) => {
   }, [results, teamColorMap]);
 
   return (
-    <div style={{ width: '500px', height: '500px' }}>
-      <Bar data={barChartData} options={options} />
-    </div>
+    <>
+      {
+        barChartData && (
+        <div style={{ width: '500px', height: '500px' }}>
+          <Bar data={barChartData} options={options} />
+        </div>
+        )
+      }
+    </>
   );
 };
 
