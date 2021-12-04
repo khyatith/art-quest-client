@@ -22,12 +22,13 @@ const StyledTableCell = withStyles((theme) => ({
   },
 }))(TableCell);
 
-function createDataMap(id, team, visits, cash) {
+function createDataMap(id, team, visits, cash, total) {
   return {
     id,
     team,
     visits,
     cash,
+    total,
   };
 }
 
@@ -54,10 +55,11 @@ function FinalResults() {
             let vis = 0;
             const teamVisits = visits.filter((v) => v.teamName === key);
             vis = teamVisits.length > 0 ? teamVisits[0].visitCount : 0.0;
-            tv.push(createDataMap(x, team, vis, cash));
+            const total = parseFloat(cash) + parseFloat(vis);
+            tv.push(createDataMap(x, team, vis, cash, total));
             x += 1;
           });
-          tv.sort((a, b) => b.cash - a.cash);
+          tv.sort((a, b) => b.total - a.total);
           for (let i = 0; i < tv.length; ++i) {
             tv[i].id = i + 1;
             console.log(tv.id);
@@ -140,7 +142,6 @@ function FinalResults() {
             <TableBody>
               {rows
                 && rows.map((row) => {
-                  const total = row.cash + row.visits;
                   return (
                     <TableRow key={row.id} style={{ backgroundColor: `${TEAM_COLOR_MAP[row.team]}` }}>
                       <StyledTableCell component="th" scope="row">
@@ -150,7 +151,7 @@ function FinalResults() {
                       <StyledTableCell align="right">{row.visits}</StyledTableCell>
                       <StyledTableCell align="right">{`$${row.cash}M`}</StyledTableCell>
                       <StyledTableCell align="right">{row.cash}</StyledTableCell>
-                      <StyledTableCell align="right">{total}</StyledTableCell>
+                      <StyledTableCell align="right">{row.total}</StyledTableCell>
                     </TableRow>
                   );
                 })}
