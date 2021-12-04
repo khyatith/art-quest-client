@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { withStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
@@ -8,7 +8,6 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
-import userContext from '../../global/userContext';
 import load from '../../assets/load.webp';
 import Header from '../Header';
 import { API_URL, TEAM_COLOR_MAP } from '../../global/constants';
@@ -33,59 +32,72 @@ function createDataMap(id, team, visits, cash) {
 }
 
 function FinalResults() {
-  const player = useContext(userContext);
   const [rows, setRows] = useState();
   const [loading, setLoading] = useState(true);
   const [gameWinner, setGameWinner] = useState();
   const [showWinner, setShowWinner] = useState(false);
+  const [hasValueFetched, setHasValueFetched] = useState(false);
 
   useEffect(() => {
-    axios
-      .get(`${API_URL}/buying/getSellingResults?roomId=${player.hostCode}`)
-      .then((newData) => {
-        const { amountSpentByTeam, visits } = newData.data;
-        let x = 1;
-        console.log(amountSpentByTeam);
-        const tv = [];
-        Object.entries(amountSpentByTeam).forEach(([key, value]) => {
-          const team = key;
-          const cash = value;
-          let vis = 0;
-          const teamVisits = visits.filter((v) => v.teamName === key);
-          vis = teamVisits.length > 0 ? teamVisits[0].visitCount : 0.0;
-          tv.push(createDataMap(x, team, vis, cash));
-          x += 1;
+    if (!hasValueFetched) {
+      const user = JSON.parse(sessionStorage.getItem('user'));
+      axios
+        .get(`${API_URL}/buying/getSellingResults?roomId=${user.hostCode}`)
+        .then((newData) => {
+          const { amountSpentByTeam, visits } = newData.data;
+          let x = 1;
+          console.log(amountSpentByTeam);
+          const tv = [];
+          Object.entries(amountSpentByTeam).forEach(([key, value]) => {
+            const team = key;
+            const cash = value;
+            let vis = 0;
+            const teamVisits = visits.filter((v) => v.teamName === key);
+            vis = teamVisits.length > 0 ? teamVisits[0].visitCount : 0.0;
+            tv.push(createDataMap(x, team, vis, cash));
+            x += 1;
+          });
+          tv.sort((a, b) => b.cash - a.cash);
+          for (let i = 0; i < tv.length; ++i) {
+            tv[i].id = i + 1;
+            console.log(tv.id);
+          }
+          console.log(tv);
+          setGameWinner(tv[0].team);
+          setRows(tv);
+        })
+        .finally(() => {
+          setLoading(false);
+          setHasValueFetched(true);
         });
-        tv.sort((a, b) => b.cash - a.cash);
-        for (let i = 0; i < tv.length; ++i) {
-          tv[i].id = i + 1;
-          console.log(tv.id);
-        }
-        console.log(tv);
-        setGameWinner(tv[0].team);
-        setRows(tv);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
+    }
   }, []);
 
   const showTeamWinner = () => {
-    const { teamName } = player;
+    const user = JSON.parse(sessionStorage.getItem('user'));
+    const { teamName } = user;
     if (teamName === gameWinner) {
       return (
-        <h2 style={{
-          backgroundColor: '#000000', padding: '20px', color: '#76e246', textAlign: 'center',
-        }}
+        <h2
+          style={{
+            backgroundColor: '#000000',
+            padding: '20px',
+            color: '#76e246',
+            textAlign: 'center',
+          }}
         >
           Congratulations! You are the winner!
         </h2>
       );
     }
     return (
-      <h2 style={{
-        backgroundColor: '#000000', padding: '20px', color: '#76e246', textAlign: 'center',
-      }}
+      <h2
+        style={{
+          backgroundColor: '#000000',
+          padding: '20px',
+          color: '#76e246',
+          textAlign: 'center',
+        }}
       >
         The winner is Team
         {gameWinner}
@@ -126,21 +138,22 @@ function FinalResults() {
               </TableRow>
             </TableHead>
             <TableBody>
-              {rows.map((row) => {
-                const total = row.cash + row.visits;
-                return (
-                  <TableRow key={row.id} style={{ backgroundColor: `${TEAM_COLOR_MAP[row.team]}` }}>
-                    <StyledTableCell component="th" scope="row">
-                      {row.id}
-                    </StyledTableCell>
-                    <StyledTableCell align="right">{row.team}</StyledTableCell>
-                    <StyledTableCell align="right">{row.visits}</StyledTableCell>
-                    <StyledTableCell align="right">{`$${row.cash}M`}</StyledTableCell>
-                    <StyledTableCell align="right">{row.cash}</StyledTableCell>
-                    <StyledTableCell align="right">{total}</StyledTableCell>
-                  </TableRow>
-                );
-              })}
+              {rows
+                && rows.map((row) => {
+                  const total = row.cash + row.visits;
+                  return (
+                    <TableRow key={row.id} style={{ backgroundColor: `${TEAM_COLOR_MAP[row.team]}` }}>
+                      <StyledTableCell component="th" scope="row">
+                        {row.id}
+                      </StyledTableCell>
+                      <StyledTableCell align="right">{row.team}</StyledTableCell>
+                      <StyledTableCell align="right">{row.visits}</StyledTableCell>
+                      <StyledTableCell align="right">{`$${row.cash}M`}</StyledTableCell>
+                      <StyledTableCell align="right">{row.cash}</StyledTableCell>
+                      <StyledTableCell align="right">{total}</StyledTableCell>
+                    </TableRow>
+                  );
+                })}
             </TableBody>
           </Table>
         </TableContainer>

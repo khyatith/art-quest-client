@@ -248,6 +248,7 @@ function ExpoBeginning() {
       if (currentAuctionObj) {
         await axios.post(`${API_URL}/buying/updateEnglishAuctionResults`, { roomId: user.hostCode, auctionId: currentAuctionObj.id });
       }
+      console.log('YES');
       history.push({
         pathname: `/sell/result/${user.playerId}`,
         state: nominatedPaintings,

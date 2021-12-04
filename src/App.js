@@ -10,6 +10,7 @@ import GameInstructions from './components/GameInstructions';
 import ExpoBegining from './components/selling/ExpoBegining';
 import LocationPhase from './components/selling/LocationPhase';
 import SellingResults from './components/selling/SellingResults';
+import FinalResults from './components/selling/FinalResults';
 
 function App() {
   const [player, setPlayer] = useState({
@@ -40,6 +41,9 @@ function App() {
               <Route path="/sell/:code" exact component={ExpoBegining} />
               <Route path="/sell/location/:code" exact component={LocationPhase} />
               <Route path="/sell/result/:code" exact component={SellingResults} />
+              <Route path="/sell/finalresult/:code">
+                <FinalResults />
+              </Route>
             </Switch>
           </auctionContext.Provider>
         </leaderboardContext.Provider>

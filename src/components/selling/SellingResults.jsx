@@ -91,7 +91,11 @@ function SellingResults(props) {
   useEffect(() => {
     const redirectToRevenueScreen = async () => {
       await axios.post(`${API_URL}/buying/updateRoundId`, { roomId: user.hostCode, roundId: user.roundId });
-      history.push(`/sell/location/${user.playerId}`);
+      if (user.roundId < 10) {
+        history.push(`/sell/location/${user.playerId}`);
+      } else {
+        history.push(`/sell/finalresult/${user.playerId}`);
+      }
     };
     if (hasTimerEnded) {
       redirectToRevenueScreen();
