@@ -87,7 +87,7 @@ function GameInstructions() {
     if (playersJoinedInfo) {
       const { numberOfPlayers, playersJoined } = playersJoinedInfo;
       if (numberOfPlayers <= playersJoined) {
-        setTimeout(() => startGame(), 20000);
+        setTimeout(() => startGame(), 30000);
       }
     }
   }, [playersJoinedInfo]);
@@ -116,17 +116,17 @@ function GameInstructions() {
             </ListItemIcon>
             <ListItemText className={classes.listtext} primary="Create your FAVORITE art collection" />
           </ListItem>
-          <ListItem className={classes.listitem}>
+          {/* <ListItem className={classes.listitem}>
             <ListItemIcon>
               <StarIcon style={{ color: '#76e246' }} />
             </ListItemIcon>
             <ListItemText className={classes.listtext} primary="Spend your cash WISELY" />
-          </ListItem>
+          </ListItem> */}
           <ListItem className={classes.listitem}>
             <ListItemIcon>
               <StarIcon style={{ color: '#76e246' }} />
             </ListItemIcon>
-            <ListItemText className={classes.listtext} primary="Collect most number of HIGH-QUALITY paintings" />
+            <ListItemText className={classes.listtext} primary="MAXIMIZE total number of paintings, MINIMIZE efficiency" />
           </ListItem>
         </List>
         <p className={classes.p}>Let the bidding wars begin!</p>
