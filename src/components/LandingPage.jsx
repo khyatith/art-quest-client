@@ -69,9 +69,6 @@ const IMAGE_GALLERY_SETTINGS = {
 function LandingPage() {
   const classes = useStyles();
   const { player } = useContext(userContext);
-  const [totalNumberOfPaintings, setTotalNumberOfPaintings] = useState();
-
-  // states
 
   const [isGalleryFullScreen, setIsGalleryFullscreen] = useState(false);
   const [hasLandingPageTimerEnded, setHasLandingPageTimerEnded] = useState(false);
@@ -112,12 +109,6 @@ function LandingPage() {
       return () => clearInterval(interval);
     }
   });
-
-  useEffect(() => {
-    if (JSON.parse(sessionStorage.getItem('allAuction')) !== null) {
-      setTotalNumberOfPaintings(JSON.parse(sessionStorage.getItem('allAuction')).auctions.artifacts.length);
-    }
-  }, []);
 
   const onScreenChange = (fullScreenElement) => {
     setIsGalleryFullscreen(fullScreenElement);
@@ -161,7 +152,7 @@ function LandingPage() {
       {
         // eslint-disable-next-line no-nested-ternary
         hasLandingPageTimerEnded
-          ? <LiveAuctions totalNumberOfPaintings={totalNumberOfPaintings} allAuctions={JSON.parse(sessionStorage.getItem('allAuction'))} fromLP />
+          ? <LiveAuctions fromLP />
           : (
             <div>
               <Header />
