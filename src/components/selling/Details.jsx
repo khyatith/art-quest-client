@@ -38,7 +38,7 @@ const Details = (props) => {
           </TableHead>
           <TableBody>
             {rows.map((row) => {
-              const total = row.cash + row.visits;
+              const total = parseFloat(row.cash) + parseFloat(row.visits);
               return (
                 <TableRow key={row.id} style={{ backgroundColor: `${TEAM_COLOR_MAP[row.team]}` }}>
                   <StyledTableCell component="th" scope="row">

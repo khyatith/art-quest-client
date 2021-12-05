@@ -65,7 +65,7 @@ const useStyles = makeStyles((theme) => ({
 
 function createData(team, cash, vis) {
   const str = [];
-  str.push(cash / 10000);
+  str.push(cash);
   str.push(vis);
   return {
     label: team,

@@ -140,21 +140,18 @@ function FinalResults() {
               </TableRow>
             </TableHead>
             <TableBody>
-              {rows
-                && rows.map((row) => {
-                  return (
-                    <TableRow key={row.id} style={{ backgroundColor: `${TEAM_COLOR_MAP[row.team]}` }}>
-                      <StyledTableCell component="th" scope="row">
-                        {row.id}
-                      </StyledTableCell>
-                      <StyledTableCell align="right">{row.team}</StyledTableCell>
-                      <StyledTableCell align="right">{row.visits}</StyledTableCell>
-                      <StyledTableCell align="right">{`$${row.cash}M`}</StyledTableCell>
-                      <StyledTableCell align="right">{row.cash}</StyledTableCell>
-                      <StyledTableCell align="right">{row.total}</StyledTableCell>
-                    </TableRow>
-                  );
-                })}
+              {rows && rows.map((row) => (
+                <TableRow key={row.id} style={{ backgroundColor: `${TEAM_COLOR_MAP[row.team]}` }}>
+                  <StyledTableCell component="th" scope="row">
+                    {row.id}
+                  </StyledTableCell>
+                  <StyledTableCell align="right">{row.team}</StyledTableCell>
+                  <StyledTableCell align="right">{row.visits}</StyledTableCell>
+                  <StyledTableCell align="right">{`$${row.cash}M`}</StyledTableCell>
+                  <StyledTableCell align="right">{row.cash}</StyledTableCell>
+                  <StyledTableCell align="right">{row.total}</StyledTableCell>
+                </TableRow>
+              ))}
             </TableBody>
           </Table>
         </TableContainer>

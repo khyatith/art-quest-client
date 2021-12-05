@@ -92,7 +92,7 @@ const useStyles = makeStyles((theme) => ({
   },
   child2: {
     flex: '0 2 0.15%',
-    backgroundColor: '#000',
+    backgroundColor: '#ededed',
   },
   child3: {
     flex: '0 2 29.85%',
@@ -397,7 +397,7 @@ function ExpoBeginning() {
       <div className={classes.parent}>
         <div className={classes.child1}>{cityData && <div className={classes.cityData}>{renderCityStats()}</div>}</div>
         <div className={classes.child2} />
-        <div className={classes.child3} style={{ backgroundColor: '#D3D3D3', textAlign: 'center' }}>
+        <div className={classes.child3} style={{ backgroundColor: '#f9f9f9', textAlign: 'center' }}>
           <p className={classes.fontSty}>
             You are in&nbsp;
             {user.currentLocationName}
@@ -420,6 +420,7 @@ function ExpoBeginning() {
           )}
         </div>
       </div>
+      <hr style={{ border: '1px solid #ededed' }} />
       <div className={classes.parent}>
         <Box className={classes.child1} justifyContent="center" display="flex" flexWrap="wrap">
           {paintings
@@ -479,7 +480,7 @@ function ExpoBeginning() {
             ))}
         </Box>
         <div className={classes.child2} />
-        <div className={classes.child3} style={{ backgroundColor: '#D3D3D3' }}>
+        <div className={classes.child3} style={{ backgroundColor: '#f9f9f9' }}>
           <NewBonusAuction auctionObj={currentAuctionObj} />
         </div>
       </div>

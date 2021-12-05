@@ -32,12 +32,13 @@ const useStyles = makeStyles((theme) => ({
   },
   typomid: {
     textAlign: 'center',
-    marginTop: '1%',
-    marginRight: '9%',
+    marginTop: '20px',
   },
   typomidnew: {
     textAlign: 'center',
     marginTop: '1%',
+    fontSize: '24px',
+    fontWeight: '700',
   },
   windowView: {
     display: 'flex',
@@ -89,7 +90,7 @@ function SellingResults(props) {
   }, [earnings, user, timerValue]);
 
   useEffect(() => {
-    const redirectToRevenueScreen = async () => {
+    const redirectToLocationScreen = async () => {
       await axios.post(`${API_URL}/buying/updateRoundId`, { roomId: user.hostCode, roundId: user.roundId });
       if (user.roundId < 10) {
         history.push(`/sell/location/${user.playerId}`);
@@ -98,7 +99,7 @@ function SellingResults(props) {
       }
     };
     if (hasTimerEnded) {
-      redirectToRevenueScreen();
+      redirectToLocationScreen();
     }
   }, [hasTimerEnded, history, user]);
 
@@ -137,10 +138,7 @@ function SellingResults(props) {
             {teamColor}
           </Typography>
           <Typography className={classes.typomidnew}>
-            Round&nbsp;
-            {user.roundId}
-            &nbsp;Earnings : $&nbsp;
-            {revenueGenerated}
+            {`$${revenueGenerated}M`}
           </Typography>
         </div>
         <div className={classes.windowViewDown}>

@@ -14,10 +14,6 @@ export default function SimpleRating({ rating }) {
   );
 }
 
-SimpleRating.defaultProps = {
-  rating: 3,
-};
-
 SimpleRating.propTypes = {
-  rating: PropTypes.number,
+  rating: PropTypes.number.isRequired,
 };
