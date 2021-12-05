@@ -75,12 +75,13 @@ function createData(team, cash, vis) {
   };
 }
 
-function createDataMap(id, team, visits, cash) {
+function createDataMap(id, team, visits, cash, total) {
   return {
     id,
     team,
     visits,
     cash,
+    total,
   };
 }
 
@@ -120,13 +121,18 @@ function LocationPhase() {
             let vis = 0;
             const teamVisits = visits.filter((v) => v.teamName === key);
             vis = teamVisits.length > 0 ? teamVisits[0].visitCount : 0.00;
+            const total = parseFloat(cash) + parseFloat(vis);
             // eslint-disable-next-line no-nested-ternary
             datasets.push(createData(team, cash, vis));
-            tv.push(createDataMap(x, team, vis, cash));
+            tv.push(createDataMap(x, team, vis, cash, total));
             x += 1;
           });
           const currentTeamVisits = visits.filter((v) => v.teamName === player.teamName);
           const currentLocationForTeam = currentTeamVisits.length === 0 ? 2 : currentTeamVisits[0].currentLocation;
+          tv.sort((a, b) => b.total - a.total);
+          for (let i = 0; i < tv.length; ++i) {
+            tv[i].id = i + 1;
+          }
           setCurrentLocationId(currentLocationForTeam);
           setResult({ labels, datasets });
           setRows(tv);

@@ -64,7 +64,6 @@ function FinalResults() {
             tv[i].id = i + 1;
             console.log(tv.id);
           }
-          console.log(tv);
           setGameWinner(tv[0].team);
           setRows(tv);
         })

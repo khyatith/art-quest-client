@@ -28,7 +28,7 @@ const Details = (props) => {
         <Table sx={{ minWidth: 700 }} aria-label="customized table">
           <TableHead>
             <TableRow>
-              <StyledTableCell>ID</StyledTableCell>
+              <StyledTableCell>Rank</StyledTableCell>
               <StyledTableCell align="right">Team</StyledTableCell>
               <StyledTableCell align="right">Visits</StyledTableCell>
               <StyledTableCell align="right">Total Cash&nbsp;($)</StyledTableCell>
