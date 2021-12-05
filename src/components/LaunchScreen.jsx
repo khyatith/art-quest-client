@@ -56,6 +56,7 @@ const useStyles = makeStyles((theme) => ({
 function LaunchScreen() {
   const classes = useStyles();
   const history = useHistory();
+  const [joinError, setJoinError] = useState();
   const [loadInstructions, setLoadInstructions] = useState(false);
   const { player, setPlayer } = useContext(userContext);
 
@@ -108,14 +109,19 @@ function LaunchScreen() {
     setPlayer((prevValues) => ({ ...prevValues, teamName, teamColor }));
   };
 
-  const handleJoin = () => {
-    if (sessionStorage.getItem('user') === null) {
-      sessionStorage.setItem('user', JSON.stringify(player));
+  const handleJoin = async () => {
+    const { data } = await axios.get(`${API_URL}/buying/validatePlayerId/${player.hostCode}`);
+    if (data.type === 'error') {
+      setJoinError(data.message);
+    } else {
+      setJoinError(false);
+      if (sessionStorage.getItem('user') === null) {
+        sessionStorage.setItem('user', JSON.stringify(player));
+      }
+      socket.emit('joinRoom', JSON.stringify(player));
+      setLoadInstructions(true);
+      socket.emit('getPlayersJoinedInfo', { roomCode: player.hostCode });
     }
-    socket.emit('joinRoom', JSON.stringify(player));
-    setLoadInstructions(true);
-    socket.emit('getPlayersJoinedInfo', { roomCode: player.hostCode });
-    // history.push(`/staging/${player.hostCode}`);
   };
 
   return (
@@ -132,6 +138,7 @@ function LaunchScreen() {
           </AppBar>
         </div>
         <div className={classes.root}>
+          { joinError && <h3 style={{ color: '#FF0000' }}>{joinError}</h3> }
           <TextField className={classes.form} name="playerName" label="Player Name" variant="outlined" onChange={handleChange} />
           <FormControl variant="outlined" className={classes.form}>
             <InputLabel htmlFor="outlined-age-native-simple">Team Colour</InputLabel>

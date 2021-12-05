@@ -11,10 +11,11 @@ import auctionContext from '../global/auctionContext';
 import useSessionStorage from '../hooks/useSessionStorage';
 // import SellingGameInstructions from './selling/SellingGameInstructions';
 
-function LiveAuctions({ totalNumberOfPaintings, fromLP }) {
+function LiveAuctions({ fromLP }) {
   const [hasEndedAuctions, setHasEndedAuctions] = useState(false);
   const allAuctionsObj = useSessionStorage('allAuction')[0];
   const [isFromLP, getFromLP] = useState(fromLP);
+  const [totalNumberOfPaintings, setTotalNumberOfPaintings] = useState();
   const { currentAuctionData, setCurrentAuctionData } = useContext(auctionContext);
 
   const getNextAuctionObj = useCallback((prevAuctionId) => {
@@ -38,6 +39,11 @@ function LiveAuctions({ totalNumberOfPaintings, fromLP }) {
       setHasEndedAuctions(true);
     }
   }, [hasEndedAuctions, setCurrentAuctionData, allAuctionsObj]);
+
+  useEffect(() => {
+    const { artifacts } = allAuctionsObj?.auctions;
+    setTotalNumberOfPaintings(artifacts.length);
+  }, [allAuctionsObj]);
 
   useEffect(() => {
     if (isFromLP) {
@@ -94,14 +100,8 @@ function LiveAuctions({ totalNumberOfPaintings, fromLP }) {
   );
 }
 
-LiveAuctions.defaultProps = {
-  totalNumberOfPaintings: 1,
-  fromLP: true,
-};
-
 LiveAuctions.propTypes = {
-  totalNumberOfPaintings: PropTypes.number,
-  fromLP: PropTypes.bool,
+  fromLP: PropTypes.bool.isRequired,
 };
 
 export default LiveAuctions;

@@ -22,7 +22,7 @@ const useStyles = makeStyles(() => ({
     padding: '20px',
   },
   title: {
-    fontSize: '36px',
+    fontSize: '32px',
     fontWeight: '700',
     color: '#76e246',
   },
@@ -96,7 +96,7 @@ function GameInstructions() {
     <>
       <div className={classes.container}>
         <Header />
-        <p className={classes.title}>Art Quest</p>
+        <p className={classes.title}>Instructions</p>
         <p className={classes.p}>Your challenge, should you choose to accept it, is to create your favorite art collection.</p>
         <p className={classes.p}>
           How will you do it? By taking part in

@@ -83,17 +83,13 @@ function AllPayAuctions({ totalNumberOfPaintings, getNextAuctionObj }) {
   const [live, setLive] = useState(true);
   const player = JSON.parse(sessionStorage.getItem('user'));
   const [auctionObj, setAuctionObj] = useState();
-  const [auctionTimer, setAuctionTimer] = useState({});
+  const [auctionTimer, setAuctionTimer] = useState();
   const [hasAuctionTimerEnded, setAuctionTimerEnded] = useState(false);
   const [bidAmtError, setBidAmtError] = useState();
   const { leaderboardData } = useContext(leaderboardContext);
   const { currentAuctionData } = useContext(auctionContext);
 
   const getRemainingTime = () => {
-    if (Object.keys(auctionTimer).length <= 0) {
-      setAuctionTimerEnded(true);
-      return;
-    }
     const total = parseInt(auctionTimer.total, 10) - 1000;
     const seconds = Math.floor((parseInt(total, 10) / 1000) % 60);
     const minutes = Math.floor((parseInt(total, 10) / 1000 / 60) % 60);
@@ -126,7 +122,7 @@ function AllPayAuctions({ totalNumberOfPaintings, getNextAuctionObj }) {
       const { data } = await axios.get(`${API_URL}/buying/auctionTimer/${player.hostCode}/${auctionObj.id}`);
       setAuctionTimer(data.currentAuctionObjTimer);
     }
-    if (auctionObj && Object.keys(auctionTimer).length === 0) {
+    if (auctionObj && !auctionTimer) {
       fetchTimerValue();
     }
   }, [auctionObj, auctionTimer, player.hostCode]);
