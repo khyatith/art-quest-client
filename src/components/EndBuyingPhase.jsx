@@ -210,7 +210,7 @@ function EndBuyingPhase() {
           {renderLeaderboardData()}
         </Grid>
         <Button className={classes.btnform} variant="contained" onClick={resetApplication}>
-          Create New Game
+          Start New Game
         </Button>
         {/* <Grid item xs={2}>
           <span style={{ fontSize: '50px' }}>&#8594;</span>
