@@ -11,6 +11,8 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
+import { Button } from '@material-ui/core';
+import { useHistory } from 'react-router';
 import Header from './Header';
 import { API_URL, TEAM_COLOR_MAP } from '../global/constants';
 import { formatNumberToCurrency } from '../global/helpers';
@@ -44,6 +46,13 @@ const useStyles = makeStyles((theme) => ({
   maingrid: {
     padding: '20px 40px 20px 40px',
   },
+  btnform: {
+    backgroundColor: '#051207',
+    margin: '60px 0 60px 0px',
+    width: 400,
+    color: '#76e246',
+    fontWeight: 1000,
+  },
 }));
 
 const StyledTableCell = withStyles((theme) => ({
@@ -59,6 +68,7 @@ const StyledTableCell = withStyles((theme) => ({
 
 function EndBuyingPhase() {
   const classes = useStyles();
+  const history = useHistory();
   const [artforTeams, setArtForTeams] = useState();
   const [gameWinner, setGameWinner] = useState();
   const [teamEfficiency, setTeamEfficiency] = useState({});
@@ -106,7 +116,10 @@ function EndBuyingPhase() {
     const tableData = Object.entries(sortedTeamsByPaintingsWon).map(([key, value]) => {
       const teamName = key;
       return {
-        teamName, debt: totalDebtByTeam[teamName], totalPaintings: value, efficiency: teamEfficiency[teamName],
+        teamName,
+        debt: totalDebtByTeam[teamName],
+        totalPaintings: value,
+        efficiency: teamEfficiency[teamName],
       };
     });
     return (
@@ -118,7 +131,7 @@ function EndBuyingPhase() {
               <TableRow>
                 <StyledTableCell>Team</StyledTableCell>
                 <StyledTableCell align="right">Total paintings</StyledTableCell>
-                { Object.keys(avgPaintingQualityByTeam).length > 0 && <StyledTableCell align="right">Average painting quality</StyledTableCell>}
+                {Object.keys(avgPaintingQualityByTeam).length > 0 && <StyledTableCell align="right">Average painting quality</StyledTableCell>}
                 <StyledTableCell align="right">Debt</StyledTableCell>
                 <StyledTableCell align="right">Efficiency</StyledTableCell>
               </TableRow>
@@ -130,8 +143,9 @@ function EndBuyingPhase() {
                     {row.teamName}
                   </StyledTableCell>
                   <StyledTableCell align="right">{row.totalPaintings}</StyledTableCell>
-                  { Object.keys(avgPaintingQualityByTeam).length > 0
-                  && <StyledTableCell align="right">{ parseFloat(avgPaintingQualityByTeam[row.teamName]) }</StyledTableCell>}
+                  {Object.keys(avgPaintingQualityByTeam).length > 0 && (
+                    <StyledTableCell align="right">{parseFloat(avgPaintingQualityByTeam[row.teamName])}</StyledTableCell>
+                  )}
                   <StyledTableCell align="right">{formatNumberToCurrency(parseFloat(row.debt))}</StyledTableCell>
                   <StyledTableCell align="right">{formatNumberToCurrency(parseFloat(row.efficiency))}</StyledTableCell>
                 </TableRow>
@@ -143,21 +157,19 @@ function EndBuyingPhase() {
     );
   };
 
+  const resetApplication = () => {
+    history.push('/');
+    sessionStorage.clear();
+  };
+
   const showTeamWinner = () => {
     const { teamName } = player;
     if (teamName === gameWinner) {
-      return (
-        <h2 style={{ backgroundColor: '#000000', padding: '20px', color: '#76e246' }}>
-          Congratulations! You are the winner!
-        </h2>
-      );
+      return <h2 style={{ backgroundColor: '#000000', padding: '20px', color: '#76e246' }}>Congratulations! You are the winner!</h2>;
     }
     return (
       <h2 style={{ backgroundColor: '#000000', padding: '20px', color: '#76e246' }}>
-        The winner is
-        {' '}
-        Team
-        {' '}
+        The winner is Team
         {gameWinner}
       </h2>
     );
@@ -197,6 +209,9 @@ function EndBuyingPhase() {
         <Grid item xs={8}>
           {renderLeaderboardData()}
         </Grid>
+        <Button className={classes.btnform} variant="contained" onClick={resetApplication}>
+          Create New Game
+        </Button>
         {/* <Grid item xs={2}>
           <span style={{ fontSize: '50px' }}>&#8594;</span>
         </Grid> */}
@@ -210,8 +225,7 @@ function EndBuyingPhase() {
         <h3>Your art collection</h3>
         <div className={classes.root}>
           <ImageList rowHeight={300} className={classes.imageList}>
-            {
-              artforTeams
+            {artforTeams
               && artforTeams.map((item) => {
                 const { auctionObj } = item;
                 return (
@@ -219,8 +233,7 @@ function EndBuyingPhase() {
                     <img key={item.auctionId} src={auctionObj.imageURL} alt={auctionObj.name} />
                   </ImageListItem>
                 );
-              })
-            }
+              })}
           </ImageList>
         </div>
       </div>
