@@ -76,17 +76,19 @@ function LandingPage() {
   const [landingPageTimerValue, setLandingPageTimerValue] = useState();
 
   useEffect(() => {
-    socket.on("redirectToNextPage", () => {
+    socket.on("redirectToNextPage", (room) => {
       setHasLandingPageTimerEnded(true);
-    })
-  });
+    });
+  }, []);
 
   const getRemainingTime = () => {
     const total = parseInt(landingPageTimerValue.total, 10) - 1000;
     const seconds = Math.floor((parseInt(total, 10) / 1000) % 60);
     const minutes = Math.floor((parseInt(total, 10) / 1000 / 60) % 60);
     if (total < 1000) {
-      socket.emit("landingPageTimerEnded");
+      const sesStr = JSON.parse(sessionStorage.getItem('user'));
+      console.log('line 91');
+      socket.emit("landingPageTimerEnded", JSON.stringify(sesStr));
       //setHasLandingPageTimerEnded(true);
     } else {
       const value = {
