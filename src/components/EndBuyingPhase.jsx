@@ -71,8 +71,13 @@ function EndBuyingPhase() {
   const [teamEfficiency, setTeamEfficiency] = useState({});
   const [totalDebtByTeam, setTotalDebtByTeam] = useState({});
   const [teamsByRank, setTeamsByRank] = useState([]);
-  const [showWinner, setShowWinner] = useState(false);
-  const [totalPaintingsWonByTeam, setTotalPaintingsWonByTeam] = useState({});
+  // const [showWinner, setShowWinner] = useState(false);
+  // const [totalPaintingsWonByTeam, setTotalPaintingsWonByTeam] = useState({});
+  // const { setPlayer } = useContext(userContext);
+  // const { setLeaderboardData } = useContext(leaderboardContext);
+  // const [sortedTeamsByPaintingsWon, setSortedTeamsByPaintingsWon] = useState({});
+  // const [avgPaintingQualityByTeam, setAvgPaintingQualityByTeam] = useState({});
+  // const [showWinner, setShowWinner] = useState(false);
   // const { setPlayer } = useContext(userContext);
   // const { setLeaderboardData } = useContext(leaderboardContext);
   const player = useSessionStorage('user')[0];

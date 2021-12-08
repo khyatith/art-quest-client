@@ -65,13 +65,13 @@ function GameInstructions() {
   const [playersJoinedInfo, setPlayersJoinedInfo] = useState();
   const [version, setVersion] = useState();
 
-  // const { player } = useContext(userContext);
+  const { player } = useContext(userContext);
 
-  // const startGame = () => {
-  //   console.log('inside start game');
-  //   socket.emit('startGame', JSON.stringify(player));
-  //   history.push(`/game/${player.playerId}`);
-  // };
+  const startGame = () => {
+    console.log('inside start game');
+    socket.emit('startGame', JSON.stringify(player));
+    history.push(`/game/${player.playerId}`);
+  };
 
   // // IMPORTANT (KOGNITI CHANGE)
 
