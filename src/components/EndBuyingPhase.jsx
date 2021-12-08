@@ -10,7 +10,7 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
-import Grid from '@material-ui/core/Grid';
+// import Grid from '@material-ui/core/Grid';
 import { Button } from '@material-ui/core';
 import { useHistory } from 'react-router';
 import Header from './Header';
@@ -39,19 +39,15 @@ const useStyles = makeStyles((theme) => ({
   },
   paper: {
     maxWidth: 700,
-  },
-  // toptwoteams: {
-  //   maxWidth: 300,
-  // },
-  maingrid: {
-    padding: '20px 40px 20px 40px',
+    margin: '0 auto',
   },
   btnform: {
-    backgroundColor: '#051207',
-    margin: '60px 0 60px 0px',
+    backgroundColor: '#76e246',
+    margin: '20px auto',
+    // margin: '60px 0 60px 0px',
     width: 400,
-    color: '#76e246',
-    fontWeight: 1000,
+    color: '#051207',
+    fontWeight: '700',
   },
 }));
 
@@ -92,9 +88,6 @@ function EndBuyingPhase() {
     if (data && data.avgPaintingQualityByTeam && Object.keys(data.avgPaintingQualityByTeam).length !== 0) {
       setAvgPaintingQualityByTeam(data.avgPaintingQualityByTeam);
     }
-    // if (data && data.topTwo) {
-    //   setTopTwoTeams(data.topTwo);
-    // }
     if (data && data.teamEfficiency) {
       setTeamEfficiency(data.teamEfficiency);
     }
@@ -205,20 +198,12 @@ function EndBuyingPhase() {
   return (
     <>
       <Header />
-      <Grid className={classes.maingrid} container spacing={2}>
-        <Grid item xs={8}>
-          {renderLeaderboardData()}
-        </Grid>
+      {renderLeaderboardData()}
+      <div style={{ margin: '40px auto', textAlign: 'center' }}>
         <Button className={classes.btnform} variant="contained" onClick={resetApplication}>
           Start New Game
         </Button>
-        {/* <Grid item xs={2}>
-          <span style={{ fontSize: '50px' }}>&#8594;</span>
-        </Grid> */}
-        {/* <Grid item xs={2}>
-          {renderTopTwoTeams()}
-        </Grid> */}
-      </Grid>
+      </div>
       <div style={{ textAlign: 'center', marginTop: '40px' }}>
         {!showWinner && <h2>And the winner is ....</h2>}
         {showWinner && showTeamWinner()}
