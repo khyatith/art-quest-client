@@ -92,7 +92,7 @@ function SellingResults(props) {
   useEffect(() => {
     const redirectToLocationScreen = async () => {
       await axios.post(`${API_URL}/buying/updateRoundId`, { roomId: user.hostCode, roundId: user.roundId });
-      if (user.roundId < 10) {
+      if (user.roundId < 5) {
         history.push(`/sell/location/${user.playerId}`);
       } else {
         history.push(`/sell/finalresult/${user.playerId}`);
