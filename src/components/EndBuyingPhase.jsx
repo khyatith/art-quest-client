@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import ImageList from '@material-ui/core/ImageList';
 import ImageListItem from '@material-ui/core/ImageListItem';
@@ -10,13 +10,14 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
-// import Grid from '@material-ui/core/Grid';
 import { Button } from '@material-ui/core';
 import { useHistory } from 'react-router';
+import userContext from '../global/userContext';
 import Header from './Header';
 import { API_URL, TEAM_COLOR_MAP } from '../global/constants';
 import { formatNumberToCurrency } from '../global/helpers';
 import useSessionStorage from '../hooks/useSessionStorage';
+import leaderboardContext from '../global/leaderboardContext';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -68,11 +69,12 @@ function EndBuyingPhase() {
   const [artforTeams, setArtForTeams] = useState();
   const [gameWinner, setGameWinner] = useState();
   const [teamEfficiency, setTeamEfficiency] = useState({});
-  // const [topTwoTeams, setTopTwoTeams] = useState({});
   const [totalDebtByTeam, setTotalDebtByTeam] = useState({});
   const [sortedTeamsByPaintingsWon, setSortedTeamsByPaintingsWon] = useState({});
   const [avgPaintingQualityByTeam, setAvgPaintingQualityByTeam] = useState({});
   const [showWinner, setShowWinner] = useState(false);
+  const { setPlayer } = useContext(userContext);
+  const { setLeaderboardData } = useContext(leaderboardContext);
   const player = useSessionStorage('user')[0];
 
   const getWinner = async () => {
@@ -152,6 +154,15 @@ function EndBuyingPhase() {
 
   const resetApplication = () => {
     history.push('/');
+    setPlayer({
+      playerName: '',
+      teamName: '',
+      playerId: '',
+      hostCode: '',
+      teamColor: '',
+      currentLocation: '',
+    });
+    setLeaderboardData({ leaderboardData: {} });
     sessionStorage.clear();
   };
 
@@ -162,7 +173,7 @@ function EndBuyingPhase() {
     }
     return (
       <h2 style={{ backgroundColor: '#000000', padding: '20px', color: '#76e246' }}>
-        The winner is Team
+        The winner is Team&nbsp;
         {gameWinner}
       </h2>
     );
@@ -173,27 +184,6 @@ function EndBuyingPhase() {
       setShowWinner(true);
     }, 5000);
   });
-
-  // const renderTopTwoTeams = () => (
-  //   <>
-  //     <h2 style={{ textAlign: 'center' }}>Top 2 teams</h2>
-  //     <TableContainer className={classes.toptwoteams} component={Paper}>
-  //       <Table className={classes.toptwoteams} aria-label="customized table">
-  //         <TableBody>
-  //           {Object.entries(topTwoTeams).map(([key]) => (
-  //             <TableRow key={key} style={{ backgroundColor: `${TEAM_COLOR_MAP[key]}` }}>
-  //               <StyledTableCell align="center">
-  //                 Team
-  //                 {' '}
-  //                 {key}
-  //               </StyledTableCell>
-  //             </TableRow>
-  //           ))}
-  //         </TableBody>
-  //       </Table>
-  //     </TableContainer>
-  //   </>
-  // );
 
   return (
     <>
