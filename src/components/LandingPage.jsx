@@ -13,6 +13,7 @@ import LiveAuctions from './LiveAuctions';
 import Header from './Header';
 import load from '../assets/load.webp';
 import { API_URL } from '../global/constants';
+import { socket } from '../global/socket';
 
 const useStyles = makeStyles((theme) => ({
   appbar: {
@@ -74,12 +75,19 @@ function LandingPage() {
   const [hasLandingPageTimerEnded, setHasLandingPageTimerEnded] = useState(false);
   const [landingPageTimerValue, setLandingPageTimerValue] = useState();
 
+  useEffect(() => {
+    socket.on('redirectToNextPage', () => {
+      setHasLandingPageTimerEnded(true);
+    });
+  }, []);
+
   const getRemainingTime = () => {
     const total = parseInt(landingPageTimerValue.total, 10) - 1000;
     const seconds = Math.floor((parseInt(total, 10) / 1000) % 60);
     const minutes = Math.floor((parseInt(total, 10) / 1000 / 60) % 60);
     if (total < 1000) {
-      setHasLandingPageTimerEnded(true);
+      const sesStr = JSON.parse(sessionStorage.getItem('user'));
+      socket.emit('landingPageTimerEnded', JSON.stringify(sesStr));
     } else {
       const value = {
         total,
