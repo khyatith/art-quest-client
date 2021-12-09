@@ -99,10 +99,11 @@ function LocationPhase() {
   const [selectedLocationId, setSelectedLocId] = useState();
   const [currentLocationId, setCurrentLocationId] = useState();
   const [teamsCurrentLocation, setTeamsCurrentLocation] = useState();
+  const [currentRoundData, setCurrentRoundData] = useState(false);
 
   // Hooks and methods
   useEffect(() => {
-    if (!hasLocationSelected) {
+    if (!currentRoundData) {
       setLoading(true);
       const datasets = [];
       axios
@@ -143,9 +144,10 @@ function LocationPhase() {
         })
         .finally(() => {
           setLoading(false);
+          setCurrentRoundData(true);
         });
     }
-  }, [player, hasLocationSelected]);
+  }, [player]);
 
   useEffect(() => {
     if (roundId || currentLocationId) {

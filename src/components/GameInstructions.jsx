@@ -1,98 +1,95 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-import { useHistory } from 'react-router-dom';
-import StarIcon from '@material-ui/icons/Star';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import { socket } from '../global/socket';
-import userContext from '../global/userContext';
-import Header from './Header';
+import React from 'react';
+// import { makeStyles } from '@material-ui/core/styles';
+// import List from '@material-ui/core/List';
+// import ListItem from '@material-ui/core/ListItem';
+// import ListItemText from '@material-ui/core/ListItemText';
+// import { useHistory } from 'react-router-dom';
+// import StarIcon from '@material-ui/icons/Star';
+// import ListItemIcon from '@material-ui/core/ListItemIcon';
+// import { socket } from '../global/socket';
+// import userContext from '../global/userContext';
+// import Header from './Header';
+import LocationPhase from './selling/LocationPhase';
 
-const useStyles = makeStyles(() => ({
-  container: {
-    width: '100%',
-    height: '100%',
-    backgroundColor: '#000000',
-    position: 'absolute',
-    color: '#ffffff',
-    textAlign: 'center',
-    padding: '20px',
-  },
-  title: {
-    fontSize: '36px',
-    fontWeight: '700',
-    color: '#76e246',
-  },
-  listcontainer: {
-    textAlign: 'center',
-    margin: '0 auto',
-    width: '50%',
-  },
-  listitem: {
-    marginTop: '20px',
-  },
-  startgamebutton: {
-    marginTop: '80px',
-    width: '90%',
-    backgroundColor: '#76e246',
-    color: '#000000',
-    fontWeight: '700',
-    fontSize: '24px',
-  },
-  p: {
-    fontSize: '18px',
-    fontWeight: '700',
-    '& span': {
-      color: '#76e246',
-    },
-  },
-  listtext: {
-    '& .MuiListItemText-primary': {
-      fontSize: '20px',
-      fontWeight: '700',
-    },
-  },
-}));
+// const useStyles = makeStyles(() => ({
+//   container: {
+//     width: '100%',
+//     height: '100%',
+//     backgroundColor: '#000000',
+//     position: 'absolute',
+//     color: '#ffffff',
+//     textAlign: 'center',
+//     padding: '20px',
+//   },
+//   title: {
+//     fontSize: '36px',
+//     fontWeight: '700',
+//     color: '#76e246',
+//   },
+//   listcontainer: {
+//     textAlign: 'center',
+//     margin: '0 auto',
+//     width: '50%',
+//   },
+//   listitem: {
+//     marginTop: '20px',
+//   },
+//   startgamebutton: {
+//     marginTop: '80px',
+//     width: '90%',
+//     backgroundColor: '#76e246',
+//     color: '#000000',
+//     fontWeight: '700',
+//     fontSize: '24px',
+//   },
+//   p: {
+//     fontSize: '18px',
+//     fontWeight: '700',
+//     '& span': {
+//       color: '#76e246',
+//     },
+//   },
+//   listtext: {
+//     '& .MuiListItemText-primary': {
+//       fontSize: '20px',
+//       fontWeight: '700',
+//     },
+//   },
+// }));
 
 function GameInstructions() {
-  const classes = useStyles();
-  const history = useHistory();
-  const [playersJoinedInfo, setPlayersJoinedInfo] = useState();
+  // const classes = useStyles();
+  // const history = useHistory();
+  // const [playersJoinedInfo, setPlayersJoinedInfo] = useState();
 
-  const { player } = useContext(userContext);
+  // const { player } = useContext(userContext);
 
-  const startGame = () => {
-    console.log('inside start game');
-    socket.emit('startGame', JSON.stringify(player));
-    history.push(`/game/${player.playerId}`);
-  };
+  // const startGame = () => {
+  //   console.log('inside start game');
+  //   socket.emit('startGame', JSON.stringify(player));
+  //   history.push(`/game/${player.playerId}`);
+  // };
 
-  // IMPORTANT (KOGNITI CHANGE)
+  // // IMPORTANT (KOGNITI CHANGE)
 
   // useEffect(() => {
-  //   socket.emit('getPlayersJoinedInfo', { roomCode: player.hostCode });
-  // });
+  //   socket.on('numberOfPlayersJoined', (data) => {
+  //     setPlayersJoinedInfo(data);
+  //   });
+  // }, [playersJoinedInfo]);
 
-  useEffect(() => {
-    socket.on('numberOfPlayersJoined', (data) => {
-      setPlayersJoinedInfo(data);
-    });
-  });
-
-  useEffect(() => {
-    if (playersJoinedInfo) {
-      const { numberOfPlayers, playersJoined } = playersJoinedInfo;
-      if (numberOfPlayers <= playersJoined) {
-        setTimeout(() => startGame(), 60000);
-      }
-    }
-  }, [playersJoinedInfo]);
+  // useEffect(() => {
+  //   if (playersJoinedInfo) {
+  //     const { numberOfPlayers, playersJoined } = playersJoinedInfo;
+  //     if (numberOfPlayers <= playersJoined) {
+  //       setTimeout(() => startGame(), 20000);
+  //     }
+  //   }
+  // }, [playersJoinedInfo]);
 
   return (
     <>
-      <div className={classes.container}>
+      {/* <div className={classes.container}>
         <Header />
         <p className={classes.title}>Instructions</p>
         <p>(1 minute to read)</p>
@@ -143,7 +140,8 @@ function GameInstructions() {
               <h3>All players Joined. Starting game ...</h3>
             </div>
           )}
-      </div>
+      </div> */}
+      <LocationPhase />
     </>
   );
 }
