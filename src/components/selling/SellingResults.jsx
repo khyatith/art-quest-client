@@ -46,7 +46,8 @@ const useStyles = makeStyles((theme) => ({
     whiteSpace: 'nowrap',
   },
   colouredDiv: {
-    minWidth: '31.33%',
+    minWidth: '27%',
+    maxWidth: '27%',
     height: '700px',
     margin: '1%',
   },
@@ -58,7 +59,7 @@ const useStyles = makeStyles((theme) => ({
   },
   colouredDivNew: {
     flex: 'column',
-    minHeight: '400px',
+    minHeight: '450px',
     margin: '1%',
   },
   cardStyle: {
@@ -156,9 +157,9 @@ function SellingResults(props) {
               >
                 <Card
                   sx={{
-                    minHeight: 445,
-                    minWidth: 355,
-                    maxWidth: 355,
+                    minHeight: 290,
+                    minWidth: 360,
+                    maxWidth: 360,
                     backgroundColor: 'white',
                     margin: 'auto',
                     marginTop: '3%',
@@ -166,7 +167,7 @@ function SellingResults(props) {
                   className={classes.cardStyle}
                   disabled
                 >
-                  <CardMedia sx={{ height: 445 }} component="img" image={arg.paintingURL} alt="green iguana" />
+                  <CardMedia sx={{ height: 290 }} component="img" image={arg.paintingURL} alt="green iguana" />
                 </Card>
               </Box>
             ))}

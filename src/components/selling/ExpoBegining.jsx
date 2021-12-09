@@ -28,6 +28,7 @@ import SimpleRating from '../Rating';
 import { socket } from '../../global/socket';
 import { validateCurrentBid } from '../../global/helpers';
 import NewBonusAuction from './NewBonusAuction';
+import NewBonusAuctionResult from './NewBonusAuctionResult';
 
 const useStyles = makeStyles((theme) => ({
   paintOpt: {
@@ -233,6 +234,7 @@ function ExpoBeginning() {
     setHasSentEnglishAuctionRequest(true);
     const { data } = await axios.get(`${API_URL}/buying/getEnglishAuctionForSelling?roomCode=${user.hostCode}&roundId=${user.roundId}`);
     setCurrentAuctionObj(data.auctionObj);
+    console.log(data.auctionObj);
   }, [user]);
 
   useEffect(() => {
@@ -480,8 +482,11 @@ function ExpoBeginning() {
             ))}
         </Box>
         <div className={classes.child2} />
-        <div className={classes.child3} style={{ backgroundColor: '#f9f9f9' }}>
+        <div className={classes.child3} style={{ backgroundColor: '#f9f9f9', display: ((timerValue && timerValue.minutes==0 && timerValue.seconds<=10) ? 'none':'block') }}>
           <NewBonusAuction auctionObj={currentAuctionObj} />
+        </div>
+        <div className={classes.child3} style={{ backgroundColor: '#f9f9f9', display: ((timerValue && timerValue.minutes==0 && timerValue.seconds<=10) ? 'block':'none') }} >
+          <NewBonusAuctionResult auctionObj={currentAuctionObj} />
         </div>
       </div>
     </>
