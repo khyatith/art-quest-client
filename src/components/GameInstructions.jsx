@@ -13,51 +13,51 @@ import axios from 'axios';
 import { API_URL } from '../global/constants';
 import DutchAuction from './DutchAuction';
 
-const useStyles = makeStyles(() => ({
-  container: {
-    width: '100%',
-    height: '100%',
-    backgroundColor: '#000000',
-    position: 'absolute',
-    color: '#ffffff',
-    textAlign: 'center',
-    padding: '20px',
-  },
-  title: {
-    fontSize: '36px',
-    fontWeight: '700',
-    color: '#76e246',
-  },
-  listcontainer: {
-    textAlign: 'center',
-    margin: '0 auto',
-    width: '50%',
-  },
-  listitem: {
-    marginTop: '20px',
-  },
-  startgamebutton: {
-    marginTop: '80px',
-    width: '90%',
-    backgroundColor: '#76e246',
-    color: '#000000',
-    fontWeight: '700',
-    fontSize: '24px',
-  },
-  p: {
-    fontSize: '18px',
-    fontWeight: '700',
-    '& span': {
-      color: '#76e246',
-    },
-  },
-  listtext: {
-    '& .MuiListItemText-primary': {
-      fontSize: '20px',
-      fontWeight: '700',
-    },
-  },
-}));
+// const useStyles = makeStyles(() => ({
+//   container: {
+//     width: '100%',
+//     height: '100%',
+//     backgroundColor: '#000000',
+//     position: 'absolute',
+//     color: '#ffffff',
+//     textAlign: 'center',
+//     padding: '20px',
+//   },
+//   title: {
+//     fontSize: '36px',
+//     fontWeight: '700',
+//     color: '#76e246',
+//   },
+//   listcontainer: {
+//     textAlign: 'center',
+//     margin: '0 auto',
+//     width: '50%',
+//   },
+//   listitem: {
+//     marginTop: '20px',
+//   },
+//   startgamebutton: {
+//     marginTop: '80px',
+//     width: '90%',
+//     backgroundColor: '#76e246',
+//     color: '#000000',
+//     fontWeight: '700',
+//     fontSize: '24px',
+//   },
+//   p: {
+//     fontSize: '18px',
+//     fontWeight: '700',
+//     '& span': {
+//       color: '#76e246',
+//     },
+//   },
+//   listtext: {
+//     '& .MuiListItemText-primary': {
+//       fontSize: '20px',
+//       fontWeight: '700',
+//     },
+//   },
+// }));
 
 function GameInstructions() {
   const classes = useStyles();
@@ -65,13 +65,13 @@ function GameInstructions() {
   const [playersJoinedInfo, setPlayersJoinedInfo] = useState();
   const [version, setVersion] = useState();
 
-  const { player } = useContext(userContext);
+  // const { player } = useContext(userContext);
 
-  const startGame = () => {
-    console.log('inside start game');
-    socket.emit('startGame', JSON.stringify(player));
-    history.push(`/game/${player.playerId}`);
-  };
+  // const startGame = () => {
+  //   console.log('inside start game');
+  //   socket.emit('startGame', JSON.stringify(player));
+  //   history.push(`/game/${player.playerId}`);
+  // };
 
   // // IMPORTANT (KOGNITI CHANGE)
 
