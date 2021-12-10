@@ -59,7 +59,6 @@ const useStyles = makeStyles((theme) => ({
   },
   colouredDivNew: {
     flex: 'column',
-    minHeight: '450px',
     margin: '1%',
   },
   cardStyle: {

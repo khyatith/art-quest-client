@@ -1,15 +1,11 @@
 /* eslint-disable react/jsx-one-expression-per-line */
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
 import CardMedia from '@material-ui/core/CardMedia';
-import CardContent from '@material-ui/core/CardContent';
 import CardActions from '@material-ui/core/CardActions';
-import { Typography, TextField } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
 import { socket } from '../../global/socket';
-import SimpleRating from '../Rating';
-import { validateCurrentBid } from '../../global/helpers';
 
 const useStyles = makeStyles((theme) => ({
   media: {
@@ -93,10 +89,7 @@ const useStyles = makeStyles((theme) => ({
 
 const NewBonusAuctionResult = ({ auctionObj }) => {
   const classes = useStyles();
-  const bidInputRef = useRef();
   const previousBidDetails = useRef();
-  const player = JSON.parse(sessionStorage.getItem('user'));
-  const [bidAmtError, setBidAmtError] = useState(null);
 
   useEffect(() => {
     socket.on('setPreviousBid', (previousBid) => {
@@ -109,34 +102,6 @@ const NewBonusAuctionResult = ({ auctionObj }) => {
       }
     });
   }, [previousBidDetails]);
-
-  const setBidAmt = () => {
-    const bidInput = bidInputRef.current.value;
-    const isValidCurrentBid = validateCurrentBid(bidInput);
-    if (!isValidCurrentBid) {
-      setBidAmtError('Your bid should be a valid number');
-      return;
-    }
-    const prevBidAmt = previousBidDetails.current && previousBidDetails.current.bidAmount;
-    const desiredBid = prevBidAmt ? parseInt(prevBidAmt, 10) + 2 : auctionObj.originalValue;
-    if (bidInput < desiredBid) {
-      setBidAmtError(`Your bid should be more than ${desiredBid}`);
-    } else {
-      setBidAmtError(null);
-      const bidInfo = {
-        auctionType: auctionObj.auctionType,
-        auctionId: auctionObj.id,
-        paintingQuality: auctionObj.paintingQuality,
-        auctionObj,
-        player,
-        bidAmount: bidInput,
-        bidAt: +new Date(),
-        bidTeam: player.teamName,
-        bidColor: player.teamColor,
-      };
-      socket.emit('addNewBid', bidInfo);
-    }
-  };
 
   return (
     <div className={classes.root}>

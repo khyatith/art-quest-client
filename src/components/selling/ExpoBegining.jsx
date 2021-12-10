@@ -486,8 +486,9 @@ function ExpoBeginning() {
           className={classes.child3}
           style={{
             backgroundColor: '#f9f9f9',
-            display: ((timerValue && timerValue.minutes === 0 && timerValue.seconds <= 10) ? 'none' : 'block'),
-          }}>
+            display: (timerValue && timerValue.minutes === 0 && timerValue.seconds <= 10) ? 'none' : 'block',
+          }}
+        >
           <NewBonusAuction auctionObj={currentAuctionObj} />
         </div>
         <div
@@ -495,7 +496,8 @@ function ExpoBeginning() {
           style={{
             backgroundColor: '#f9f9f9',
             display: ((timerValue && timerValue.minutes === 0 && timerValue.seconds <= 10) ? 'block' : 'none'),
-          }}>
+          }}
+        >
           <NewBonusAuctionResult auctionObj={currentAuctionObj} />
         </div>
       </div>
