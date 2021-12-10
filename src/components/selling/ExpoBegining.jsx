@@ -482,10 +482,20 @@ function ExpoBeginning() {
             ))}
         </Box>
         <div className={classes.child2} />
-        <div className={classes.child3} style={{ backgroundColor: '#f9f9f9', display: ((timerValue && timerValue.minutes==0 && timerValue.seconds<=10) ? 'none':'block') }}>
+        <div
+          className={classes.child3}
+          style={{
+            backgroundColor: '#f9f9f9',
+            display: ((timerValue && timerValue.minutes === 0 && timerValue.seconds <= 10) ? 'none' : 'block'),
+          }}>
           <NewBonusAuction auctionObj={currentAuctionObj} />
         </div>
-        <div className={classes.child3} style={{ backgroundColor: '#f9f9f9', display: ((timerValue && timerValue.minutes==0 && timerValue.seconds<=10) ? 'block':'none') }} >
+        <div
+          className={classes.child3}
+          style={{
+            backgroundColor: '#f9f9f9',
+            display: ((timerValue && timerValue.minutes === 0 && timerValue.seconds <= 10) ? 'block' : 'none'),
+          }}>
           <NewBonusAuctionResult auctionObj={currentAuctionObj} />
         </div>
       </div>
