@@ -212,24 +212,6 @@ function ExpoBeginning() {
     }
   }, [user, cityData, paintings]);
 
-  // if (loading) {
-  //   return (
-  //     <div style={{ marginTop: '12%', marginLeft: '43%' }}>
-  //       {' '}
-  //       <img src={load} alt="loading..." />
-  //       {' '}
-  //     </div>
-  //   );
-  // }
-
-  // useEffect(() => {
-  //   if (!hasTimerEnded) {
-  //     socket.on('calculatedRevenueForTeam', (data) => {
-  //       console.log('calculated revenue', data);
-  //     });
-  //   }
-  // });
-
   const renderEnglishAuction = useCallback(async () => {
     setHasSentEnglishAuctionRequest(true);
     const { data } = await axios.get(`${API_URL}/buying/getEnglishAuctionForSelling?roomCode=${user.hostCode}&roundId=${user.roundId}`);
@@ -438,7 +420,7 @@ function ExpoBeginning() {
               >
                 <Card
                   sx={{
-                    minHeight: 445,
+                    minHeight: 45,
                     minWidth: 355,
                     maxWidth: 355,
                     backgroundColor: 'white',
@@ -449,7 +431,7 @@ function ExpoBeginning() {
                   disabled
                 >
                   <CardMedia
-                    sx={nominatedPaintings.includes(paintings[index].auctionId) ? { height: 398, filter: 'grayscale(100%)' } : { height: 398 }}
+                    sx={nominatedPaintings.includes(paintings[index].auctionId) ? { height: 298, filter: 'grayscale(100%)' } : { height: 298 }}
                     component="img"
                     image={arg.auctionObj.imageURL}
                     alt="green iguana"
