@@ -121,7 +121,7 @@ const NewBonusAuctionResult = ({ auctionObj }) => {
                     </div>
                   ) : (
                     <div className={classes.lastbidcontainer}>
-                      <p className={classes.lastbidby}>No team bidded for this painting</p>
+                      <p className={classes.lastbidby}>No team bid for this painting</p>
                     </div>
                   )}
                 </div>

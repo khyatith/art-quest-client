@@ -100,7 +100,7 @@ function FinalResults() {
           textAlign: 'center',
         }}
       >
-        The winner is Team
+        The winner is Team&nbsp;
         {gameWinner}
       </h2>
     );
