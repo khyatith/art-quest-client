@@ -1,13 +1,14 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable react/jsx-closing-bracket-location */
 /* eslint-disable react/jsx-one-expression-per-line */
-import React, {
-  useContext, useEffect, useState,
-} from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import { useHistory, useLocation } from 'react-router-dom';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
 import GameInstructions from './GameInstructions';
 import { socket } from '../global/socket';
 import userContext from '../global/userContext';
@@ -41,6 +42,7 @@ function StagingScreen() {
   // const [loadInstructions, setLoadInstructions] = useState(false);
   // const [playersJoinedInfo, setPlayersJoinedInfo] = useState();
   const [noOfPlayers, setNumberOfPlayers] = useState(0);
+  const [versionValue, setVersion] = React.useState(1);
 
   useEffect(() => {
     if (player.playerId === player.hostCode) {
@@ -59,8 +61,15 @@ function StagingScreen() {
     setNumberOfPlayers(value);
   };
 
+  const handleVersion = (event) => {
+    console.log(versionValue);
+    const { value } = event.target;
+    setVersion(value);
+    console.log(value);
+  };
+
   const setTeams = () => {
-    socket.emit('setTeams', { numberOfPlayers: noOfPlayers, roomCode: player.hostCode });
+    socket.emit('setTeams', { numberOfPlayers: noOfPlayers, roomCode: player.hostCode, version: versionValue });
   };
 
   // useEffect(() => {
@@ -86,12 +95,18 @@ function StagingScreen() {
           </form>
           )} */}
         {isAdmin && (
-        <>
-          <TextField className={classes.form} placeholder="Enter total number Of Players" name="numberOfTeams" variant="outlined" onChange={handleTeams} />
-          <Button className={classes.btnform} variant="contained" onClick={setTeams}>
-            Set number of players
-          </Button>
-        </>
+          <>
+            <TextField className={classes.form} placeholder="Enter total number Of Players" name="numberOfTeams" variant="outlined" onChange={handleTeams} />
+            <InputLabel>Version</InputLabel>
+            <Select className={classes.form} labelId="demo-simple-select-label" id="demo-simple-select" value={versionValue} label="Version" onChange={handleVersion}>
+              <MenuItem value={1}>v1</MenuItem>
+              <MenuItem value={2}>v2</MenuItem>
+              <MenuItem value={3}>v3</MenuItem>
+            </Select>
+            <Button className={classes.btnform} variant="contained" onClick={setTeams}>
+              Set Details
+            </Button>
+          </>
         )}
       </div>
       {/* {
