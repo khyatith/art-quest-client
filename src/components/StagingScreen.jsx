@@ -62,7 +62,6 @@ function StagingScreen() {
   };
 
   const handleVersion = (event) => {
-    console.log(versionValue);
     const { value } = event.target;
     setVersion(value);
     console.log(value);
@@ -98,10 +97,10 @@ function StagingScreen() {
           <>
             <TextField className={classes.form} placeholder="Enter total number Of Players" name="numberOfTeams" variant="outlined" onChange={handleTeams} />
             <InputLabel>Version</InputLabel>
-            <Select className={classes.form} labelId="demo-simple-select-label" id="demo-simple-select" value={versionValue} label="Version" onChange={handleVersion}>
-              <MenuItem value={1}>v1</MenuItem>
-              <MenuItem value={2}>v2</MenuItem>
-              <MenuItem value={3}>v3</MenuItem>
+            <Select className={classes.form} value={versionValue} label="Version" onChange={handleVersion}>
+              <MenuItem value={1}>version 1</MenuItem>
+              <MenuItem value={2}>version 2</MenuItem>
+              <MenuItem value={3}>version 3</MenuItem>
             </Select>
             <Button className={classes.btnform} variant="contained" onClick={setTeams}>
               Set Details
