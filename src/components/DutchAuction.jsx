@@ -1,13 +1,12 @@
 import React, {
   useEffect, useState,
 } from 'react';
-import { makeStyles, withStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import axios from 'axios';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import CardMedia from '@mui/material/CardMedia';
 import { Button, CardActions } from '@mui/material';
-import TableCell from '@material-ui/core/TableCell';
 import CardContent from '@material-ui/core/CardContent';
 import Typography from '@material-ui/core/Typography';
 import clsx from 'clsx';
@@ -116,22 +115,9 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const StyledTableCell = withStyles((theme) => ({
-  head: {
-    backgroundColor: theme.palette.common.black,
-    color: theme.palette.common.white,
-    fontWeight: 700,
-    fontSize: 16,
-  },
-  body: {
-    fontSize: 20,
-    fontWeight: 700,
-  },
-}))(TableCell);
-
 function DutchAuction() {
   const classes = useStyles();
-  const [paintings, setPaintings] = useState([]);
+  const [paintings, setPaintings] = useState();
   const user = JSON.parse(sessionStorage.getItem('user'));
   // const { player, setPlayer } = useContext(userContext);
   // const [revenue, setRevenue] = useState(-1);
@@ -156,11 +142,14 @@ function DutchAuction() {
     async function getSellingInfo() {
       const { data } = await axios.get(`${API_URL}/buying/getDutchAuctionData/${user.hostCode}`);
       const { artifacts } = data.dutchAuctions;
+      console.log(data.dutchAuctionsOrder); // To be implemented with timer
       if (artifacts) {
         setPaintings(artifacts);
       }
     }
-    getSellingInfo();
+    if (!paintings) {
+      getSellingInfo();
+    }
   }, [user]);
 
   useEffect(() => {
@@ -230,8 +219,8 @@ function DutchAuction() {
                   paddingLeft: '20px',
                   paddingRight: '20px',
                 }}
-                // eslint-disable-next-line no-nested-ternary
-                // display={paintingSelected === -1 ? 'block' : paintingSelected === index ? 'block' : 'none'}
+              // eslint-disable-next-line no-nested-ternary
+              // display={paintingSelected === -1 ? 'block' : paintingSelected === index ? 'block' : 'none'}
               >
                 <Card
                   sx={{

@@ -9,7 +9,6 @@ import React from 'react';
 // import { socket } from '../global/socket';
 // import userContext from '../global/userContext';
 // import Header from './Header';
-import LocationPhase from './selling/LocationPhase';
 import DutchAuction from './DutchAuction';
 
 // const useStyles = makeStyles(() => ({
