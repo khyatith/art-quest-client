@@ -55,8 +55,6 @@ const IMAGE_GALLERY_SETTINGS = {
   showThumbnails: true,
   showFullscreenButton: true,
   showGalleryFullscreenButton: true,
-  showPlayButton: true,
-  showGalleryPlayButton: true,
   showNav: true,
   isRTL: false,
   slideDuration: 450,
@@ -140,7 +138,7 @@ function LandingPage() {
       acc.push({
         original: imageURL,
         thumbnail: imageURL,
-        originalHeight: !isGalleryFullScreen && '500px',
+        originalHeight: !isGalleryFullScreen && '100%',
         fullScreen: imageURL,
         description: `${name}, Created By: ${artist}`,
       });
