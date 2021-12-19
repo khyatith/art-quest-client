@@ -32,16 +32,15 @@ const BuyingGroupedBarChart = (props) => {
 
   const parseDataForGroupChart = (results) => {
     const chart = {};
-    chart.labels = ['Total Paintings', 'Debt', 'Efficiency'];
+    chart.labels = ['Total Paintings', 'Efficiency'];
     if (results) {
       const dataset = Object.entries(results).map(([key, value]) => {
         const teamName = key;
-        const { debt, efficiency, totalPaintings } = value;
-        const formattedDebt = debt ? parseInt(debt, 10) : 0;
+        const { efficiency, totalPaintings } = value;
         const formattedEfficiency = efficiency ? parseInt(efficiency, 10) : 0;
         return {
           label: `${teamName}`,
-          data: [parseInt(totalPaintings, 10), formattedDebt, formattedEfficiency],
+          data: [parseInt(totalPaintings, 10), formattedEfficiency],
           backgroundColor: TEAM_COLOR_MAP[teamName],
           barThickness: 30,
         };

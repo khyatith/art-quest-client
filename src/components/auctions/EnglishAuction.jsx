@@ -120,8 +120,8 @@ function EnglishAuction({
     const seconds = Math.floor((parseInt(total, 10) / 1000) % 60);
     const minutes = Math.floor((parseInt(total, 10) / 1000 / 60) % 60);
     if (total < 1000) {
-      setAuctionTimerEnded(true);
-      setAuctionTimer({});
+      console.log('inside total < 1000');
+      socket.emit('auctionTimerEnded', { player, auctionId: auctionObj.id });
     } else {
       const value = {
         total,
@@ -131,6 +131,20 @@ function EnglishAuction({
       setAuctionTimer(value);
     }
   };
+
+  useEffect(() => {
+    socket.on('redirectToNextAuction', (auctionId) => {
+      const currentAuctionId = currentAuctionData.currentAuctionObj.id;
+      if (auctionId === currentAuctionId) {
+        setAuctionTimerEnded(true);
+        setAuctionTimer();
+        const val = JSON.parse(sessionStorage.getItem('allAuction'));
+        val.auctions.artifacts[currentAuctionId - 1].hasAuctionTimerEnded = true;
+        sessionStorage.setItem('allAuction', JSON.stringify(val));
+        getNextAuctionObj(currentAuctionId);
+      }
+    });
+  }, []);
 
   useEffect(() => {
     if (currentAuctionData && currentAuctionData.currentAuctionObj) {
@@ -159,14 +173,14 @@ function EnglishAuction({
     }
   });
 
-  useEffect(() => {
-    if (hasAuctionTimerEnded) {
-      const val = JSON.parse(sessionStorage.getItem('allAuction'));
-      val.auctions.artifacts[auctionObj.id - 1].hasAuctionTimerEnded = true;
-      sessionStorage.setItem('allAuction', JSON.stringify(val));
-      getNextAuctionObj(auctionObj.id);
-    }
-  }, [hasAuctionTimerEnded, auctionObj, getNextAuctionObj]);
+  // useEffect(() => {
+  //   if (hasAuctionTimerEnded) {
+  //     const val = JSON.parse(sessionStorage.getItem('allAuction'));
+  //     val.auctions.artifacts[auctionObj.id - 1].hasAuctionTimerEnded = true;
+  //     sessionStorage.setItem('allAuction', JSON.stringify(val));
+  //     getNextAuctionObj(auctionObj.id);
+  //   }
+  // }, [hasAuctionTimerEnded, auctionObj, getNextAuctionObj]);
 
   useEffect(() => {
     socket.on('setPreviousBid', (previousBid) => {

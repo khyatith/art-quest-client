@@ -96,9 +96,7 @@ function FirstPriceSealedBid({
     const seconds = Math.floor((parseInt(total, 10) / 1000) % 60);
     const minutes = Math.floor((parseInt(total, 10) / 1000 / 60) % 60);
     if (total < 1000) {
-      setAuctionTimerEnded(true);
-      setLive(false);
-      setAuctionTimer({});
+      socket.emit('auctionTimerEnded', { player, auctionId: auctionObj.id });
     } else {
       const value = {
         total,
@@ -108,6 +106,21 @@ function FirstPriceSealedBid({
       setAuctionTimer(value);
     }
   };
+
+  useEffect(() => {
+    socket.on('redirectToNextAuction', (auctionId) => {
+      const currentAuctionId = currentAuctionData.currentAuctionObj.id;
+      if (auctionId === currentAuctionId) {
+        setAuctionTimerEnded(true);
+        setLive(false);
+        setAuctionTimer();
+        const val = JSON.parse(sessionStorage.getItem('allAuction'));
+        val.auctions.artifacts[currentAuctionId - 1].hasAuctionTimerEnded = true;
+        sessionStorage.setItem('allAuction', JSON.stringify(val));
+        getNextAuctionObj(currentAuctionId);
+      }
+    });
+  }, []);
 
   useEffect(() => {
     if (currentAuctionData && currentAuctionData.currentAuctionObj) {
@@ -137,14 +150,14 @@ function FirstPriceSealedBid({
     }
   });
 
-  useEffect(() => {
-    if (hasAuctionTimerEnded) {
-      const val = JSON.parse(sessionStorage.getItem('allAuction'));
-      val.auctions.artifacts[auctionObj.id - 1].hasAuctionTimerEnded = true;
-      sessionStorage.setItem('allAuction', JSON.stringify(val));
-      getNextAuctionObj(auctionObj.id);
-    }
-  }, [hasAuctionTimerEnded]);
+  // useEffect(() => {
+  //   if (hasAuctionTimerEnded) {
+  //     const val = JSON.parse(sessionStorage.getItem('allAuction'));
+  //     val.auctions.artifacts[auctionObj.id - 1].hasAuctionTimerEnded = true;
+  //     sessionStorage.setItem('allAuction', JSON.stringify(val));
+  //     getNextAuctionObj(auctionObj.id);
+  //   }
+  // }, [hasAuctionTimerEnded]);
 
   useEffect(() => {
     socket.on('setLiveStyles', (team) => {
