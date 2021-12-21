@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useEffect, useState } from 'react';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import ImageList from '@material-ui/core/ImageList';
 import ImageListItem from '@material-ui/core/ImageListItem';
@@ -10,14 +10,14 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
-import { Button } from '@material-ui/core';
-import { useHistory } from 'react-router';
-import userContext from '../global/userContext';
+// import { Button } from '@material-ui/core';
+// import { useHistory } from 'react-router';
+// import userContext from '../global/userContext';
 import Header from './Header';
 import { API_URL, TEAM_COLOR_MAP } from '../global/constants';
 import { formatNumberToCurrency } from '../global/helpers';
 import useSessionStorage from '../hooks/useSessionStorage';
-import leaderboardContext from '../global/leaderboardContext';
+// import leaderboardContext from '../global/leaderboardContext';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -65,7 +65,7 @@ const StyledTableCell = withStyles((theme) => ({
 
 function EndBuyingPhase() {
   const classes = useStyles();
-  const history = useHistory();
+  // const history = useHistory();
   const [artforTeams, setArtForTeams] = useState();
   const [gameWinner, setGameWinner] = useState();
   const [teamEfficiency, setTeamEfficiency] = useState({});
@@ -73,8 +73,8 @@ function EndBuyingPhase() {
   const [sortedTeamsByPaintingsWon, setSortedTeamsByPaintingsWon] = useState({});
   const [avgPaintingQualityByTeam, setAvgPaintingQualityByTeam] = useState({});
   const [showWinner, setShowWinner] = useState(false);
-  const { setPlayer } = useContext(userContext);
-  const { setLeaderboardData } = useContext(leaderboardContext);
+  // const { setPlayer } = useContext(userContext);
+  // const { setLeaderboardData } = useContext(leaderboardContext);
   const player = useSessionStorage('user')[0];
 
   const getWinner = async () => {
@@ -152,19 +152,19 @@ function EndBuyingPhase() {
     );
   };
 
-  const resetApplication = () => {
-    history.push('/');
-    setPlayer({
-      playerName: '',
-      teamName: '',
-      playerId: '',
-      hostCode: '',
-      teamColor: '',
-      currentLocation: '',
-    });
-    setLeaderboardData({ leaderboardData: {} });
-    sessionStorage.clear();
-  };
+  // const resetApplication = () => {
+  //   history.push('/');
+  //   setPlayer({
+  //     playerName: '',
+  //     teamName: '',
+  //     playerId: '',
+  //     hostCode: '',
+  //     teamColor: '',
+  //     currentLocation: '',
+  //   });
+  //   setLeaderboardData({ leaderboardData: {} });
+  //   sessionStorage.clear();
+  // };
 
   const showTeamWinner = () => {
     const { teamName } = player;
@@ -189,11 +189,11 @@ function EndBuyingPhase() {
     <>
       <Header />
       {renderLeaderboardData()}
-      <div style={{ margin: '40px auto', textAlign: 'center' }}>
+      {/* <div style={{ margin: '40px auto', textAlign: 'center' }}>
         <Button className={classes.btnform} variant="contained" onClick={resetApplication}>
           Start New Game
         </Button>
-      </div>
+      </div> */}
       <div style={{ textAlign: 'center', marginTop: '40px' }}>
         {!showWinner && <h2>And the winner is ....</h2>}
         {showWinner && showTeamWinner()}
