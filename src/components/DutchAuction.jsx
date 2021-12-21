@@ -123,6 +123,7 @@ function DutchAuction() {
   // const [revenue, setRevenue] = useState(-1);
   const [nominatedPaintings, setNominatedPaintings] = useState([]);
   const [paintingTeams, setPaintingTeams] = useState({});
+  const [dutchAuctionTimerValue, setDutchAuctionTimerValue] = useState();
 
   const handleSelectPainting = (index) => {
     const val = paintings[index].paintingQuality;
@@ -136,13 +137,30 @@ function DutchAuction() {
     });
   };
 
+  const getRemainingTime = () => {
+    const total = parseInt(dutchAuctionTimerValue.total, 10) - 1000;
+    const seconds = Math.floor((parseInt(total, 10) / 1000) % 60);
+    const minutes = Math.floor((parseInt(total, 10) / 1000 / 60) % 60);
+    if (total < 1000) {
+      const sesStr = JSON.parse(sessionStorage.getItem('user'));
+      socket.emit('dutchAuctionTimerEnded', JSON.stringify(sesStr));
+    } else {
+      const value = {
+        total,
+        minutes: minutes.toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }),
+        seconds: seconds.toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }),
+      };
+      setDutchAuctionTimerValue(value);
+    }
+  };
+
   // Hooks and methods
   useEffect(() => {
     // setLoading(true);
     async function getSellingInfo() {
       const { data } = await axios.get(`${API_URL}/buying/getDutchAuctionData/${user.hostCode}`);
       const { artifacts } = data.dutchAuctions;
-      console.log(data.dutchAuctionsOrder); // To be implemented with timer
+      setDutchAuctionTimerValue(data.dutchAuctionTimerValue); // To be implemented with timer
       if (artifacts) {
         setPaintings(artifacts);
       }
@@ -151,6 +169,13 @@ function DutchAuction() {
       getSellingInfo();
     }
   }, [user]);
+
+  useEffect(() => {
+    if (dutchAuctionTimerValue) {
+      const interval = setInterval(() => getRemainingTime(), 1000);
+      return () => clearInterval(interval);
+    }
+  });
 
   useEffect(() => {
     socket.on('emitBidForPainting', (data) => {
@@ -195,6 +220,10 @@ function DutchAuction() {
         <Toolbar>
           <Typography variant="h6" className={classes.timercontent}>
             Time left :
+                    {' '}
+                    {dutchAuctionTimerValue && dutchAuctionTimerValue.minutes}
+                    :
+                    {dutchAuctionTimerValue && dutchAuctionTimerValue.seconds}
           </Typography>
           {user && (
             <div className={classes.playerdiv}>
