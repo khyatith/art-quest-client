@@ -78,7 +78,6 @@ function GameInstructions() {
 
   useEffect(() => {
     socket.on('numberOfPlayersJoined', (data) => {
-      console.log('data', data);
       setPlayersJoinedInfo(data);
     });
   });

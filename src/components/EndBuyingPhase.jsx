@@ -71,7 +71,6 @@ function EndBuyingPhase() {
   const [teamEfficiency, setTeamEfficiency] = useState({});
   const [totalDebtByTeam, setTotalDebtByTeam] = useState({});
   const [sortedTeamsByPaintingsWon, setSortedTeamsByPaintingsWon] = useState({});
-  const [avgPaintingQualityByTeam, setAvgPaintingQualityByTeam] = useState({});
   const [showWinner, setShowWinner] = useState(false);
   // const { setPlayer } = useContext(userContext);
   // const { setLeaderboardData } = useContext(leaderboardContext);
@@ -86,9 +85,6 @@ function EndBuyingPhase() {
     }
     if (data && data.winner) {
       setGameWinner(data.winner);
-    }
-    if (data && data.avgPaintingQualityByTeam && Object.keys(data.avgPaintingQualityByTeam).length !== 0) {
-      setAvgPaintingQualityByTeam(data.avgPaintingQualityByTeam);
     }
     if (data && data.teamEfficiency) {
       setTeamEfficiency(data.teamEfficiency);
@@ -126,7 +122,6 @@ function EndBuyingPhase() {
               <TableRow>
                 <StyledTableCell>Team</StyledTableCell>
                 <StyledTableCell align="right">Total paintings</StyledTableCell>
-                {Object.keys(avgPaintingQualityByTeam).length > 0 && <StyledTableCell align="right">Average painting quality</StyledTableCell>}
                 <StyledTableCell align="right">Debt</StyledTableCell>
                 <StyledTableCell align="right">Efficiency</StyledTableCell>
               </TableRow>
@@ -138,9 +133,6 @@ function EndBuyingPhase() {
                     {row.teamName}
                   </StyledTableCell>
                   <StyledTableCell align="right">{row.totalPaintings}</StyledTableCell>
-                  {Object.keys(avgPaintingQualityByTeam).length > 0 && (
-                    <StyledTableCell align="right">{parseFloat(avgPaintingQualityByTeam[row.teamName])}</StyledTableCell>
-                  )}
                   <StyledTableCell align="right">{formatNumberToCurrency(parseFloat(row.debt))}</StyledTableCell>
                   <StyledTableCell align="right">{formatNumberToCurrency(parseFloat(row.efficiency))}</StyledTableCell>
                 </TableRow>
