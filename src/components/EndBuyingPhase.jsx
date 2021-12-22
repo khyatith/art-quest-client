@@ -70,8 +70,9 @@ function EndBuyingPhase() {
   const [gameWinner, setGameWinner] = useState();
   const [teamEfficiency, setTeamEfficiency] = useState({});
   const [totalDebtByTeam, setTotalDebtByTeam] = useState({});
-  const [sortedTeamsByPaintingsWon, setSortedTeamsByPaintingsWon] = useState({});
+  const [teamsByRank, setTeamsByRank] = useState([]);
   const [showWinner, setShowWinner] = useState(false);
+  const [totalPaintingsWonByTeam, setTotalPaintingsWonByTeam] = useState({});
   // const { setPlayer } = useContext(userContext);
   // const { setLeaderboardData } = useContext(leaderboardContext);
   const player = useSessionStorage('user')[0];
@@ -86,11 +87,14 @@ function EndBuyingPhase() {
     if (data && data.winner) {
       setGameWinner(data.winner);
     }
+    if (data && data.teamsByRank) {
+      setTeamsByRank(data.teamsByRank);
+    }
+    if (data && data.totalPaintingsWonByTeam) {
+      setTotalPaintingsWonByTeam(data.totalPaintingsWonByTeam);
+    }
     if (data && data.teamEfficiency) {
       setTeamEfficiency(data.teamEfficiency);
-    }
-    if (data && data.sortedObjByPaintingsWon) {
-      setSortedTeamsByPaintingsWon(data.sortedObjByPaintingsWon);
     }
     if (data && data.totalAmountSpentByTeam) {
       setTotalDebtByTeam(data.totalAmountSpentByTeam);
@@ -104,15 +108,12 @@ function EndBuyingPhase() {
   }, [gameWinner]);
 
   const renderLeaderboardData = () => {
-    const tableData = Object.entries(sortedTeamsByPaintingsWon).map(([key, value]) => {
-      const teamName = key;
-      return {
-        teamName,
-        debt: totalDebtByTeam[teamName],
-        totalPaintings: value,
-        efficiency: teamEfficiency[teamName],
-      };
-    });
+    const tableData = teamsByRank.map((key) => ({
+      key,
+      debt: totalDebtByTeam[key],
+      totalPaintings: totalPaintingsWonByTeam[key],
+      efficiency: teamEfficiency[key],
+    }));
     return (
       <>
         <h2 style={{ textAlign: 'center' }}>All teams</h2>
@@ -130,7 +131,7 @@ function EndBuyingPhase() {
               {tableData.map((row) => (
                 <TableRow key={row.key} style={{ backgroundColor: `${TEAM_COLOR_MAP[row.key]}` }}>
                   <StyledTableCell component="th" scope="row">
-                    {row.teamName}
+                    {row.key}
                   </StyledTableCell>
                   <StyledTableCell align="right">{row.totalPaintings}</StyledTableCell>
                   <StyledTableCell align="right">{formatNumberToCurrency(parseFloat(row.debt))}</StyledTableCell>
@@ -180,7 +181,7 @@ function EndBuyingPhase() {
   return (
     <>
       <Header />
-      {renderLeaderboardData()}
+      {teamsByRank && totalPaintingsWonByTeam && renderLeaderboardData()}
       {/* <div style={{ margin: '40px auto', textAlign: 'center' }}>
         <Button className={classes.btnform} variant="contained" onClick={resetApplication}>
           Start New Game
