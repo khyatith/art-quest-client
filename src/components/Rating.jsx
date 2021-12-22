@@ -7,11 +7,9 @@ export default function SimpleRating({ rating }) {
   return (
     rating
     && (
-    <div>
-      <Box component="fieldset" mb={3} borderColor="transparent">
-        <Rating size="large" name="read-only" value={rating} max={5} precision={0.1} readOnly />
-      </Box>
-    </div>
+    <Box component="fieldset" borderColor="transparent">
+      <Rating size="large" name="read-only" value={rating} max={5} precision={0.1} readOnly />
+    </Box>
     )
   );
 }

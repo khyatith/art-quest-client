@@ -5,7 +5,7 @@ import React, {
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
-import CardHeader from '@material-ui/core/CardHeader';
+// import CardHeader from '@material-ui/core/CardHeader';
 import CardMedia from '@material-ui/core/CardMedia';
 import CardContent from '@material-ui/core/CardContent';
 import CardActions from '@material-ui/core/CardActions';
@@ -39,12 +39,13 @@ const useStyles = makeStyles((theme) => ({
     color: '#212F3C',
     '& .MuiCardHeader-subheader': {
       color: '#212F3C',
-      lineHeight: '1.9',
-      fontSize: '18px',
+      lineHeight: '1',
+      fontSize: '15px',
     },
   },
   cardcontentstyle: {
     textAlign: 'center',
+    marginTop: '-5px',
   },
   cardactionsstyle: {
     textAlign: 'center',
@@ -260,7 +261,7 @@ function EnglishAuction({
         {auctionObj && (
         <Grid item xs={4}>
           <Card key={auctionObj.id}>
-            <CardHeader className={classes.titlestyle} title={auctionObj.name} subheader={`Created By: ${auctionObj.artist}`} />
+            {/* <CardHeader className={classes.titlestyle} title={auctionObj.name} subheader={`Created By: ${auctionObj.artist}`} /> */}
             <CardMedia className={classes.media} component="img" image={`${auctionObj.imageURL}`} title={auctionObj.name} />
             <CardContent className={classes.cardcontentstyle}>
               <p>Painting Quality</p>
