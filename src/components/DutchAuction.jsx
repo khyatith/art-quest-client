@@ -1,7 +1,6 @@
-import React, {
-  useEffect, useState,
-} from 'react';
+import React, { useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
+import styled, { keyframes } from 'styled-components';
 import axios from 'axios';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
@@ -12,6 +11,7 @@ import Typography from '@material-ui/core/Typography';
 import clsx from 'clsx';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
+import { rubberBand } from 'react-animations';
 import { API_URL, TEAM_COLOR_MAP } from '../global/constants';
 import SimpleRating from './Rating';
 import { socket } from '../global/socket';
@@ -124,6 +124,12 @@ function DutchAuction() {
   const [nominatedPaintings, setNominatedPaintings] = useState([]);
   const [paintingTeams, setPaintingTeams] = useState({});
   const [dutchAuctionTimerValue, setDutchAuctionTimerValue] = useState();
+  const [priceDropSequence, setPriceDropSequence] = useState();
+  const [animateChange, setAnimateChange] = useState(false);
+  const [valueDrop, setValueDrop] = useState(0);
+  const Bounce = styled.div`
+    animation: 1s ${keyframes`${rubberBand}`};
+  `;
 
   const handleSelectPainting = (index) => {
     const val = paintings[index].paintingQuality;
@@ -138,6 +144,7 @@ function DutchAuction() {
   };
 
   const getRemainingTime = () => {
+    setAnimateChange(false);
     const total = parseInt(dutchAuctionTimerValue.total, 10) - 1000;
     const seconds = Math.floor((parseInt(total, 10) / 1000) % 60);
     const minutes = Math.floor((parseInt(total, 10) / 1000 / 60) % 60);
@@ -151,6 +158,16 @@ function DutchAuction() {
         seconds: seconds.toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }),
       };
       setDutchAuctionTimerValue(value);
+      if (seconds % 3 === 0 && !nominatedPaintings.includes(paintings[priceDropSequence[valueDrop]].id)) {
+        const newValue = paintings;
+        newValue[priceDropSequence[valueDrop]].originalValue = ((newValue[priceDropSequence[valueDrop]].originalValue * 9) / 10).toFixed(2);
+        setPaintings(newValue);
+        setAnimateChange(true);
+        setValueDrop(valueDrop + 1);
+      }
+      else if(seconds % 3 === 0) {
+        setValueDrop(valueDrop + 1);
+      }
     }
   };
 
@@ -160,7 +177,8 @@ function DutchAuction() {
     async function getSellingInfo() {
       const { data } = await axios.get(`${API_URL}/buying/getDutchAuctionData/${user.hostCode}`);
       const { artifacts } = data.dutchAuctions;
-      setDutchAuctionTimerValue(data.dutchAuctionTimerValue); // To be implemented with timer
+      setDutchAuctionTimerValue(data.dutchAuctionTimerValue);
+      setPriceDropSequence(data.dutchAuctionsOrder);
       if (artifacts) {
         setPaintings(artifacts);
       }
@@ -189,12 +207,24 @@ function DutchAuction() {
 
   const loadCardContent = (index) => (
     <CardContent className={classes.paintOpt}>
-      <p style={{ color: '#000000', fontWeight: '700', marginBottom: '20px' }}>
+      {index === priceDropSequence[valueDrop - 1] && animateChange && (
+      <Bounce>
+        <p style={{ color: '#000000', fontWeight: '700', marginBottom: '20px', fontSize: '20px' }}>
+          Painting Price: $
+          {paintings[index].originalValue}
+          {' '}
+          M
+        </p>
+      </Bounce>
+      )}
+      {(index !== priceDropSequence[valueDrop - 1] || !animateChange) && (
+      <p style={{ color: '#000000', fontWeight: '700', marginBottom: '20px', fontSize: '20px' }}>
         Painting Price: $
         {paintings[index].originalValue}
         {' '}
         M
       </p>
+      )}
     </CardContent>
   );
 
@@ -208,7 +238,6 @@ function DutchAuction() {
       </p>
       <p style={{ color: '#000000', fontWeight: '700', marginBottom: '20px' }}>
         Team Won: Team
-        {' '}
         {paintingTeams[paintings[index].id]}
       </p>
     </CardContent>
@@ -220,10 +249,10 @@ function DutchAuction() {
         <Toolbar>
           <Typography variant="h6" className={classes.timercontent}>
             Time left :
-                    {' '}
-                    {dutchAuctionTimerValue && dutchAuctionTimerValue.minutes}
-                    :
-                    {dutchAuctionTimerValue && dutchAuctionTimerValue.seconds}
+            {' '}
+            {dutchAuctionTimerValue && dutchAuctionTimerValue.minutes}
+            :
+            {dutchAuctionTimerValue && dutchAuctionTimerValue.seconds}
           </Typography>
           {user && (
             <div className={classes.playerdiv}>
@@ -248,8 +277,8 @@ function DutchAuction() {
                   paddingLeft: '20px',
                   paddingRight: '20px',
                 }}
-              // eslint-disable-next-line no-nested-ternary
-              // display={paintingSelected === -1 ? 'block' : paintingSelected === index ? 'block' : 'none'}
+                // eslint-disable-next-line no-nested-ternary
+                // display={paintingSelected === -1 ? 'block' : paintingSelected === index ? 'block' : 'none'}
               >
                 <Card
                   sx={{
