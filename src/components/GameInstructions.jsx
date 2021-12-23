@@ -86,7 +86,7 @@ function GameInstructions() {
     if (playersJoinedInfo) {
       const { numberOfPlayers, playersJoined } = playersJoinedInfo;
       if (numberOfPlayers <= playersJoined) {
-        setTimeout(() => startGame(), 1);
+        setTimeout(() => startGame(), 60000);
       }
     }
   }, [playersJoinedInfo]);
@@ -96,6 +96,7 @@ function GameInstructions() {
       <div className={classes.container}>
         <Header />
         <p className={classes.title}>Instructions</p>
+        <p>(1 minute to read)</p>
         <p className={classes.p}>Your challenge, should you choose to accept it, is to create your favorite art collection.</p>
         <p className={classes.p}>
           How will you do it? By taking part in
