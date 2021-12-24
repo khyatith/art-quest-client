@@ -124,6 +124,7 @@ function DutchAuction() {
   const [nominatedPaintings, setNominatedPaintings] = useState([]);
   const [paintingTeams, setPaintingTeams] = useState({});
   const [dutchAuctionTimerValue, setDutchAuctionTimerValue] = useState();
+  const [hasDutchAuctionTimerEnded, setHasDutchAuctionTimerEnded] = useState(false);
   const [priceDropSequence, setPriceDropSequence] = useState();
   const [animateChange, setAnimateChange] = useState(false);
   const [valueDrop, setValueDrop] = useState(0);
@@ -134,23 +135,27 @@ function DutchAuction() {
   const handleSelectPainting = (index) => {
     const val = paintings[index].paintingQuality;
     const paintingId = paintings[index].id;
-    socket.emit('bidDutchAuction', {
-      paintingId,
-      roomCode: user.hostCode,
-      teamName: user.teamName,
+    socket.emit('addNewBid', {
+      auctionId: paintingId,
+      bidTeam: user.teamName,
+      player: user,
+      auctionObj: paintings,
+      bidAt: +new Date(),
       paintingQuality: val,
-      artifactId: paintingId,
+      auctionType: '5',
+      bidColor: user.teamColor,
+      bidAmount: paintings[index].originalValue,
     });
   };
 
-  const getRemainingTime = () => {
+  const getRemainingTime = async () => {
     setAnimateChange(false);
     const total = parseInt(dutchAuctionTimerValue.total, 10) - 1000;
     const seconds = Math.floor((parseInt(total, 10) / 1000) % 60);
     const minutes = Math.floor((parseInt(total, 10) / 1000 / 60) % 60);
     if (total < 1000) {
-      const sesStr = JSON.parse(sessionStorage.getItem('user'));
-      socket.emit('dutchAuctionTimerEnded', JSON.stringify(sesStr));
+      await axios.put(`${API_URL}/buying/updateDutchAuctionResults/${user.hostCode}`);
+      setHasDutchAuctionTimerEnded(true);
     } else {
       const value = {
         total,
@@ -158,18 +163,24 @@ function DutchAuction() {
         seconds: seconds.toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }),
       };
       setDutchAuctionTimerValue(value);
-      if (seconds % 3 === 0 && !nominatedPaintings.includes(paintings[priceDropSequence[valueDrop]].id)) {
+      if (!hasDutchAuctionTimerEnded && seconds % 3 === 0 && !nominatedPaintings.includes(paintings[priceDropSequence[valueDrop]].id)) {
         const newValue = paintings;
         newValue[priceDropSequence[valueDrop]].originalValue = ((newValue[priceDropSequence[valueDrop]].originalValue * 9) / 10).toFixed(2);
         setPaintings(newValue);
         setAnimateChange(true);
         setValueDrop(valueDrop + 1);
-      }
-      else if(seconds % 3 === 0) {
+      } else if (seconds % 3 === 0) {
         setValueDrop(valueDrop + 1);
       }
     }
   };
+
+  useEffect(() => {
+    if (hasDutchAuctionTimerEnded) {
+      console.log('timer ended');
+      // redirect to selling instructions
+    }
+  }, [hasDutchAuctionTimerEnded]);
 
   // Hooks and methods
   useEffect(() => {
@@ -188,12 +199,13 @@ function DutchAuction() {
     }
   }, [user]);
 
+  // eslint-disable-next-line consistent-return
   useEffect(() => {
     if (dutchAuctionTimerValue) {
       const interval = setInterval(() => getRemainingTime(), 1000);
       return () => clearInterval(interval);
     }
-  });
+  }, [dutchAuctionTimerValue]);
 
   useEffect(() => {
     socket.on('emitBidForPainting', (data) => {
@@ -209,8 +221,14 @@ function DutchAuction() {
     <CardContent className={classes.paintOpt}>
       {index === priceDropSequence[valueDrop - 1] && animateChange && (
       <Bounce>
-        <p style={{ color: '#000000', fontWeight: '700', marginBottom: '20px', fontSize: '20px' }}>
-          Painting Price: $
+        <p style={{
+          color: '#000000',
+          fontWeight: '700',
+          marginBottom: '20px',
+          fontSize: '20px',
+        }}
+        >
+          Painting price: $
           {paintings[index].originalValue}
           {' '}
           M
@@ -218,8 +236,14 @@ function DutchAuction() {
       </Bounce>
       )}
       {(index !== priceDropSequence[valueDrop - 1] || !animateChange) && (
-      <p style={{ color: '#000000', fontWeight: '700', marginBottom: '20px', fontSize: '20px' }}>
-        Painting Price: $
+      <p style={{
+        color: '#000000',
+        fontWeight: '700',
+        marginBottom: '20px',
+        fontSize: '20px',
+      }}
+      >
+        Painting price: $
         {paintings[index].originalValue}
         {' '}
         M
@@ -231,13 +255,13 @@ function DutchAuction() {
   const loadCardSelection = (index) => (
     <CardContent className={classes.paintOpt} style={{ backgroundColor: TEAM_COLOR_MAP[paintingTeams[paintings[index].id]] }}>
       <p style={{ color: '#000000', fontWeight: '700', marginBottom: '20px' }}>
-        Painting Price: $
+        Sold at $
         {paintings[index].originalValue}
         {' '}
         M
       </p>
       <p style={{ color: '#000000', fontWeight: '700', marginBottom: '20px' }}>
-        Team Won: Team
+        Team Won: Team&nbsp;
         {paintingTeams[paintings[index].id]}
       </p>
     </CardContent>
@@ -283,8 +307,8 @@ function DutchAuction() {
                 <Card
                   sx={{
                     minHeight: 55,
-                    minWidth: 355,
-                    maxWidth: 355,
+                    minWidth: 300,
+                    maxWidth: 300,
                     backgroundColor: 'white',
                     margin: 'auto',
                     marginTop: '3%',
@@ -293,7 +317,7 @@ function DutchAuction() {
                   disabled
                 >
                   <CardMedia
-                    sx={nominatedPaintings.includes(paintings[index].id) ? { height: 398, filter: 'grayscale(100%)' } : { height: 398 }}
+                    sx={nominatedPaintings.includes(paintings[index].id) ? { height: 320, filter: 'grayscale(100%)' } : { height: 320 }}
                     component="img"
                     image={arg.imageURL}
                     alt="green iguana"
