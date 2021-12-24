@@ -47,6 +47,9 @@ const useStyles = makeStyles((theme) => ({
       duration: theme.transitions.duration.shortest,
     }),
   },
+  childSel: {
+    boxShadow: "5px 10px red",
+  },
   expandOpen: {
     backgroundColor: '#000000',
   },
@@ -118,6 +121,7 @@ const useStyles = makeStyles((theme) => ({
 function DutchAuction() {
   const classes = useStyles();
   const [paintings, setPaintings] = useState();
+  const [initialPaintings, setInitialPaintings] = useState();
   const user = JSON.parse(sessionStorage.getItem('user'));
   // const { player, setPlayer } = useContext(userContext);
   // const [revenue, setRevenue] = useState(-1);
@@ -129,7 +133,7 @@ function DutchAuction() {
   const [animateChange, setAnimateChange] = useState(false);
   const [valueDrop, setValueDrop] = useState(0);
   const Bounce = styled.div`
-    animation: 1s ${keyframes`${rubberBand}`};
+    animation: 1.2s ${keyframes`${rubberBand}`};
   `;
 
   const handleSelectPainting = (index) => {
@@ -191,6 +195,11 @@ function DutchAuction() {
       setDutchAuctionTimerValue(data.dutchAuctionTimerValue);
       setPriceDropSequence(data.dutchAuctionsOrder);
       if (artifacts) {
+        let tempArr = [];
+        for(let i=0;i<artifacts.length;++i) {
+          tempArr.push(artifacts[i].originalValue);
+        }
+        setInitialPaintings(tempArr);
         setPaintings(artifacts);
       }
     }
@@ -215,11 +224,26 @@ function DutchAuction() {
         setNominatedPaintings((existingValues) => [data.paintingId, ...existingValues]);
       }
     });
+    console.log(nominatedPaintings);
   }, [nominatedPaintings]);
 
   const loadCardContent = (index) => (
     <CardContent className={classes.paintOpt}>
-      {index === priceDropSequence[valueDrop - 1] && animateChange && (
+      {initialPaintings && 
+      <p style={{
+        color: '#A4A4A4',
+        fontWeight: '700',
+        marginBottom: '20px',
+        fontSize: '20px',
+      }}
+      >
+        Opening bid: $
+        {initialPaintings[index]}
+        {' '}
+        M
+      </p>}
+      {//index === priceDropSequence[valueDrop - 1] && animateChange && 
+      (
       <Bounce>
         <p style={{
           color: '#000000',
@@ -228,14 +252,14 @@ function DutchAuction() {
           fontSize: '20px',
         }}
         >
-          Painting price: $
+          Price reduced to: $
           {paintings[index].originalValue}
           {' '}
           M
         </p>
       </Bounce>
       )}
-      {(index !== priceDropSequence[valueDrop - 1] || !animateChange) && (
+      {/*(index !== priceDropSequence[valueDrop - 1] || !animateChange) && (
       <p style={{
         color: '#000000',
         fontWeight: '700',
@@ -243,12 +267,12 @@ function DutchAuction() {
         fontSize: '20px',
       }}
       >
-        Painting price: $
+        Price reduced to: $
         {paintings[index].originalValue}
         {' '}
         M
       </p>
-      )}
+    )*/}
     </CardContent>
   );
 
@@ -295,6 +319,7 @@ function DutchAuction() {
         <Box className={classes.child1} justifyContent="center" display="flex" flexWrap="wrap">
           {paintings
             && paintings.map((arg, index) => (
+              <>
               <Box
                 p={1}
                 sx={{
@@ -302,7 +327,7 @@ function DutchAuction() {
                   paddingRight: '20px',
                 }}
                 // eslint-disable-next-line no-nested-ternary
-                // display={paintingSelected === -1 ? 'block' : paintingSelected === index ? 'block' : 'none'}
+                // display={(index === priceDropSequence[valueDrop - 1] && animateChange) ? 'block' : 'none'}
               >
                 <Card
                   sx={{
@@ -312,6 +337,7 @@ function DutchAuction() {
                     backgroundColor: 'white',
                     margin: 'auto',
                     marginTop: '3%',
+                    boxShadow: (index === priceDropSequence[valueDrop - 1])?'rgb(255,215,0,0.9) 0px 0px 7px 9px':'none',
                   }}
                   className={classes.cardStyle}
                   disabled
@@ -343,6 +369,7 @@ function DutchAuction() {
                   <SimpleRating rating={parseFloat(arg.paintingQuality)} />
                 </div>
               </Box>
+              </>
             ))}
         </Box>
       </div>

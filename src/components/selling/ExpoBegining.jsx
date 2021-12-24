@@ -155,6 +155,7 @@ function ExpoBeginning() {
   const [hasTimerEnded, setTimerEnded] = useState(false);
   const [timerValue, setTimerValue] = useState();
   const [nominatedPaintings, setNominatedPaintings] = useState([]);
+  const [paintingSelected, setPaintingSelected] = useState(-1);
   const [bidAmtError, setBidAmtError] = useState();
   const [currentAuctionObj, setCurrentAuctionObj] = useState();
   const [hasSentEnglishAuctionRequest, setHasSentEnglishAuctionRequest] = useState(false);
@@ -165,6 +166,10 @@ function ExpoBeginning() {
   };
 
   const handleSelectPainting = (index) => {
+    if(!ticketPrice.current) {
+      setBidAmtError('We encountered an error, please submit your bid again!');
+      return;
+    }
     const ticketVal = ticketPrice.current.value;
     const isValidatedTicketVal = validateCurrentBid(ticketVal);
     if (!isValidatedTicketVal) {
@@ -274,6 +279,7 @@ function ExpoBeginning() {
     socket.on('emitNominatedPainting', (paintingId) => {
       if (paintingId && !nominatedPaintings.includes(paintingId)) {
         setNominatedPaintings((existingValues) => [paintingId, ...existingValues]);
+        setPaintingSelected(paintingId);
       }
     });
   }, [nominatedPaintings]);
@@ -416,7 +422,7 @@ function ExpoBeginning() {
                   paddingRight: '20px',
                 }}
                 // eslint-disable-next-line no-nested-ternary
-                // display={paintingSelected === -1 ? 'block' : paintingSelected === index ? 'block' : 'none'}
+                display={paintingSelected === -1 ? 'block' : paintingSelected === arg.auctionId ? 'block' : 'none'}
               >
                 <Card
                   sx={{

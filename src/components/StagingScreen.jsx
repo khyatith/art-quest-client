@@ -35,12 +35,12 @@ const useStyles = makeStyles(() => ({
 
 function StagingScreen() {
   const classes = useStyles();
-  // const history = useHistory();
+  const history = useHistory();
   const location = useLocation();
   const { player } = useContext(userContext);
   const [isAdmin, setAdmin] = useState(false);
-  // const [loadInstructions, setLoadInstructions] = useState(false);
-  // const [playersJoinedInfo, setPlayersJoinedInfo] = useState();
+  const [loadInstructions, setLoadInstructions] = useState(false);
+  const [playersJoinedInfo, setPlayersJoinedInfo] = useState();
   const [noOfPlayers, setNumberOfPlayers] = useState(0);
   const [versionValue, setVersion] = React.useState(1);
 
@@ -52,9 +52,9 @@ function StagingScreen() {
     }
   }, [player]);
 
-  // const handleClick = () => {
-  //   setLoadInstructions(true);
-  // };
+  const handleClick = () => {
+    setLoadInstructions(true);
+  };
 
   const handleTeams = (event) => {
     const { value } = event.target;
@@ -71,11 +71,11 @@ function StagingScreen() {
     socket.emit('setTeams', { numberOfPlayers: noOfPlayers, roomCode: player.hostCode, version: versionValue });
   };
 
-  // useEffect(() => {
-  //   socket.on('numberOfPlayersJoined', (data) => {
-  //     setPlayersJoinedInfo(data);
-  //   });
-  // });
+  useEffect(() => {
+    socket.on('numberOfPlayersJoined', (data) => {
+      setPlayersJoinedInfo(data);
+    });
+  });
 
   return (
     <>
@@ -108,9 +108,9 @@ function StagingScreen() {
           </>
         )}
       </div>
-      {/* {
+      {
         loadInstructions && <GameInstructions playersJoinedInfo={playersJoinedInfo} />
-      } */}
+      }
     </>
   );
 }
