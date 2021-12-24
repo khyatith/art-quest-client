@@ -6,10 +6,10 @@ import ListItemText from '@material-ui/core/ListItemText';
 import { useHistory } from 'react-router-dom';
 import StarIcon from '@material-ui/icons/Star';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
+import axios from 'axios';
 import { socket } from '../global/socket';
 import userContext from '../global/userContext';
 import Header from './Header';
-import axios from 'axios';
 import { API_URL } from '../global/constants';
 import DutchAuction from './DutchAuction';
 
@@ -104,61 +104,62 @@ function GameInstructions() {
 
   return (
     <>
-      { version === 1 && <div className={classes.container}>
-        <Header />
-        <p className={classes.title}>Instructions</p>
-        <p>(1 minute to read)</p>
-        <p className={classes.p}>Your challenge, should you choose to accept it, is to create your favorite art collection.</p>
-        <p className={classes.p}>
-          How will you do it? By taking part in
-          {' '}
-          <span>AUCTIONS</span>
-          {' '}
-          and by putting
-          {' '}
-          <span>BIDS</span>
-          {' '}
-          on your favorite art pieces.
-        </p>
-        <List className={classes.listcontainer} dense>
-          <ListItem className={classes.listitem}>
-            <ListItemIcon>
-              <StarIcon style={{ color: '#76e246' }} />
-            </ListItemIcon>
-            <ListItemText className={classes.listtext} primary="Create your FAVORITE art collection" />
-          </ListItem>
-          <ListItem className={classes.listitem}>
-            <ListItemIcon>
-              <StarIcon style={{ color: '#76e246' }} />
-            </ListItemIcon>
-            <ListItemText className={classes.listtext} primary="MAXIMIZE total number of paintings, MINIMIZE efficiency" />
-          </ListItem>
-        </List>
-        <p className={classes.p}>Let the bidding wars begin!</p>
-        { playersJoinedInfo && (playersJoinedInfo.playersJoined !== playersJoinedInfo.numberOfPlayers)
-          ? (
-            <div style={{ border: '5px solid #76e246' }}>
-              <h3>
-                Player
-                {' '}
-                {playersJoinedInfo.playersJoined}
-                {' '}
-                of
-                {' '}
-                {playersJoinedInfo.numberOfPlayers}
-                {' '}
-                joined. Waiting for others to join...
-              </h3>
-            </div>
-          ) : (
-            <div style={{ border: '5px solid #76e246' }}>
-              <h3>All players Joined. Starting game ...</h3>
-            </div>
-          )}
-      </div> }
-      { version === 2 &&
-      <DutchAuction />
-      }
+      { version === 1
+      && (
+        <div className={classes.container}>
+          <Header />
+          <p className={classes.title}>Instructions</p>
+          <p>(1 minute to read)</p>
+          <p className={classes.p}>Your challenge, should you choose to accept it, is to create your favorite art collection.</p>
+          <p className={classes.p}>
+            How will you do it? By taking part in
+            {' '}
+            <span>AUCTIONS</span>
+            {' '}
+            and by putting
+            {' '}
+            <span>BIDS</span>
+            {' '}
+            on your favorite art pieces.
+          </p>
+          <List className={classes.listcontainer} dense>
+            <ListItem className={classes.listitem}>
+              <ListItemIcon>
+                <StarIcon style={{ color: '#76e246' }} />
+              </ListItemIcon>
+              <ListItemText className={classes.listtext} primary="Create your FAVORITE art collection" />
+            </ListItem>
+            <ListItem className={classes.listitem}>
+              <ListItemIcon>
+                <StarIcon style={{ color: '#76e246' }} />
+              </ListItemIcon>
+              <ListItemText className={classes.listtext} primary="MAXIMIZE total number of paintings, MINIMIZE efficiency" />
+            </ListItem>
+          </List>
+          <p className={classes.p}>Let the bidding wars begin!</p>
+          { playersJoinedInfo && (playersJoinedInfo.playersJoined !== playersJoinedInfo.numberOfPlayers)
+            ? (
+              <div style={{ border: '5px solid #76e246' }}>
+                <h3>
+                  Player
+                  {' '}
+                  {playersJoinedInfo.playersJoined}
+                  {' '}
+                  of
+                  {' '}
+                  {playersJoinedInfo.numberOfPlayers}
+                  {' '}
+                  joined. Waiting for others to join...
+                </h3>
+              </div>
+            ) : (
+              <div style={{ border: '5px solid #76e246' }}>
+                <h3>All players Joined. Starting game ...</h3>
+              </div>
+            )}
+        </div>
+      )}
+      { version === 2 && <DutchAuction />}
     </>
   );
 }

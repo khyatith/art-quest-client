@@ -48,7 +48,7 @@ const useStyles = makeStyles((theme) => ({
     }),
   },
   childSel: {
-    boxShadow: "5px 10px red",
+    boxShadow: '5px 10px red',
   },
   expandOpen: {
     backgroundColor: '#000000',
@@ -130,7 +130,7 @@ function DutchAuction() {
   const [dutchAuctionTimerValue, setDutchAuctionTimerValue] = useState();
   const [hasDutchAuctionTimerEnded, setHasDutchAuctionTimerEnded] = useState(false);
   const [priceDropSequence, setPriceDropSequence] = useState();
-  const [animateChange, setAnimateChange] = useState(false);
+  // const [animateChange, setAnimateChange] = useState(false);
   const [valueDrop, setValueDrop] = useState(0);
   const Bounce = styled.div`
     animation: 1.2s ${keyframes`${rubberBand}`};
@@ -153,7 +153,7 @@ function DutchAuction() {
   };
 
   const getRemainingTime = async () => {
-    setAnimateChange(false);
+    // setAnimateChange(false);
     const total = parseInt(dutchAuctionTimerValue.total, 10) - 1000;
     const seconds = Math.floor((parseInt(total, 10) / 1000) % 60);
     const minutes = Math.floor((parseInt(total, 10) / 1000 / 60) % 60);
@@ -171,7 +171,7 @@ function DutchAuction() {
         const newValue = paintings;
         newValue[priceDropSequence[valueDrop]].originalValue = ((newValue[priceDropSequence[valueDrop]].originalValue * 9) / 10).toFixed(2);
         setPaintings(newValue);
-        setAnimateChange(true);
+        // setAnimateChange(true);
         setValueDrop(valueDrop + 1);
       } else if (seconds % 3 === 0) {
         setValueDrop(valueDrop + 1);
@@ -195,8 +195,8 @@ function DutchAuction() {
       setDutchAuctionTimerValue(data.dutchAuctionTimerValue);
       setPriceDropSequence(data.dutchAuctionsOrder);
       if (artifacts) {
-        let tempArr = [];
-        for(let i=0;i<artifacts.length;++i) {
+        const tempArr = [];
+        for (let i = 0; i < artifacts.length; ++i) {
           tempArr.push(artifacts[i].originalValue);
         }
         setInitialPaintings(tempArr);
@@ -236,7 +236,8 @@ function DutchAuction() {
 
   const loadCardContent = (index) => (
     <CardContent className={classes.paintOpt}>
-      {initialPaintings && 
+      {initialPaintings
+      && (
       <p style={{
         color: '#A4A4A4',
         fontWeight: '700',
@@ -248,8 +249,8 @@ function DutchAuction() {
         {initialPaintings[index]}
         {' '}
         M
-      </p>}
-      {//index === priceDropSequence[valueDrop - 1] && animateChange && 
+      </p>
+      )}
       (
       <Bounce>
         <p style={{
@@ -265,8 +266,8 @@ function DutchAuction() {
           M
         </p>
       </Bounce>
-      )}
-      {/*(index !== priceDropSequence[valueDrop - 1] || !animateChange) && (
+      )
+      {/* (index !== priceDropSequence[valueDrop - 1] || !animateChange) && (
       <p style={{
         color: '#000000',
         fontWeight: '700',
@@ -279,7 +280,7 @@ function DutchAuction() {
         {' '}
         M
       </p>
-    )*/}
+    ) */}
     </CardContent>
   );
 
@@ -327,55 +328,55 @@ function DutchAuction() {
           {paintings
             && paintings.map((arg, index) => (
               <>
-              <Box
-                p={1}
-                sx={{
-                  paddingLeft: '20px',
-                  paddingRight: '20px',
-                }}
-                // eslint-disable-next-line no-nested-ternary
-                // display={(index === priceDropSequence[valueDrop - 1] && animateChange) ? 'block' : 'none'}
-              >
-                <Card
+                <Box
+                  p={1}
                   sx={{
-                    minHeight: 55,
-                    minWidth: 300,
-                    maxWidth: 300,
-                    backgroundColor: 'white',
-                    margin: 'auto',
-                    marginTop: '3%',
-                    boxShadow: (index === priceDropSequence[valueDrop - 1])?'rgb(255,215,0,0.9) 0px 0px 7px 9px':'none',
+                    paddingLeft: '20px',
+                    paddingRight: '20px',
                   }}
-                  className={classes.cardStyle}
-                  disabled
+                  // eslint-disable-next-line no-nested-ternary
+                  // display={(index === priceDropSequence[valueDrop - 1] && animateChange) ? 'block' : 'none'}
                 >
-                  <CardMedia
-                    sx={nominatedPaintings.includes(paintings[index].id) ? { height: 320, filter: 'grayscale(100%)' } : { height: 320 }}
-                    component="img"
-                    image={arg.imageURL}
-                    alt="green iguana"
-                  />
-                  <CardActions className={nominatedPaintings.includes(paintings[index].id) ? classes.nominateBtnDone : classes.nominateBtn}>
-                    <Button
-                      size="small"
-                      style={{ color: '#000000', fontWeight: 'bold', width: '100%' }}
-                      className={clsx(classes.expand, {
-                        [classes.expandOpen]: true,
-                      })}
-                      onClick={() => handleSelectPainting(index)}
-                      disabled={nominatedPaintings.includes(paintings[index].id)}
-                    >
-                      BID
-                    </Button>
-                  </CardActions>
-                  {!nominatedPaintings.includes(paintings[index].id) && loadCardContent(index)}
-                  {nominatedPaintings.includes(paintings[index].id) && loadCardSelection(index)}
-                </Card>
-                <div className={classes.contentstyle}>
-                  <p>Painting Quality</p>
-                  <SimpleRating rating={parseFloat(arg.paintingQuality)} />
-                </div>
-              </Box>
+                  <Card
+                    sx={{
+                      minHeight: 55,
+                      minWidth: 300,
+                      maxWidth: 300,
+                      backgroundColor: 'white',
+                      margin: 'auto',
+                      marginTop: '3%',
+                      boxShadow: (index === priceDropSequence[valueDrop - 1]) ? 'rgb(255,215,0,0.9) 0px 0px 7px 9px' : 'none',
+                    }}
+                    className={classes.cardStyle}
+                    disabled
+                  >
+                    <CardMedia
+                      sx={nominatedPaintings.includes(paintings[index].id) ? { height: 320, filter: 'grayscale(100%)' } : { height: 320 }}
+                      component="img"
+                      image={arg.imageURL}
+                      alt="green iguana"
+                    />
+                    <CardActions className={nominatedPaintings.includes(paintings[index].id) ? classes.nominateBtnDone : classes.nominateBtn}>
+                      <Button
+                        size="small"
+                        style={{ color: '#000000', fontWeight: 'bold', width: '100%' }}
+                        className={clsx(classes.expand, {
+                          [classes.expandOpen]: true,
+                        })}
+                        onClick={() => handleSelectPainting(index)}
+                        disabled={nominatedPaintings.includes(paintings[index].id)}
+                      >
+                        BID
+                      </Button>
+                    </CardActions>
+                    {!nominatedPaintings.includes(paintings[index].id) && loadCardContent(index)}
+                    {nominatedPaintings.includes(paintings[index].id) && loadCardSelection(index)}
+                  </Card>
+                  <div className={classes.contentstyle}>
+                    <p>Painting Quality</p>
+                    <SimpleRating rating={parseFloat(arg.paintingQuality)} />
+                  </div>
+                </Box>
               </>
             ))}
         </Box>

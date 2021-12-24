@@ -11,7 +11,7 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 // import { Button } from '@material-ui/core';
-// import { useHistory } from 'react-router';
+import { useHistory } from 'react-router';
 // import userContext from '../global/userContext';
 import Header from './Header';
 import { API_URL, TEAM_COLOR_MAP } from '../global/constants';
@@ -65,14 +65,14 @@ const StyledTableCell = withStyles((theme) => ({
 
 function EndBuyingPhase() {
   const classes = useStyles();
-  // const history = useHistory();
+  const history = useHistory();
   const [artforTeams, setArtForTeams] = useState();
   const [gameWinner, setGameWinner] = useState();
   const [teamEfficiency, setTeamEfficiency] = useState({});
   const [totalDebtByTeam, setTotalDebtByTeam] = useState({});
   const [teamsByRank, setTeamsByRank] = useState([]);
   // const [showWinner, setShowWinner] = useState(false);
-  // const [totalPaintingsWonByTeam, setTotalPaintingsWonByTeam] = useState({});
+  const [totalPaintingsWonByTeam, setTotalPaintingsWonByTeam] = useState({});
   // const { setPlayer } = useContext(userContext);
   // const { setLeaderboardData } = useContext(leaderboardContext);
   // const [sortedTeamsByPaintingsWon, setSortedTeamsByPaintingsWon] = useState({});

@@ -166,7 +166,7 @@ function ExpoBeginning() {
   };
 
   const handleSelectPainting = (index) => {
-    if(!ticketPrice.current) {
+    if (!ticketPrice.current) {
       setBidAmtError('We encountered an error, please submit your bid again!');
       return;
     }
