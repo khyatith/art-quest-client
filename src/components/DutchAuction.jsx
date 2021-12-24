@@ -221,7 +221,7 @@ function DutchAuction() {
       const interval = setInterval(() => getRemainingTime(), 1000);
       return () => clearInterval(interval);
     }
-  });
+  }, [dutchAuctionTimerValue]);
 
   useEffect(() => {
     socket.on('emitBidForPainting', (data) => {
