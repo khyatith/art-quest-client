@@ -1,5 +1,6 @@
 import React, {
-  useEffect, useRef, useState, useCallback,
+  useCallback,
+  useEffect, useRef, useState,
 } from 'react';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import axios from 'axios';
@@ -111,7 +112,7 @@ const useStyles = makeStyles((theme) => ({
   appbar: {
     backgroundColor: '#76e246',
     flexGrow: 1,
-    position: 'relative',
+    position: 'fixed',
   },
   timercontent: {
     display: 'none',
@@ -147,17 +148,14 @@ function ExpoBeginning() {
   const [paintings, setPaintings] = useState([]);
   const [cityData, setCityData] = useState();
   const user = JSON.parse(sessionStorage.getItem('user'));
-  // const { player, setPlayer } = useContext(userContext);
   const [otherTeams, setOtherTeams] = useState([]);
   const [expanded, setExpanded] = React.useState(-1);
   const ticketPrice = useRef();
-  // const [revenue, setRevenue] = useState(-1);
   const [hasTimerEnded, setTimerEnded] = useState(false);
   const [timerValue, setTimerValue] = useState();
   const [nominatedPaintings, setNominatedPaintings] = useState([]);
   const [paintingSelected, setPaintingSelected] = useState(-1);
   const [bidAmtError, setBidAmtError] = useState();
-  // const [currentAuctionObj, setCurrentAuctionObj] = useState();
   const [hasSentEnglishAuctionRequest, setHasSentEnglishAuctionRequest] = useState(false);
   const history = useHistory();
 
@@ -217,27 +215,33 @@ function ExpoBeginning() {
     }
   }, [user, cityData, paintings]);
 
+  const updateStorageWithCurrentAuction = (data) => {
+    console.log('data', data);
+    if (Object.keys(data.auctionObj).length > 0) {
+      sessionStorage.setItem('currentSellingEnglishAuction', JSON.stringify(data.auctionObj));
+    }
+  };
+
   const renderEnglishAuction = useCallback(async () => {
-    setHasSentEnglishAuctionRequest(true);
-    const { data } = await axios.get(`${API_URL}/buying/getEnglishAuctionForSelling?roomCode=${user.hostCode}&roundId=${user.roundId}`);
-    sessionStorage.setItem('currentSellingEnglishAuction', JSON.stringify(data.auctionObj));
-    // setCurrentAuctionObj(data.auctionObj);
-    console.log(data.auctionObj);
+    if (!hasSentEnglishAuctionRequest) {
+      const { data } = await axios.get(`${API_URL}/buying/getEnglishAuctionForSelling?roomCode=${user.hostCode}&roundId=${user.roundId}`);
+      setTimeout(() => updateStorageWithCurrentAuction(data), 5000);
+      console.log(data.auctionObj);
+    }
   }, [user]);
 
   useEffect(() => {
-    setTimeout(() => {
-      if (!hasSentEnglishAuctionRequest) {
-        renderEnglishAuction();
-      }
-    }, 5000);
-  }, [hasSentEnglishAuctionRequest, renderEnglishAuction]);
+    if (!hasSentEnglishAuctionRequest) {
+      renderEnglishAuction();
+      setHasSentEnglishAuctionRequest(true);
+    }
+  }, [hasSentEnglishAuctionRequest]);
 
   useEffect(() => {
     const redirectToRevenueScreen = async () => {
       const currentAuctionObj = sessionStorage.getItem('currentSellingEnglishAuction');
       const obj = currentAuctionObj && JSON.parse(currentAuctionObj);
-      if (Object.keys(obj).length > 0) {
+      if (obj && Object.keys(obj).length > 0) {
         await axios.post(`${API_URL}/buying/updateEnglishAuctionResults`, { roomId: user.hostCode, auctionId: obj.id });
       }
       history.push({

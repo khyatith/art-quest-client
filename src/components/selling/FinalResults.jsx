@@ -72,7 +72,7 @@ function FinalResults() {
           setHasValueFetched(true);
         });
     }
-  }, []);
+  }, [hasValueFetched]);
 
   const showTeamWinner = () => {
     const user = JSON.parse(sessionStorage.getItem('user'));
