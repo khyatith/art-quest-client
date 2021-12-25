@@ -151,12 +151,13 @@ function ExpoBeginning() {
   const [otherTeams, setOtherTeams] = useState([]);
   const [expanded, setExpanded] = React.useState(-1);
   const ticketPrice = useRef();
-  const [hasTimerEnded, setTimerEnded] = useState(false);
+  // const [hasTimerEnded, setTimerEnded] = useState(false);
   const [timerValue, setTimerValue] = useState();
   const [nominatedPaintings, setNominatedPaintings] = useState([]);
   const [paintingSelected, setPaintingSelected] = useState(-1);
   const [bidAmtError, setBidAmtError] = useState();
   const [hasSentEnglishAuctionRequest, setHasSentEnglishAuctionRequest] = useState(false);
+  const [hasRevenueUpdated, setHasRevenueUpdated] = useState(false);
   const history = useHistory();
 
   const handleExpandClick = (index) => {
@@ -216,7 +217,6 @@ function ExpoBeginning() {
   }, [user, cityData, paintings]);
 
   const updateStorageWithCurrentAuction = (data) => {
-    console.log('data', data);
     if (Object.keys(data.auctionObj).length > 0) {
       sessionStorage.setItem('currentSellingEnglishAuction', JSON.stringify(data.auctionObj));
     }
@@ -238,28 +238,26 @@ function ExpoBeginning() {
   }, [hasSentEnglishAuctionRequest]);
 
   useEffect(() => {
-    const redirectToRevenueScreen = async () => {
+    socket.on('goToSellingResults', () => {
+      history.push({
+        pathname: `/sell/result/${user.playerId}`,
+        state: nominatedPaintings,
+      });
+    });
+  }, [user, history]);
+
+  const getRemainingTime = async () => {
+    const total = parseInt(timerValue.total, 10) - 1000;
+    const seconds = Math.floor((parseInt(total, 10) / 1000) % 60);
+    const minutes = Math.floor((parseInt(total, 10) / 1000 / 60) % 60);
+    if (total < 1000 && !hasRevenueUpdated) {
       const currentAuctionObj = sessionStorage.getItem('currentSellingEnglishAuction');
       const obj = currentAuctionObj && JSON.parse(currentAuctionObj);
       if (obj && Object.keys(obj).length > 0) {
         await axios.post(`${API_URL}/buying/updateEnglishAuctionResults`, { roomId: user.hostCode, auctionId: obj.id });
       }
-      history.push({
-        pathname: `/sell/result/${user.playerId}`,
-        state: nominatedPaintings,
-      });
-    };
-    if (hasTimerEnded) {
-      redirectToRevenueScreen();
-    }
-  }, [hasTimerEnded, user, history]);
-
-  const getRemainingTime = () => {
-    const total = parseInt(timerValue.total, 10) - 1000;
-    const seconds = Math.floor((parseInt(total, 10) / 1000) % 60);
-    const minutes = Math.floor((parseInt(total, 10) / 1000 / 60) % 60);
-    if (total < 1000) {
-      setTimerEnded(true);
+      socket.emit('expoBeginningTimerEnded', { hostCode: user.hostCode });
+      setHasRevenueUpdated(true);
     } else {
       const value = {
         total,
