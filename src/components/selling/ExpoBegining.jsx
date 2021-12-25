@@ -277,10 +277,12 @@ function ExpoBeginning() {
   });
 
   useEffect(() => {
-    socket.on('emitNominatedPainting', (paintingId) => {
-      if (paintingId && !nominatedPaintings.includes(paintingId)) {
-        setNominatedPaintings((existingValues) => [paintingId, ...existingValues]);
-        setPaintingSelected(paintingId);
+    socket.on('emitNominatedPainting', (data) => {
+      if (data.paintingId && !nominatedPaintings.includes(data.paintingId)) {
+        setNominatedPaintings((existingValues) => [data.paintingId, ...existingValues]);
+        if(data.teamName === user.teamName) {
+          setPaintingSelected(data.paintingId);
+        }
       }
     });
   }, [nominatedPaintings]);
@@ -318,7 +320,9 @@ function ExpoBeginning() {
     );
   };
 
-  const loadCardContent = (index) => (
+  const loadCardContent = (index) => {
+    console.log(index);
+    return(
     <CardContent className={classes.paintOpt}>
       <p style={{ color: '#000000', fontWeight: '700', marginBottom: '25px' }}>
         How much would you charge 1 person to see your painting in
@@ -354,6 +358,7 @@ function ExpoBeginning() {
       </Button>
     </CardContent>
   );
+      }
 
   const loadCardSelection = () => (
     <CardContent className={classes.paintOpt}>
@@ -438,12 +443,12 @@ function ExpoBeginning() {
                   disabled
                 >
                   <CardMedia
-                    sx={nominatedPaintings.includes(paintings[index].auctionId) ? { height: 298, filter: 'grayscale(100%)' } : { height: 298 }}
+                    sx={(paintingSelected === paintings[index].auctionId) ? { height: 298, filter: 'grayscale(100%)' } : { height: 298 }}
                     component="img"
                     image={arg.auctionObj.imageURL}
                     alt="green iguana"
                   />
-                  <CardActions className={nominatedPaintings.includes(paintings[index].auctionId) ? classes.nominateBtnDone : classes.nominateBtn}>
+                  <CardActions className={(paintingSelected === paintings[index].auctionId) ? classes.nominateBtnDone : classes.nominateBtn}>
                     <Button
                       size="small"
                       style={{ color: '#000000', fontWeight: 'bold', width: '100%' }}
@@ -453,14 +458,14 @@ function ExpoBeginning() {
                       onClick={() => handleExpandClick(index)}
                       aria-expanded
                       aria-label="show more"
-                      disabled={nominatedPaintings.includes(paintings[index].auctionId)}
+                      disabled={(paintingSelected === paintings[index].auctionId)}
                     >
                       Nominate painting
                     </Button>
                   </CardActions>
                   <Collapse in={index === expanded} timeout="auto" unmountOnExit>
-                    {!nominatedPaintings.includes(paintings[index].auctionId) && loadCardContent(index)}
-                    {nominatedPaintings.includes(paintings[index].auctionId) && loadCardSelection()}
+                    {(paintingSelected === -1) && loadCardContent(expanded)}
+                    {(paintingSelected === paintings[index].auctionId) && loadCardSelection()}
                   </Collapse>
                 </Card>
                 <div className={classes.contentstyle}>

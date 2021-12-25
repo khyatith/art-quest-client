@@ -130,7 +130,7 @@ function DutchAuction() {
   const [dutchAuctionTimerValue, setDutchAuctionTimerValue] = useState();
   const [hasDutchAuctionTimerEnded, setHasDutchAuctionTimerEnded] = useState(false);
   const [priceDropSequence, setPriceDropSequence] = useState();
-  // const [animateChange, setAnimateChange] = useState(false);
+  const [animateChange, setAnimateChange] = useState(false);
   const [valueDrop, setValueDrop] = useState(0);
   const Bounce = styled.div`
     animation: 1.2s ${keyframes`${rubberBand}`};
@@ -153,7 +153,7 @@ function DutchAuction() {
   };
 
   const getRemainingTime = async () => {
-    // setAnimateChange(false);
+    setAnimateChange(false);
     const total = parseInt(dutchAuctionTimerValue.total, 10) - 1000;
     const seconds = Math.floor((parseInt(total, 10) / 1000) % 60);
     const minutes = Math.floor((parseInt(total, 10) / 1000 / 60) % 60);
@@ -171,7 +171,7 @@ function DutchAuction() {
         const newValue = paintings;
         newValue[priceDropSequence[valueDrop]].originalValue = ((newValue[priceDropSequence[valueDrop]].originalValue * 9) / 10).toFixed(2);
         setPaintings(newValue);
-        // setAnimateChange(true);
+        setAnimateChange(true);
         setValueDrop(valueDrop + 1);
       } else if (seconds % 3 === 0) {
         setValueDrop(valueDrop + 1);
@@ -251,7 +251,7 @@ function DutchAuction() {
         M
       </p>
       )}
-      (
+      {(index === priceDropSequence[valueDrop - 1] && animateChange) && (initialPaintings[index] !== paintings[index].originalValue) (
       <Bounce>
         <p style={{
           color: '#000000',
@@ -265,9 +265,8 @@ function DutchAuction() {
           {' '}
           M
         </p>
-      </Bounce>
-      )
-      {/* (index !== priceDropSequence[valueDrop - 1] || !animateChange) && (
+      </Bounce>)}
+      {(index !== priceDropSequence[valueDrop - 1] || !animateChange)  && (initialPaintings[index] !== paintings[index].originalValue) && (
       <p style={{
         color: '#000000',
         fontWeight: '700',
@@ -280,7 +279,7 @@ function DutchAuction() {
         {' '}
         M
       </p>
-    ) */}
+    )}
     </CardContent>
   );
 
