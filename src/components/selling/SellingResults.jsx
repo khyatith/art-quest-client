@@ -76,6 +76,7 @@ function SellingResults(props) {
   const [timerValue, setTimerValue] = useState();
   const [earnings, setEarnings] = useState();
   const [paintings, setPaintings] = useState();
+  const [hasRequestedResult, setHasRequestedResult] = useState(false);
 
   useEffect(() => {
     const getEarnings = async () => {
@@ -84,8 +85,9 @@ function SellingResults(props) {
       setPaintings(data.allTeamPaintings);
       setTimerValue(data.sellingResultsTimerValue);
     };
-    if (user && (!earnings || !timerValue || !paintings)) {
+    if (user && !hasRequestedResult) {
       sessionStorage.setItem('currentSellingEnglishAuction', null);
+      setHasRequestedResult(true);
       getEarnings();
     }
   }, [earnings, user, timerValue]);
