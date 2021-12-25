@@ -92,7 +92,7 @@ function LocationPhase() {
   const { player, setPlayer } = useContext(userContext);
   const history = useHistory();
   const [loading, setLoading] = useState(true);
-  const [hasLocationPageTimerEnded, setHasLocationPageTimerEnded] = useState(false);
+  // const [hasLocationPageTimerEnded, setHasLocationPageTimerEnded] = useState(false);
   const [locationPageTimerValue, setLocationPageTimerValue] = useState();
   const [roundId, setRoundId] = useState();
   const [hasLocationSelected, setSelectedLocation] = useState(false);
@@ -171,21 +171,18 @@ function LocationPhase() {
   };
 
   const getRemainingTime = () => {
-    if (Object.keys(locationPageTimerValue).length <= 0) {
-      if (!selectedLocationId) {
-        setLocationSelectedForCurrentRound(true, currentLocationId);
-      }
-      setHasLocationPageTimerEnded(true);
-      return;
-    }
+    // if (Object.keys(locationPageTimerValue).length <= 0) {
+    //   if (!selectedLocationId) {
+    //     setLocationSelectedForCurrentRound(true, currentLocationId);
+    //   }
+    //   setHasLocationPageTimerEnded(true);
+    //   return;
+    // }
     const total = parseInt(locationPageTimerValue.total, 10) - 1000;
     const seconds = Math.floor((parseInt(total, 10) / 1000) % 60);
     const minutes = Math.floor((parseInt(total, 10) / 1000 / 60) % 60);
     if (total < 1000) {
-      if (!selectedLocationId) {
-        setLocationSelectedForCurrentRound(true, currentLocationId);
-      }
-      setHasLocationPageTimerEnded(true);
+      socket.emit('locationPhaseTimerEnded', { player });
     } else {
       const value = {
         total,
@@ -196,6 +193,16 @@ function LocationPhase() {
     }
   };
 
+  useEffect(() => {
+    socket.on('goToExpo', () => {
+      if (!selectedLocationId) {
+        setLocationSelectedForCurrentRound(true, currentLocationId);
+      }
+      setSelectedLocation(false);
+      history.push(`/sell/${player.playerId}`);
+    });
+  });
+
   // eslint-disable-next-line consistent-return
   useEffect(() => {
     if (locationPageTimerValue) {
@@ -203,13 +210,6 @@ function LocationPhase() {
       return () => clearInterval(interval);
     }
   });
-
-  useEffect(() => {
-    if (hasLocationPageTimerEnded) {
-      setSelectedLocation(false);
-      history.push(`/sell/${player.playerId}`);
-    }
-  }, [hasLocationPageTimerEnded, player.playerId, history]);
 
   useEffect(() => {
     socket.on('locationUpdatedForTeam', (data) => {
@@ -228,8 +228,6 @@ function LocationPhase() {
       </div>
     );
   }
-
-  // IMPORTANT (KOGNITI CHANGE)
 
   return (
     <>

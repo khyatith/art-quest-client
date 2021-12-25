@@ -10,14 +10,11 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
-// import { Button } from '@material-ui/core';
 import { useHistory } from 'react-router';
-// import userContext from '../global/userContext';
 import Header from './Header';
 import { API_URL, TEAM_COLOR_MAP } from '../global/constants';
 import { formatNumberToCurrency } from '../global/helpers';
 import useSessionStorage from '../hooks/useSessionStorage';
-// import leaderboardContext from '../global/leaderboardContext';
 
 const useStyles = makeStyles((theme) => ({
   root: {
