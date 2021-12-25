@@ -85,6 +85,7 @@ function SellingResults(props) {
       setTimerValue(data.sellingResultsTimerValue);
     };
     if (user && (!earnings || !timerValue || !paintings)) {
+      sessionStorage.setItem('currentSellingEnglishAuction', null);
       getEarnings();
     }
   }, [earnings, user, timerValue]);
@@ -104,10 +105,6 @@ function SellingResults(props) {
   }, [hasTimerEnded, history, user]);
 
   const getRemainingTime = () => {
-    if (Object.keys(timerValue).length <= 0) {
-      setTimerEnded(true);
-      return;
-    }
     const total = parseInt(timerValue.total, 10) - 1000;
     const seconds = Math.floor((parseInt(total, 10) / 1000) % 60);
     const minutes = Math.floor((parseInt(total, 10) / 1000 / 60) % 60);

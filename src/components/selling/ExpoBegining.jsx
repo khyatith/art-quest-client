@@ -157,7 +157,7 @@ function ExpoBeginning() {
   const [nominatedPaintings, setNominatedPaintings] = useState([]);
   const [paintingSelected, setPaintingSelected] = useState(-1);
   const [bidAmtError, setBidAmtError] = useState();
-  const [currentAuctionObj, setCurrentAuctionObj] = useState();
+  // const [currentAuctionObj, setCurrentAuctionObj] = useState();
   const [hasSentEnglishAuctionRequest, setHasSentEnglishAuctionRequest] = useState(false);
   const history = useHistory();
 
@@ -220,13 +220,14 @@ function ExpoBeginning() {
   const renderEnglishAuction = useCallback(async () => {
     setHasSentEnglishAuctionRequest(true);
     const { data } = await axios.get(`${API_URL}/buying/getEnglishAuctionForSelling?roomCode=${user.hostCode}&roundId=${user.roundId}`);
-    setCurrentAuctionObj(data.auctionObj);
+    sessionStorage.setItem('currentSellingEnglishAuction', JSON.stringify(data.auctionObj));
+    // setCurrentAuctionObj(data.auctionObj);
     console.log(data.auctionObj);
   }, [user]);
 
   useEffect(() => {
     setTimeout(() => {
-      if (!hasSentEnglishAuctionRequest && !currentAuctionObj) {
+      if (!hasSentEnglishAuctionRequest) {
         renderEnglishAuction();
       }
     }, 5000);
@@ -234,8 +235,10 @@ function ExpoBeginning() {
 
   useEffect(() => {
     const redirectToRevenueScreen = async () => {
-      if (currentAuctionObj) {
-        await axios.post(`${API_URL}/buying/updateEnglishAuctionResults`, { roomId: user.hostCode, auctionId: currentAuctionObj.id });
+      const currentAuctionObj = sessionStorage.getItem('currentSellingEnglishAuction');
+      const obj = currentAuctionObj && JSON.parse(currentAuctionObj);
+      if (Object.keys(obj).length > 0) {
+        await axios.post(`${API_URL}/buying/updateEnglishAuctionResults`, { roomId: user.hostCode, auctionId: obj.id });
       }
       history.push({
         pathname: `/sell/result/${user.playerId}`,
@@ -477,7 +480,7 @@ function ExpoBeginning() {
             display: (timerValue && timerValue.minutes === '0' && timerValue.seconds <= 10) ? 'none' : 'block',
           }}
         >
-          <NewBonusAuction auctionObj={currentAuctionObj} />
+          <NewBonusAuction />
         </div>
         <div
           className={classes.child3}
@@ -486,7 +489,7 @@ function ExpoBeginning() {
             display: ((timerValue && timerValue.minutes === '0' && timerValue.seconds <= 10) ? 'block' : 'none'),
           }}
         >
-          <NewBonusAuctionResult auctionObj={currentAuctionObj} />
+          <NewBonusAuctionResult />
         </div>
       </div>
     </>

@@ -87,7 +87,9 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const NewBonusAuctionResult = ({ auctionObj }) => {
+const NewBonusAuctionResult = () => {
+  const obj = sessionStorage.getItem('currentSellingEnglishAuction');
+  const auctionObj = obj && JSON.parse(obj);
   const classes = useStyles();
   const previousBidDetails = useRef();
 
