@@ -251,8 +251,23 @@ function DutchAuction() {
         M
       </p>
       )}
-      {(index === priceDropSequence[valueDrop - 1] && animateChange) && (initialPaintings[index] !== paintings[index].originalValue) (
-      <Bounce>
+      {(index === priceDropSequence[valueDrop - 1] && animateChange) && (initialPaintings[index] !== paintings[index].originalValue)(
+        <Bounce>
+          <p style={{
+            color: '#000000',
+            fontWeight: '700',
+            marginBottom: '20px',
+            fontSize: '20px',
+          }}
+          >
+            Price reduced to: $
+            {paintings[index].originalValue}
+            {' '}
+            M
+          </p>
+        </Bounce>,
+      )}
+      {(index !== priceDropSequence[valueDrop - 1] || !animateChange) && (initialPaintings[index] !== paintings[index].originalValue) && (
         <p style={{
           color: '#000000',
           fontWeight: '700',
@@ -265,21 +280,7 @@ function DutchAuction() {
           {' '}
           M
         </p>
-      </Bounce>)}
-      {(index !== priceDropSequence[valueDrop - 1] || !animateChange)  && (initialPaintings[index] !== paintings[index].originalValue) && (
-      <p style={{
-        color: '#000000',
-        fontWeight: '700',
-        marginBottom: '20px',
-        fontSize: '20px',
-      }}
-      >
-        Price reduced to: $
-        {paintings[index].originalValue}
-        {' '}
-        M
-      </p>
-    )}
+      )}
     </CardContent>
   );
 
