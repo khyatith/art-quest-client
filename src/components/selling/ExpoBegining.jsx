@@ -255,10 +255,6 @@ function ExpoBeginning() {
   }, [hasTimerEnded, user, history]);
 
   const getRemainingTime = () => {
-    if (Object.keys(timerValue).length <= 0) {
-      setTimerEnded(true);
-      return;
-    }
     const total = parseInt(timerValue.total, 10) - 1000;
     const seconds = Math.floor((parseInt(total, 10) / 1000) % 60);
     const minutes = Math.floor((parseInt(total, 10) / 1000 / 60) % 60);

@@ -45,7 +45,7 @@ const useStyles = makeStyles((theme) => ({
   appbar: {
     backgroundColor: '#76e246',
     flexGrow: 1,
-    position: 'relative',
+    position: 'fixed',
   },
   timercontent: {
     display: 'none',
@@ -92,7 +92,7 @@ function LocationPhase() {
   const { player, setPlayer } = useContext(userContext);
   const history = useHistory();
   const [loading, setLoading] = useState(true);
-  const [hasLocationPageTimerEnded, setHasLocationPageTimerEnded] = useState(false);
+  // const [hasLocationPageTimerEnded, setHasLocationPageTimerEnded] = useState(false);
   const [locationPageTimerValue, setLocationPageTimerValue] = useState();
   const [roundId, setRoundId] = useState();
   const [hasLocationSelected, setSelectedLocation] = useState(false);
@@ -175,12 +175,12 @@ function LocationPhase() {
     const seconds = Math.floor((parseInt(total, 10) / 1000) % 60);
     const minutes = Math.floor((parseInt(total, 10) / 1000 / 60) % 60);
     if (total < 1000) {
-      // socket.emit('locationPhaseTimerEnded', { player });
+      socket.emit('locationPhaseTimerEnded', { player });
       if (!selectedLocationId) {
         setLocationSelectedForCurrentRound(true, currentLocationId);
       }
       setSelectedLocation(false);
-      setHasLocationPageTimerEnded(true);
+      // setHasLocationPageTimerEnded(true);
     } else {
       const value = {
         total,
@@ -192,10 +192,10 @@ function LocationPhase() {
   };
 
   useEffect(() => {
-    if (hasLocationPageTimerEnded) {
+    socket.on('goToExpo', () => {
       history.push(`/sell/${player.playerId}`);
-    }
-  });
+    });
+  }, []);
 
   // eslint-disable-next-line consistent-return
   useEffect(() => {
