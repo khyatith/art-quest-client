@@ -1,6 +1,6 @@
 import React, {
   useCallback,
-  useEffect, useRef, useState,
+  useEffect, useState,
 } from 'react';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import axios from 'axios';
@@ -150,8 +150,8 @@ function ExpoBeginning() {
   const user = JSON.parse(sessionStorage.getItem('user'));
   const [otherTeams, setOtherTeams] = useState([]);
   const [expanded, setExpanded] = React.useState(-1);
-  const ticketPrice = useRef();
-  // const [hasTimerEnded, setTimerEnded] = useState(false);
+  // const ticketPrice = useRef();
+  let ticketPrice = null;
   const [timerValue, setTimerValue] = useState();
   const [nominatedPaintings, setNominatedPaintings] = useState([]);
   const [paintingSelected, setPaintingSelected] = useState(-1);
@@ -165,11 +165,11 @@ function ExpoBeginning() {
   };
 
   const handleSelectPainting = (index) => {
-    if (!ticketPrice.current) {
+    if (!ticketPrice.value) {
       setBidAmtError('We encountered an error, please submit your bid again!');
       return;
     }
-    const ticketVal = ticketPrice.current.value;
+    const ticketVal = ticketPrice?.value;
     const isValidatedTicketVal = validateCurrentBid(ticketVal);
     if (!isValidatedTicketVal) {
       setBidAmtError('Ticket value should be within the specified range');
@@ -321,7 +321,7 @@ function ExpoBeginning() {
   };
 
   const loadCardContent = (index) => {
-    console.log(index);
+    console.log('load card content index', index);
     return (
       <CardContent className={classes.paintOpt}>
         <p style={{ color: '#000000', fontWeight: '700', marginBottom: '25px' }}>
@@ -332,8 +332,8 @@ function ExpoBeginning() {
           museum?
         </p>
         <TextField
-          inputRef={ticketPrice}
           id="textfield"
+          inputRef={(node) => { ticketPrice = node; }}
           error={!!bidAmtError}
           helperText={bidAmtError && bidAmtError}
           label="Enter Ticket Price"

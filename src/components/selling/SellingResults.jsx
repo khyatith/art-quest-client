@@ -125,7 +125,7 @@ function SellingResults(props) {
   const loadRevenue = (teamColor, revenueGenerated) => {
     const ns = props.location.state;
     if (paintings === undefined) {
-      return <div />;
+      return <h3 style={{ color: '#990000' }}>All teams earned $0. No painting nominations were made.</h3>;
     }
     const teamPaintings = paintings[teamColor];
     console.log(teamPaintings);
