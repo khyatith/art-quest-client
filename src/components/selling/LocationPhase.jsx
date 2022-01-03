@@ -110,12 +110,14 @@ function LocationPhase() {
         .get(`${API_URL}/buying/getSellingResults?roomId=${player.hostCode}`)
         .then((newData) => {
           const {
-            amountSpentByTeam, visits, locationPhaseTimerValue, roundNumber,
+            amountSpentByTeam, visits, locationPhaseTimerValue, roundNumber, players,
           } = newData.data;
           setTeamsCurrentLocation(newData.data.visits);
           let x = 1;
           const tv = [];
           const labels = ['Cash', 'Visits'];
+          console.log(newData);
+          const teams = [];
           Object.entries(amountSpentByTeam).forEach(([key, value]) => {
             const team = key;
             const cash = value;
@@ -126,8 +128,18 @@ function LocationPhase() {
             // eslint-disable-next-line no-nested-ternary
             datasets.push(createData(team, cash, vis));
             tv.push(createDataMap(x, team, vis, cash, total));
+            teams.push(team);
             x += 1;
           });
+          console.log(visits);
+          for(var i=1;i<players.length;++i) {
+            const found = teams.find(val => val === players[i].teamName);
+            if(!found) {
+              datasets.push(createData(players[i].teamName, 0, 0));
+              tv.push(createDataMap(x, players[i].teamName, 0, 0, 0));
+              x+=1;
+            }
+          }
           const currentTeamVisits = visits.filter((v) => v.teamName === player.teamName);
           const currentLocationForTeam = currentTeamVisits.length === 0 ? 2 : currentTeamVisits[0].currentLocation;
           tv.sort((a, b) => b.total - a.total);

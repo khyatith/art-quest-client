@@ -12,6 +12,7 @@ import userContext from '../global/userContext';
 import Header from './Header';
 import { API_URL } from '../global/constants';
 import DutchAuction from './DutchAuction';
+import LocationPhase from './selling/LocationPhase';
 
 const useStyles = makeStyles(() => ({
   container: {
@@ -94,7 +95,7 @@ function GameInstructions() {
   }, [version]);
 
   useEffect(() => {
-    if (playersJoinedInfo) {
+    if (false) {
       const { numberOfPlayers, playersJoined } = playersJoinedInfo;
       if (numberOfPlayers <= playersJoined) {
         setTimeout(() => startGame(), 20000);
@@ -159,7 +160,7 @@ function GameInstructions() {
             )}
         </div>
       )}
-      { version === 2 && <DutchAuction />}
+      { version === 2 && <LocationPhase />}
     </>
   );
 }

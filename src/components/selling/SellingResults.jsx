@@ -16,6 +16,9 @@ const useStyles = makeStyles((theme) => ({
     flexGrow: 1,
     position: 'fixed',
   },
+  headIntro: {
+    marginTop: '4.8%',
+  },
   timercontent: {
     display: 'none',
     margin: '0 auto',
@@ -46,9 +49,9 @@ const useStyles = makeStyles((theme) => ({
     whiteSpace: 'nowrap',
   },
   colouredDiv: {
-    minWidth: '27%',
-    maxWidth: '27%',
-    height: '700px',
+    minWidth: '21%',
+    maxWidth: '21%',
+    height: '460px',
     margin: '1%',
   },
   windowViewDown: {
@@ -60,6 +63,17 @@ const useStyles = makeStyles((theme) => ({
   colouredDivNew: {
     flex: 'column',
     margin: '1%',
+  },
+  parent: {
+    display: 'flex',
+    flexWrap: 'wrap',
+  },
+  child1: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    marginTop: '0.5%',
+    paddingBottom: '0.5%',
+    justifyContent: 'center',
   },
   cardStyle: {
     transition: 'width 2s',
@@ -128,6 +142,7 @@ function SellingResults(props) {
       return <h3 style={{ color: '#990000' }}>All teams earned $0. No painting nominations were made.</h3>;
     }
     const teamPaintings = paintings[teamColor];
+    console.log(teamPaintings);
     return (
       <div>
         <div>
@@ -136,27 +151,31 @@ function SellingResults(props) {
             {teamColor}
           </Typography>
           <Typography className={classes.typomidnew}>
-            {`$${revenueGenerated}M`}
+          Round&nbsp;
+          {user.roundId}
+          &nbsp;earnings : {`$${revenueGenerated}M`}
           </Typography>
         </div>
-        <div className={classes.windowViewDown}>
+        <Box className={classes.child1} justifyContent="center" >
           {teamPaintings
             && teamPaintings.map((arg) => (
               <Box
                 p={1}
-                style={{
+                sx={{
                   paddingLeft: '20px',
                   paddingRight: '20px',
+                  minHeight: '45',
+                  minWidth: '355',
+                  maxWidth: '355',
                 }}
-                className={classes.colouredDivNew}
                 // eslint-disable-next-line no-nested-ternary
                 display={ns.includes(arg.auctionId) ? 'block' : 'none'}
               >
                 <Card
                   sx={{
-                    minHeight: 290,
-                    minWidth: 360,
-                    maxWidth: 360,
+                    minHeight: 45,
+                    minWidth: 355,
+                    maxWidth: 355,
                     backgroundColor: 'white',
                     margin: 'auto',
                     marginTop: '3%',
@@ -164,11 +183,16 @@ function SellingResults(props) {
                   className={classes.cardStyle}
                   disabled
                 >
-                  <CardMedia sx={{ height: 290 }} component="img" image={arg.paintingURL} alt="green iguana" />
+                  <CardMedia
+                    sx={{ height: 338 }}
+                    component="img"
+                    image={arg.paintingURL}
+                    alt="green iguana"
+                  />
                 </Card>
               </Box>
             ))}
-        </div>
+        </Box>
       </div>
     );
   };
@@ -211,7 +235,7 @@ function SellingResults(props) {
           &nbsp;earnings
         </Typography>
       </div>
-      <div className={classes.windowView}>
+      <div  className={classes.child1} justifyContent="center" display="flex" flexWrap="wrap">
         {earnings
           && Object.keys(earnings).map((arg) => (
             <div className={classes.colouredDiv} style={{ backgroundColor: TEAM_COLOR_MAP[arg] }}>
