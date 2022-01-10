@@ -401,7 +401,7 @@ function ExpoBeginning() {
           {otherTeams.length !== 0 ? (
             <>
               <p className={classes.fontSty}>
-                Other teams in&nbsp;
+                All teams in&nbsp;
                 {user.currentLocationName}
               </p>
               {otherTeams.map((arg) => (
