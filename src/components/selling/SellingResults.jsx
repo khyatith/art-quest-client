@@ -151,12 +151,13 @@ function SellingResults(props) {
             {teamColor}
           </Typography>
           <Typography className={classes.typomidnew}>
-          Round&nbsp;
-          {user.roundId}
-          &nbsp;earnings : {`$${revenueGenerated}M`}
+            Round&nbsp;
+            {user.roundId}
+            &nbsp;earnings :
+            {`$${revenueGenerated}M`}
           </Typography>
         </div>
-        <Box className={classes.child1} justifyContent="center" >
+        <Box className={classes.child1} justifyContent="center">
           {teamPaintings
             && teamPaintings.map((arg) => (
               <Box
@@ -235,7 +236,7 @@ function SellingResults(props) {
           &nbsp;earnings
         </Typography>
       </div>
-      <div  className={classes.child1} justifyContent="center" display="flex" flexWrap="wrap">
+      <div className={classes.child1} justifyContent="center" display="flex" flexWrap="wrap">
         {earnings
           && Object.keys(earnings).map((arg) => (
             <div className={classes.colouredDiv} style={{ backgroundColor: TEAM_COLOR_MAP[arg] }}>

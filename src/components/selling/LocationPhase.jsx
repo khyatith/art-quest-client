@@ -132,12 +132,12 @@ function LocationPhase() {
             x += 1;
           });
           console.log(visits);
-          for(var i=1;i<players.length;++i) {
-            const found = teams.find(val => val === players[i].teamName);
-            if(!found) {
+          for (let i = 1; i < players.length; ++i) {
+            const found = teams.find((val) => val === players[i].teamName);
+            if (!found) {
               datasets.push(createData(players[i].teamName, 0, 0));
               tv.push(createDataMap(x, players[i].teamName, 0, 0, 0));
-              x+=1;
+              x += 1;
             }
           }
           const currentTeamVisits = visits.filter((v) => v.teamName === player.teamName);
