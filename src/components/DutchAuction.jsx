@@ -217,13 +217,6 @@ function DutchAuction() {
   }, [dutchAuctionTimerValue]);
 
   useEffect(() => {
-    if (dutchAuctionTimerValue) {
-      const interval = setInterval(() => getRemainingTime(), 1000);
-      return () => clearInterval(interval);
-    }
-  }, [dutchAuctionTimerValue]);
-
-  useEffect(() => {
     socket.on('emitBidForPainting', (data) => {
       if (data.paintingId && !nominatedPaintings.includes(data.paintingId)) {
         paintingTeams[data.paintingId] = data.teamName;
