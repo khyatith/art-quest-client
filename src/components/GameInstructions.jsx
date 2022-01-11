@@ -11,7 +11,7 @@ import { socket } from '../global/socket';
 import userContext from '../global/userContext';
 import Header from './Header';
 import { API_URL } from '../global/constants';
-import DutchAuction from './DutchAuction';
+// import DutchAuction from './DutchAuction';
 import LocationPhase from './selling/LocationPhase';
 
 const useStyles = makeStyles(() => ({
