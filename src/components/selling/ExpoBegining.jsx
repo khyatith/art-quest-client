@@ -189,6 +189,7 @@ function ExpoBeginning() {
       artifactId: paintingId,
       ticketPrice: ticketVal,
       roundId: user.roundId,
+      allTeamsInCity: otherTeams.length,
     });
   };
 
