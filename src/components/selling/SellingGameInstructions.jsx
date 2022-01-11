@@ -39,15 +39,16 @@ function SellingGameInstructions() {
   }, [player, history]);
 
   useEffect(() => {
-    setTimeout(() => startGame(), 10000);
+    setTimeout(() => startGame(), 15000);
   }, [startGame]);
 
   return (
     <>
       <div className={classes.container}>
         <Header />
-        <p className={classes.title}>Art Quest</p>
-        <p className={classes.p}>Now you can travel the world. You make money by putting ticket price to display your painting in the museum</p>
+        <p className={classes.title}>Art Quest - Phase 2</p>
+        <p className={classes.p}>Now that you have your favorite art collection, you have to earn money from it!</p>
+        <p className={classes.p}>You can travel the world and put your art in museums in that city to collect money from it.</p>
         <p className={classes.p}>
           Remember, you have to maximize
           {' '}
@@ -57,7 +58,7 @@ function SellingGameInstructions() {
           {' '}
           <span>VISITS</span>
         </p>
-        <p className={classes.p}>Let the game begin!</p>
+        <p className={classes.p}>Good Luck!</p>
       </div>
     </>
   );

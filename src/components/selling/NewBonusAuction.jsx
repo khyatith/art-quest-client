@@ -2,7 +2,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
-import CardHeader from '@material-ui/core/CardHeader';
 import CardMedia from '@material-ui/core/CardMedia';
 import CardContent from '@material-ui/core/CardContent';
 import CardActions from '@material-ui/core/CardActions';
@@ -19,11 +18,13 @@ const useStyles = makeStyles((theme) => ({
     height: '200px', // 16:9
   },
   root: {
-    width: '100%',
+    width: '85%',
+    margin: 'auto',
   },
   maingrid: {
     padding: '20px',
     width: '100%',
+    textAlign: 'center',
   },
   titlestyle: {
     textAlign: 'center',
@@ -43,7 +44,7 @@ const useStyles = makeStyles((theme) => ({
     padding: '0px',
   },
   textfieldstyle: {
-    marginRight: '10px',
+    margin: '0 10px 10px 10px',
   },
   bottomcontainer: {
     display: 'flex',
@@ -92,7 +93,9 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const NewBonusAuction = ({ auctionObj }) => {
+const NewBonusAuction = () => {
+  const obj = sessionStorage.getItem('currentSellingEnglishAuction');
+  const auctionObj = obj && JSON.parse(obj);
   const classes = useStyles();
   const bidInputRef = useRef();
   const previousBidDetails = useRef();
@@ -144,12 +147,11 @@ const NewBonusAuction = ({ auctionObj }) => {
       <Grid className={classes.maingrid} container spacing={3}>
         {auctionObj && (
           <Grid item xs={12}>
+            <h3>{auctionObj.name}</h3>
             <Card key={auctionObj.id}>
-              <CardHeader className={classes.titlestyle} title={auctionObj.name} subheader={`Created By: ${auctionObj.artist}`} />
+              {/* <CardHeader className={classes.titlestyle} title={auctionObj.name} subheader={`Created By: ${auctionObj.artist}`} /> */}
               <CardMedia className={classes.media} component="img" image={`${auctionObj.imageURL}`} title={auctionObj.name} />
               <CardContent className={classes.cardcontentstyle}>
-                <p>Painting Quality</p>
-                <SimpleRating rating={parseFloat(auctionObj.paintingQuality)} />
                 <Typography component="h6" variant="h6">
                   {`Opening bid : $${auctionObj.originalValue}M`}
                 </Typography>
@@ -200,6 +202,10 @@ const NewBonusAuction = ({ auctionObj }) => {
                 </div>
               </CardActions>
             </Card>
+            <div>
+              <h3>Painting Quality</h3>
+              <SimpleRating rating={parseFloat(auctionObj.paintingQuality)} />
+            </div>
           </Grid>
         )}
       </Grid>

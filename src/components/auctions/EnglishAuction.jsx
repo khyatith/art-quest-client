@@ -67,7 +67,7 @@ const useStyles = makeStyles((theme) => ({
   appbar: {
     backgroundColor: '#76e246',
     flexGrow: 1,
-    position: 'relative',
+    position: 'fixed',
   },
   timercontent: {
     display: 'none',
@@ -121,7 +121,6 @@ function EnglishAuction({
     const seconds = Math.floor((parseInt(total, 10) / 1000) % 60);
     const minutes = Math.floor((parseInt(total, 10) / 1000 / 60) % 60);
     if (total < 1000) {
-      console.log('inside total < 1000');
       socket.emit('auctionTimerEnded', { player, auctionId: auctionObj.id });
     } else {
       const value = {
@@ -173,15 +172,6 @@ function EnglishAuction({
       return () => clearInterval(interval);
     }
   });
-
-  // useEffect(() => {
-  //   if (hasAuctionTimerEnded) {
-  //     const val = JSON.parse(sessionStorage.getItem('allAuction'));
-  //     val.auctions.artifacts[auctionObj.id - 1].hasAuctionTimerEnded = true;
-  //     sessionStorage.setItem('allAuction', JSON.stringify(val));
-  //     getNextAuctionObj(auctionObj.id);
-  //   }
-  // }, [hasAuctionTimerEnded, auctionObj, getNextAuctionObj]);
 
   useEffect(() => {
     socket.on('setPreviousBid', (previousBid) => {

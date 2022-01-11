@@ -45,7 +45,7 @@ const useStyles = makeStyles((theme) => ({
   appbar: {
     backgroundColor: '#76e246',
     flexGrow: 1,
-    position: 'relative',
+    position: 'fixed',
   },
   timercontent: {
     display: 'none',
@@ -65,7 +65,7 @@ const useStyles = makeStyles((theme) => ({
 
 function createData(team, cash, vis) {
   const str = [];
-  str.push(cash / 10000);
+  str.push(cash);
   str.push(vis);
   return {
     label: team,
@@ -75,12 +75,13 @@ function createData(team, cash, vis) {
   };
 }
 
-function createDataMap(id, team, visits, cash) {
+function createDataMap(id, team, visits, cash, total) {
   return {
     id,
     team,
     visits,
     cash,
+    total,
   };
 }
 
@@ -91,42 +92,60 @@ function LocationPhase() {
   const { player, setPlayer } = useContext(userContext);
   const history = useHistory();
   const [loading, setLoading] = useState(true);
-  const [hasLocationPageTimerEnded, setHasLocationPageTimerEnded] = useState(false);
+  // const [hasLocationPageTimerEnded, setHasLocationPageTimerEnded] = useState(false);
   const [locationPageTimerValue, setLocationPageTimerValue] = useState();
   const [roundId, setRoundId] = useState();
   const [hasLocationSelected, setSelectedLocation] = useState(false);
   const [selectedLocationId, setSelectedLocId] = useState();
   const [currentLocationId, setCurrentLocationId] = useState();
   const [teamsCurrentLocation, setTeamsCurrentLocation] = useState();
+  const [currentRoundData, setCurrentRoundData] = useState(false);
 
   // Hooks and methods
   useEffect(() => {
-    if (!hasLocationSelected) {
+    if (!currentRoundData) {
       setLoading(true);
       const datasets = [];
       axios
         .get(`${API_URL}/buying/getSellingResults?roomId=${player.hostCode}`)
         .then((newData) => {
           const {
-            amountSpentByTeam, visits, locationPhaseTimerValue, roundNumber,
+            amountSpentByTeam, visits, locationPhaseTimerValue, roundNumber, players,
           } = newData.data;
           setTeamsCurrentLocation(newData.data.visits);
           let x = 1;
           const tv = [];
           const labels = ['Cash', 'Visits'];
+          console.log(newData);
+          const teams = [];
           Object.entries(amountSpentByTeam).forEach(([key, value]) => {
             const team = key;
             const cash = value;
             let vis = 0;
             const teamVisits = visits.filter((v) => v.teamName === key);
             vis = teamVisits.length > 0 ? teamVisits[0].visitCount : 0.00;
+            const total = parseFloat(cash) + parseFloat(vis);
             // eslint-disable-next-line no-nested-ternary
             datasets.push(createData(team, cash, vis));
-            tv.push(createDataMap(x, team, vis, cash));
+            tv.push(createDataMap(x, team, vis, cash, total));
+            teams.push(team);
             x += 1;
           });
+          console.log(visits);
+          for (let i = 1; i < players.length; ++i) {
+            const found = teams.find((val) => val === players[i].teamName);
+            if (!found) {
+              datasets.push(createData(players[i].teamName, 0, 0));
+              tv.push(createDataMap(x, players[i].teamName, 0, 0, 0));
+              x += 1;
+            }
+          }
           const currentTeamVisits = visits.filter((v) => v.teamName === player.teamName);
           const currentLocationForTeam = currentTeamVisits.length === 0 ? 2 : currentTeamVisits[0].currentLocation;
+          tv.sort((a, b) => b.total - a.total);
+          for (let i = 0; i < tv.length; ++i) {
+            tv[i].id = i + 1;
+          }
           setCurrentLocationId(currentLocationForTeam);
           setResult({ labels, datasets });
           setRows(tv);
@@ -137,9 +156,10 @@ function LocationPhase() {
         })
         .finally(() => {
           setLoading(false);
+          setCurrentRoundData(true);
         });
     }
-  }, [player, hasLocationSelected]);
+  }, [player]);
 
   useEffect(() => {
     if (roundId || currentLocationId) {
@@ -163,21 +183,16 @@ function LocationPhase() {
   };
 
   const getRemainingTime = () => {
-    if (Object.keys(locationPageTimerValue).length <= 0) {
-      if (!selectedLocationId) {
-        setLocationSelectedForCurrentRound(true, currentLocationId);
-      }
-      setHasLocationPageTimerEnded(true);
-      return;
-    }
     const total = parseInt(locationPageTimerValue.total, 10) - 1000;
     const seconds = Math.floor((parseInt(total, 10) / 1000) % 60);
     const minutes = Math.floor((parseInt(total, 10) / 1000 / 60) % 60);
     if (total < 1000) {
+      socket.emit('locationPhaseTimerEnded', { player });
       if (!selectedLocationId) {
         setLocationSelectedForCurrentRound(true, currentLocationId);
       }
-      setHasLocationPageTimerEnded(true);
+      setSelectedLocation(false);
+      // setHasLocationPageTimerEnded(true);
     } else {
       const value = {
         total,
@@ -188,6 +203,12 @@ function LocationPhase() {
     }
   };
 
+  useEffect(() => {
+    socket.on('goToExpo', () => {
+      history.push(`/sell/${player.playerId}`);
+    });
+  }, []);
+
   // eslint-disable-next-line consistent-return
   useEffect(() => {
     if (locationPageTimerValue) {
@@ -195,13 +216,6 @@ function LocationPhase() {
       return () => clearInterval(interval);
     }
   });
-
-  useEffect(() => {
-    if (hasLocationPageTimerEnded) {
-      setSelectedLocation(false);
-      history.push(`/sell/${player.playerId}`);
-    }
-  }, [hasLocationPageTimerEnded, player.playerId, history]);
 
   useEffect(() => {
     socket.on('locationUpdatedForTeam', (data) => {
@@ -220,8 +234,6 @@ function LocationPhase() {
       </div>
     );
   }
-
-  // IMPORTANT (KOGNITI CHANGE)
 
   return (
     <>

@@ -1,5 +1,6 @@
 import React, {
-  useEffect, useRef, useState, useCallback,
+  useCallback,
+  useEffect, useState,
 } from 'react';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import axios from 'axios';
@@ -23,11 +24,12 @@ import InputAdornment from '@material-ui/core/InputAdornment';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import { useHistory } from 'react-router-dom';
-import { API_URL } from '../../global/constants';
+import { API_URL, TEAM_COLOR_MAP } from '../../global/constants';
 import SimpleRating from '../Rating';
 import { socket } from '../../global/socket';
 import { validateCurrentBid } from '../../global/helpers';
 import NewBonusAuction from './NewBonusAuction';
+import NewBonusAuctionResult from './NewBonusAuctionResult';
 
 const useStyles = makeStyles((theme) => ({
   paintOpt: {
@@ -91,7 +93,11 @@ const useStyles = makeStyles((theme) => ({
     paddingBottom: '0.5%',
   },
   child2: {
-    flex: '0 2 30%',
+    flex: '0 2 0.15%',
+    backgroundColor: '#ededed',
+  },
+  child3: {
+    flex: '0 2 29.85%',
   },
   paper: {
     maxWidth: 600,
@@ -106,7 +112,7 @@ const useStyles = makeStyles((theme) => ({
   appbar: {
     backgroundColor: '#76e246',
     flexGrow: 1,
-    position: 'relative',
+    position: 'fixed',
   },
   timercontent: {
     display: 'none',
@@ -142,17 +148,16 @@ function ExpoBeginning() {
   const [paintings, setPaintings] = useState([]);
   const [cityData, setCityData] = useState();
   const user = JSON.parse(sessionStorage.getItem('user'));
-  // const { player, setPlayer } = useContext(userContext);
   const [otherTeams, setOtherTeams] = useState([]);
   const [expanded, setExpanded] = React.useState(-1);
-  const ticketPrice = useRef();
-  // const [revenue, setRevenue] = useState(-1);
-  const [hasTimerEnded, setTimerEnded] = useState(false);
+  // const ticketPrice = useRef();
+  let ticketPrice = null;
   const [timerValue, setTimerValue] = useState();
   const [nominatedPaintings, setNominatedPaintings] = useState([]);
+  const [paintingSelected, setPaintingSelected] = useState(-1);
   const [bidAmtError, setBidAmtError] = useState();
-  const [currentAuctionObj, setCurrentAuctionObj] = useState();
   const [hasSentEnglishAuctionRequest, setHasSentEnglishAuctionRequest] = useState(false);
+  const [hasRevenueUpdated, setHasRevenueUpdated] = useState(false);
   const history = useHistory();
 
   const handleExpandClick = (index) => {
@@ -160,7 +165,11 @@ function ExpoBeginning() {
   };
 
   const handleSelectPainting = (index) => {
-    const ticketVal = ticketPrice.current.value;
+    if (!ticketPrice.value) {
+      setBidAmtError('We encountered an error, please submit your bid again!');
+      return;
+    }
+    const ticketVal = ticketPrice?.value;
     const isValidatedTicketVal = validateCurrentBid(ticketVal);
     if (!isValidatedTicketVal) {
       setBidAmtError('Ticket value should be within the specified range');
@@ -180,6 +189,7 @@ function ExpoBeginning() {
       artifactId: paintingId,
       ticketPrice: ticketVal,
       roundId: user.roundId,
+      allTeamsInCity: otherTeams.length,
     });
   };
 
@@ -207,61 +217,48 @@ function ExpoBeginning() {
     }
   }, [user, cityData, paintings]);
 
-  // if (loading) {
-  //   return (
-  //     <div style={{ marginTop: '12%', marginLeft: '43%' }}>
-  //       {' '}
-  //       <img src={load} alt="loading..." />
-  //       {' '}
-  //     </div>
-  //   );
-  // }
-
-  // useEffect(() => {
-  //   if (!hasTimerEnded) {
-  //     socket.on('calculatedRevenueForTeam', (data) => {
-  //       console.log('calculated revenue', data);
-  //     });
-  //   }
-  // });
+  const updateStorageWithCurrentAuction = (data) => {
+    if (Object.keys(data.auctionObj).length > 0) {
+      sessionStorage.setItem('currentSellingEnglishAuction', JSON.stringify(data.auctionObj));
+    }
+  };
 
   const renderEnglishAuction = useCallback(async () => {
-    setHasSentEnglishAuctionRequest(true);
-    const { data } = await axios.get(`${API_URL}/buying/getEnglishAuctionForSelling?roomCode=${user.hostCode}&roundId=${user.roundId}`);
-    setCurrentAuctionObj(data.auctionObj);
+    if (!hasSentEnglishAuctionRequest) {
+      const { data } = await axios.get(`${API_URL}/buying/getEnglishAuctionForSelling?roomCode=${user.hostCode}&roundId=${user.roundId}`);
+      setTimeout(() => updateStorageWithCurrentAuction(data), 5000);
+      console.log(data.auctionObj);
+    }
   }, [user]);
 
   useEffect(() => {
-    setTimeout(() => {
-      if (!hasSentEnglishAuctionRequest && !currentAuctionObj) {
-        renderEnglishAuction();
-      }
-    }, 5000);
-  }, [hasSentEnglishAuctionRequest, renderEnglishAuction]);
+    if (!hasSentEnglishAuctionRequest) {
+      renderEnglishAuction();
+      setHasSentEnglishAuctionRequest(true);
+    }
+  }, [hasSentEnglishAuctionRequest]);
 
   useEffect(() => {
-    const redirectToRevenueScreen = async () => {
-      // await axios.post(`${API_URL}/buying/updateRoundId`, { roomId: user.hostCode, roundId: user.roundId });
+    socket.on('goToSellingResults', () => {
       history.push({
         pathname: `/sell/result/${user.playerId}`,
         state: nominatedPaintings,
       });
-    };
-    if (hasTimerEnded) {
-      redirectToRevenueScreen();
-    }
-  }, [hasTimerEnded, user, history]);
+    });
+  }, [user, history]);
 
-  const getRemainingTime = () => {
-    if (Object.keys(timerValue).length <= 0) {
-      setTimerEnded(true);
-      return;
-    }
+  const getRemainingTime = async () => {
     const total = parseInt(timerValue.total, 10) - 1000;
     const seconds = Math.floor((parseInt(total, 10) / 1000) % 60);
     const minutes = Math.floor((parseInt(total, 10) / 1000 / 60) % 60);
-    if (total < 1000) {
-      setTimerEnded(true);
+    if (total < 1000 && !hasRevenueUpdated) {
+      const currentAuctionObj = sessionStorage.getItem('currentSellingEnglishAuction');
+      const obj = currentAuctionObj && JSON.parse(currentAuctionObj);
+      if (obj && Object.keys(obj).length > 0) {
+        await axios.post(`${API_URL}/buying/updateEnglishAuctionResults`, { roomId: user.hostCode, auctionId: obj.id });
+      }
+      socket.emit('expoBeginningTimerEnded', { hostCode: user.hostCode });
+      setHasRevenueUpdated(true);
     } else {
       const value = {
         total,
@@ -281,9 +278,12 @@ function ExpoBeginning() {
   });
 
   useEffect(() => {
-    socket.on('emitNominatedPainting', (paintingId) => {
-      if (paintingId && !nominatedPaintings.includes(paintingId)) {
-        setNominatedPaintings((existingValues) => [paintingId, ...existingValues]);
+    socket.on('emitNominatedPainting', (data) => {
+      if (data.paintingId && !nominatedPaintings.includes(data.paintingId)) {
+        setNominatedPaintings((existingValues) => [data.paintingId, ...existingValues]);
+        if (data.teamName === user.teamName) {
+          setPaintingSelected(data.paintingId);
+        }
       }
     });
   }, [nominatedPaintings]);
@@ -321,44 +321,45 @@ function ExpoBeginning() {
     );
   };
 
-  const loadCardContent = (index) => (
-    <CardContent className={classes.paintOpt}>
-      <p style={{ color: '#000000', fontWeight: '700', marginBottom: '25px' }}>
-        How much would you charge 1 person to see your painting in
-        {' '}
-        {user.currentLocationName}
-        {' '}
-        museum?
-      </p>
-      <TextField
-        inputRef={ticketPrice}
-        id="textfield"
-        error={!!bidAmtError}
-        helperText={bidAmtError && bidAmtError}
-        label="Enter Ticket Price"
-        variant="outlined"
-        style={{ color: '#76e246', marginBottom: '20px' }}
-        InputProps={{
-          startAdornment: <InputAdornment position="start">$</InputAdornment>,
-        }}
-      />
-      <p>
-        * Ticket price can be between $1 to $999
-      </p>
-      <Button
-        size="small"
-        style={{
-          color: '#76e246',
-          fontWeight: 'bold',
-          width: '100%',
-          backgroundColor: '#000000',
-        }}
-        onClick={() => handleSelectPainting(index)}
-      >
-        Submit ticket price
-      </Button>
-    </CardContent>
-  );
+  const loadCardContent = (index) => {
+    console.log('load card content index', index);
+    return (
+      <CardContent className={classes.paintOpt}>
+        <p style={{ color: '#000000', fontWeight: '700', marginBottom: '25px' }}>
+          How much would you charge 1 person to see your painting in
+          {' '}
+          {user.currentLocationName}
+          {' '}
+          museum?
+        </p>
+        <TextField
+          id="textfield"
+          inputRef={(node) => { ticketPrice = node; }}
+          error={!!bidAmtError}
+          helperText={bidAmtError && bidAmtError}
+          label="Enter Ticket Price"
+          variant="outlined"
+          style={{ color: '#76e246', marginBottom: '20px' }}
+          InputProps={{
+            startAdornment: <InputAdornment position="start">$</InputAdornment>,
+          }}
+        />
+        <p>* Ticket price can be between $1 to $999</p>
+        <Button
+          size="small"
+          style={{
+            color: '#76e246',
+            fontWeight: 'bold',
+            width: '100%',
+            backgroundColor: '#000000',
+          }}
+          onClick={() => handleSelectPainting(index)}
+        >
+          Submit ticket price
+        </Button>
+      </CardContent>
+    );
+  };
 
   const loadCardSelection = () => (
     <CardContent className={classes.paintOpt}>
@@ -392,7 +393,8 @@ function ExpoBeginning() {
       </AppBar>
       <div className={classes.parent}>
         <div className={classes.child1}>{cityData && <div className={classes.cityData}>{renderCityStats()}</div>}</div>
-        <div className={classes.child2} style={{ backgroundColor: '#ffffff' }}>
+        <div className={classes.child2} />
+        <div className={classes.child3} style={{ backgroundColor: '#f9f9f9', textAlign: 'center' }}>
           <p className={classes.fontSty}>
             You are in&nbsp;
             {user.currentLocationName}
@@ -400,11 +402,11 @@ function ExpoBeginning() {
           {otherTeams.length !== 0 ? (
             <>
               <p className={classes.fontSty}>
-                Other teams in&nbsp;
+                All teams in&nbsp;
                 {user.currentLocationName}
               </p>
               {otherTeams.map((arg) => (
-                <div className={classes.teammark} style={{ backgroundColor: arg, borderRadius: '100%' }} />
+                <div className={classes.teammark} style={{ backgroundColor: TEAM_COLOR_MAP[arg], borderRadius: '100%' }} />
               ))}
             </>
           ) : (
@@ -415,6 +417,7 @@ function ExpoBeginning() {
           )}
         </div>
       </div>
+      <hr style={{ border: '1px solid #ededed' }} />
       <div className={classes.parent}>
         <Box className={classes.child1} justifyContent="center" display="flex" flexWrap="wrap">
           {paintings
@@ -426,11 +429,11 @@ function ExpoBeginning() {
                   paddingRight: '20px',
                 }}
                 // eslint-disable-next-line no-nested-ternary
-                // display={paintingSelected === -1 ? 'block' : paintingSelected === index ? 'block' : 'none'}
+                display={paintingSelected === -1 ? 'block' : paintingSelected === arg.auctionId ? 'block' : 'none'}
               >
                 <Card
                   sx={{
-                    minHeight: 445,
+                    minHeight: 45,
                     minWidth: 355,
                     maxWidth: 355,
                     backgroundColor: 'white',
@@ -441,12 +444,12 @@ function ExpoBeginning() {
                   disabled
                 >
                   <CardMedia
-                    sx={nominatedPaintings.includes(paintings[index].auctionId) ? { height: 398, filter: 'grayscale(100%)' } : { height: 398 }}
+                    sx={(paintingSelected === paintings[index].auctionId) ? { height: 298, filter: 'grayscale(100%)' } : { height: 298 }}
                     component="img"
                     image={arg.auctionObj.imageURL}
                     alt="green iguana"
                   />
-                  <CardActions className={nominatedPaintings.includes(paintings[index].auctionId) ? classes.nominateBtnDone : classes.nominateBtn}>
+                  <CardActions className={(paintingSelected === paintings[index].auctionId) ? classes.nominateBtnDone : classes.nominateBtn}>
                     <Button
                       size="small"
                       style={{ color: '#000000', fontWeight: 'bold', width: '100%' }}
@@ -456,14 +459,14 @@ function ExpoBeginning() {
                       onClick={() => handleExpandClick(index)}
                       aria-expanded
                       aria-label="show more"
-                      disabled={nominatedPaintings.includes(paintings[index].auctionId)}
+                      disabled={(paintingSelected === paintings[index].auctionId)}
                     >
                       Nominate painting
                     </Button>
                   </CardActions>
                   <Collapse in={index === expanded} timeout="auto" unmountOnExit>
-                    {!nominatedPaintings.includes(paintings[index].auctionId) && loadCardContent(index)}
-                    {nominatedPaintings.includes(paintings[index].auctionId) && loadCardSelection()}
+                    {(paintingSelected === -1) && loadCardContent(expanded)}
+                    {(paintingSelected === paintings[index].auctionId) && loadCardSelection()}
                   </Collapse>
                 </Card>
                 <div className={classes.contentstyle}>
@@ -473,8 +476,24 @@ function ExpoBeginning() {
               </Box>
             ))}
         </Box>
-        <div className={classes.child2} style={{ backgroundColor: '#D09B69' }}>
-          <NewBonusAuction auctionObj={currentAuctionObj} />
+        <div className={classes.child2} />
+        <div
+          className={classes.child3}
+          style={{
+            backgroundColor: '#f9f9f9',
+            display: (timerValue && timerValue.total <= 10000) ? 'none' : 'block',
+          }}
+        >
+          <NewBonusAuction />
+        </div>
+        <div
+          className={classes.child3}
+          style={{
+            backgroundColor: '#f9f9f9',
+            display: ((timerValue && timerValue.total <= 10000) ? 'block' : 'none'),
+          }}
+        >
+          <NewBonusAuctionResult />
         </div>
       </div>
     </>

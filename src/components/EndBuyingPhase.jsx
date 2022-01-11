@@ -10,14 +10,11 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
-// import { Button } from '@material-ui/core';
-// import { useHistory } from 'react-router';
-// import userContext from '../global/userContext';
+import { useHistory } from 'react-router';
 import Header from './Header';
 import { API_URL, TEAM_COLOR_MAP } from '../global/constants';
 import { formatNumberToCurrency } from '../global/helpers';
 import useSessionStorage from '../hooks/useSessionStorage';
-// import leaderboardContext from '../global/leaderboardContext';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -65,14 +62,19 @@ const StyledTableCell = withStyles((theme) => ({
 
 function EndBuyingPhase() {
   const classes = useStyles();
-  // const history = useHistory();
+  const history = useHistory();
   const [artforTeams, setArtForTeams] = useState();
   const [gameWinner, setGameWinner] = useState();
   const [teamEfficiency, setTeamEfficiency] = useState({});
   const [totalDebtByTeam, setTotalDebtByTeam] = useState({});
   const [teamsByRank, setTeamsByRank] = useState([]);
-  const [showWinner, setShowWinner] = useState(false);
+  // const [showWinner, setShowWinner] = useState(false);
   const [totalPaintingsWonByTeam, setTotalPaintingsWonByTeam] = useState({});
+  // const { setPlayer } = useContext(userContext);
+  // const { setLeaderboardData } = useContext(leaderboardContext);
+  // const [sortedTeamsByPaintingsWon, setSortedTeamsByPaintingsWon] = useState({});
+  // const [avgPaintingQualityByTeam, setAvgPaintingQualityByTeam] = useState({});
+  // const [showWinner, setShowWinner] = useState(false);
   // const { setPlayer } = useContext(userContext);
   // const { setLeaderboardData } = useContext(leaderboardContext);
   const player = useSessionStorage('user')[0];
@@ -159,23 +161,29 @@ function EndBuyingPhase() {
   //   sessionStorage.clear();
   // };
 
-  const showTeamWinner = () => {
-    const { teamName } = player;
-    if (teamName === gameWinner) {
-      return <h2 style={{ backgroundColor: '#000000', padding: '20px', color: '#76e246' }}>Congratulations! You are the winner!</h2>;
-    }
-    return (
-      <h2 style={{ backgroundColor: '#000000', padding: '20px', color: '#76e246' }}>
-        The winner is Team&nbsp;
-        {gameWinner}
-      </h2>
-    );
-  };
+  // const showTeamWinner = () => {
+  //   const { teamName } = player;
+  //   if (teamName === gameWinner) {
+  //     return <h2 style={{ backgroundColor: '#000000', padding: '20px', color: '#76e246' }}>Congratulations! You are the winner!</h2>;
+  //   }
+  //   return (
+  //     <h2 style={{ backgroundColor: '#000000', padding: '20px', color: '#76e246' }}>
+  //       The winner is Team&nbsp;
+  //       {gameWinner}
+  //     </h2>
+  //   );
+  // };
+
+  // useEffect(() => {
+  //   setTimeout(() => {
+  //     setShowWinner(true);
+  //   }, 5000);
+  // });
 
   useEffect(() => {
     setTimeout(() => {
-      setShowWinner(true);
-    }, 5000);
+      history.push(`/sell/instructions/${player.playerId}`);
+    }, 15000);
   });
 
   return (
@@ -188,8 +196,8 @@ function EndBuyingPhase() {
         </Button>
       </div> */}
       <div style={{ textAlign: 'center', marginTop: '40px' }}>
-        {!showWinner && <h2>And the winner is ....</h2>}
-        {showWinner && showTeamWinner()}
+        {/* {!showWinner && <h2>And the winner is ....</h2>}
+        {showWinner && showTeamWinner()} */}
         <h3>Your art collection</h3>
         <div className={classes.root}>
           <ImageList rowHeight={300} className={classes.imageList}>

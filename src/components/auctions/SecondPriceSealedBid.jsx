@@ -59,7 +59,7 @@ const useStyles = makeStyles((theme) => ({
   appbar: {
     backgroundColor: '#76e246',
     flexGrow: 1,
-    position: 'relative',
+    position: 'fixed',
   },
   timercontent: {
     display: 'none',

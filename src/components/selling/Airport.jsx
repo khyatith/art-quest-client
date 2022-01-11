@@ -18,7 +18,7 @@ const useStyles = makeStyles(() => ({
     paddingLeft: '5%',
     marginRight: '25%',
     color: 'black',
-    paddingBottom: '15%',
+    paddingBottom: '5%',
     paddingTop: '4%',
     border: '0.4px solid #cccccc',
   },
@@ -123,7 +123,7 @@ const Airport = ({
   return (
     <div>
       <div className={classes.root}>
-        {mapValues && previousLocationId && <RoundsInfo label={`You are currently in ${getLocationNameById()}`} />}
+        {mapValues && previousLocationId && <RoundsInfo marginTop="20px" label={`You are currently in ${getLocationNameById()}`} />}
         {!hasLocationSelected ? (
           <>
             <p style={{ marginTop: '40px' }}>Fly to : </p>

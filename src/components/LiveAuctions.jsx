@@ -9,7 +9,6 @@ import SecondPriceSealedBid from './auctions/SecondPriceSealedBid';
 import AllPayAuctions from './auctions/AllPayAuctions';
 import auctionContext from '../global/auctionContext';
 import useSessionStorage from '../hooks/useSessionStorage';
-// import SellingGameInstructions from './selling/SellingGameInstructions';
 
 function LiveAuctions({ fromLP }) {
   const [hasEndedAuctions, setHasEndedAuctions] = useState(false);

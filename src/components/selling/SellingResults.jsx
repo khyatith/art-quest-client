@@ -14,7 +14,10 @@ const useStyles = makeStyles((theme) => ({
   appbar: {
     backgroundColor: '#76e246',
     flexGrow: 1,
-    position: 'relative',
+    position: 'fixed',
+  },
+  headIntro: {
+    marginTop: '4.8%',
   },
   timercontent: {
     display: 'none',
@@ -32,12 +35,13 @@ const useStyles = makeStyles((theme) => ({
   },
   typomid: {
     textAlign: 'center',
-    marginTop: '1%',
-    marginRight: '9%',
+    marginTop: '20px',
   },
   typomidnew: {
     textAlign: 'center',
     marginTop: '1%',
+    fontSize: '24px',
+    fontWeight: '700',
   },
   windowView: {
     display: 'flex',
@@ -45,8 +49,9 @@ const useStyles = makeStyles((theme) => ({
     whiteSpace: 'nowrap',
   },
   colouredDiv: {
-    minWidth: '31.33%',
-    height: '700px',
+    minWidth: '21%',
+    maxWidth: '21%',
+    height: '460px',
     margin: '1%',
   },
   windowViewDown: {
@@ -57,8 +62,18 @@ const useStyles = makeStyles((theme) => ({
   },
   colouredDivNew: {
     flex: 'column',
-    minHeight: '400px',
     margin: '1%',
+  },
+  parent: {
+    display: 'flex',
+    flexWrap: 'wrap',
+  },
+  child1: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    marginTop: '0.5%',
+    paddingBottom: '0.5%',
+    justifyContent: 'center',
   },
   cardStyle: {
     transition: 'width 2s',
@@ -75,6 +90,7 @@ function SellingResults(props) {
   const [timerValue, setTimerValue] = useState();
   const [earnings, setEarnings] = useState();
   const [paintings, setPaintings] = useState();
+  const [hasRequestedResult, setHasRequestedResult] = useState(false);
 
   useEffect(() => {
     const getEarnings = async () => {
@@ -83,26 +99,28 @@ function SellingResults(props) {
       setPaintings(data.allTeamPaintings);
       setTimerValue(data.sellingResultsTimerValue);
     };
-    if (user && (!earnings || !timerValue || !paintings)) {
+    if (user && !hasRequestedResult) {
+      sessionStorage.setItem('currentSellingEnglishAuction', null);
+      setHasRequestedResult(true);
       getEarnings();
     }
   }, [earnings, user, timerValue]);
 
   useEffect(() => {
-    const redirectToRevenueScreen = async () => {
+    const redirectToLocationScreen = async () => {
       await axios.post(`${API_URL}/buying/updateRoundId`, { roomId: user.hostCode, roundId: user.roundId });
-      history.push(`/sell/location/${user.playerId}`);
+      if (user.roundId < 5) {
+        history.push(`/sell/location/${user.playerId}`);
+      } else {
+        history.push(`/sell/finalresult/${user.playerId}`);
+      }
     };
     if (hasTimerEnded) {
-      redirectToRevenueScreen();
+      redirectToLocationScreen();
     }
   }, [hasTimerEnded, history, user]);
 
   const getRemainingTime = () => {
-    if (Object.keys(timerValue).length <= 0) {
-      setTimerEnded(true);
-      return;
-    }
     const total = parseInt(timerValue.total, 10) - 1000;
     const seconds = Math.floor((parseInt(total, 10) / 1000) % 60);
     const minutes = Math.floor((parseInt(total, 10) / 1000 / 60) % 60);
@@ -120,8 +138,8 @@ function SellingResults(props) {
 
   const loadRevenue = (teamColor, revenueGenerated) => {
     const ns = props.location.state;
-    if (paintings === undefined) {
-      return <div />;
+    if (!paintings || paintings.length === 0) {
+      return <h3 style={{ color: '#990000' }}>All teams earned $0. No painting nominations were made.</h3>;
     }
     const teamPaintings = paintings[teamColor];
     console.log(teamPaintings);
@@ -135,26 +153,28 @@ function SellingResults(props) {
           <Typography className={classes.typomidnew}>
             Round&nbsp;
             {user.roundId}
-            &nbsp;Earnings : $&nbsp;
-            {revenueGenerated}
+            &nbsp;earnings :
+            {`$${revenueGenerated}M`}
           </Typography>
         </div>
-        <div className={classes.windowViewDown}>
+        <Box className={classes.child1} justifyContent="center">
           {teamPaintings
             && teamPaintings.map((arg) => (
               <Box
                 p={1}
-                style={{
+                sx={{
                   paddingLeft: '20px',
                   paddingRight: '20px',
+                  minHeight: '45',
+                  minWidth: '355',
+                  maxWidth: '355',
                 }}
-                className={classes.colouredDivNew}
                 // eslint-disable-next-line no-nested-ternary
                 display={ns.includes(arg.auctionId) ? 'block' : 'none'}
               >
                 <Card
                   sx={{
-                    minHeight: 445,
+                    minHeight: 45,
                     minWidth: 355,
                     maxWidth: 355,
                     backgroundColor: 'white',
@@ -164,11 +184,16 @@ function SellingResults(props) {
                   className={classes.cardStyle}
                   disabled
                 >
-                  <CardMedia sx={{ height: 445 }} component="img" image={arg.paintingURL} alt="green iguana" />
+                  <CardMedia
+                    sx={{ height: 338 }}
+                    component="img"
+                    image={arg.paintingURL}
+                    alt="green iguana"
+                  />
                 </Card>
               </Box>
             ))}
-        </div>
+        </Box>
       </div>
     );
   };
@@ -211,7 +236,7 @@ function SellingResults(props) {
           &nbsp;earnings
         </Typography>
       </div>
-      <div className={classes.windowView}>
+      <div className={classes.child1} justifyContent="center" display="flex" flexWrap="wrap">
         {earnings
           && Object.keys(earnings).map((arg) => (
             <div className={classes.colouredDiv} style={{ backgroundColor: TEAM_COLOR_MAP[arg] }}>
