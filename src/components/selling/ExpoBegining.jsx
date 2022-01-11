@@ -480,7 +480,7 @@ function ExpoBeginning() {
           className={classes.child3}
           style={{
             backgroundColor: '#f9f9f9',
-            display: (timerValue && timerValue.minutes === '0' && timerValue.seconds <= 10) ? 'none' : 'block',
+            display: (timerValue && timerValue.total <= 10000) ? 'none' : 'block',
           }}
         >
           <NewBonusAuction />
@@ -489,7 +489,7 @@ function ExpoBeginning() {
           className={classes.child3}
           style={{
             backgroundColor: '#f9f9f9',
-            display: ((timerValue && timerValue.minutes === '0' && timerValue.seconds <= 10) ? 'block' : 'none'),
+            display: ((timerValue && timerValue.total <= 10000) ? 'block' : 'none'),
           }}
         >
           <NewBonusAuctionResult />
