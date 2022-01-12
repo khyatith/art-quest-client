@@ -8,6 +8,7 @@ import Typography from '@material-ui/core/Typography';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import CardMedia from '@mui/material/CardMedia';
+import { socket } from '../../global/socket';
 import { API_URL, TEAM_COLOR_MAP } from '../../global/constants';
 
 const useStyles = makeStyles((theme) => ({
@@ -86,7 +87,7 @@ function SellingResults(props) {
   const classes = useStyles();
   const history = useHistory();
   const user = JSON.parse(sessionStorage.getItem('user'));
-  const [hasTimerEnded, setTimerEnded] = useState(false);
+  // const [hasTimerEnded, setTimerEnded] = useState(false);
   const [timerValue, setTimerValue] = useState();
   const [earnings, setEarnings] = useState();
   const [paintings, setPaintings] = useState();
@@ -107,25 +108,22 @@ function SellingResults(props) {
   }, [earnings, user, timerValue]);
 
   useEffect(() => {
-    const redirectToLocationScreen = async () => {
-      await axios.post(`${API_URL}/buying/updateRoundId`, { roomId: user.hostCode, roundId: user.roundId });
+    socket.on('startNextRound', () => {
       if (user.roundId < 5) {
         history.push(`/sell/location/${user.playerId}`);
       } else {
         history.push(`/sell/finalresult/${user.playerId}`);
       }
-    };
-    if (hasTimerEnded) {
-      redirectToLocationScreen();
-    }
-  }, [hasTimerEnded, history, user]);
+    });
+  }, []);
 
-  const getRemainingTime = () => {
+  const getRemainingTime = async () => {
     const total = parseInt(timerValue.total, 10) - 1000;
     const seconds = Math.floor((parseInt(total, 10) / 1000) % 60);
     const minutes = Math.floor((parseInt(total, 10) / 1000 / 60) % 60);
     if (total < 1000) {
-      setTimerEnded(true);
+      socket.emit('sellingResultsTimerEnded', { player: user });
+      await axios.post(`${API_URL}/buying/updateRoundId`, { roomId: user.hostCode, roundId: user.roundId });
     } else {
       const value = {
         total,
