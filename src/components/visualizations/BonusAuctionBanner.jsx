@@ -30,7 +30,7 @@ const BonusAuctionBanner = ({ text }) => {
         <Zoom in>
           <Paper elevation={4} variant="outlined" className={classes.paper}>
             <div className={classes.textContainer}>
-              <Typography variant="h5" color="secondary"> Bonus Round!!</Typography>
+              <Typography variant="h5" color="secondary"> Secret Auction Round!!</Typography>
               <Typography variant="h5" component="p">{text && <p>{text}</p> }</Typography>
             </div>
           </Paper>

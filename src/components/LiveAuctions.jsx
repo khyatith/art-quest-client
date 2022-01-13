@@ -9,12 +9,14 @@ import SecondPriceSealedBid from './auctions/SecondPriceSealedBid';
 import AllPayAuctions from './auctions/AllPayAuctions';
 import auctionContext from '../global/auctionContext';
 import useSessionStorage from '../hooks/useSessionStorage';
+import RenderAuctionResults from './RenderAuctionResults';
 
 function LiveAuctions({ fromLP }) {
   const [hasEndedAuctions, setHasEndedAuctions] = useState(false);
   const allAuctionsObj = useSessionStorage('allAuction')[0];
   const [isFromLP, getFromLP] = useState(fromLP);
   const [totalNumberOfPaintings, setTotalNumberOfPaintings] = useState();
+  const [renderResults, setIsRenderResults] = useState(false);
   const { currentAuctionData, setCurrentAuctionData } = useContext(auctionContext);
 
   const getNextAuctionObj = useCallback((prevAuctionId) => {
@@ -37,6 +39,7 @@ function LiveAuctions({ fromLP }) {
     } else if (!data) {
       setHasEndedAuctions(true);
     }
+    setIsRenderResults(false);
   }, [hasEndedAuctions, setCurrentAuctionData, allAuctionsObj]);
 
   useEffect(() => {
@@ -51,37 +54,40 @@ function LiveAuctions({ fromLP }) {
     }
   }, [isFromLP, getNextAuctionObj]);
 
+  const goToAuctionResult = (value) => {
+    setIsRenderResults(value);
+  };
+
   const loadAuction = () => {
     const { auctionType } = currentAuctionData && currentAuctionData.currentAuctionObj;
     switch (auctionType) {
       case '1':
         return (
           <FirstPriceSealedBid
-            newAuctionObj={currentAuctionData.currentAuctionObj}
             getNextAuctionObj={getNextAuctionObj}
             totalNumberOfPaintings={totalNumberOfPaintings}
+            goToAuctionResult={goToAuctionResult}
           />
         );
       case '2':
         return (
           <EnglishAuction
-            newAuctionObj={currentAuctionData.currentAuctionObj}
             getNextAuctionObj={getNextAuctionObj}
             totalNumberOfPaintings={totalNumberOfPaintings}
+            goToAuctionResult={goToAuctionResult}
           />
         );
       case '3':
         return (
           <SecondPriceSealedBid
-            newAuctionObj={currentAuctionData.currentAuctionObj}
             getNextAuctionObj={getNextAuctionObj}
             totalNumberOfPaintings={totalNumberOfPaintings}
+            goToAuctionResult={goToAuctionResult}
           />
         );
       case '4':
         return (
           <AllPayAuctions
-            newAuctionObj={currentAuctionData.currentAuctionObj}
             getNextAuctionObj={getNextAuctionObj}
             totalNumberOfPaintings={totalNumberOfPaintings}
           />
@@ -93,7 +99,8 @@ function LiveAuctions({ fromLP }) {
 
   return (
     <>
-      {!hasEndedAuctions && currentAuctionData && currentAuctionData.currentAuctionObj && loadAuction()}
+      {!hasEndedAuctions && currentAuctionData && currentAuctionData.currentAuctionObj && !renderResults && loadAuction()}
+      {renderResults && <RenderAuctionResults getNextAuctionObj={getNextAuctionObj} goToAuctionResult={goToAuctionResult} />}
       {hasEndedAuctions && <EndBuyingPhase />}
     </>
   );
