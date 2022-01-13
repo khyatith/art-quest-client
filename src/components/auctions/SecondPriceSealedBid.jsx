@@ -78,7 +78,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function SecondPriceSealedBid({
-  totalNumberOfPaintings, getNextAuctionObj,
+  totalNumberOfPaintings, goToAuctionResult,
 }) {
   const classes = useStyles();
   const bidInputRef = useRef();
@@ -108,7 +108,7 @@ function SecondPriceSealedBid({
   };
 
   useEffect(() => {
-    socket.on('redirectToNextAuction', (auctionId) => {
+    socket.on('redirectToResults', (auctionId) => {
       const currentAuctionId = currentAuctionData.currentAuctionObj.id;
       if (auctionId === currentAuctionId) {
         setAuctionTimerEnded(true);
@@ -117,7 +117,8 @@ function SecondPriceSealedBid({
         const val = JSON.parse(sessionStorage.getItem('allAuction'));
         val.auctions.artifacts[currentAuctionId - 1].hasAuctionTimerEnded = true;
         sessionStorage.setItem('allAuction', JSON.stringify(val));
-        getNextAuctionObj(currentAuctionId);
+        goToAuctionResult(true);
+        // getNextAuctionObj(currentAuctionId);
       }
     });
   }, []);
@@ -149,15 +150,6 @@ function SecondPriceSealedBid({
       return () => clearInterval(interval);
     }
   });
-
-  // useEffect(() => {
-  //   if (hasAuctionTimerEnded) {
-  //     const val = JSON.parse(sessionStorage.getItem('allAuction'));
-  //     val.auctions.artifacts[auctionObj.id - 1].hasAuctionTimerEnded = true;
-  //     sessionStorage.setItem('allAuction', JSON.stringify(val));
-  //     getNextAuctionObj(auctionObj.id);
-  //   }
-  // }, [hasAuctionTimerEnded]);
 
   useEffect(() => {
     socket.on('setLiveStyles', (team) => {
@@ -282,16 +274,6 @@ function SecondPriceSealedBid({
                 <BuyingGroupedBarChart leaderboardData={leaderboardData} />
               )}
           </Grid>
-          {/* <Grid item xs={7}>
-            { leaderboardData && leaderboardData.totalPaintingsWonByTeams
-            && (
-              <BuyingBarChart
-                results={leaderboardData.totalPaintingsWonByTeams}
-                labels={Object.keys(leaderboardData.totalPaintingsWonByTeams)}
-                labelDesc="total paintings"
-              />
-            )}
-          </Grid> */}
         </Grid>
       </Grid>
     </div>
@@ -300,7 +282,7 @@ function SecondPriceSealedBid({
 
 SecondPriceSealedBid.propTypes = {
   totalNumberOfPaintings: PropTypes.number.isRequired,
-  getNextAuctionObj: PropTypes.func.isRequired,
+  goToAuctionResult: PropTypes.func.isRequired,
 };
 
 export default SecondPriceSealedBid;

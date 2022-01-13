@@ -103,7 +103,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function EnglishAuction({
-  totalNumberOfPaintings, getNextAuctionObj,
+  totalNumberOfPaintings, goToAuctionResult,
 }) {
   const classes = useStyles();
   const bidInputRef = useRef();
@@ -133,7 +133,7 @@ function EnglishAuction({
   };
 
   useEffect(() => {
-    socket.on('redirectToNextAuction', (auctionId) => {
+    socket.on('redirectToResults', (auctionId) => {
       const currentAuctionId = currentAuctionData.currentAuctionObj.id;
       if (auctionId === currentAuctionId) {
         setAuctionTimerEnded(true);
@@ -141,7 +141,8 @@ function EnglishAuction({
         const val = JSON.parse(sessionStorage.getItem('allAuction'));
         val.auctions.artifacts[currentAuctionId - 1].hasAuctionTimerEnded = true;
         sessionStorage.setItem('allAuction', JSON.stringify(val));
-        getNextAuctionObj(currentAuctionId);
+        goToAuctionResult(true);
+        // getNextAuctionObj(currentAuctionId);
       }
     });
   }, []);
@@ -324,16 +325,6 @@ function EnglishAuction({
                 <BuyingGroupedBarChart leaderboardData={leaderboardData} />
               )}
           </Grid>
-          {/* <Grid item xs={7}>
-            { leaderboardData && leaderboardData.totalPaintingsWonByTeams
-            && (
-              <BuyingBarChart
-                results={leaderboardData.totalPaintingsWonByTeams}
-                labels={Object.keys(leaderboardData.totalPaintingsWonByTeams)}
-                labelDesc="total paintings"
-              />
-            )}
-          </Grid> */}
         </Grid>
       </Grid>
     </div>
@@ -342,7 +333,7 @@ function EnglishAuction({
 
 EnglishAuction.propTypes = {
   totalNumberOfPaintings: PropTypes.number.isRequired,
-  getNextAuctionObj: PropTypes.func.isRequired,
+  goToAuctionResult: PropTypes.func.isRequired,
 };
 
 export default EnglishAuction;
