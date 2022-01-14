@@ -22,11 +22,11 @@ import NewLeaderboard from '../NewLeaderboard';
 import SimpleRating from '../Rating';
 import RoundsInfo from '../RoundsInfo';
 import TeamInfo from '../TeamInfo';
-import leaderboardContext from '../../global/leaderboardContext';
+// import leaderboardContext from '../../global/leaderboardContext';
 import BonusAuctionBanner from '../visualizations/BonusAuctionBanner';
 import { FIRST_PRICED_SEALED_BID_TEXT, API_URL } from '../../global/constants';
 import auctionContext from '../../global/auctionContext';
-import BuyingGroupedBarChart from '../visualizations/BuyingGroupedBarChart';
+// import BuyingGroupedBarChart from '../visualizations/BuyingGroupedBarChart';
 import { validateCurrentBid } from '../../global/helpers';
 
 const useStyles = makeStyles((theme) => ({
@@ -88,7 +88,7 @@ function FirstPriceSealedBid({
   const [auctionTimer, setAuctionTimer] = useState();
   const [hasAuctionTimerEnded, setAuctionTimerEnded] = useState(false);
   const [bidAmtError, setBidAmtError] = useState();
-  const { leaderboardData } = useContext(leaderboardContext);
+  // const { leaderboardData } = useContext(leaderboardContext);
   const { currentAuctionData } = useContext(auctionContext);
 
   const getRemainingTime = () => {
@@ -268,12 +268,12 @@ function FirstPriceSealedBid({
           <Grid item xs={7}>
             <NewLeaderboard hasAuctionTimerEnded={hasAuctionTimerEnded} />
           </Grid>
-          <Grid item xs={12}>
+          {/* <Grid item xs={12}>
             { leaderboardData && leaderboardData.totalAmountByTeam
               && (
                 <BuyingGroupedBarChart leaderboardData={leaderboardData} />
               )}
-          </Grid>
+          </Grid> */}
         </Grid>
       </Grid>
     </div>

@@ -127,12 +127,12 @@ function GameInstructions() {
               </ListItemIcon>
               <ListItemText className={classes.listtext} primary="Create your FAVORITE art collection" />
             </ListItem>
-            <ListItem className={classes.listitem}>
+            {/* <ListItem className={classes.listitem}>
               <ListItemIcon>
                 <StarIcon style={{ color: '#76e246' }} />
               </ListItemIcon>
               <ListItemText className={classes.listtext} primary="MAXIMIZE total number of paintings, MINIMIZE efficiency" />
-            </ListItem>
+            </ListItem> */}
           </List>
           <p className={classes.p}>Let the bidding wars begin!</p>
           {playersJoinedInfo && playersJoinedInfo.playersJoined !== playersJoinedInfo.numberOfPlayers ? (

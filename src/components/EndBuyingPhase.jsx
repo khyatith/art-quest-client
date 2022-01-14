@@ -65,7 +65,7 @@ function EndBuyingPhase() {
   const history = useHistory();
   const [artforTeams, setArtForTeams] = useState();
   const [gameWinner, setGameWinner] = useState();
-  const [teamEfficiency, setTeamEfficiency] = useState({});
+  // const [teamEfficiency, setTeamEfficiency] = useState({});
   const [totalDebtByTeam, setTotalDebtByTeam] = useState({});
   const [teamsByRank, setTeamsByRank] = useState([]);
   // const [showWinner, setShowWinner] = useState(false);
@@ -95,9 +95,9 @@ function EndBuyingPhase() {
     if (data && data.totalPaintingsWonByTeam) {
       setTotalPaintingsWonByTeam(data.totalPaintingsWonByTeam);
     }
-    if (data && data.teamEfficiency) {
-      setTeamEfficiency(data.teamEfficiency);
-    }
+    // if (data && data.teamEfficiency) {
+    //   setTeamEfficiency(data.teamEfficiency);
+    // }
     if (data && data.totalAmountSpentByTeam) {
       setTotalDebtByTeam(data.totalAmountSpentByTeam);
     }
@@ -114,7 +114,7 @@ function EndBuyingPhase() {
       key,
       debt: totalDebtByTeam[key],
       totalPaintings: totalPaintingsWonByTeam[key],
-      efficiency: teamEfficiency[key],
+      // efficiency: teamEfficiency[key],
     }));
     return (
       <>
@@ -126,7 +126,7 @@ function EndBuyingPhase() {
                 <StyledTableCell>Team</StyledTableCell>
                 <StyledTableCell align="right">Total paintings</StyledTableCell>
                 <StyledTableCell align="right">Debt</StyledTableCell>
-                <StyledTableCell align="right">Efficiency</StyledTableCell>
+                {/* <StyledTableCell align="right">Efficiency</StyledTableCell> */}
               </TableRow>
             </TableHead>
             <TableBody>
@@ -137,7 +137,7 @@ function EndBuyingPhase() {
                   </StyledTableCell>
                   <StyledTableCell align="right">{row.totalPaintings}</StyledTableCell>
                   <StyledTableCell align="right">{formatNumberToCurrency(parseFloat(row.debt))}</StyledTableCell>
-                  <StyledTableCell align="right">{formatNumberToCurrency(parseFloat(row.efficiency))}</StyledTableCell>
+                  {/* <StyledTableCell align="right">{formatNumberToCurrency(parseFloat(row.efficiency))}</StyledTableCell> */}
                 </TableRow>
               ))}
             </TableBody>
