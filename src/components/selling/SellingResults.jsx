@@ -7,6 +7,7 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
+import CardHeader from '@material-ui/core/CardHeader';
 import CardMedia from '@mui/material/CardMedia';
 import { socket } from '../../global/socket';
 import { API_URL, TEAM_COLOR_MAP } from '../../global/constants';
@@ -54,6 +55,9 @@ const useStyles = makeStyles((theme) => ({
     maxWidth: '21%',
     height: '460px',
     margin: '1%',
+  },
+  loginCardHeader: {
+    backgroundColor: '#000000',
   },
   windowViewDown: {
     overflowY: 'scroll',
@@ -143,18 +147,6 @@ function SellingResults(props) {
     console.log(teamPaintings);
     return (
       <div>
-        <div>
-          <Typography className={classes.typomidnew}>
-            Team&nbsp;
-            {teamColor}
-          </Typography>
-          <Typography className={classes.typomidnew}>
-            Round&nbsp;
-            {user.roundId}
-            &nbsp;earnings :
-            {`$${revenueGenerated}M`}
-          </Typography>
-        </div>
         <Box className={classes.child1} justifyContent="center">
           {teamPaintings
             && teamPaintings.map((arg) => (
@@ -169,25 +161,22 @@ function SellingResults(props) {
                 }}
                 // eslint-disable-next-line no-nested-ternary
                 display={ns.includes(arg.auctionId) ? 'block' : 'none'}
-              >
+                >
                 <Card
                   sx={{
                     minHeight: 45,
                     minWidth: 355,
                     maxWidth: 355,
                     backgroundColor: 'white',
-                    margin: 'auto',
-                    marginTop: '3%',
                   }}
                   className={classes.cardStyle}
-                  disabled
                 >
-                  <CardMedia
-                    sx={{ height: 338 }}
-                    component="img"
-                    image={arg.paintingURL}
-                    alt="green iguana"
+                  <CardHeader
+                    style={{ backgroundColor: TEAM_COLOR_MAP[teamColor] }}
+                    title={`Team ${teamColor}`}
+                    subheader={`Round ${user.roundId} earnings: $${revenueGenerated}M`}
                   />
+                  <CardMedia sx={{ height: 338 }} component="img" image={arg.paintingURL} alt="green iguana" />
                 </Card>
               </Box>
             ))}
@@ -235,12 +224,7 @@ function SellingResults(props) {
         </Typography>
       </div>
       <div className={classes.child1} justifyContent="center" display="flex" flexWrap="wrap">
-        {earnings
-          && Object.keys(earnings).map((arg) => (
-            <div className={classes.colouredDiv} style={{ backgroundColor: TEAM_COLOR_MAP[arg] }}>
-              {loadRevenue(arg, earnings[arg])}
-            </div>
-          ))}
+        {earnings && Object.keys(earnings).map((arg) => <div className={classes.colouredDiv}>{loadRevenue(arg, earnings[arg])}</div>)}
       </div>
     </>
   );
