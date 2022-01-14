@@ -71,7 +71,6 @@ const Airport = ({
 
   const updateLocName = useCallback(() => {
     let locName;
-    console.log(mapValues);
     Object.entries(mapValues).forEach((val) => {
       if (parseInt(val[1].cityId, 10) === selectedLocationId) {
         locName = val[1].cityName;

@@ -69,7 +69,6 @@ function GameInstructions() {
   const { player } = useContext(userContext);
 
   const startGame = () => {
-    console.log('inside start game');
     socket.emit('startGame', JSON.stringify(player));
     history.push(`/game/${player.playerId}`);
   };
@@ -86,7 +85,6 @@ function GameInstructions() {
     async function fetchVersion() {
       const sesStr = JSON.parse(sessionStorage.getItem('user'));
       const { data } = await axios.get(`${API_URL}/buying/getVersionID/${sesStr.hostCode}`);
-      console.log(data);
       setVersion(data.version);
     }
     if (!version) {

@@ -144,7 +144,6 @@ function SellingResults(props) {
       return <h3 style={{ color: '#990000' }}>All teams earned $0. No painting nominations were made.</h3>;
     }
     const teamPaintings = paintings[teamColor];
-    console.log(teamPaintings);
     return (
       <div>
         <Box className={classes.child1} justifyContent="center">
@@ -161,7 +160,7 @@ function SellingResults(props) {
                 }}
                 // eslint-disable-next-line no-nested-ternary
                 display={ns.includes(arg.auctionId) ? 'block' : 'none'}
-                >
+              >
                 <Card
                   sx={{
                     minHeight: 45,
@@ -172,7 +171,7 @@ function SellingResults(props) {
                   className={classes.cardStyle}
                 >
                   <CardHeader
-                    style={{ backgroundColor: TEAM_COLOR_MAP[teamColor] }}
+                    style={{ backgroundColor: TEAM_COLOR_MAP[teamColor], marginTop: '5%' }}
                     title={`Team ${teamColor}`}
                     subheader={`Round ${user.roundId} earnings: $${revenueGenerated}M`}
                   />

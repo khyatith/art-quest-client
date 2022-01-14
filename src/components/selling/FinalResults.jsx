@@ -47,7 +47,6 @@ function FinalResults() {
         .then((newData) => {
           const { amountSpentByTeam, visits } = newData.data;
           let x = 1;
-          console.log(amountSpentByTeam);
           const tv = [];
           Object.entries(amountSpentByTeam).forEach(([key, value]) => {
             const team = key;
@@ -62,7 +61,6 @@ function FinalResults() {
           tv.sort((a, b) => b.total - a.total);
           for (let i = 0; i < tv.length; ++i) {
             tv[i].id = i + 1;
-            console.log(tv.id);
           }
           setGameWinner(tv[0].team);
           setRows(tv);

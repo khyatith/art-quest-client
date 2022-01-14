@@ -6,6 +6,7 @@ import { makeStyles, withStyles } from '@material-ui/core/styles';
 import axios from 'axios';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
+import CardHeader from '@material-ui/core/CardHeader';
 import CardMedia from '@mui/material/CardMedia';
 import { Button, CardActions } from '@mui/material';
 import Table from '@material-ui/core/Table';
@@ -128,6 +129,10 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: 700,
     color: '#051207', // green color
   },
+  titlestyle: {
+    backgroundColor: '#000000',
+    color: '#76e246',
+  },
 }));
 
 const StyledTableCell = withStyles((theme) => ({
@@ -227,7 +232,6 @@ function ExpoBeginning() {
     if (!hasSentEnglishAuctionRequest) {
       const { data } = await axios.get(`${API_URL}/buying/getEnglishAuctionForSelling?roomCode=${user.hostCode}&roundId=${user.roundId}`);
       setTimeout(() => updateStorageWithCurrentAuction(data), 5000);
-      console.log(data.auctionObj);
     }
   }, [user]);
 
@@ -322,7 +326,6 @@ function ExpoBeginning() {
   };
 
   const loadCardContent = (index) => {
-    console.log('load card content index', index);
     return (
       <CardContent className={classes.paintOpt}>
         <p style={{ color: '#000000', fontWeight: '700', marginBottom: '25px' }}>
@@ -443,6 +446,7 @@ function ExpoBeginning() {
                   className={classes.cardStyle}
                   disabled
                 >
+                  <CardHeader className={classes.titlestyle} title={`Bought for $${arg.bidAmount}M`} />
                   <CardMedia
                     sx={(paintingSelected === paintings[index].auctionId) ? { height: 298, filter: 'grayscale(100%)' } : { height: 298 }}
                     component="img"

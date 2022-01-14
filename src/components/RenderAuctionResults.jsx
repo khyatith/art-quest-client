@@ -47,7 +47,7 @@ const useStyles = makeStyles((theme) => ({
   },
   root: {
     display: 'flex',
-    margin: '15% 15% 5% 15%',
+    margin: '5% 15% 5% 15%',
   },
   paper: {
     maxWidth: '570px',
@@ -119,8 +119,6 @@ const RenderAuctionResults = ({ getNextAuctionObj }) => {
 
   useEffect(() => {
     socket.on('goToNextAuction', (auctionId) => {
-      console.log(getNextAuctionObj);
-      console.log('auctionId', auctionId);
       getNextAuctionObj(auctionId);
     });
   });
@@ -134,42 +132,47 @@ const RenderAuctionResults = ({ getNextAuctionObj }) => {
       );
     }
     const { auctionObj } = auctionResult[0];
-    console.log(auctionObj);
     return (
-      <div className={classes.root}>
-        <Card className={classes.cardroot}>
-          {auctionWinner && <CardHeader style={{ backgroundColor: TEAM_COLOR_MAP[auctionWinner.team] }} title={`Bought For: $${auctionWinner.bid}M`} />}
-          <CardActionArea>
-            <CardMedia className={classes.media} component="img" image={auctionObj.imageURL} title={auctionObj.name} />
-          </CardActionArea>
-        </Card>
-        <TableContainer className={classes.paper} component={Paper}>
-          <Table className={classes.table} aria-label="auctions result table">
-            <TableHead>
-              <TableRow>
-                <StyledTableCell>Team</StyledTableCell>
-                <StyledTableCell align="left">Bids</StyledTableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {auctionResult
-                && auctionResult.map((entry) => {
-                  const { bidTeam, bidAmount } = entry;
-                  return (
-                    <TableRow key={bidTeam} style={{ backgroundColor: `${TEAM_COLOR_MAP[bidTeam]}` }}>
-                      <StyledTableCell align="left">{bidTeam}</StyledTableCell>
-                      <StyledTableCell align="left">
-                        $
-                        {bidAmount}
-                        M
-                      </StyledTableCell>
-                    </TableRow>
-                  );
-                })}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      </div>
+      <>
+        <h3 style={{ marginTop: '10%', textAlign: 'center' }}>
+          Result of Round&nbsp;
+          {auctionResult[0].auctionObj.id}
+        </h3>
+        <div className={classes.root}>
+          <Card className={classes.cardroot}>
+            {auctionWinner && <CardHeader style={{ backgroundColor: TEAM_COLOR_MAP[auctionWinner.team] }} title={`Bought For: $${auctionWinner.bid}M`} />}
+            <CardActionArea>
+              <CardMedia className={classes.media} component="img" image={auctionObj.imageURL} title={auctionObj.name} />
+            </CardActionArea>
+          </Card>
+          <TableContainer className={classes.paper} component={Paper}>
+            <Table className={classes.table} aria-label="auctions result table">
+              <TableHead>
+                <TableRow>
+                  <StyledTableCell>Team</StyledTableCell>
+                  <StyledTableCell align="left">Bids</StyledTableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {auctionResult
+                  && auctionResult.map((entry) => {
+                    const { bidTeam, bidAmount } = entry;
+                    return (
+                      <TableRow key={bidTeam} style={{ backgroundColor: `${TEAM_COLOR_MAP[bidTeam]}` }}>
+                        <StyledTableCell align="left">{bidTeam}</StyledTableCell>
+                        <StyledTableCell align="left">
+                          $
+                          {bidAmount}
+                          M
+                        </StyledTableCell>
+                      </TableRow>
+                    );
+                  })}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </div>
+      </>
     );
   };
 
@@ -202,25 +205,6 @@ const RenderAuctionResults = ({ getNextAuctionObj }) => {
       ) : (
         <div style={{ margin: '15%', textAlign: 'center' }}>
           <h2>No bids were placed for this round</h2>
-        </div>
-      )}
-      {auctionWinner && auctionResult.length > 0 && (
-        <div
-          style={{
-            textAlign: 'center',
-            backgroundColor: '#000000',
-            color: '#ffffff',
-            padding: '2px',
-          }}
-        >
-          <h3>
-            {auctionWinner.paintingName}
-            &nbsp; is won by Team &nbsp;
-            {auctionWinner.team}
-            &nbsp; for &nbsp; $
-            {auctionWinner.bid}
-            M
-          </h3>
         </div>
       )}
     </div>
