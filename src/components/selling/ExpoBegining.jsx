@@ -325,44 +325,42 @@ function ExpoBeginning() {
     );
   };
 
-  const loadCardContent = (index) => {
-    return (
-      <CardContent className={classes.paintOpt}>
-        <p style={{ color: '#000000', fontWeight: '700', marginBottom: '25px' }}>
-          How much would you charge 1 person to see your painting in
-          {' '}
-          {user.currentLocationName}
-          {' '}
-          museum?
-        </p>
-        <TextField
-          id="textfield"
-          inputRef={(node) => { ticketPrice = node; }}
-          error={!!bidAmtError}
-          helperText={bidAmtError && bidAmtError}
-          label="Enter Ticket Price"
-          variant="outlined"
-          style={{ color: '#76e246', marginBottom: '20px' }}
-          InputProps={{
-            startAdornment: <InputAdornment position="start">$</InputAdornment>,
-          }}
-        />
-        <p>* Ticket price can be between $1 to $999</p>
-        <Button
-          size="small"
-          style={{
-            color: '#76e246',
-            fontWeight: 'bold',
-            width: '100%',
-            backgroundColor: '#000000',
-          }}
-          onClick={() => handleSelectPainting(index)}
-        >
-          Submit ticket price
-        </Button>
-      </CardContent>
-    );
-  };
+  const loadCardContent = (index) => (
+    <CardContent className={classes.paintOpt}>
+      <p style={{ color: '#000000', fontWeight: '700', marginBottom: '25px' }}>
+        How much would you charge 1 person to see your painting in
+        {' '}
+        {user.currentLocationName}
+        {' '}
+        museum?
+      </p>
+      <TextField
+        id="textfield"
+        inputRef={(node) => { ticketPrice = node; }}
+        error={!!bidAmtError}
+        helperText={bidAmtError && bidAmtError}
+        label="Enter Ticket Price"
+        variant="outlined"
+        style={{ color: '#76e246', marginBottom: '20px' }}
+        InputProps={{
+          startAdornment: <InputAdornment position="start">$</InputAdornment>,
+        }}
+      />
+      <p>* Ticket price can be between $1 to $999</p>
+      <Button
+        size="small"
+        style={{
+          color: '#76e246',
+          fontWeight: 'bold',
+          width: '100%',
+          backgroundColor: '#000000',
+        }}
+        onClick={() => handleSelectPainting(index)}
+      >
+        Submit ticket price
+      </Button>
+    </CardContent>
+  );
 
   const loadCardSelection = () => (
     <CardContent className={classes.paintOpt}>
