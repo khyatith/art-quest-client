@@ -92,7 +92,7 @@ export default function NewLeaderboard({ hasAuctionTimerEnded }) {
                     {teamName}
                   </StyledTableCell>
                   <StyledTableCell align="right">{totalPaintingsWonByTeams[`${teamName}`]}</StyledTableCell>
-                  <StyledTableCell component="th" scope="row">
+                  <StyledTableCell component="th" scope="row" align="right">
                     $
                     {parseFloat(totalAmountByTeam[`${teamName}`])}
                     M
