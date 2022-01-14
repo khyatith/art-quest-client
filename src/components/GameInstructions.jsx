@@ -69,7 +69,6 @@ function GameInstructions() {
   const { player } = useContext(userContext);
 
   const startGame = () => {
-    console.log('inside start game');
     socket.emit('startGame', JSON.stringify(player));
     history.push(`/game/${player.playerId}`);
   };
@@ -86,7 +85,6 @@ function GameInstructions() {
     async function fetchVersion() {
       const sesStr = JSON.parse(sessionStorage.getItem('user'));
       const { data } = await axios.get(`${API_URL}/buying/getVersionID/${sesStr.hostCode}`);
-      console.log(data);
       setVersion(data.version);
     }
     if (!version) {
@@ -105,8 +103,7 @@ function GameInstructions() {
 
   return (
     <>
-      { version === 1
-      && (
+      {version === 1 && (
         <div className={classes.container}>
           <Header />
           <p className={classes.title}>Instructions</p>
@@ -138,29 +135,28 @@ function GameInstructions() {
             </ListItem>
           </List>
           <p className={classes.p}>Let the bidding wars begin!</p>
-          { playersJoinedInfo && (playersJoinedInfo.playersJoined !== playersJoinedInfo.numberOfPlayers)
-            ? (
-              <div style={{ border: '5px solid #76e246' }}>
-                <h3>
-                  Player
-                  {' '}
-                  {playersJoinedInfo.playersJoined}
-                  {' '}
-                  of
-                  {' '}
-                  {playersJoinedInfo.numberOfPlayers}
-                  {' '}
-                  joined. Waiting for others to join...
-                </h3>
-              </div>
-            ) : (
-              <div style={{ border: '5px solid #76e246' }}>
-                <h3>All players Joined. Starting game ...</h3>
-              </div>
-            )}
+          {playersJoinedInfo && playersJoinedInfo.playersJoined !== playersJoinedInfo.numberOfPlayers ? (
+            <div style={{ border: '5px solid #76e246' }}>
+              <h3>
+                Player
+                {' '}
+                {playersJoinedInfo.playersJoined}
+                {' '}
+                of
+                {' '}
+                {playersJoinedInfo.numberOfPlayers}
+                {' '}
+                joined. Waiting for others to join...
+              </h3>
+            </div>
+          ) : (
+            <div style={{ border: '5px solid #76e246' }}>
+              <h3>All players Joined. Starting game ...</h3>
+            </div>
+          )}
         </div>
       )}
-      { version === 2 && <LocationPhase />}
+      {version === 2 && <LocationPhase />}
     </>
   );
 }

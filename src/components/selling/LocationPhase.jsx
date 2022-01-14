@@ -116,7 +116,6 @@ function LocationPhase() {
           let x = 1;
           const tv = [];
           const labels = ['Cash', 'Visits'];
-          console.log(newData);
           const teams = [];
           Object.entries(amountSpentByTeam).forEach(([key, value]) => {
             const team = key;
@@ -131,7 +130,6 @@ function LocationPhase() {
             teams.push(team);
             x += 1;
           });
-          console.log(visits);
           for (let i = 1; i < players.length; ++i) {
             const found = teams.find((val) => val === players[i].teamName);
             if (!found) {

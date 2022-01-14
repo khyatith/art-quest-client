@@ -64,7 +64,6 @@ function StagingScreen() {
   const handleVersion = (event) => {
     const { value } = event.target;
     setVersion(value);
-    console.log(value);
   };
 
   const setTeams = () => {
