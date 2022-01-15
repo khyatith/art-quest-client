@@ -135,12 +135,20 @@ const RenderAuctionResults = ({ getNextAuctionObj }) => {
     return (
       <>
         <h3 style={{ marginTop: '10%', textAlign: 'center' }}>
-          Result of Round&nbsp;
+          Round&nbsp;
           {auctionResult[0].auctionObj.id}
+          &nbsp;
+          result
         </h3>
         <div className={classes.root}>
           <Card className={classes.cardroot}>
-            {auctionWinner && <CardHeader style={{ backgroundColor: TEAM_COLOR_MAP[auctionWinner.team] }} title={`Bought For: $${auctionWinner.bid}M`} />}
+            {auctionWinner
+            && (
+              <CardHeader
+                style={{ backgroundColor: TEAM_COLOR_MAP[auctionWinner.team] }}
+                title={`Team ${auctionWinner.team} won, for: $${auctionWinner.bid}M`}
+              />
+            )}
             <CardActionArea>
               <CardMedia className={classes.media} component="img" image={auctionObj.imageURL} title={auctionObj.name} />
             </CardActionArea>
