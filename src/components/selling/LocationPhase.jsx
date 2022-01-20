@@ -65,7 +65,8 @@ const useStyles = makeStyles((theme) => ({
 
 function createData(team, cash, vis) {
   const str = [];
-  str.push(cash);
+  const formattedCash = parseFloat((cash) / 10).toFixed(2);
+  str.push(formattedCash);
   str.push(vis);
   return {
     label: team,

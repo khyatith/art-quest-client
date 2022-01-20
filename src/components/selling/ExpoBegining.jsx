@@ -373,7 +373,7 @@ function ExpoBeginning() {
       <AppBar className={classes.appbar}>
         <Toolbar>
           <Typography variant="h6" className={classes.timercontent}>
-            Time left
+            Time left to nominate paintings
             {' '}
             {timerValue && timerValue.minutes}
             :
