@@ -11,6 +11,7 @@ import CardHeader from '@material-ui/core/CardHeader';
 import CardMedia from '@mui/material/CardMedia';
 import { socket } from '../../global/socket';
 import { API_URL, TEAM_COLOR_MAP } from '../../global/constants';
+import load from '../../assets/load.webp';
 
 const useStyles = makeStyles((theme) => ({
   appbar: {
@@ -85,14 +86,22 @@ const useStyles = makeStyles((theme) => ({
     transitionTimingFunction: 'linear',
     animation: '$fadeIn .2s ease-in-out',
   },
+  cardTitleStyle: {
+    '& .MuiCardHeader-subheader': {
+      color: '#212F3C',
+      lineHeight: '1.9',
+      fontSize: '18px',
+      fontWeight: '700',
+    },
+  },
 }));
 
 function SellingResults(props) {
   const classes = useStyles();
   const history = useHistory();
   const user = JSON.parse(sessionStorage.getItem('user'));
-  // const [hasTimerEnded, setTimerEnded] = useState(false);
   const [timerValue, setTimerValue] = useState();
+  const [loading, setLoading] = useState(true);
   const [earnings, setEarnings] = useState();
   const [paintings, setPaintings] = useState();
   const [hasRequestedResult, setHasRequestedResult] = useState(false);
@@ -103,6 +112,7 @@ function SellingResults(props) {
       setEarnings(data.calculatedRevenueForRound);
       setPaintings(data.allTeamPaintings);
       setTimerValue(data.sellingResultsTimerValue);
+      setLoading(false);
     };
     if (user && !hasRequestedResult) {
       sessionStorage.setItem('currentSellingEnglishAuction', null);
@@ -171,6 +181,7 @@ function SellingResults(props) {
                   className={classes.cardStyle}
                 >
                   <CardHeader
+                    className={classes.cardTitleStyle}
                     style={{ backgroundColor: TEAM_COLOR_MAP[teamColor], marginTop: '5%' }}
                     title={`Team ${teamColor}`}
                     subheader={`Round ${user.roundId} earnings: $${revenueGenerated}M`}
@@ -191,6 +202,16 @@ function SellingResults(props) {
       return () => clearInterval(interval);
     }
   });
+
+  if (loading) {
+    return (
+      <div style={{ marginTop: '12%', marginLeft: '43%' }}>
+        {' '}
+        <img src={load} alt="loading..." />
+        {' '}
+      </div>
+    );
+  }
 
   return (
     <>
