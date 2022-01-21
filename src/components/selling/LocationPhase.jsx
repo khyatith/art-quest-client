@@ -7,13 +7,14 @@ import { Typography } from '@material-ui/core';
 import { useHistory } from 'react-router-dom';
 import userContext from '../../global/userContext';
 import Airport from './Airport';
-import BarGraph from './BarGraph';
+// import BarGraph from './BarGraph';
 import Details from './Details';
 import Mapping from './Mapping';
 import { API_URL, TEAM_COLOR_MAP } from '../../global/constants';
 import load from '../../assets/load.webp';
 import { socket } from '../../global/socket';
 import RoundsInfo from '../RoundsInfo';
+import LevelOfInterest from './LevelOfInterest';
 
 const useStyles = makeStyles((theme) => ({
   parent: {
@@ -263,8 +264,12 @@ function LocationPhase() {
       <RoundsInfo label={`Round ${roundId} of 10`} />
       <div className={classes.parent}>
         <div className={classes.child1}>
-          <Mapping />
+          <p className={classes.resultsText}>Results</p>
+          <Details rows={rows} />
         </div>
+        {/* <div className={classes.child1}>
+          <BarGraph result={result} />
+        </div> */}
         <div className={classes.child1}>
           <Airport
             roundNumber={roundId}
@@ -274,14 +279,11 @@ function LocationPhase() {
             allLocationDetails={teamsCurrentLocation}
           />
         </div>
-      </div>
-      <p className={classes.resultsText}>Results</p>
-      <div className={classes.parent}>
         <div className={classes.child2}>
-          <Details rows={rows} />
+          <Mapping />
         </div>
         <div className={classes.child2}>
-          <BarGraph result={result} />
+          <LevelOfInterest />
         </div>
       </div>
     </>
