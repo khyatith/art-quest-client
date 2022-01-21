@@ -101,6 +101,7 @@ function LocationPhase() {
   const [selectedLocationId, setSelectedLocId] = useState();
   const [currentLocationId, setCurrentLocationId] = useState();
   const [teamsCurrentLocation, setTeamsCurrentLocation] = useState();
+  const [allLocationHistory, setAllLocationHistory] = useState([]);
   const [currentRoundData, setCurrentRoundData] = useState(false);
 
   // Hooks and methods
@@ -112,9 +113,15 @@ function LocationPhase() {
         .get(`${API_URL}/buying/getSellingResults?roomId=${player.hostCode}`)
         .then((newData) => {
           const {
-            amountSpentByTeam, visits, locationPhaseTimerValue, roundNumber, players,
+            amountSpentByTeam, visits, locationPhaseTimerValue, roundNumber, players, locationHistory,
           } = newData.data;
           setTeamsCurrentLocation(newData.data.visits);
+          for(var i=0;i<locationHistory.length;++i) {
+            if(locationHistory[i].teamName==player.teamName) {
+              setAllLocationHistory(locationHistory[i].locations);
+            }
+          }
+          console.log(allLocationHistory);
           let x = 1;
           const tv = [];
           const labels = ['Cash', 'Visits'];
@@ -277,6 +284,7 @@ function LocationPhase() {
             selectedLocationId={selectedLocationId}
             previousLocationId={currentLocationId}
             allLocationDetails={teamsCurrentLocation}
+            locations={allLocationHistory}
           />
         </div>
         <div className={classes.child2}>

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState, useEffect, useContext} from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -92,7 +92,7 @@ function GameInstructions() {
   useEffect(() => {
     if (playersJoinedInfo) {
       const { numberOfPlayers, playersJoined } = playersJoinedInfo;
-      if (numberOfPlayers <= playersJoined) {
+      if (false) {
         setTimeout(() => startGame(), 30000);
       }
     }
