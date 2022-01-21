@@ -50,14 +50,14 @@ const useStyles = makeStyles(() => ({
 }));
 
 const Airport = ({
-  roundNumber, hasLocationSelected, selectedLocationId, previousLocationId, allLocationDetails,
+  roundNumber, hasLocationSelected, selectedLocationId, previousLocationId, allLocationDetails, locations,
 }) => {
   const classes = useStyles();
   const [mapValues, setMapValues] = useState({});
   // const [teamValues, setTeamValues] = useState({});
   const [valRet, setValRet] = useState(false);
   const { player, setPlayer } = useContext(userContext);
-  const [selectedRadio, setSelectedRadio] = useState();
+  const [selectedRadio, setSelectedRadio] = useState(previousLocationId);
   const [updatedLocation, setUpdatedLocation] = useState(false);
 
   const setVisitLocation = async () => {
@@ -128,6 +128,9 @@ const Airport = ({
             <p style={{ marginTop: '40px' }}>Fly to : </p>
             {Object.entries(mapValues).map((items) => {
               const totalCon = items[1].allowedToVisit;
+              if(!totalCon.includes(previousLocationId)) {
+                totalCon.push(previousLocationId);
+              }
               if (items[1].cityId === player.previousLocation) {
                 return (
                   <>
@@ -139,7 +142,7 @@ const Airport = ({
                             type="radio"
                             value={obj.cityId}
                             key={obj.cityId}
-                            disabled={hasLocationSelected}
+                            disabled={hasLocationSelected || (locations.filter((v) => (v === obj.cityId)).length)==2}
                             name="location"
                             checked={parseInt(selectedRadio, 10) === parseInt(obj.cityId, 10)}
                             onChange={updateSelectedLocation}
