@@ -118,7 +118,7 @@ function LocationPhase() {
           setTeamsCurrentLocation(newData.data.visits);
           for(var i=0;i<locationHistory.length;++i) {
             if(locationHistory[i].teamName==player.teamName) {
-              setAllLocationHistory(locationHistory[i].locations);
+              setAllLocationHistory(locationHistory[i].allVisitLocations);
             }
           }
           console.log(allLocationHistory);

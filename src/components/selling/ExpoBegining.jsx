@@ -202,7 +202,7 @@ function ExpoBeginning() {
   useEffect(() => {
     // setLoading(true);
     async function getSellingInfo() {
-      const { data } = await axios.get(`${API_URL}/buying/getSellingInfo?roomId=${user.hostCode}&locationId=${user.currentLocation}&teamName=${user.teamName}`);
+      const { data } = await axios.get(`${API_URL}/buying/getSellingInfo?roomId=${user.hostCode}&locationId=${user.currentLocation}&teamName=${user.teamName}&roundId=${user.roundId}`);
       const {
         artifacts, otherteams, city, sellPaintingTimerValue,
       } = data;
