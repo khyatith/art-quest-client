@@ -167,12 +167,15 @@ const RenderAuctionResults = ({ getNextAuctionObj }) => {
                     const { bidTeam, bidAmount } = entry;
                     return (
                       <TableRow key={bidTeam} style={{ backgroundColor: `${TEAM_COLOR_MAP[bidTeam]}` }}>
-                        <StyledTableCell align="left">{bidTeam}</StyledTableCell>
+                        { bidTeam && <StyledTableCell align="left">{bidTeam}</StyledTableCell> }
+                        { bidAmount
+                        && (
                         <StyledTableCell align="left">
                           $
                           {bidAmount}
                           M
                         </StyledTableCell>
+                        )}
                       </TableRow>
                     );
                   })}
