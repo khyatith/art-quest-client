@@ -107,12 +107,15 @@ function EnglishAuction({
 }) {
   const classes = useStyles();
   const bidInputRef = useRef();
+  const maxBidInputRef = useRef();
   const previousBidDetails = useRef();
   const player = JSON.parse(sessionStorage.getItem('user'));
   const [auctionObj, setAuctionObj] = useState();
   const [auctionTimer, setAuctionTimer] = useState();
   const [hasAuctionTimerEnded, setAuctionTimerEnded] = useState(false);
   const [bidAmtError, setBidAmtError] = useState();
+  const [maxBidAmtError, setMaxBidAmtError] = useState();
+  const [maxBidSetForTeam, setMaxBidSetForTeam] = useState();
   // const { leaderboardData } = useContext(leaderboardContext);
   const { currentAuctionData } = useContext(auctionContext);
 
@@ -142,7 +145,6 @@ function EnglishAuction({
         val.auctions.artifacts[currentAuctionId - 1].hasAuctionTimerEnded = true;
         sessionStorage.setItem('allAuction', JSON.stringify(val));
         goToAuctionResult(true);
-        // getNextAuctionObj(currentAuctionId);
       }
     });
   }, []);
@@ -187,6 +189,14 @@ function EnglishAuction({
     });
   }, [previousBidDetails]);
 
+  useEffect(() => {
+    socket.on('setMaxEnglishAuctionBid', (team) => {
+      if (team === player.teamName) {
+        setMaxBidSetForTeam(team);
+      }
+    });
+  }, [maxBidSetForTeam]);
+
   const setBidAmt = () => {
     const bidInput = bidInputRef.current.value;
     const isValidCurrentBid = validateCurrentBid(bidInput);
@@ -201,6 +211,33 @@ function EnglishAuction({
     } else {
       setBidAmtError(null);
       const bidInfo = {
+        auctionType: auctionObj.auctionType,
+        auctionId: auctionObj.id,
+        paintingQuality: auctionObj.paintingQuality,
+        auctionObj,
+        player,
+        bidAmount: bidInput,
+        bidAt: +new Date(),
+        bidTeam: player.teamName,
+        bidColor: player.teamColor,
+      };
+      socket.emit('addNewBid', bidInfo);
+    }
+  };
+
+  const setMaxBidAmt = () => {
+    const bidInput = maxBidInputRef.current.value;
+    const isValidCurrentBid = validateCurrentBid(bidInput);
+    if (!isValidCurrentBid) {
+      setMaxBidAmtError('Your bid should be a valid number');
+      return;
+    }
+    const desiredBid = auctionObj.originalValue;
+    if (bidInput < desiredBid) {
+      setMaxBidAmtError(`Your bid should be more than ${desiredBid}`);
+    } else {
+      const bidInfo = {
+        bidType: 'maxBid',
         auctionType: auctionObj.auctionType,
         auctionId: auctionObj.id,
         paintingQuality: auctionObj.paintingQuality,
@@ -318,6 +355,38 @@ function EnglishAuction({
         <Grid item xs={12} sm container spacing={4}>
           <Grid item xs={10}>
             <NewLeaderboard hasAuctionTimerEnded={hasAuctionTimerEnded} />
+          </Grid>
+          <Grid item xs={12}>
+            <h3>Enter the max bid you can pay for this painting</h3>
+            <TextField
+              inputRef={maxBidInputRef}
+              error={!!maxBidAmtError}
+              helperText={maxBidAmtError && maxBidAmtError}
+              className={classes.textfieldstyle}
+              size="small"
+              name="maxbidAmount"
+              placeholder="Enter your max bid"
+              variant="outlined"
+              disabled={!!maxBidSetForTeam}
+              InputProps={{
+                startAdornment: <InputAdornment position="start">$</InputAdornment>,
+                endAdornment: <InputAdornment position="end">M</InputAdornment>,
+              }}
+            />
+            <Button
+              variant="contained"
+              color="secondary"
+              onClick={setMaxBidAmt}
+              disabled={!!maxBidSetForTeam}
+            >
+              Bid
+            </Button>
+            { maxBidSetForTeam
+                && (
+                <p>
+                  * Your team has already bid the max amount
+                </p>
+                )}
           </Grid>
           {/* <Grid item xs={12}>
             { leaderboardData && leaderboardData.totalAmountByTeam

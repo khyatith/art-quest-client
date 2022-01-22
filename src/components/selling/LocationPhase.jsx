@@ -90,7 +90,7 @@ function createDataMap(id, team, visits, cash, total) {
 function LocationPhase() {
   const classes = useStyles();
   const [rows, setRows] = useState([]);
-  const [result, setResult] = useState({});
+  // const [result, setResult] = useState({});
   const { player, setPlayer } = useContext(userContext);
   const history = useHistory();
   const [loading, setLoading] = useState(true);
@@ -117,7 +117,7 @@ function LocationPhase() {
           setTeamsCurrentLocation(newData.data.visits);
           let x = 1;
           const tv = [];
-          const labels = ['Cash', 'Visits'];
+          // const labels = ['Cash', 'Visits'];
           const teams = [];
           Object.entries(amountSpentByTeam).forEach(([key, value]) => {
             const team = key;
@@ -127,7 +127,7 @@ function LocationPhase() {
             vis = teamVisits.length > 0 ? teamVisits[0].visitCount : 0.00;
             const total = parseFloat(cash) + parseFloat(vis);
             // eslint-disable-next-line no-nested-ternary
-            datasets.push(createData(team, cash, vis));
+            // datasets.push(createData(team, cash, vis));
             tv.push(createDataMap(x, team, vis, cash, total));
             teams.push(team);
             x += 1;
@@ -147,7 +147,7 @@ function LocationPhase() {
             tv[i].id = i + 1;
           }
           setCurrentLocationId(currentLocationForTeam);
-          setResult({ labels, datasets });
+          // setResult({ labels, datasets });
           setRows(tv);
           setLocationPageTimerValue(locationPhaseTimerValue);
           if (roundNumber) {
