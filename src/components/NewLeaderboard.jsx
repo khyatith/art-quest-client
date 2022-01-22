@@ -65,7 +65,7 @@ export default function NewLeaderboard({ hasAuctionTimerEnded }) {
 
   const renderLeaderboard = () => {
     const {
-      totalAmountByTeam, totalPaintingsWonByTeams, teamRanks,
+      totalAmountByTeam, totalPaintingsWonByTeams, teamRanks, totalArtScoreForTeams,
     } = leaderboardData;
     // if (!leaderboard) return <></>;
     return (
@@ -73,11 +73,10 @@ export default function NewLeaderboard({ hasAuctionTimerEnded }) {
         <Table className={classes.table} aria-label="customized table">
           <TableHead>
             <TableRow>
-              {/* <StyledTableCell>Rank</StyledTableCell> */}
               <StyledTableCell>Team</StyledTableCell>
               <StyledTableCell align="right">Total Paintings</StyledTableCell>
+              <StyledTableCell align="right">Art Score</StyledTableCell>
               <StyledTableCell align="right">Debt</StyledTableCell>
-              {/* <StyledTableCell align="right">Efficiency</StyledTableCell> */}
             </TableRow>
           </TableHead>
           <TableBody>
@@ -85,23 +84,16 @@ export default function NewLeaderboard({ hasAuctionTimerEnded }) {
               const teamName = entry[0];
               return (
                 <TableRow key={teamName} style={{ backgroundColor: `${TEAM_COLOR_MAP[teamName]}` }}>
-                  {/* <StyledTableCell align="right">
-                    {i + 1}
-                  </StyledTableCell> */}
                   <StyledTableCell align="right">
                     {teamName}
                   </StyledTableCell>
                   <StyledTableCell align="right">{totalPaintingsWonByTeams[`${teamName}`]}</StyledTableCell>
+                  <StyledTableCell align="right">{parseFloat(totalArtScoreForTeams[`${teamName}`]).toFixed(2)}</StyledTableCell>
                   <StyledTableCell component="th" scope="row" align="right">
                     $
                     {parseFloat(totalAmountByTeam[`${teamName}`])}
                     M
                   </StyledTableCell>
-                  {/* <StyledTableCell align="right">
-                    $
-                    {parseFloat(teamEfficiency[`${teamName}`])}
-                    M
-                  </StyledTableCell> */}
                 </TableRow>
               );
             })}
