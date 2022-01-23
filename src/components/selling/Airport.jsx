@@ -90,6 +90,19 @@ const Airport = ({
   useEffect(() => {
     async function getMapVal() {
       const { data } = await axios.get(`${API_URL}/buying/getMap`);
+      for(var i=0;i<data.length;++i) {
+        if(data[i].cityId == previousLocationId) {
+          if((locations.filter((v) => (v == previousLocationId)).length)>=2) {
+            for(var j=0;j<data[i].allowedToVisit.length;++j) {
+              if((locations.filter((v) => (v == data[i].allowedToVisit[j])).length)<2) {
+                setSelectedRadio(data[i].allowedToVisit[j]);
+                break;
+              }
+            }
+          }
+          break;
+        }
+      }
       setMapValues(data);
     }
     if (!valRet && !hasLocationSelected) {
