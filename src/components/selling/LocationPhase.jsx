@@ -77,13 +77,14 @@ function createData(team, cash, vis) {
   };
 }
 
-function createDataMap(id, team, visits, cash, total) {
+function createDataMap(id, team, visits, cash, total, artScore) {
   return {
     id,
     team,
     visits,
     cash,
     total,
+    artScore,
   };
 }
 
@@ -112,7 +113,7 @@ function LocationPhase() {
         .get(`${API_URL}/buying/getSellingResults?roomId=${player.hostCode}`)
         .then((newData) => {
           const {
-            amountSpentByTeam, visits, locationPhaseTimerValue, roundNumber, players,
+            amountSpentByTeam, totalArtScoreForTeams, visits, locationPhaseTimerValue, roundNumber, players,
           } = newData.data;
           setTeamsCurrentLocation(newData.data.visits);
           let x = 1;
@@ -125,10 +126,11 @@ function LocationPhase() {
             let vis = 0;
             const teamVisits = visits.filter((v) => v.teamName === key);
             vis = teamVisits.length > 0 ? teamVisits[0].visitCount : 0.00;
+            const artScore = totalArtScoreForTeams[team] || 0;
             const total = parseFloat(cash) + parseFloat(vis);
             // eslint-disable-next-line no-nested-ternary
             // datasets.push(createData(team, cash, vis));
-            tv.push(createDataMap(x, team, vis, cash, total));
+            tv.push(createDataMap(x, team, vis, cash, total, artScore));
             teams.push(team);
             x += 1;
           });
@@ -136,7 +138,7 @@ function LocationPhase() {
             const found = teams.find((val) => val === players[i].teamName);
             if (!found) {
               datasets.push(createData(players[i].teamName, 0, 0));
-              tv.push(createDataMap(x, players[i].teamName, 0, 0, 0));
+              tv.push(createDataMap(x, players[i].teamName, 0, 0, 0, 0));
               x += 1;
             }
           }
