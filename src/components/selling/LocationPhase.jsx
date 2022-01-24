@@ -102,6 +102,7 @@ function LocationPhase() {
   const [selectedLocationId, setSelectedLocId] = useState();
   const [currentLocationId, setCurrentLocationId] = useState();
   const [teamsCurrentLocation, setTeamsCurrentLocation] = useState();
+  const [allLocationHistory, setAllLocationHistory] = useState([]);
   const [currentRoundData, setCurrentRoundData] = useState(false);
 
   // Hooks and methods
@@ -144,6 +145,8 @@ function LocationPhase() {
           }
           const currentTeamVisits = visits.filter((v) => v.teamName === player.teamName);
           const currentLocationForTeam = currentTeamVisits.length === 0 ? 2 : currentTeamVisits[0].currentLocation;
+          const locationHistory = currentTeamVisits.length === 0 ? [] : currentTeamVisits[0].allVisitLocations;
+          setAllLocationHistory(locationHistory);
           tv.sort((a, b) => b.total - a.total);
           for (let i = 0; i < tv.length; ++i) {
             tv[i].id = i + 1;
@@ -279,6 +282,7 @@ function LocationPhase() {
             selectedLocationId={selectedLocationId}
             previousLocationId={currentLocationId}
             allLocationDetails={teamsCurrentLocation}
+            locations={allLocationHistory}
           />
         </div>
         <div className={classes.child2}>

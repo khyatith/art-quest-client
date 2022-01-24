@@ -50,14 +50,14 @@ const useStyles = makeStyles(() => ({
 }));
 
 const Airport = ({
-  roundNumber, hasLocationSelected, selectedLocationId, previousLocationId, allLocationDetails,
+  roundNumber, hasLocationSelected, selectedLocationId, previousLocationId, allLocationDetails, locations,
 }) => {
   const classes = useStyles();
   const [mapValues, setMapValues] = useState({});
   // const [teamValues, setTeamValues] = useState({});
   const [valRet, setValRet] = useState(false);
   const { player, setPlayer } = useContext(userContext);
-  const [selectedRadio, setSelectedRadio] = useState();
+  const [selectedRadio, setSelectedRadio] = useState(previousLocationId);
   const [updatedLocation, setUpdatedLocation] = useState(false);
 
   const setVisitLocation = async () => {
@@ -72,13 +72,13 @@ const Airport = ({
   const updateLocName = useCallback(() => {
     let locName;
     Object.entries(mapValues).forEach((val) => {
-      if (parseInt(val[1].cityId, 10) === selectedLocationId) {
+      if (parseInt(val[1].cityId, 10) === parseInt(selectedLocationId, 10)) {
         locName = val[1].cityName;
       }
     });
     const updatedPlayer = {
       ...player,
-      currentLocation: selectedLocationId,
+      currentLocation: parseInt(selectedLocationId, 10),
       currentLocationName: locName,
     };
     setPlayer(updatedPlayer);
@@ -90,6 +90,19 @@ const Airport = ({
   useEffect(() => {
     async function getMapVal() {
       const { data } = await axios.get(`${API_URL}/buying/getMap`);
+      for (let i = 0; i < data.length; ++i) {
+        if (parseInt(data[i].cityId, 10) === parseInt(previousLocationId, 10)) {
+          if ((locations.filter((v) => (parseInt(v, 10) === parseInt(previousLocationId, 10))).length) >= 2) {
+            for (let j = 0; j < data[i].allowedToVisit.length; ++j) {
+              if ((locations.filter((v) => (parseInt(v, 10) === parseInt(data[i].allowedToVisit[j], 10))).length) < 2) {
+                setSelectedRadio(parseInt(data[i].allowedToVisit[j], 10));
+                break;
+              }
+            }
+          }
+          break;
+        }
+      }
       setMapValues(data);
     }
     if (!valRet && !hasLocationSelected) {
@@ -112,7 +125,8 @@ const Airport = ({
   const getLocationNameById = () => {
     let result;
     Object.entries(mapValues).forEach((val) => {
-      if (parseInt(val[1].cityId, 10) === previousLocationId) {
+      if (parseInt(val[1].cityId, 10) === parseInt(previousLocationId, 10)) {
+        console.log('inside if');
         result = val[1].cityName;
       }
     });
@@ -128,18 +142,21 @@ const Airport = ({
             <p style={{ marginTop: '40px' }}>Fly to : </p>
             {Object.entries(mapValues).map((items) => {
               const totalCon = items[1].allowedToVisit;
-              if (items[1].cityId === player.previousLocation) {
+              if (!totalCon.includes(previousLocationId)) {
+                totalCon.push(previousLocationId);
+              }
+              if (parseInt(items[1].cityId, 10) === parseInt(previousLocationId, 10)) {
                 return (
                   <>
                     {totalCon.map((tloc) => {
-                      const obj = mapValues.find((x) => x.cityId === tloc);
+                      const obj = mapValues.find((x) => parseInt(x.cityId, 10) === parseInt(tloc, 10));
                       return (
                         <div className={classes.radio} key={obj.cityId}>
                           <input
                             type="radio"
                             value={obj.cityId}
                             key={obj.cityId}
-                            disabled={hasLocationSelected}
+                            disabled={hasLocationSelected || (locations.filter((v) => (parseInt(v, 10) === parseInt(obj.cityId, 10))).length) >= 2}
                             name="location"
                             checked={parseInt(selectedRadio, 10) === parseInt(obj.cityId, 10)}
                             onChange={updateSelectedLocation}
