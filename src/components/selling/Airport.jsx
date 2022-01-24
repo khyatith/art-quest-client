@@ -72,13 +72,13 @@ const Airport = ({
   const updateLocName = useCallback(() => {
     let locName;
     Object.entries(mapValues).forEach((val) => {
-      if (parseInt(val[1].cityId, 10) === selectedLocationId) {
+      if (parseInt(val[1].cityId, 10) === parseInt(selectedLocationId, 10)) {
         locName = val[1].cityName;
       }
     });
     const updatedPlayer = {
       ...player,
-      currentLocation: selectedLocationId,
+      currentLocation: parseInt(selectedLocationId, 10),
       currentLocationName: locName,
     };
     setPlayer(updatedPlayer);
@@ -91,11 +91,11 @@ const Airport = ({
     async function getMapVal() {
       const { data } = await axios.get(`${API_URL}/buying/getMap`);
       for (let i = 0; i < data.length; ++i) {
-        if (parseInt(data[i].cityId, 10) === previousLocationId) {
-          if ((locations.filter((v) => (parseInt(v, 10) === previousLocationId)).length) >= 2) {
+        if (parseInt(data[i].cityId, 10) === parseInt(previousLocationId, 10)) {
+          if ((locations.filter((v) => (parseInt(v, 10) === parseInt(previousLocationId, 10))).length) >= 2) {
             for (let j = 0; j < data[i].allowedToVisit.length; ++j) {
-              if ((locations.filter((v) => (parseInt(v, 10) === data[i].allowedToVisit[j])).length) < 2) {
-                setSelectedRadio(data[i].allowedToVisit[j]);
+              if ((locations.filter((v) => (parseInt(v, 10) === parseInt(data[i].allowedToVisit[j], 10))).length) < 2) {
+                setSelectedRadio(parseInt(data[i].allowedToVisit[j], 10));
                 break;
               }
             }
@@ -125,14 +125,11 @@ const Airport = ({
   const getLocationNameById = () => {
     let result;
     Object.entries(mapValues).forEach((val) => {
-      console.log('val[1].cityId', val[1].cityId);
-      console.log('previousLocationId', previousLocationId);
       if (parseInt(val[1].cityId, 10) === parseInt(previousLocationId, 10)) {
         console.log('inside if');
         result = val[1].cityName;
       }
     });
-    console.log('result >>>>>', result);
     return result;
   };
 
@@ -148,11 +145,11 @@ const Airport = ({
               if (!totalCon.includes(previousLocationId)) {
                 totalCon.push(previousLocationId);
               }
-              if (items[1].cityId === player.previousLocation) {
+              if (parseInt(items[1].cityId, 10) === parseInt(previousLocationId, 10)) {
                 return (
                   <>
                     {totalCon.map((tloc) => {
-                      const obj = mapValues.find((x) => x.cityId === tloc);
+                      const obj = mapValues.find((x) => parseInt(x.cityId, 10) === parseInt(tloc, 10));
                       return (
                         <div className={classes.radio} key={obj.cityId}>
                           <input

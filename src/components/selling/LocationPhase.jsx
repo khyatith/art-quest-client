@@ -117,12 +117,6 @@ function LocationPhase() {
             amountSpentByTeam, totalArtScoreForTeams, visits, locationPhaseTimerValue, roundNumber, players,
           } = newData.data;
           setTeamsCurrentLocation(newData.data.visits);
-          // for (let i = 0; i < visits.length; ++i) {
-          //   if (locationHistory[i].teamName === player.teamName) {
-          //     setAllLocationHistory(locationHistory[i].allVisitLocations);
-          //   }
-          // }
-          // console.log(allLocationHistory);
           let x = 1;
           const tv = [];
           // const labels = ['Cash', 'Visits'];
