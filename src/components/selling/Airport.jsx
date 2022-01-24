@@ -90,11 +90,11 @@ const Airport = ({
   useEffect(() => {
     async function getMapVal() {
       const { data } = await axios.get(`${API_URL}/buying/getMap`);
-      for(var i=0;i<data.length;++i) {
-        if(data[i].cityId == previousLocationId) {
-          if((locations.filter((v) => (v == previousLocationId)).length)>=2) {
-            for(var j=0;j<data[i].allowedToVisit.length;++j) {
-              if((locations.filter((v) => (v == data[i].allowedToVisit[j])).length)<2) {
+      for (let i = 0; i < data.length; ++i) {
+        if (parseInt(data[i].cityId, 10) === previousLocationId) {
+          if ((locations.filter((v) => (parseInt(v, 10) === previousLocationId)).length) >= 2) {
+            for (let j = 0; j < data[i].allowedToVisit.length; ++j) {
+              if ((locations.filter((v) => (parseInt(v, 10) === data[i].allowedToVisit[j])).length) < 2) {
                 setSelectedRadio(data[i].allowedToVisit[j]);
                 break;
               }
@@ -125,10 +125,14 @@ const Airport = ({
   const getLocationNameById = () => {
     let result;
     Object.entries(mapValues).forEach((val) => {
-      if (parseInt(val[1].cityId, 10) === previousLocationId) {
+      console.log('val[1].cityId', val[1].cityId);
+      console.log('previousLocationId', previousLocationId);
+      if (parseInt(val[1].cityId, 10) === parseInt(previousLocationId, 10)) {
+        console.log('inside if');
         result = val[1].cityName;
       }
     });
+    console.log('result >>>>>', result);
     return result;
   };
 
@@ -141,7 +145,7 @@ const Airport = ({
             <p style={{ marginTop: '40px' }}>Fly to : </p>
             {Object.entries(mapValues).map((items) => {
               const totalCon = items[1].allowedToVisit;
-              if(!totalCon.includes(previousLocationId)) {
+              if (!totalCon.includes(previousLocationId)) {
                 totalCon.push(previousLocationId);
               }
               if (items[1].cityId === player.previousLocation) {
@@ -155,7 +159,7 @@ const Airport = ({
                             type="radio"
                             value={obj.cityId}
                             key={obj.cityId}
-                            disabled={hasLocationSelected || (locations.filter((v) => (v == obj.cityId)).length)>=2}
+                            disabled={hasLocationSelected || (locations.filter((v) => (parseInt(v, 10) === parseInt(obj.cityId, 10))).length) >= 2}
                             name="location"
                             checked={parseInt(selectedRadio, 10) === parseInt(obj.cityId, 10)}
                             onChange={updateSelectedLocation}

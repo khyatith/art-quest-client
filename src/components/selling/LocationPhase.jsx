@@ -114,15 +114,15 @@ function LocationPhase() {
         .get(`${API_URL}/buying/getSellingResults?roomId=${player.hostCode}`)
         .then((newData) => {
           const {
-            amountSpentByTeam, totalArtScoreForTeams, visits, locationPhaseTimerValue, roundNumber, players, locationHistory,
+            amountSpentByTeam, totalArtScoreForTeams, visits, locationPhaseTimerValue, roundNumber, players,
           } = newData.data;
           setTeamsCurrentLocation(newData.data.visits);
-          for(var i=0;i<locationHistory.length;++i) {
-            if(locationHistory[i].teamName==player.teamName) {
-              setAllLocationHistory(locationHistory[i].allVisitLocations);
-            }
-          }
-          console.log(allLocationHistory);
+          // for (let i = 0; i < visits.length; ++i) {
+          //   if (locationHistory[i].teamName === player.teamName) {
+          //     setAllLocationHistory(locationHistory[i].allVisitLocations);
+          //   }
+          // }
+          // console.log(allLocationHistory);
           let x = 1;
           const tv = [];
           // const labels = ['Cash', 'Visits'];
@@ -151,6 +151,8 @@ function LocationPhase() {
           }
           const currentTeamVisits = visits.filter((v) => v.teamName === player.teamName);
           const currentLocationForTeam = currentTeamVisits.length === 0 ? 2 : currentTeamVisits[0].currentLocation;
+          const locationHistory = currentTeamVisits.length === 0 ? [] : currentTeamVisits[0].allVisitLocations;
+          setAllLocationHistory(locationHistory);
           tv.sort((a, b) => b.total - a.total);
           for (let i = 0; i < tv.length; ++i) {
             tv[i].id = i + 1;
