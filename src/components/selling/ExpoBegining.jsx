@@ -163,6 +163,8 @@ function ExpoBeginning() {
   const [bidAmtError, setBidAmtError] = useState();
   const [hasSentEnglishAuctionRequest, setHasSentEnglishAuctionRequest] = useState(false);
   const [hasRevenueUpdated, setHasRevenueUpdated] = useState(false);
+  const [calculatedRevenue, setCalculatedRevenue] = useState();
+  const [ticketPriceFromAPI, setTicketPriceFromapi] = useState();
   const history = useHistory();
 
   const handleExpandClick = (index) => {
@@ -288,6 +290,12 @@ function ExpoBeginning() {
         setNominatedPaintings((existingValues) => [data.paintingId, ...existingValues]);
         if (data.teamName === user.teamName) {
           setPaintingSelected(data.paintingId);
+          setTicketPriceFromapi(data.ticketPrice);
+          if (timerValue?.total <= 5000) {
+            setCalculatedRevenue(data.calculatedRevenue);
+          } else {
+            setTimeout(() => setCalculatedRevenue(data.calculatedRevenue), 5000);
+          }
         }
       }
     });
@@ -366,6 +374,27 @@ function ExpoBeginning() {
   const loadCardSelection = () => (
     <CardContent className={classes.paintOpt}>
       <Typography>Thank you for nominating this painting. You will see your earnings when the timer ends.</Typography>
+      {
+        !calculatedRevenue && <h3>Calculating your team's earning...</h3>
+      }
+      {
+        calculatedRevenue
+        && (
+          <div>
+            <h3>
+              Your ticket price:
+              $
+              {ticketPriceFromAPI}
+            </h3>
+            <h3>
+              Your earning:
+              $
+              {calculatedRevenue}
+              M
+            </h3>
+          </div>
+        )
+      }
     </CardContent>
   );
 

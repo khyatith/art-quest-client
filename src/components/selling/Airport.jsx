@@ -189,15 +189,15 @@ const Airport = ({
             && allLocationDetails.map((arg) => {
               let ind = -1;
               for (let i = 0; i < mapValues.length; i++) {
-                if (mapValues[i].cityId === arg.currentLocation) {
-                  ind = i;
+                if (mapValues[parseInt(i, 10)].cityId === parseInt(arg.currentLocation, 10)) {
+                  ind = parseInt(i, 10);
                   break;
                 }
               }
               return (
                 <div className={classes.child1}>
                   <div className={classes.teammark} style={{ backgroundColor: TEAM_COLOR_MAP[arg.teamName], borderRadius: '100%' }} />
-                  <div style={{ margin: 'auto', textAlign: 'center' }}>{ind !== -1 && mapValues[ind].cityName}</div>
+                  <div style={{ margin: 'auto', textAlign: 'center' }}>{parseInt(ind, 10) !== -1 && mapValues[parseInt(ind, 10)].cityName}</div>
                 </div>
               );
             })}
