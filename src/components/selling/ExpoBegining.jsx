@@ -188,13 +188,13 @@ function ExpoBeginning() {
       roomCode: user.hostCode,
       interestInArt,
       population: demand,
-      cityId: user.currentLocationName,
+      cityId: user.currentLocation,
       teamName: user.teamName,
       paintingQuality: val,
       artifactId: paintingId,
       ticketPrice: ticketVal,
       roundId: user.roundId,
-      allTeamsInCity: otherTeams.length,
+      allTeamsInCity: otherTeams.length || 1,
     });
   };
 
