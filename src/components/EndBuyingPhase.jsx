@@ -70,6 +70,7 @@ function EndBuyingPhase() {
   const [teamsByRank, setTeamsByRank] = useState([]);
   // const [showWinner, setShowWinner] = useState(false);
   const [totalPaintingsWonByTeam, setTotalPaintingsWonByTeam] = useState({});
+  const [totalArtScore, setTotalArtScore] = useState({});
   // const { setPlayer } = useContext(userContext);
   // const { setLeaderboardData } = useContext(leaderboardContext);
   // const [sortedTeamsByPaintingsWon, setSortedTeamsByPaintingsWon] = useState({});
@@ -81,6 +82,7 @@ function EndBuyingPhase() {
 
   const getWinner = async () => {
     const { data } = await axios.get(`${API_URL}/buying/getWinner/${player.hostCode}`);
+    console.log('data', data);
     if (data && data.leaderBoard) {
       const { teamName } = player;
       const allTeamArt = data.leaderBoard[teamName];
@@ -101,6 +103,10 @@ function EndBuyingPhase() {
     if (data && data.totalAmountSpentByTeam) {
       setTotalDebtByTeam(data.totalAmountSpentByTeam);
     }
+    if (data && data.totalArtScoreForTeams) {
+      console.log('data', data);
+      setTotalArtScore(data.totalArtScoreForTeams);
+    }
   };
 
   useEffect(() => {
@@ -114,6 +120,7 @@ function EndBuyingPhase() {
       key,
       debt: totalDebtByTeam[key],
       totalPaintings: totalPaintingsWonByTeam[key],
+      totalArtScoreForTeam: totalArtScore[key],
       // efficiency: teamEfficiency[key],
     }));
     return (
@@ -125,6 +132,7 @@ function EndBuyingPhase() {
               <TableRow>
                 <StyledTableCell>Team</StyledTableCell>
                 <StyledTableCell align="right">Total paintings</StyledTableCell>
+                <StyledTableCell align="right">Art score</StyledTableCell>
                 <StyledTableCell align="right">Debt</StyledTableCell>
                 {/* <StyledTableCell align="right">Efficiency</StyledTableCell> */}
               </TableRow>
@@ -136,6 +144,7 @@ function EndBuyingPhase() {
                     {row.key}
                   </StyledTableCell>
                   <StyledTableCell align="right">{row.totalPaintings}</StyledTableCell>
+                  <StyledTableCell align="right">{row.totalArtScoreForTeam}</StyledTableCell>
                   <StyledTableCell align="right">{formatNumberToCurrency(parseFloat(row.debt))}</StyledTableCell>
                   {/* <StyledTableCell align="right">{formatNumberToCurrency(parseFloat(row.efficiency))}</StyledTableCell> */}
                 </TableRow>
@@ -189,7 +198,7 @@ function EndBuyingPhase() {
   return (
     <>
       <Header />
-      {teamsByRank && totalPaintingsWonByTeam && renderLeaderboardData()}
+      {teamsByRank && totalPaintingsWonByTeam && totalArtScore && renderLeaderboardData()}
       {/* <div style={{ margin: '40px auto', textAlign: 'center' }}>
         <Button className={classes.btnform} variant="contained" onClick={resetApplication}>
           Start New Game

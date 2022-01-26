@@ -357,7 +357,7 @@ function EnglishAuction({
             <NewLeaderboard hasAuctionTimerEnded={hasAuctionTimerEnded} />
           </Grid>
           <Grid item xs={12}>
-            <h3>Enter the max bid you can pay for this painting</h3>
+            <h3>You can also enter the maximum amount you want to pay for this art piece</h3>
             <TextField
               inputRef={maxBidInputRef}
               error={!!maxBidAmtError}

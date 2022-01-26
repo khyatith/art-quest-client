@@ -128,7 +128,7 @@ function LocationPhase() {
             const teamVisits = visits.filter((v) => v.teamName === key);
             vis = teamVisits.length > 0 ? teamVisits[0].visitCount : 0.00;
             const artScore = totalArtScoreForTeams[team] || 0;
-            const total = parseFloat(cash) + parseFloat(vis);
+            const total = parseFloat(cash) + parseFloat(vis) + parseFloat(artScore);
             // eslint-disable-next-line no-nested-ternary
             // datasets.push(createData(team, cash, vis));
             tv.push(createDataMap(x, team, vis, cash, total, artScore));
@@ -144,7 +144,7 @@ function LocationPhase() {
             }
           }
           const currentTeamVisits = visits.filter((v) => v.teamName === player.teamName);
-          const currentLocationForTeam = currentTeamVisits.length === 0 ? 2 : currentTeamVisits[0].currentLocation;
+          const currentLocationForTeam = currentTeamVisits.length === 0 ? 10 : currentTeamVisits[0].currentLocation;
           const locationHistory = currentTeamVisits.length === 0 ? [] : currentTeamVisits[0].allVisitLocations;
           setAllLocationHistory(locationHistory);
           tv.sort((a, b) => b.total - a.total);

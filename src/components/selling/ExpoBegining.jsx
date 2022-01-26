@@ -196,7 +196,7 @@ function ExpoBeginning() {
       artifactId: paintingId,
       ticketPrice: ticketVal,
       roundId: user.roundId,
-      allTeamsInCity: otherTeams.length || 1,
+      allTeamsInCity: otherTeams.length,
     });
   };
 
