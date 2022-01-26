@@ -92,9 +92,9 @@ const Airport = ({
       const { data } = await axios.get(`${API_URL}/buying/getMap`);
       for (let i = 0; i < data.length; ++i) {
         if (parseInt(data[i].cityId, 10) === parseInt(previousLocationId, 10)) {
-          if ((locations.filter((v) => (parseInt(v, 10) === parseInt(previousLocationId, 10))).length) >= 2) {
+          if ((locations.filter((v) => (parseInt(v, 10) === parseInt(previousLocationId, 10))).length) >= 1) {
             for (let j = 0; j < data[i].allowedToVisit.length; ++j) {
-              if ((locations.filter((v) => (parseInt(v, 10) === parseInt(data[i].allowedToVisit[j], 10))).length) < 2) {
+              if ((locations.filter((v) => (parseInt(v, 10) === parseInt(data[i].allowedToVisit[j], 10))).length) < 1) {
                 setSelectedRadio(parseInt(data[i].allowedToVisit[j], 10));
                 break;
               }
@@ -156,7 +156,7 @@ const Airport = ({
                             type="radio"
                             value={obj.cityId}
                             key={obj.cityId}
-                            disabled={hasLocationSelected || (locations.filter((v) => (parseInt(v, 10) === parseInt(obj.cityId, 10))).length) >= 2}
+                            disabled={hasLocationSelected || (locations.filter((v) => (parseInt(v, 10) === parseInt(obj.cityId, 10))).length) >= 1}
                             name="location"
                             checked={parseInt(selectedRadio, 10) === parseInt(obj.cityId, 10)}
                             onChange={updateSelectedLocation}

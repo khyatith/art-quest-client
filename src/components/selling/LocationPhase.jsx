@@ -104,8 +104,45 @@ function LocationPhase() {
   const [teamsCurrentLocation, setTeamsCurrentLocation] = useState();
   const [allLocationHistory, setAllLocationHistory] = useState([]);
   const [currentRoundData, setCurrentRoundData] = useState(false);
+  const [valRet, setValRet] = useState(false);
+  const [selectedValue, setSelectedValue] = useState(1);
 
   // Hooks and methods
+
+
+  const setRandomVisitLocation = async (v) => {
+    console.log(v);
+    socket.emit('putRandomCurrentLocation', {
+      roomId: player.hostCode,
+      locationId: v,
+      teamName: player.teamName,
+      roundId: roundId,
+    });
+  };
+
+  useEffect(() => {
+    async function getMapVal() {
+      const { data } = await axios.get(`${API_URL}/buying/getMap`);
+      for (let i = 0; i < data.length; ++i) {
+        if (parseInt(data[i].cityId, 10) === parseInt(currentLocationId, 10)) {
+          if ((allLocationHistory.filter((v) => (parseInt(v, 10) === parseInt(currentLocationId, 10))).length) >= 1) {
+            for (let j = 0; j < data[i].allowedToVisit.length; ++j) {
+              if ((allLocationHistory.filter((v) => (parseInt(v, 10) === parseInt(data[i].allowedToVisit[j], 10))).length) < 1) {
+                setSelectedValue(parseInt(data[i].allowedToVisit[j], 10));
+                break;
+              }
+            }
+          }
+          break;
+        }
+      }
+    }
+    if (!valRet && currentLocationId && allLocationHistory.length >0) {
+      getMapVal();
+      setValRet(true);
+    }
+  }, [valRet]);
+
   useEffect(() => {
     if (!currentRoundData) {
       setLoading(true);
@@ -114,18 +151,19 @@ function LocationPhase() {
         .get(`${API_URL}/buying/getSellingResults?roomId=${player.hostCode}`)
         .then((newData) => {
           const {
-            amountSpentByTeam, totalArtScoreForTeams, visits, locationPhaseTimerValue, roundNumber, players,
+            amountSpentByTeam, totalArtScoreForTeams, visits, locationPhaseTimerValue, roundNumber, players, allTeams,
           } = newData.data;
           setTeamsCurrentLocation(newData.data.visits);
+          console.log(visits);
           let x = 1;
           const tv = [];
           // const labels = ['Cash', 'Visits'];
           const teams = [];
-          Object.entries(amountSpentByTeam).forEach(([key, value]) => {
-            const team = key;
-            const cash = value;
+          allTeams.forEach((value) => {
+            const team = value;
+            const cash = amountSpentByTeam[team] || 0;
             let vis = 0;
-            const teamVisits = visits.filter((v) => v.teamName === key);
+            const teamVisits = visits.filter((v) => v.teamName === team);
             vis = teamVisits.length > 0 ? teamVisits[0].visitCount : 0.00;
             const artScore = totalArtScoreForTeams[team] || 0;
             const total = parseFloat(cash) + parseFloat(vis) + parseFloat(artScore);
@@ -135,14 +173,14 @@ function LocationPhase() {
             teams.push(team);
             x += 1;
           });
-          for (let i = 1; i < players.length; ++i) {
+          /*for (let i = 1; i < players.length; ++i) {
             const found = teams.find((val) => val === players[i].teamName);
             if (!found) {
               datasets.push(createData(players[i].teamName, 0, 0));
               tv.push(createDataMap(x, players[i].teamName, 0, 0, 0, 0));
               x += 1;
             }
-          }
+          }*/
           const currentTeamVisits = visits.filter((v) => v.teamName === player.teamName);
           const currentLocationForTeam = currentTeamVisits.length === 0 ? 10 : currentTeamVisits[0].currentLocation;
           const locationHistory = currentTeamVisits.length === 0 ? [] : currentTeamVisits[0].allVisitLocations;
@@ -191,6 +229,9 @@ function LocationPhase() {
     const total = parseInt(locationPageTimerValue.total, 10) - 1000;
     const seconds = Math.floor((parseInt(total, 10) / 1000) % 60);
     const minutes = Math.floor((parseInt(total, 10) / 1000 / 60) % 60);
+    if(total<5000) {
+      setRandomVisitLocation(selectedValue);
+    }
     if (total < 1000) {
       socket.emit('locationPhaseTimerEnded', { player });
       if (!selectedLocationId) {
