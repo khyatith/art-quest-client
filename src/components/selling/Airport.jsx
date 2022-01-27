@@ -71,14 +71,18 @@ const Airport = ({
 
   const updateLocName = useCallback(() => {
     let locName;
+    let selectedLoc = selectedLocationId;
+    if ((locations.filter((v) => (parseInt(v, 10) === parseInt(previousLocationId, 10))).length) >= 2) {
+      selectedLoc = selectedRadio;
+    }
     Object.entries(mapValues).forEach((val) => {
-      if (parseInt(val[1].cityId, 10) === parseInt(selectedLocationId, 10)) {
+      if (parseInt(val[1].cityId, 10) === parseInt(selectedLoc, 10)) {
         locName = val[1].cityName;
       }
     });
     const updatedPlayer = {
       ...player,
-      currentLocation: parseInt(selectedLocationId, 10),
+      currentLocation: parseInt(selectedLoc, 10),
       currentLocationName: locName,
     };
     setPlayer(updatedPlayer);
