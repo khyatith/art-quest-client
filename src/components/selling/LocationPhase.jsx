@@ -104,44 +104,8 @@ function LocationPhase() {
   const [teamsCurrentLocation, setTeamsCurrentLocation] = useState();
   const [allLocationHistory, setAllLocationHistory] = useState([]);
   const [currentRoundData, setCurrentRoundData] = useState(false);
-  const [valRet, setValRet] = useState(false);
-  const [selectedValue, setSelectedValue] = useState(1);
 
   // Hooks and methods
-
-
-  const setRandomVisitLocation = async (v) => {
-    console.log(v);
-    socket.emit('putRandomCurrentLocation', {
-      roomId: player.hostCode,
-      locationId: v,
-      teamName: player.teamName,
-      roundId: roundId,
-    });
-  };
-
-  useEffect(() => {
-    async function getMapVal() {
-      const { data } = await axios.get(`${API_URL}/buying/getMap`);
-      for (let i = 0; i < data.length; ++i) {
-        if (parseInt(data[i].cityId, 10) === parseInt(currentLocationId, 10)) {
-          if ((allLocationHistory.filter((v) => (parseInt(v, 10) === parseInt(currentLocationId, 10))).length) >= 1) {
-            for (let j = 0; j < data[i].allowedToVisit.length; ++j) {
-              if ((allLocationHistory.filter((v) => (parseInt(v, 10) === parseInt(data[i].allowedToVisit[j], 10))).length) < 1) {
-                setSelectedValue(parseInt(data[i].allowedToVisit[j], 10));
-                break;
-              }
-            }
-          }
-          break;
-        }
-      }
-    }
-    if (!valRet && currentLocationId && allLocationHistory.length >0) {
-      getMapVal();
-      setValRet(true);
-    }
-  }, [valRet]);
 
   useEffect(() => {
     if (!currentRoundData) {
@@ -229,9 +193,6 @@ function LocationPhase() {
     const total = parseInt(locationPageTimerValue.total, 10) - 1000;
     const seconds = Math.floor((parseInt(total, 10) / 1000) % 60);
     const minutes = Math.floor((parseInt(total, 10) / 1000 / 60) % 60);
-    if(total<5000) {
-      setRandomVisitLocation(selectedValue);
-    }
     if (total < 1000) {
       socket.emit('locationPhaseTimerEnded', { player });
       if (!selectedLocationId) {
