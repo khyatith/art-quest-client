@@ -30,10 +30,10 @@ const Details = (props) => {
             <TableRow>
               <StyledTableCell>Rank</StyledTableCell>
               <StyledTableCell align="right">Team</StyledTableCell>
+              <StyledTableCell align="right">Cash</StyledTableCell>
+              <StyledTableCell align="right">Cash Points</StyledTableCell>
               <StyledTableCell align="right">Visits</StyledTableCell>
               <StyledTableCell align="right">Art Score</StyledTableCell>
-              <StyledTableCell align="right">Total Cash&nbsp;($)</StyledTableCell>
-              <StyledTableCell align="right">Cash</StyledTableCell>
               <StyledTableCell align="right">Total</StyledTableCell>
             </TableRow>
           </TableHead>
@@ -47,10 +47,10 @@ const Details = (props) => {
                     {row.id}
                   </StyledTableCell>
                   <StyledTableCell align="right">{row.team}</StyledTableCell>
-                  <StyledTableCell align="right">{row.visits}</StyledTableCell>
-                  <StyledTableCell align="right">{parseFloat(row.artScore).toFixed(2)}</StyledTableCell>
                   <StyledTableCell align="right">{`$${row.cash}M`}</StyledTableCell>
                   <StyledTableCell align="right">{formattedCash}</StyledTableCell>
+                  <StyledTableCell align="right">{row.visits}</StyledTableCell>
+                  <StyledTableCell align="right">{parseFloat(row.artScore).toFixed(2)}</StyledTableCell>
                   <StyledTableCell align="right">{parseFloat(total).toFixed(2)}</StyledTableCell>
                 </TableRow>
               );

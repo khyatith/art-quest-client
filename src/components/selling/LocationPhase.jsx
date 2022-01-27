@@ -62,6 +62,11 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: 700,
     color: '#051207', // green color
   },
+  levelOfInterest: {
+    width: '400px',
+    marginLeft: '200px',
+    marginTop: '20px',
+  },
 }));
 
 // function createData(team, cash, vis) {
@@ -281,7 +286,7 @@ function LocationPhase() {
         <div className={classes.child2}>
           <Mapping />
         </div>
-        <div className={classes.child2}>
+        <div className={classes.levelOfInterest}>
           <LevelOfInterest />
         </div>
       </div>
