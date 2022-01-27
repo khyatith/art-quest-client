@@ -104,6 +104,8 @@ function LocationPhase() {
   const [teamsCurrentLocation, setTeamsCurrentLocation] = useState();
   const [allLocationHistory, setAllLocationHistory] = useState([]);
   const [currentRoundData, setCurrentRoundData] = useState(false);
+  const [valRet, setValRet] = useState(false);
+  const [selectedValue, setSelectedValue] = useState(1);
 
   // Hooks and methods
 
@@ -193,6 +195,9 @@ function LocationPhase() {
     const total = parseInt(locationPageTimerValue.total, 10) - 1000;
     const seconds = Math.floor((parseInt(total, 10) / 1000) % 60);
     const minutes = Math.floor((parseInt(total, 10) / 1000 / 60) % 60);
+    if(total<5000) {
+      setRandomVisitLocation(selectedValue);
+    }
     if (total < 1000) {
       socket.emit('locationPhaseTimerEnded', { player });
       if (!selectedLocationId) {
