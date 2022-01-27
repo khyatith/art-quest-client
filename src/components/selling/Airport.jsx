@@ -160,7 +160,7 @@ const Airport = ({
                             type="radio"
                             value={obj.cityId}
                             key={obj.cityId}
-                            disabled={hasLocationSelected || (locations.filter((v) => (parseInt(v, 10) === parseInt(obj.cityId, 10))).length) >= 2}
+                            disabled={hasLocationSelected || (locations.filter((v) => (parseInt(v, 10) === parseInt(obj.cityId, 10))).length) >= 1}
                             name="location"
                             checked={parseInt(selectedRadio, 10) === parseInt(obj.cityId, 10)}
                             onChange={updateSelectedLocation}

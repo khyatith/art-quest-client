@@ -10,7 +10,7 @@ import Airport from './Airport';
 // import BarGraph from './BarGraph';
 import Details from './Details';
 import Mapping from './Mapping';
-import { API_URL, TEAM_COLOR_MAP } from '../../global/constants';
+import { API_URL } from '../../global/constants';
 import load from '../../assets/load.webp';
 import { socket } from '../../global/socket';
 import RoundsInfo from '../RoundsInfo';
@@ -64,18 +64,18 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function createData(team, cash, vis) {
-  const str = [];
-  const formattedCash = parseFloat((cash) / 10).toFixed(2);
-  str.push(formattedCash);
-  str.push(vis);
-  return {
-    label: team,
-    backgroundColor: TEAM_COLOR_MAP[team],
-    data: str,
-    barThickness: 25,
-  };
-}
+// function createData(team, cash, vis) {
+//   const str = [];
+//   const formattedCash = parseFloat((cash) / 10).toFixed(2);
+//   str.push(formattedCash);
+//   str.push(vis);
+//   return {
+//     label: team,
+//     backgroundColor: TEAM_COLOR_MAP[team],
+//     data: str,
+//     barThickness: 25,
+//   };
+// }
 
 function createDataMap(id, team, visits, cash, total, artScore) {
   return {
@@ -106,26 +106,27 @@ function LocationPhase() {
   const [currentRoundData, setCurrentRoundData] = useState(false);
 
   // Hooks and methods
+
   useEffect(() => {
     if (!currentRoundData) {
       setLoading(true);
-      const datasets = [];
       axios
         .get(`${API_URL}/buying/getSellingResults?roomId=${player.hostCode}`)
         .then((newData) => {
           const {
-            amountSpentByTeam, totalArtScoreForTeams, visits, locationPhaseTimerValue, roundNumber, players,
+            amountSpentByTeam, totalArtScoreForTeams, visits, locationPhaseTimerValue, roundNumber, allTeams,
           } = newData.data;
           setTeamsCurrentLocation(newData.data.visits);
+          console.log(visits);
           let x = 1;
           const tv = [];
           // const labels = ['Cash', 'Visits'];
           const teams = [];
-          Object.entries(amountSpentByTeam).forEach(([key, value]) => {
-            const team = key;
-            const cash = value;
+          allTeams.forEach((value) => {
+            const team = value;
+            const cash = amountSpentByTeam[team] || 0;
             let vis = 0;
-            const teamVisits = visits.filter((v) => v.teamName === key);
+            const teamVisits = visits.filter((v) => v.teamName === team);
             vis = teamVisits.length > 0 ? teamVisits[0].visitCount : 0.00;
             const artScore = totalArtScoreForTeams[team] || 0;
             const total = parseFloat(cash) + parseFloat(vis) + parseFloat(artScore);
@@ -135,14 +136,6 @@ function LocationPhase() {
             teams.push(team);
             x += 1;
           });
-          for (let i = 1; i < players.length; ++i) {
-            const found = teams.find((val) => val === players[i].teamName);
-            if (!found) {
-              datasets.push(createData(players[i].teamName, 0, 0));
-              tv.push(createDataMap(x, players[i].teamName, 0, 0, 0, 0));
-              x += 1;
-            }
-          }
           const currentTeamVisits = visits.filter((v) => v.teamName === player.teamName);
           const currentLocationForTeam = currentTeamVisits.length === 0 ? 10 : currentTeamVisits[0].currentLocation;
           const locationHistory = currentTeamVisits.length === 0 ? [] : currentTeamVisits[0].allVisitLocations;

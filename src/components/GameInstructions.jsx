@@ -92,7 +92,7 @@ function GameInstructions() {
   useEffect(() => {
     if (playersJoinedInfo) {
       const { numberOfPlayers, playersJoined } = playersJoinedInfo;
-      if (numberOfPlayers <= playersJoined) {
+      if (false) {
         setTimeout(() => startGame(), 1000);
       }
     }
