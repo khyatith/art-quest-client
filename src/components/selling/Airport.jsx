@@ -96,9 +96,9 @@ const Airport = ({
       const { data } = await axios.get(`${API_URL}/buying/getMap`);
       for (let i = 0; i < data.length; ++i) {
         if (parseInt(data[i].cityId, 10) === parseInt(previousLocationId, 10)) {
-          if ((locations.filter((v) => (parseInt(v, 10) === parseInt(previousLocationId, 10))).length) >= 1) {
+          if ((locations.filter((v) => (parseInt(v, 10) === parseInt(previousLocationId, 10))).length) >= 2) {
             for (let j = 0; j < data[i].allowedToVisit.length; ++j) {
-              if ((locations.filter((v) => (parseInt(v, 10) === parseInt(data[i].allowedToVisit[j], 10))).length) < 1) {
+              if ((locations.filter((v) => (parseInt(v, 10) === parseInt(data[i].allowedToVisit[j], 10))).length) < 2) {
                 setSelectedRadio(parseInt(data[i].allowedToVisit[j], 10));
                 break;
               }
