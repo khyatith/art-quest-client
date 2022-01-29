@@ -384,7 +384,7 @@ function EnglishAuction({
             { maxBidSetForTeam
                 && (
                 <p>
-                  * Your team has already bid the max amount
+                  * Your team's max amount has been registered.
                 </p>
                 )}
           </Grid>

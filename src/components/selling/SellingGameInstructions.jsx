@@ -18,6 +18,7 @@ const useStyles = makeStyles(() => ({
     fontSize: '36px',
     fontWeight: '700',
     color: '#76e246',
+    marginTop: '50px',
   },
   p: {
     fontSize: '18px',
@@ -49,15 +50,6 @@ function SellingGameInstructions() {
         <p className={classes.title}>Art Quest - Phase 2</p>
         <p className={classes.p}>Now that you have your favorite art collection, you have to earn money from it!</p>
         <p className={classes.p}>You can travel the world and put your art in museums in that city to collect money from it.</p>
-        <p className={classes.p}>
-          Remember, you have to maximize
-          {' '}
-          <span>CASH</span>
-          {' '}
-          and
-          {' '}
-          <span>VISITS</span>
-        </p>
         <p className={classes.p}>Good Luck!</p>
       </div>
     </>
