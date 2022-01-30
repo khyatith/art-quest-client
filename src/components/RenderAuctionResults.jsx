@@ -39,20 +39,21 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: 700,
     color: '#051207', // green color
   },
-  media: {
-    height: 300,
-  },
   cardroot: {
-    height: 300,
+    flex: '0 1 25%',
   },
   root: {
-    display: 'flex',
-    margin: '5% 15% 5% 15%',
+    flex: '0 1 33%',
+  },
+  paper1: {
+    marginLeft: '10%',
+    flex: '0 1 33%',
+    height: '100%',
+    marginRight: '5%',
   },
   paper: {
-    maxWidth: '570px',
     marginLeft: '10%',
-    height: '100%',
+    flex: '0 1 33%',
   },
 }));
 
@@ -73,6 +74,7 @@ const RenderAuctionResults = ({ getNextAuctionObj }) => {
   const player = JSON.parse(sessionStorage.getItem('user'));
   const [auctionResultTimer, setAuctionResultTimer] = useState();
   const [auctionResult, setAuctionResult] = useState();
+  const [auctionMaxBids, setAuctionMaxBids] = useState();
   const [hasResultRequested, setHasResultRequested] = useState(false);
   const [auctionWinner, setAuctionWinner] = useState();
   const { currentAuctionData } = useContext(auctionContext);
@@ -98,9 +100,15 @@ const RenderAuctionResults = ({ getNextAuctionObj }) => {
       const { auctionType, id } = currentAuctionData.currentAuctionObj;
       const url = `${API_URL}/buying/getAuctionResults/${player.hostCode}/${id}/${auctionType}`;
       const { data } = await axios.get(url);
-      const { result, auctionResultTimerValue, winner } = data;
+      const {
+        result,
+        auctionResultTimerValue,
+        winner,
+        maxBids,
+      } = data;
       setAuctionResultTimer(auctionResultTimerValue);
       setAuctionResult(result);
+      setAuctionMaxBids(maxBids);
       setAuctionWinner(winner);
     }
     if (!hasResultRequested) {
@@ -123,6 +131,53 @@ const RenderAuctionResults = ({ getNextAuctionObj }) => {
     });
   });
 
+  const renderAuctionMaxBids = () => (
+    <TableContainer className={classes.paper1} component={Paper}>
+      <Table aria-label="auctions result table">
+        <TableHead>
+          <TableRow>
+            <StyledTableCell>Team</StyledTableCell>
+            <StyledTableCell align="left">Max bids by teams</StyledTableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {auctionMaxBids
+            && auctionMaxBids.map((entry) => {
+              const { bidTeam, bidAmount } = entry || {};
+              return (
+                <TableRow key={bidTeam} style={{ backgroundColor: `${TEAM_COLOR_MAP[bidTeam]}` }}>
+                  { bidTeam && <StyledTableCell align="left">{bidTeam}</StyledTableCell> }
+                  { bidAmount
+                  && (
+                  <StyledTableCell align="left">
+                    $
+                    {bidAmount}
+                    M
+                  </StyledTableCell>
+                  )}
+                </TableRow>
+              );
+            })}
+        </TableBody>
+      </Table>
+    </TableContainer>
+  );
+
+  const renderWinnerCard = () => (
+    <Card className={classes.cardroot}>
+      {auctionWinner
+      && (
+        <CardHeader
+          style={{ backgroundColor: TEAM_COLOR_MAP[auctionWinner.team] }}
+          title={`Team ${auctionWinner.team} won, for: $${auctionWinner.bid}M`}
+        />
+      )}
+      <CardActionArea>
+        <CardMedia component="img" image={currentAuctionData.currentAuctionObj.imageURL} title={currentAuctionData.currentAuctionObj.name} />
+      </CardActionArea>
+    </Card>
+  );
+
   const setAuctionResults = () => {
     if (!auctionResult || auctionResult.length === 0) {
       return (
@@ -131,30 +186,13 @@ const RenderAuctionResults = ({ getNextAuctionObj }) => {
         </div>
       );
     }
-    const { auctionObj } = auctionResult[0];
     return (
       <>
-        <h3 style={{ marginTop: '10%', textAlign: 'center' }}>
-          Round&nbsp;
-          {auctionResult[0].auctionObj.id}
-          &nbsp;
-          result
-        </h3>
+        { auctionResult[0]
+        && (
         <div className={classes.root}>
-          <Card className={classes.cardroot}>
-            {auctionWinner
-            && (
-              <CardHeader
-                style={{ backgroundColor: TEAM_COLOR_MAP[auctionWinner.team] }}
-                title={`Team ${auctionWinner.team} won, for: $${auctionWinner.bid}M`}
-              />
-            )}
-            <CardActionArea>
-              <CardMedia className={classes.media} component="img" image={auctionObj.imageURL} title={auctionObj.name} />
-            </CardActionArea>
-          </Card>
           <TableContainer className={classes.paper} component={Paper}>
-            <Table className={classes.table} aria-label="auctions result table">
+            <Table aria-label="auctions result table">
               <TableHead>
                 <TableRow>
                   <StyledTableCell>Team</StyledTableCell>
@@ -183,6 +221,7 @@ const RenderAuctionResults = ({ getNextAuctionObj }) => {
             </Table>
           </TableContainer>
         </div>
+        )}
       </>
     );
   };
@@ -211,13 +250,29 @@ const RenderAuctionResults = ({ getNextAuctionObj }) => {
           )}
         </Toolbar>
       </AppBar>
-      {auctionResult && auctionResult.length > 0 ? (
-        setAuctionResults()
-      ) : (
-        <div style={{ margin: '15%', textAlign: 'center' }}>
-          <h2>No bids were placed for this round</h2>
-        </div>
-      )}
+      <h3 style={{ marginTop: '10%', textAlign: 'center' }}>
+        Round&nbsp;
+        {currentAuctionData.currentAuctionObj.id}
+        &nbsp;
+        result
+      </h3>
+      <div style={{ display: 'flex', marginTop: '5%', marginLeft: '5%' }}>
+        {auctionWinner
+        && (
+          renderWinnerCard()
+        )}
+        {auctionResult && auctionResult.length > 0 ? (
+          setAuctionResults()
+        ) : (
+          <div style={{ margin: '25%', textAlign: 'center' }}>
+            <h2>No bids were placed for this round</h2>
+          </div>
+        )}
+        {auctionMaxBids && auctionMaxBids.length > 0
+        && (
+          renderAuctionMaxBids()
+        )}
+      </div>
     </div>
   );
 };
