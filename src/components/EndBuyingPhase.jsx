@@ -198,6 +198,16 @@ function EndBuyingPhase() {
   return (
     <>
       <Header />
+      <div style={{
+        textAlign: 'center',
+        marginTop: '40px',
+        backgroundColor: '#000000',
+        padding: '20px',
+        color: '#76e246',
+      }}
+      >
+        <h3>Starting Phase 2 in 15 seconds ...</h3>
+      </div>
       {teamsByRank && totalPaintingsWonByTeam && totalArtScore && renderLeaderboardData()}
       {/* <div style={{ margin: '40px auto', textAlign: 'center' }}>
         <Button className={classes.btnform} variant="contained" onClick={resetApplication}>

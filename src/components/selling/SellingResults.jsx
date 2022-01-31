@@ -38,7 +38,7 @@ const useStyles = makeStyles((theme) => ({
   },
   typomid: {
     textAlign: 'center',
-    marginTop: '20px',
+    marginTop: '80px',
   },
   typomidnew: {
     textAlign: 'center',

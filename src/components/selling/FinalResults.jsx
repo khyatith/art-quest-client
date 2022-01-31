@@ -22,14 +22,15 @@ const StyledTableCell = withStyles((theme) => ({
   },
 }))(TableCell);
 
-function createDataMap(id, team, visits, cash, total, totalArtScore) {
+function createDataMap(id, team, visits, cash, total, totalArtScore, cashPoints) {
   return {
     id,
     team,
     visits,
     cash,
-    total,
+    total: parseFloat(total).toFixed(2),
     totalArtScore,
+    cashPoints,
   };
 }
 
@@ -56,8 +57,9 @@ function FinalResults() {
             let vis = 0;
             const teamVisits = visits.filter((v) => v.teamName === key);
             vis = teamVisits.length > 0 ? teamVisits[0].visitCount : 0.0;
-            const total = parseFloat(cash) + parseFloat(vis) + parseFloat(totalArtScore);
-            tv.push(createDataMap(x, team, vis, cash, total, totalArtScore));
+            const formattedCash = parseFloat((cash) / 10).toFixed(2);
+            const total = parseFloat(formattedCash) + parseFloat(vis) + parseFloat(totalArtScore);
+            tv.push(createDataMap(x, team, vis, cash, total, totalArtScore, formattedCash));
             x += 1;
           });
           tv.sort((a, b) => b.total - a.total);
@@ -132,10 +134,10 @@ function FinalResults() {
               <TableRow>
                 <StyledTableCell>Rank</StyledTableCell>
                 <StyledTableCell align="right">Team</StyledTableCell>
+                <StyledTableCell align="right">Cash</StyledTableCell>
+                <StyledTableCell align="right">Cash points</StyledTableCell>
                 <StyledTableCell align="right">Visits</StyledTableCell>
                 <StyledTableCell align="right">Art score</StyledTableCell>
-                <StyledTableCell align="right">Total Cash&nbsp;($)</StyledTableCell>
-                <StyledTableCell align="right">Cash</StyledTableCell>
                 <StyledTableCell align="right">Total</StyledTableCell>
               </TableRow>
             </TableHead>
@@ -146,10 +148,10 @@ function FinalResults() {
                     {row.id}
                   </StyledTableCell>
                   <StyledTableCell align="right">{row.team}</StyledTableCell>
+                  <StyledTableCell align="right">{`$${row.cash}M`}</StyledTableCell>
+                  <StyledTableCell align="right">{row.cashPoints}</StyledTableCell>
                   <StyledTableCell align="right">{row.visits}</StyledTableCell>
                   <StyledTableCell align="right">{row.totalArtScore}</StyledTableCell>
-                  <StyledTableCell align="right">{`$${row.cash}M`}</StyledTableCell>
-                  <StyledTableCell align="right">{row.cash}</StyledTableCell>
                   <StyledTableCell align="right">{row.total}</StyledTableCell>
                 </TableRow>
               ))}
