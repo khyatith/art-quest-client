@@ -222,8 +222,8 @@ function LocationPhase() {
 
   useEffect(() => {
     socket.on('locationUpdatedForTeam', (data) => {
-      if (data.roundId === roundId && data.teamName === player.teamName) {
-        setLocationSelectedForCurrentRound(true, data.locationId);
+      if (parseInt(data.roundId, 10) === parseInt(roundId, 10) && data.teamName === player.teamName) {
+        setLocationSelectedForCurrentRound(true, parseInt(data.locationId, 10));
       }
     });
   });
