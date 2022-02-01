@@ -226,6 +226,7 @@ function LocationPhase() {
       console.log('roundId', roundId);
       console.log('player.teamName', player.teamName);
       if (parseInt(data.roundId, 10) === parseInt(roundId, 10) && data.teamName === player.teamName) {
+        console.log('inside if condition satisfied');
         setLocationSelectedForCurrentRound(true, parseInt(data.locationId, 10));
       }
     });
