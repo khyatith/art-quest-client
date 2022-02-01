@@ -222,6 +222,9 @@ function LocationPhase() {
 
   useEffect(() => {
     socket.on('locationUpdatedForTeam', (data) => {
+      console.log('data in locationUpdatedForTeam', data);
+      console.log('roundId', roundId);
+      console.log('player.teamName', player.teamName);
       if (parseInt(data.roundId, 10) === parseInt(roundId, 10) && data.teamName === player.teamName) {
         setLocationSelectedForCurrentRound(true, parseInt(data.locationId, 10));
       }
