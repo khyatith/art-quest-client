@@ -75,11 +75,13 @@ const Airport = ({
     if ((locations.filter((v) => (parseInt(v, 10) === parseInt(previousLocationId, 10))).length) >= 2) {
       selectedLoc = selectedRadio;
     }
+    console.log('selectedLoc', selectedLoc);
     Object.entries(mapValues).forEach((val) => {
       if (parseInt(val[1].cityId, 10) === parseInt(selectedLoc, 10)) {
         locName = val[1].cityName;
       }
     });
+    console.log('locname', locName);
     const updatedPlayer = {
       ...player,
       currentLocation: parseInt(selectedLoc, 10),

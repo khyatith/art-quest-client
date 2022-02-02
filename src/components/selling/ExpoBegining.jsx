@@ -220,7 +220,7 @@ function ExpoBeginning() {
       }
       setTimerValue(sellPaintingTimerValue);
     }
-    if (!paintings || !cityData) {
+    if (paintings.length === 0 || !cityData) {
       getSellingInfo();
     }
   }, [user, cityData, paintings]);

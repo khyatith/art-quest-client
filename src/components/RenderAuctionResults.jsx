@@ -257,7 +257,7 @@ const RenderAuctionResults = ({ getNextAuctionObj }) => {
         result
       </h3>
       <div style={{ display: 'flex', marginTop: '5%', marginLeft: '5%' }}>
-        {auctionWinner
+        {auctionWinner && Object.keys(auctionWinner).length > 0
         && (
           renderWinnerCard()
         )}
