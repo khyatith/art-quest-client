@@ -22,14 +22,20 @@ const useStyles = makeStyles((theme) => ({
     flexWrap: 'wrap',
     marginBottom: '30px',
   },
+  parent2: {
+    display: 'flex',
+    flexWrap: 'nowrap',
+    marginBottom: '30px',
+  },
   bargraph: {
-    flex: '0 2 35%',
+    flex: '0 2 40%',
     marginTop: '50px',
   },
   child2: {
-    flex: '0 2 50%',
+    flex: '0 1 50%',
     marginTop: '1%',
     marginBottom: '30px',
+    marginRight: '100px',
   },
   airport: {
     flex: '0 2 20%',
@@ -65,8 +71,8 @@ const useStyles = makeStyles((theme) => ({
     color: '#051207', // green color
   },
   levelOfInterest: {
-    width: '400px',
-    marginLeft: '200px',
+    flex: '0 1 50%',
+    maxWidth: '400px',
     marginTop: '20px',
     textAlign: 'center',
   },
@@ -290,7 +296,7 @@ function LocationPhase() {
         </div>
       </div>
       <hr />
-      <div className={classes.parent}>
+      <div className={classes.parent2}>
         <div className={classes.child2}>
           <Mapping />
         </div>
