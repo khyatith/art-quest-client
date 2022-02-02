@@ -71,7 +71,7 @@ const Airport = ({
 
   const updateLocName = useCallback(() => {
     let locName;
-    let selectedLoc = selectedLocationId;
+    const selectedLoc = selectedLocationId;
     // if ((locations.filter((v) => (parseInt(v, 10) === parseInt(previousLocationId, 10))).length) >= 2) {
     //   selectedLoc = selectedRadio;
     // }
