@@ -11,7 +11,7 @@ const RoundsInfo = ({ label, marginTop }) => {
       height: theme.spacing(3),
       color: '#ffffff',
       fontWeight: 700,
-      marginLeft: '20px',
+      marginLeft: '10px',
       marginTop: marginTop || '80px',
       fontSize: '15px',
       padding: '10px',

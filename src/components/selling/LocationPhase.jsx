@@ -7,10 +7,10 @@ import { Typography } from '@material-ui/core';
 import { useHistory } from 'react-router-dom';
 import userContext from '../../global/userContext';
 import Airport from './Airport';
-// import BarGraph from './BarGraph';
+import BarGraph from './BarGraph';
 import Details from './Details';
 import Mapping from './Mapping';
-import { API_URL } from '../../global/constants';
+import { API_URL, TEAM_COLOR_MAP } from '../../global/constants';
 import load from '../../assets/load.webp';
 import { socket } from '../../global/socket';
 import RoundsInfo from '../RoundsInfo';
@@ -20,22 +20,24 @@ const useStyles = makeStyles((theme) => ({
   parent: {
     display: 'flex',
     flexWrap: 'wrap',
+    marginBottom: '30px',
   },
-  child1: {
-    flex: '0 2 50%' /* explanation below */,
-    marginTop: '0.5%',
-    paddingBottom: '0.5%',
-    borderBottom: '0.8%',
-    borderTop: '0',
-    borderLeft: '0',
-    borderRight: '0',
-    borderColor: 'rgb(214,214,218)',
-    borderStyle: 'solid',
+  bargraph: {
+    flex: '0 2 35%',
+    marginTop: '50px',
   },
   child2: {
-    flex: '0 2 48%' /* explanation below */,
+    flex: '0 2 50%',
     marginTop: '1%',
     marginBottom: '30px',
+  },
+  airport: {
+    flex: '0 2 20%',
+    marginTop: '0.5%',
+  },
+  resultstable: {
+    flex: '0 2 35%',
+    marginTop: '0.5%',
   },
   resultsText: {
     display: 'block',
@@ -66,21 +68,23 @@ const useStyles = makeStyles((theme) => ({
     width: '400px',
     marginLeft: '200px',
     marginTop: '20px',
+    textAlign: 'center',
   },
 }));
 
-// function createData(team, cash, vis) {
-//   const str = [];
-//   const formattedCash = parseFloat((cash) / 10).toFixed(2);
-//   str.push(formattedCash);
-//   str.push(vis);
-//   return {
-//     label: team,
-//     backgroundColor: TEAM_COLOR_MAP[team],
-//     data: str,
-//     barThickness: 25,
-//   };
-// }
+function createData(team, cash, vis, artScore) {
+  const str = [];
+  const formattedCash = parseFloat((cash) / 10).toFixed(2);
+  str.push(formattedCash);
+  str.push(vis);
+  str.push(artScore);
+  return {
+    label: team,
+    backgroundColor: TEAM_COLOR_MAP[team],
+    data: str,
+    barThickness: 25,
+  };
+}
 
 function createDataMap(id, team, visits, cash, total, artScore) {
   return {
@@ -96,7 +100,7 @@ function createDataMap(id, team, visits, cash, total, artScore) {
 function LocationPhase() {
   const classes = useStyles();
   const [rows, setRows] = useState([]);
-  // const [result, setResult] = useState({});
+  const [result, setResult] = useState({});
   const { player, setPlayer } = useContext(userContext);
   const history = useHistory();
   const [loading, setLoading] = useState(true);
@@ -113,6 +117,7 @@ function LocationPhase() {
   // Hooks and methods
 
   useEffect(() => {
+    const datasets = [];
     if (!currentRoundData) {
       setLoading(true);
       axios
@@ -125,7 +130,7 @@ function LocationPhase() {
           console.log(visits);
           let x = 1;
           const tv = [];
-          // const labels = ['Cash', 'Visits'];
+          const labels = ['Cash Points', 'Visits', 'Art Score'];
           const teams = [];
           allTeams.forEach((value) => {
             const team = value;
@@ -136,7 +141,7 @@ function LocationPhase() {
             const artScore = totalArtScoreForTeams[team] || 0;
             const total = parseFloat(cash) + parseFloat(vis) + parseFloat(artScore);
             // eslint-disable-next-line no-nested-ternary
-            // datasets.push(createData(team, cash, vis));
+            datasets.push(createData(team, cash, vis, artScore));
             tv.push(createDataMap(x, team, vis, cash, total, artScore));
             teams.push(team);
             x += 1;
@@ -150,7 +155,7 @@ function LocationPhase() {
             tv[i].id = i + 1;
           }
           setCurrentLocationId(currentLocationForTeam);
-          // setResult({ labels, datasets });
+          setResult({ labels, datasets });
           setRows(tv);
           setLocationPageTimerValue(locationPhaseTimerValue);
           if (roundNumber) {
@@ -266,14 +271,14 @@ function LocationPhase() {
       </AppBar>
       <RoundsInfo label={`Round ${roundId} of 10`} />
       <div className={classes.parent}>
-        <div className={classes.child1}>
+        <div className={classes.resultstable}>
           <p className={classes.resultsText}>Results</p>
           <Details rows={rows} />
         </div>
-        {/* <div className={classes.child1}>
+        <div className={classes.bargraph}>
           <BarGraph result={result} />
-        </div> */}
-        <div className={classes.child1}>
+        </div>
+        <div className={classes.airport}>
           <Airport
             roundNumber={roundId}
             hasLocationSelected={hasLocationSelected}
@@ -283,10 +288,14 @@ function LocationPhase() {
             locations={allLocationHistory}
           />
         </div>
+      </div>
+      <hr />
+      <div className={classes.parent}>
         <div className={classes.child2}>
           <Mapping />
         </div>
         <div className={classes.levelOfInterest}>
+          <h3>Level of Interest In Art</h3>
           <LevelOfInterest />
         </div>
       </div>

@@ -23,7 +23,7 @@ const StyledTableCell = withStyles((theme) => ({
 const Details = (props) => {
   const { rows } = props;
   return (
-    <div style={{ marginLeft: '10%', marginRight: '10%', marginTop: '2%' }}>
+    <div style={{ marginTop: '2%', marginLeft: '10px' }}>
       <TableContainer component={Paper}>
         <Table sx={{ minWidth: 700 }} aria-label="customized table">
           <TableHead>
