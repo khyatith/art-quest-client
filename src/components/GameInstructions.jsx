@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
+// import List from '@material-ui/core/List';
+// import ListItem from '@material-ui/core/ListItem';
+// import ListItemText from '@material-ui/core/ListItemText';
 import { useHistory } from 'react-router-dom';
-import StarIcon from '@material-ui/icons/Star';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
+// import StarIcon from '@material-ui/icons/Star';
+// import ListItemIcon from '@material-ui/core/ListItemIcon';
 import axios from 'axios';
 import { socket } from '../global/socket';
 import userContext from '../global/userContext';
@@ -27,6 +27,7 @@ const useStyles = makeStyles(() => ({
     fontSize: '36px',
     fontWeight: '700',
     color: '#76e246',
+    marginTop: '50px',
   },
   listcontainer: {
     textAlign: 'center',
@@ -93,7 +94,7 @@ function GameInstructions() {
     if (playersJoinedInfo) {
       const { numberOfPlayers, playersJoined } = playersJoinedInfo;
       if (numberOfPlayers <= playersJoined) {
-        setTimeout(() => startGame(), 1000);
+        setTimeout(() => startGame(), 10000);
       }
     }
   }, [playersJoinedInfo]);
@@ -103,29 +104,16 @@ function GameInstructions() {
       {version === 1 && (
         <div className={classes.container}>
           <Header />
-          <p className={classes.title}>Instructions</p>
-          <p>(30 seconds to read)</p>
-          <p className={classes.p}>Your challenge, should you choose to accept it, is to create your favorite art collection.</p>
-          <p className={classes.p}>
-            How will you do it? By taking part in
-            {' '}
-            <span>AUCTIONS</span>
-            {' '}
-            and by putting
-            {' '}
-            <span>BIDS</span>
-            {' '}
-            on your favorite art pieces.
-          </p>
-          <List className={classes.listcontainer} dense>
+          <p className={classes.title}>Art Quest Phase-1</p>
+          {/* <List className={classes.listcontainer} dense>
             <ListItem className={classes.listitem}>
               <ListItemIcon>
                 <StarIcon style={{ color: '#76e246' }} />
               </ListItemIcon>
               <ListItemText className={classes.listtext} primary="Create your FAVORITE art collection" />
             </ListItem>
-          </List>
-          <p className={classes.p}>Let the bidding wars begin!</p>
+          </List> */}
+          {/* <p className={classes.p}>Let the bidding wars begin!</p> */}
           {playersJoinedInfo && playersJoinedInfo.playersJoined !== playersJoinedInfo.numberOfPlayers ? (
             <div style={{ border: '5px solid #76e246' }}>
               <h3>

@@ -337,11 +337,11 @@ function ExpoBeginning() {
   const loadCardContent = (index) => (
     <CardContent className={classes.paintOpt}>
       <p style={{ color: '#000000', fontWeight: '700', marginBottom: '25px' }}>
-        How much would you charge 1 person to see your painting in
+        Enter per person ticket price to display this art piece in
         {' '}
         {user.currentLocationName}
         {' '}
-        museum?
+        museum
       </p>
       <TextField
         id="textfield"
@@ -373,7 +373,6 @@ function ExpoBeginning() {
 
   const loadCardSelection = () => (
     <CardContent className={classes.paintOpt}>
-      <Typography>Thank you for nominating this painting. You will see your earnings when the timer ends.</Typography>
       {
         !calculatedRevenue && <h3>Calculating your team's earning...</h3>
       }
@@ -385,6 +384,8 @@ function ExpoBeginning() {
               Your ticket price:
               $
               {ticketPriceFromAPI}
+              {''}
+              per person
             </h3>
             <h3>
               Your earning:

@@ -264,7 +264,7 @@ const RenderAuctionResults = ({ getNextAuctionObj }) => {
         {auctionResult && auctionResult.length > 0 ? (
           setAuctionResults()
         ) : (
-          <div style={{ margin: '25%', textAlign: 'center' }}>
+          <div style={{ margin: '0 auto', textAlign: 'center' }}>
             <h2>No bids were placed for this round</h2>
           </div>
         )}

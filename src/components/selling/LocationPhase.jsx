@@ -28,8 +28,9 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: '30px',
   },
   bargraph: {
-    flex: '0 2 40%',
+    flex: '0 1 33%',
     marginTop: '50px',
+    marginRight: '20px',
   },
   child2: {
     flex: '0 1 50%',
@@ -42,7 +43,7 @@ const useStyles = makeStyles((theme) => ({
     marginTop: '0.5%',
   },
   resultstable: {
-    flex: '0 2 35%',
+    flex: '0 1 35%',
     marginTop: '0.5%',
   },
   resultsText: {
@@ -275,7 +276,7 @@ function LocationPhase() {
             )}
         </Toolbar>
       </AppBar>
-      <RoundsInfo label={`Round ${roundId} of 10`} />
+      <RoundsInfo label={`Round ${roundId} of 7`} />
       <div className={classes.parent}>
         <div className={classes.resultstable}>
           <p className={classes.resultsText}>Results</p>

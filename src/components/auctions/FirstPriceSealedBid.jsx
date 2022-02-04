@@ -23,8 +23,8 @@ import SimpleRating from '../Rating';
 import RoundsInfo from '../RoundsInfo';
 import TeamInfo from '../TeamInfo';
 // import leaderboardContext from '../../global/leaderboardContext';
-import BonusAuctionBanner from '../visualizations/BonusAuctionBanner';
-import { FIRST_PRICED_SEALED_BID_TEXT, API_URL } from '../../global/constants';
+// import BonusAuctionBanner from '../visualizations/BonusAuctionBanner';
+import { API_URL } from '../../global/constants';
 import auctionContext from '../../global/auctionContext';
 // import BuyingGroupedBarChart from '../visualizations/BuyingGroupedBarChart';
 import { validateCurrentBid } from '../../global/helpers';
@@ -262,9 +262,9 @@ function FirstPriceSealedBid({
         </Grid>
         )}
         <Grid item xs={12} sm container spacing={2}>
-          <Grid item xs={5}>
+          {/* <Grid item xs={5}>
             <BonusAuctionBanner text={FIRST_PRICED_SEALED_BID_TEXT} />
-          </Grid>
+          </Grid> */}
           <Grid item xs={7}>
             <NewLeaderboard hasAuctionTimerEnded={hasAuctionTimerEnded} />
           </Grid>

@@ -33,7 +33,7 @@ const BarGraph = (props) => {
   const { result } = props;
   return (
     result && (
-      <div style={{ width: '70%', marginLeft: '10%' }}>
+      <div style={{ marginLeft: '10%' }}>
         <Bar data={result} options={options} />
       </div>
     )
