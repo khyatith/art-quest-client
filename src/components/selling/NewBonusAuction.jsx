@@ -148,7 +148,7 @@ const NewBonusAuction = () => {
         {auctionObj && (
           <Grid item xs={12}>
             <div>
-              <h3>This auction will be closed 30 seconds before the timer ends</h3>
+              <h3>This auction will be closed 15 seconds before the timer ends</h3>
             </div>
             <h3>{auctionObj.name}</h3>
             <Card key={auctionObj.id}>

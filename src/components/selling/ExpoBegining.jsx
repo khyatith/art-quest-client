@@ -523,7 +523,7 @@ function ExpoBeginning() {
           className={classes.child3}
           style={{
             backgroundColor: '#f9f9f9',
-            display: ((timerValue && timerValue.total <= 30000) ? 'block' : 'none'),
+            display: ((timerValue && timerValue.total <= 15000) ? 'block' : 'none'),
           }}
         >
           <NewBonusAuctionResult />

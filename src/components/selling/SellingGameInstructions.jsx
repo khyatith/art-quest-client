@@ -48,6 +48,7 @@ function SellingGameInstructions() {
       <div className={classes.container}>
         <Header />
         <p className={classes.title}>Art Quest - Phase 2</p>
+        <p>Starting in 15 seconds ...</p>
         {/* <p className={classes.p}>Now that you have your favorite art collection, you have to earn money from it!</p>
         <p className={classes.p}>You can travel the world and put your art in museums in that city to collect money from it.</p>
         <p className={classes.p}>Good Luck!</p> */}

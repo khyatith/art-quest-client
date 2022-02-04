@@ -93,7 +93,7 @@ function createData(team, cash, vis, artScore) {
   };
 }
 
-function createDataMap(id, team, visits, cash, total, artScore) {
+function createDataMap(id, team, visits, cash, total, artScore, cashPoints) {
   return {
     id,
     team,
@@ -101,6 +101,7 @@ function createDataMap(id, team, visits, cash, total, artScore) {
     cash,
     total,
     artScore,
+    cashPoints,
   };
 }
 
@@ -146,10 +147,11 @@ function LocationPhase() {
             const teamVisits = visits.filter((v) => v.teamName === team);
             vis = teamVisits.length > 0 ? teamVisits[0].visitCount : 0.00;
             const artScore = totalArtScoreForTeams[team] || 0;
-            const total = parseFloat(cash) + parseFloat(vis) + parseFloat(artScore);
+            const formattedCash = parseFloat((cash) / 10).toFixed(2);
+            const total = parseFloat(formattedCash) + parseFloat(vis) + parseFloat(artScore);
             // eslint-disable-next-line no-nested-ternary
             datasets.push(createData(team, cash, vis, artScore));
-            tv.push(createDataMap(x, team, vis, cash, total, artScore));
+            tv.push(createDataMap(x, team, vis, cash, total, artScore, formattedCash));
             teams.push(team);
             x += 1;
           });
