@@ -123,7 +123,7 @@ function SellingResults(props) {
 
   useEffect(() => {
     socket.on('startNextRound', () => {
-      if (user.roundId < 5) {
+      if (user.roundId < 4) {
         history.push(`/sell/location/${user.playerId}`);
       } else {
         history.push(`/sell/finalresult/${user.playerId}`);

@@ -278,7 +278,7 @@ function LocationPhase() {
             )}
         </Toolbar>
       </AppBar>
-      <RoundsInfo label={`Round ${roundId} of 7`} />
+      <RoundsInfo label={`Round ${roundId} of 4`} />
       <div className={classes.parent}>
         <div className={classes.resultstable}>
           <p className={classes.resultsText}>Results</p>
