@@ -31,7 +31,7 @@ function Mapping() {
   }, [valRet]);
 
   return (
-    <div>
+    <>
       <div style={{
         width: '100%', marginLeft: '5%',
       }}
@@ -70,20 +70,24 @@ function Mapping() {
               </>
             );
           })}
-          {Object.entries(mapValues).map((items) => (
-            <Marker id={items[1].cityName} key={items[1].cityId} coordinates={[items[1].longitude, items[1].latitude]}>
-              <circle r={items[1].demand + 30} fill="#000000" margin="45px" style={{ margin: '45px' }} />
-              <text textAnchor="middle" fill="#FFF" fontSize="12px" fontWeight="700">
-                {items[1].cityName}
-              </text>
-              <text y="15" textAnchor="middle" fill="#FFF" fontSize="12px" fontWeight="700">
-                {`${items[1].demand}M`}
-              </text>
-            </Marker>
-          ))}
+          {Object.entries(mapValues).map((items) => {
+            console.log('items', items[1].transportCost);
+            console.log('typeof', typeof items[1].transportCost);
+            return (
+              <Marker id={items[1].cityName} key={items[1].cityId} coordinates={[items[1].longitude, items[1].latitude]}>
+                <circle r={(items[1].transportCost) / 100000 + 35} fill="#000000" margin="45px" style={{ margin: '45px' }} />
+                <text textAnchor="middle" fill="#FFF" fontSize="12px" fontWeight="700">
+                  {items[1].cityName}
+                </text>
+                <text y="15" textAnchor="middle" fill="#FFF" fontSize="12px" fontWeight="700">
+                  {`$${items[1].transportCost.toLocaleString()}`}
+                </text>
+              </Marker>
+            );
+          })}
         </ComposableMap>
       </div>
-    </div>
+    </>
   );
 }
 
