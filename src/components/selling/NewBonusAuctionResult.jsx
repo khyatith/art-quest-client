@@ -87,7 +87,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const NewBonusAuctionResult = () => {
+const NewBonusAuctionResult = ({ updateSellingBidWinner }) => {
   const obj = sessionStorage.getItem('currentSellingEnglishAuction');
   const auctionObj = obj && JSON.parse(obj);
   const classes = useStyles();
@@ -101,6 +101,7 @@ const NewBonusAuctionResult = () => {
           bidTeam: previousBid.bidTeam,
           bidColor: previousBid.bidColor,
         };
+        updateSellingBidWinner(previousBid);
       }
     });
   }, [previousBidDetails]);

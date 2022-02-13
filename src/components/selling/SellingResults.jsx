@@ -149,12 +149,12 @@ function SellingResults({ location }) {
   };
 
   const loadRevenue = (teamColor, revenueGenerated) => {
-    const { state } = location;
-    const ns = state;
+    const { nominatedPaintings, sellingAuctionBidWinner } = props.location.state;
     if (!paintings || paintings.length === 0) {
       return <h3 style={{ color: '#990000' }}>All teams earned $0. No painting nominations were made.</h3>;
     }
     const teamPaintings = paintings[teamColor];
+    const sellingAuctionSpendingForTeam = sellingAuctionBidWinner && sellingAuctionBidWinner.bidTeam === teamColor ? sellingAuctionBidWinner.bidAmount : 0;
     return (
       <div>
         <Box className={classes.child1} justifyContent="center">
@@ -170,7 +170,7 @@ function SellingResults({ location }) {
                   maxWidth: '355',
                 }}
                 // eslint-disable-next-line no-nested-ternary
-                display={ns.includes(arg.auctionId) ? 'block' : 'none'}
+                display={nominatedPaintings.includes(arg.auctionId) ? 'block' : 'none'}
               >
                 <Card
                   sx={{
@@ -187,7 +187,8 @@ function SellingResults({ location }) {
                     title={`Team ${teamColor}`}
                     subheader={`Round ${user.roundId} earnings: $${revenueGenerated}M`}
                   />
-                  <CardMedia sx={{ height: 338 }} component="img" image={arg.paintingURL} alt="green iguana" />
+                  <h3 style={{ color: 'green', marginLeft: '20px' }}>{`Your spending: $${sellingAuctionSpendingForTeam}M`}</h3>
+                  <CardMedia sx={{ height: 338 }} component="img" image={arg.paintingURL} alt={arg.paintingName} />
                 </Card>
               </Box>
             ))}

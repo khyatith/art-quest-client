@@ -47,7 +47,7 @@ const Details = (props) => {
                     {row.id}
                   </StyledTableCell>
                   <StyledTableCell align="right">{row.team}</StyledTableCell>
-                  <StyledTableCell align="right">{`$${row.cash}M`}</StyledTableCell>
+                  <StyledTableCell align="right">{`$${parseFloat(row.cash).toFixed(2)}M`}</StyledTableCell>
                   <StyledTableCell align="right">{formattedCash}</StyledTableCell>
                   <StyledTableCell align="right">{row.visits}</StyledTableCell>
                   <StyledTableCell align="right">{parseFloat(row.artScore).toFixed(2)}</StyledTableCell>

@@ -165,6 +165,7 @@ function ExpoBeginning() {
   const [hasRevenueUpdated, setHasRevenueUpdated] = useState(false);
   const [calculatedRevenue, setCalculatedRevenue] = useState();
   const [ticketPriceFromAPI, setTicketPriceFromapi] = useState();
+  const [sellingAuctionBidWinner, setSellingAuctionBidWinner] = useState();
   const history = useHistory();
 
   const handleExpandClick = (index) => {
@@ -250,7 +251,7 @@ function ExpoBeginning() {
     socket.on('goToSellingResults', () => {
       history.push({
         pathname: `/sell/result/${user.playerId}`,
-        state: nominatedPaintings,
+        state: { nominatedPaintings, sellingAuctionBidWinner },
       });
     });
   }, [user, history]);
@@ -301,6 +302,10 @@ function ExpoBeginning() {
       }
     });
   }, [nominatedPaintings]);
+
+  const updateSellingBidWinner = (bidObj) => {
+    setSellingAuctionBidWinner(bidObj);
+  };
 
   const renderCityStats = () => {
     const { interestInArt, demand } = cityData;
@@ -543,7 +548,7 @@ function ExpoBeginning() {
             display: ((timerValue && timerValue.total <= 15000) ? 'block' : 'none'),
           }}
         >
-          <NewBonusAuctionResult />
+          <NewBonusAuctionResult updateSellingBidWinner={updateSellingBidWinner} />
         </div>
       </div>
     </>
