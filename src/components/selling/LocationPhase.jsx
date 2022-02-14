@@ -119,6 +119,7 @@ function LocationPhase() {
   const [selectedLocationId, setSelectedLocId] = useState();
   const [currentLocationId, setCurrentLocationId] = useState();
   const [teamsCurrentLocation, setTeamsCurrentLocation] = useState();
+  const [chosenLocationForTeams, setChosenLocationForTeams] = useState();
   const [allLocationHistory, setAllLocationHistory] = useState([]);
   const [currentRoundData, setCurrentRoundData] = useState(false);
 
@@ -236,6 +237,13 @@ function LocationPhase() {
 
   useEffect(() => {
     socket.on('locationUpdatedForTeam', (data) => {
+      const chosenLocation = {
+        ...chosenLocationForTeams,
+        [data.teamName]: data,
+      };
+      console.log('data', data);
+      console.log('chosenLocation', chosenLocation);
+      setChosenLocationForTeams(chosenLocation);
       if (parseInt(data.roundId, 10) === parseInt(roundId, 10) && data.teamName === player.teamName) {
         setLocationSelectedForCurrentRound(true, parseInt(data.locationId, 10));
       }
@@ -295,6 +303,7 @@ function LocationPhase() {
             previousLocationId={currentLocationId}
             allLocationDetails={teamsCurrentLocation}
             locations={allLocationHistory}
+            chosenLocationForTeams={chosenLocationForTeams}
           />
         </div>
       </div>
