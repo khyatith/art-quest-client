@@ -38,7 +38,7 @@ const Details = (props) => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows.map((row) => {
+            {rows && rows.map((row) => {
               const formattedCash = parseFloat((row.cash) / 10).toFixed(2);
               const total = parseFloat(formattedCash) + parseFloat(row.visits) + parseFloat(row.artScore);
               return (

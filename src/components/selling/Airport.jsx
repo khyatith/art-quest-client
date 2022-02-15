@@ -174,7 +174,9 @@ const Airport = ({
       .get(`${API_URL}/buying/getFlyTicketPriceForLocation?roomId=${player.hostCode}`)
       .then((result) => {
         console.log('data', result.data);
-        setTicketPricesForLocations(result.data.ticketPriceByLocation);
+        if (result && result.data && result.data.ticketPriceByLocation) {
+          setTicketPricesForLocations(result.data.ticketPriceByLocation);
+        }
       });
   };
 

@@ -85,6 +85,7 @@ function createData(team, cash, vis, artScore) {
   str.push(formattedCash);
   str.push(vis);
   str.push(artScore);
+  console.log('str?????', str);
   return {
     label: team,
     backgroundColor: TEAM_COLOR_MAP[team],
@@ -150,10 +151,12 @@ function LocationPhase() {
             const cash = amountSpentByTeam[team] || 0;
             let vis = 0;
             const teamVisits = visits.filter((v) => v.teamName === team);
-            vis = teamVisits.length > 0 ? teamVisits[0].visitCount : 0.00;
+            console.log('teamVisits', teamVisits);
+            vis = teamVisits && teamVisits.length > 0 && teamVisits[0].totalVisitPrice ? parseInt(teamVisits[0].totalVisitPrice, 10) : 0.00;
+            console.log('vis', vis);
             const artScore = totalArtScoreForTeams[team] || 0;
             const formattedCash = parseFloat((cash) / 10).toFixed(2);
-            const total = parseFloat(formattedCash) + parseFloat(vis) + parseFloat(artScore);
+            const total = parseFloat(formattedCash) - parseFloat(vis) + parseFloat(artScore);
             // eslint-disable-next-line no-nested-ternary
             datasets.push(createData(team, cash, vis, artScore));
             tv.push(createDataMap(x, team, vis, cash, total, artScore, formattedCash));
@@ -245,12 +248,10 @@ function LocationPhase() {
         ...chosenLocationForTeams,
         [data.teamName]: data,
       };
-      console.log('data', data);
       const ticketPrices = {
         ...ticketPricesForLocations,
         [data.locationId]: data.flyTicketPrice,
       };
-      console.log('ticketPrices', ticketPrices);
       setTicketPricesForLocations(ticketPrices);
       setChosenLocationForTeams(chosenLocation);
       if (parseInt(data.roundId, 10) === parseInt(roundId, 10) && data.teamName === player.teamName) {
