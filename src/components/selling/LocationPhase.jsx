@@ -136,7 +136,9 @@ function LocationPhase() {
           const {
             amountSpentByTeam, totalArtScoreForTeams, visits, locationPhaseTimerValue, roundNumber, allTeams, flyTicketsPrice,
           } = newData.data;
-          setTicketPricesForLocations(flyTicketsPrice.ticketPriceByLocation);
+          if (flyTicketsPrice) {
+            setTicketPricesForLocations(flyTicketsPrice.ticketPriceByLocation);
+          }
           setTeamsCurrentLocation(newData.data.visits);
           console.log(visits);
           let x = 1;
@@ -225,8 +227,7 @@ function LocationPhase() {
 
   useEffect(() => {
     socket.on('goToExpo', () => {
-      console.log('goToexpo', history);
-      // history.push(`/sell/${player.playerId}`);
+      history.push(`/sell/${player.playerId}`);
     });
   }, []);
 

@@ -1,5 +1,5 @@
 import React, {
-  useEffect, useState, useContext, useCallback,
+  useEffect, useState, useContext, useCallback, useRef,
 } from 'react';
 // import PropTypes from 'prop-types';
 import axios from 'axios';
@@ -68,15 +68,15 @@ const Airport = ({
   ticketPricesForLocations,
   setTicketPricesForLocations,
 }) => {
-  console.log('ticketPricesForLocations in airport', ticketPricesForLocations);
   const classes = useStyles();
+  const ticketInputRef = useRef();
   const [mapValues, setMapValues] = useState({});
   // const [teamValues, setTeamValues] = useState({});
   const [valRet, setValRet] = useState(false);
   const { player, setPlayer } = useContext(userContext);
   const [selectedRadio, setSelectedRadio] = useState(previousLocationId);
   const [updatedLocation, setUpdatedLocation] = useState(false);
-  const [flyTicketPrice, setFlyTicketPrice] = useState(0);
+  // const [flyTicketPrice, setFlyTicketPrice] = useState(0);
   const [flyInputError, setFlyInputError] = useState(null);
   // const [selectedLocationTicketPrice, setSelectedLocationTicketPrice] = useState();
 
@@ -92,6 +92,7 @@ const Airport = ({
   // };
 
   const setVisitLocation = () => {
+    const flyTicketPrice = ticketInputRef.current.value;
     const isValidTicketPrice = validateCurrentBid(flyTicketPrice);
     if (!isValidTicketPrice) {
       setFlyInputError('Please enter a valid ticket price');
@@ -105,10 +106,6 @@ const Airport = ({
         flyTicketPrice,
       });
     }
-  };
-
-  const handleTicketPriceChange = (e) => {
-    setFlyTicketPrice(e.target.value);
   };
 
   const updateLocName = useCallback(() => {
@@ -224,7 +221,7 @@ const Airport = ({
                         </div>
                       );
                     })}
-                    { Object.keys(ticketPricesForLocations).length > 0
+                    { ticketPricesForLocations && Object.keys(ticketPricesForLocations).length > 0
                     && (
                       <h4>
                         {`Current price in ${getLocationNameById(selectedRadio)} is
@@ -232,13 +229,13 @@ const Airport = ({
                       </h4>
                     )}
                     <TextField
+                      inputRef={ticketInputRef}
                       error={!!flyInputError}
                       helperText={flyInputError && flyInputError}
                       className={classes.form}
                       name="ticketPrice"
                       label="Enter ticket price"
                       variant="outlined"
-                      onChange={handleTicketPriceChange}
                       InputProps={{
                         startAdornment: <InputAdornment position="start">$</InputAdornment>,
                       }}
