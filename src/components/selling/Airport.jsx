@@ -58,8 +58,17 @@ const useStyles = makeStyles(() => ({
 }));
 
 const Airport = ({
-  roundNumber, hasLocationSelected, selectedLocationId, previousLocationId, allLocationDetails, locations, chosenLocationForTeams,
+  roundNumber,
+  hasLocationSelected,
+  selectedLocationId,
+  previousLocationId,
+  allLocationDetails,
+  locations,
+  chosenLocationForTeams,
+  ticketPricesForLocations,
+  setTicketPricesForLocations,
 }) => {
+  console.log('ticketPricesForLocations in airport', ticketPricesForLocations);
   const classes = useStyles();
   const [mapValues, setMapValues] = useState({});
   // const [teamValues, setTeamValues] = useState({});
@@ -69,8 +78,22 @@ const Airport = ({
   const [updatedLocation, setUpdatedLocation] = useState(false);
   const [flyTicketPrice, setFlyTicketPrice] = useState(0);
   const [flyInputError, setFlyInputError] = useState(null);
+  const [selectedLocationTicketPrice, setSelectedLocationTicketPrice] = useState();
 
-  const setVisitLocation = async () => {
+  const updateSelectedLocationTicketPrice = () => {
+    Object.entries(ticketPricesForLocations).forEach(([key, value]) => {
+      console.log('key', key);
+      console.log('selectedRadio', selectedRadio);
+      if (parseInt(selectedRadio, 10) === parseInt(key, 10)) {
+        console.log('inside >>>>>>', selectedRadio, key);
+        setSelectedLocationTicketPrice(parseInt(value, 10));
+      } else {
+        setSelectedLocationTicketPrice();
+      }
+    });
+  };
+
+  const setVisitLocation = () => {
     const isValidTicketPrice = validateCurrentBid(flyTicketPrice);
     if (!isValidTicketPrice) {
       setFlyInputError('Please enter a valid ticket price');
@@ -81,6 +104,7 @@ const Airport = ({
         locationId: selectedRadio,
         teamName: player.teamName,
         roundId: roundNumber,
+        flyTicketPrice,
       });
     }
   };
@@ -120,6 +144,7 @@ const Airport = ({
             for (let j = 0; j < data[i].allowedToVisit.length; ++j) {
               if ((locations.filter((v) => (parseInt(v, 10) === parseInt(data[i].allowedToVisit[j], 10))).length) < 2) {
                 setSelectedRadio(parseInt(data[i].allowedToVisit[j], 10));
+                updateSelectedLocationTicketPrice();
                 break;
               }
             }
@@ -136,6 +161,12 @@ const Airport = ({
   }, [valRet, hasLocationSelected]);
 
   useEffect(() => {
+    if (ticketPricesForLocations) {
+      updateSelectedLocationTicketPrice();
+    }
+  }, [selectedRadio]);
+
+  useEffect(() => {
     if (hasLocationSelected && selectedLocationId && !updatedLocation) {
       updateLocName();
       setUpdatedLocation(true);
@@ -144,6 +175,12 @@ const Airport = ({
 
   const updateSelectedLocation = (e) => {
     setSelectedRadio(parseInt(e.target.value, 10));
+    axios
+      .get(`${API_URL}/buying/getFlyTicketPriceForLocation?roomId=${player.hostCode}`)
+      .then((data) => {
+        console.log('data', data);
+        setTicketPricesForLocations(data.ticketPriceByLocation);
+      });
   };
 
   const getLocationNameById = (prevLocId) => {
@@ -189,6 +226,7 @@ const Airport = ({
                         </div>
                       );
                     })}
+                    { selectedLocationTicketPrice && <h4>{`Current price in ${getLocationNameById(selectedRadio)} is $${selectedLocationTicketPrice}`}</h4> }
                     <TextField
                       error={!!flyInputError}
                       helperText={flyInputError && flyInputError}

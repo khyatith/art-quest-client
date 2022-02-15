@@ -122,6 +122,7 @@ function LocationPhase() {
   const [chosenLocationForTeams, setChosenLocationForTeams] = useState();
   const [allLocationHistory, setAllLocationHistory] = useState([]);
   const [currentRoundData, setCurrentRoundData] = useState(false);
+  const [ticketPricesForLocations, setTicketPricesForLocations] = useState();
 
   // Hooks and methods
 
@@ -133,8 +134,9 @@ function LocationPhase() {
         .get(`${API_URL}/buying/getSellingResults?roomId=${player.hostCode}`)
         .then((newData) => {
           const {
-            amountSpentByTeam, totalArtScoreForTeams, visits, locationPhaseTimerValue, roundNumber, allTeams,
+            amountSpentByTeam, totalArtScoreForTeams, visits, locationPhaseTimerValue, roundNumber, allTeams, flyTicketsPrice,
           } = newData.data;
+          setTicketPricesForLocations(flyTicketsPrice.ticketPriceByLocation);
           setTeamsCurrentLocation(newData.data.visits);
           console.log(visits);
           let x = 1;
@@ -223,7 +225,8 @@ function LocationPhase() {
 
   useEffect(() => {
     socket.on('goToExpo', () => {
-      history.push(`/sell/${player.playerId}`);
+      console.log('goToexpo', history);
+      // history.push(`/sell/${player.playerId}`);
     });
   }, []);
 
@@ -242,7 +245,12 @@ function LocationPhase() {
         [data.teamName]: data,
       };
       console.log('data', data);
-      console.log('chosenLocation', chosenLocation);
+      const ticketPrices = {
+        ...ticketPricesForLocations,
+        [data.locationId]: data.flyTicketPrice,
+      };
+      console.log('ticketPrices', ticketPrices);
+      setTicketPricesForLocations(ticketPrices);
       setChosenLocationForTeams(chosenLocation);
       if (parseInt(data.roundId, 10) === parseInt(roundId, 10) && data.teamName === player.teamName) {
         setLocationSelectedForCurrentRound(true, parseInt(data.locationId, 10));
@@ -304,6 +312,8 @@ function LocationPhase() {
             allLocationDetails={teamsCurrentLocation}
             locations={allLocationHistory}
             chosenLocationForTeams={chosenLocationForTeams}
+            ticketPricesForLocations={ticketPricesForLocations}
+            setTicketPricesForLocations={setTicketPricesForLocations}
           />
         </div>
       </div>
