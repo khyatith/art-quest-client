@@ -40,7 +40,7 @@ const Details = (props) => {
           <TableBody>
             {rows && rows.map((row) => {
               const formattedCash = parseFloat((row.cash) / 10).toFixed(2);
-              const total = parseFloat(formattedCash) + parseFloat(row.visits) + parseFloat(row.artScore);
+              const total = parseFloat(formattedCash) - parseFloat(row.visits) + parseFloat(row.artScore);
               return (
                 <TableRow key={row.id} style={{ backgroundColor: `${TEAM_COLOR_MAP[row.team]}` }}>
                   <StyledTableCell component="th" scope="row">

@@ -153,7 +153,6 @@ function LocationPhase() {
             const teamVisits = visits.filter((v) => v.teamName === team);
             console.log('teamVisits', teamVisits);
             vis = teamVisits && teamVisits.length > 0 && teamVisits[0].totalVisitPrice ? parseInt(teamVisits[0].totalVisitPrice, 10) : 0.00;
-            console.log('vis', vis);
             const artScore = totalArtScoreForTeams[team] || 0;
             const formattedCash = parseFloat((cash) / 10).toFixed(2);
             const total = parseFloat(formattedCash) - parseFloat(vis) + parseFloat(artScore);
