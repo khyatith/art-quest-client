@@ -163,7 +163,7 @@ function LocationPhase() {
             x += 1;
           });
           const currentTeamVisits = visits.filter((v) => v.teamName === player.teamName);
-          const currentLocationForTeam = currentTeamVisits.length === 0 ? 10 : currentTeamVisits[0].currentLocation;
+          const currentLocationForTeam = currentTeamVisits.length === 0 ? 1 : currentTeamVisits[0].currentLocation;
           const locationHistory = currentTeamVisits.length === 0 ? [] : currentTeamVisits[0].allVisitLocations;
           setAllLocationHistory(locationHistory);
           tv.sort((a, b) => b.total - a.total);
