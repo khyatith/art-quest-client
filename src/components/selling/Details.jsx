@@ -38,16 +38,16 @@ const Details = (props) => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows.map((row) => {
+            {rows && rows.map((row) => {
               const formattedCash = parseFloat((row.cash) / 10).toFixed(2);
-              const total = parseFloat(formattedCash) + parseFloat(row.visits) + parseFloat(row.artScore);
+              const total = parseFloat(formattedCash) - parseFloat(row.visits) + parseFloat(row.artScore);
               return (
                 <TableRow key={row.id} style={{ backgroundColor: `${TEAM_COLOR_MAP[row.team]}` }}>
                   <StyledTableCell component="th" scope="row">
                     {row.id}
                   </StyledTableCell>
                   <StyledTableCell align="right">{row.team}</StyledTableCell>
-                  <StyledTableCell align="right">{`$${row.cash}M`}</StyledTableCell>
+                  <StyledTableCell align="right">{`$${parseFloat(row.cash).toFixed(2)}M`}</StyledTableCell>
                   <StyledTableCell align="right">{formattedCash}</StyledTableCell>
                   <StyledTableCell align="right">{row.visits}</StyledTableCell>
                   <StyledTableCell align="right">{parseFloat(row.artScore).toFixed(2)}</StyledTableCell>

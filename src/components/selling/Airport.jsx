@@ -1,12 +1,14 @@
 import React, {
-  useEffect, useState, useContext, useCallback,
+  useEffect, useState, useContext, useCallback, useRef,
 } from 'react';
 // import PropTypes from 'prop-types';
 import axios from 'axios';
+import { TextField, InputAdornment } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import userContext from '../../global/userContext';
 import { API_URL, TEAM_COLOR_MAP } from '../../global/constants';
+import { validateCurrentBid } from '../../global/helpers';
 import RoundsInfo from '../RoundsInfo';
 import { socket } from '../../global/socket';
 
@@ -26,7 +28,7 @@ const useStyles = makeStyles(() => ({
   },
   btnform: {
     backgroundColor: '#051207',
-    margin: '40px 0 20px 0px',
+    margin: '20px 0 20px 0px',
     width: 245,
     color: '#76e246',
     fontWeight: 700,
@@ -46,26 +48,64 @@ const useStyles = makeStyles(() => ({
     marginTop: '0.5%',
     paddingBottom: '0.5%',
   },
+  form: {
+    margin: '20px 0 20px 0px',
+    width: 245,
+  },
+  hr: {
+    marginLeft: '-15px',
+  },
 }));
 
 const Airport = ({
-  roundNumber, hasLocationSelected, selectedLocationId, previousLocationId, allLocationDetails, locations,
+  roundNumber,
+  hasLocationSelected,
+  selectedLocationId,
+  previousLocationId,
+  allLocationDetails,
+  locations,
+  chosenLocationForTeams,
+  ticketPricesForLocations,
+  setTicketPricesForLocations,
 }) => {
   const classes = useStyles();
+  const ticketInputRef = useRef();
   const [mapValues, setMapValues] = useState({});
   // const [teamValues, setTeamValues] = useState({});
   const [valRet, setValRet] = useState(false);
   const { player, setPlayer } = useContext(userContext);
   const [selectedRadio, setSelectedRadio] = useState(previousLocationId);
   const [updatedLocation, setUpdatedLocation] = useState(false);
+  // const [flyTicketPrice, setFlyTicketPrice] = useState(0);
+  const [flyInputError, setFlyInputError] = useState(null);
+  // const [selectedLocationTicketPrice, setSelectedLocationTicketPrice] = useState();
 
-  const setVisitLocation = async () => {
-    socket.emit('putCurrentLocation', {
-      roomId: player.hostCode,
-      locationId: selectedRadio,
-      teamName: player.teamName,
-      roundId: roundNumber,
-    });
+  // const updateSelectedLocationTicketPrice = () => {
+  //   Object.entries(ticketPricesForLocations).forEach(([key, value]) => {
+  //     console.log('key', key);
+  //     console.log('selectedRadio>>>>', selectedRadio);
+  //     if (parseInt(selectedRadio, 10) === parseInt(key, 10)) {
+  //       console.log('inside >>>>>>', selectedRadio, key);
+  //       // setSelectedLocationTicketPrice(parseInt(value, 10));
+  //     }
+  //   });
+  // };
+
+  const setVisitLocation = () => {
+    const flyTicketPrice = ticketInputRef.current.value;
+    const isValidTicketPrice = validateCurrentBid(flyTicketPrice);
+    if (!isValidTicketPrice) {
+      setFlyInputError('Please enter a valid ticket price');
+    } else {
+      setFlyInputError(null);
+      socket.emit('putCurrentLocation', {
+        roomId: player.hostCode,
+        locationId: selectedRadio,
+        teamName: player.teamName,
+        roundId: roundNumber,
+        flyTicketPrice,
+      });
+    }
   };
 
   const updateLocName = useCallback(() => {
@@ -99,6 +139,7 @@ const Airport = ({
             for (let j = 0; j < data[i].allowedToVisit.length; ++j) {
               if ((locations.filter((v) => (parseInt(v, 10) === parseInt(data[i].allowedToVisit[j], 10))).length) < 2) {
                 setSelectedRadio(parseInt(data[i].allowedToVisit[j], 10));
+                // updateSelectedLocationTicketPrice();
                 break;
               }
             }
@@ -114,6 +155,12 @@ const Airport = ({
     }
   }, [valRet, hasLocationSelected]);
 
+  // useEffect(() => {
+  //   if (ticketPricesForLocations) {
+  //     updateSelectedLocationTicketPrice();
+  //   }
+  // }, [selectedRadio]);
+
   useEffect(() => {
     if (hasLocationSelected && selectedLocationId && !updatedLocation) {
       updateLocName();
@@ -123,12 +170,20 @@ const Airport = ({
 
   const updateSelectedLocation = (e) => {
     setSelectedRadio(parseInt(e.target.value, 10));
+    axios
+      .get(`${API_URL}/buying/getFlyTicketPriceForLocation?roomId=${player.hostCode}`)
+      .then((result) => {
+        console.log('data', result.data);
+        if (result && result.data && result.data.ticketPriceByLocation) {
+          setTicketPricesForLocations(result.data.ticketPriceByLocation);
+        }
+      });
   };
 
-  const getLocationNameById = () => {
+  const getLocationNameById = (prevLocId) => {
     let result;
     Object.entries(mapValues).forEach((val) => {
-      if (parseInt(val[1].cityId, 10) === parseInt(previousLocationId, 10)) {
+      if (parseInt(val[1].cityId, 10) === parseInt(prevLocId, 10)) {
         result = val[1].cityName;
       }
     });
@@ -138,7 +193,7 @@ const Airport = ({
   return (
     <>
       <div className={classes.root}>
-        {mapValues && previousLocationId && <RoundsInfo marginTop="20px" label={`You are currently in ${getLocationNameById()}`} />}
+        {mapValues && previousLocationId && <RoundsInfo marginTop="20px" label={`You are currently in ${getLocationNameById(previousLocationId)}`} />}
         {!hasLocationSelected ? (
           <>
             <p style={{ marginTop: '40px' }}>Fly to : </p>
@@ -168,6 +223,25 @@ const Airport = ({
                         </div>
                       );
                     })}
+                    { ticketPricesForLocations && Object.keys(ticketPricesForLocations).length > 0
+                    && (
+                      <h4>
+                        {`Current price in ${getLocationNameById(selectedRadio)} is
+                        $${(ticketPricesForLocations[selectedRadio] ? ticketPricesForLocations[selectedRadio] : 0)}`}
+                      </h4>
+                    )}
+                    <TextField
+                      inputRef={ticketInputRef}
+                      error={!!flyInputError}
+                      helperText={flyInputError && flyInputError}
+                      className={classes.form}
+                      name="ticketPrice"
+                      label="Enter ticket price"
+                      variant="outlined"
+                      InputProps={{
+                        startAdornment: <InputAdornment position="start">$</InputAdornment>,
+                      }}
+                    />
                   </>
                 );
               }
@@ -200,6 +274,20 @@ const Airport = ({
                 <div className={classes.child1}>
                   <div className={classes.teammark} style={{ backgroundColor: TEAM_COLOR_MAP[arg.teamName], borderRadius: '100%' }} />
                   <div style={{ margin: 'auto', textAlign: 'center' }}>{parseInt(ind, 10) !== -1 && mapValues[parseInt(ind, 10)].cityName}</div>
+                </div>
+              );
+            })}
+        </div>
+        <hr className={classes.hr} />
+        <div className={classes.parent}>
+          {chosenLocationForTeams && <h4>All team's next destination</h4>}
+          {chosenLocationForTeams
+            && Object.values(chosenLocationForTeams).map((chosenLocation) => {
+              const chosenTeamName = getLocationNameById(chosenLocation.locationId);
+              return (
+                <div className={classes.child1}>
+                  <div className={classes.teammark} style={{ backgroundColor: TEAM_COLOR_MAP[chosenLocation.teamName], borderRadius: '100%' }} />
+                  <div style={{ margin: 'auto', textAlign: 'center' }}>{chosenTeamName}</div>
                 </div>
               );
             })}

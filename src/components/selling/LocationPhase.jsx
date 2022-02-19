@@ -85,6 +85,7 @@ function createData(team, cash, vis, artScore) {
   str.push(formattedCash);
   str.push(vis);
   str.push(artScore);
+  console.log('str?????', str);
   return {
     label: team,
     backgroundColor: TEAM_COLOR_MAP[team],
@@ -119,8 +120,10 @@ function LocationPhase() {
   const [selectedLocationId, setSelectedLocId] = useState();
   const [currentLocationId, setCurrentLocationId] = useState();
   const [teamsCurrentLocation, setTeamsCurrentLocation] = useState();
+  const [chosenLocationForTeams, setChosenLocationForTeams] = useState();
   const [allLocationHistory, setAllLocationHistory] = useState([]);
   const [currentRoundData, setCurrentRoundData] = useState(false);
+  const [ticketPricesForLocations, setTicketPricesForLocations] = useState();
 
   // Hooks and methods
 
@@ -132,8 +135,11 @@ function LocationPhase() {
         .get(`${API_URL}/buying/getSellingResults?roomId=${player.hostCode}`)
         .then((newData) => {
           const {
-            amountSpentByTeam, totalArtScoreForTeams, visits, locationPhaseTimerValue, roundNumber, allTeams,
+            amountSpentByTeam, totalArtScoreForTeams, visits, locationPhaseTimerValue, roundNumber, allTeams, flyTicketsPrice,
           } = newData.data;
+          if (flyTicketsPrice) {
+            setTicketPricesForLocations(flyTicketsPrice.ticketPriceByLocation);
+          }
           setTeamsCurrentLocation(newData.data.visits);
           console.log(visits);
           let x = 1;
@@ -145,10 +151,11 @@ function LocationPhase() {
             const cash = amountSpentByTeam[team] || 0;
             let vis = 0;
             const teamVisits = visits.filter((v) => v.teamName === team);
-            vis = teamVisits.length > 0 ? teamVisits[0].visitCount : 0.00;
+            console.log('teamVisits', teamVisits);
+            vis = teamVisits && teamVisits.length > 0 && teamVisits[0].totalVisitPrice ? parseInt(teamVisits[0].totalVisitPrice, 10) : 0.00;
             const artScore = totalArtScoreForTeams[team] || 0;
             const formattedCash = parseFloat((cash) / 10).toFixed(2);
-            const total = parseFloat(formattedCash) + parseFloat(vis) + parseFloat(artScore);
+            const total = parseFloat(formattedCash) - parseFloat(vis) + parseFloat(artScore);
             // eslint-disable-next-line no-nested-ternary
             datasets.push(createData(team, cash, vis, artScore));
             tv.push(createDataMap(x, team, vis, cash, total, artScore, formattedCash));
@@ -156,7 +163,7 @@ function LocationPhase() {
             x += 1;
           });
           const currentTeamVisits = visits.filter((v) => v.teamName === player.teamName);
-          const currentLocationForTeam = currentTeamVisits.length === 0 ? 10 : currentTeamVisits[0].currentLocation;
+          const currentLocationForTeam = currentTeamVisits.length === 0 ? 1 : currentTeamVisits[0].currentLocation;
           const locationHistory = currentTeamVisits.length === 0 ? [] : currentTeamVisits[0].allVisitLocations;
           setAllLocationHistory(locationHistory);
           tv.sort((a, b) => b.total - a.total);
@@ -236,6 +243,16 @@ function LocationPhase() {
 
   useEffect(() => {
     socket.on('locationUpdatedForTeam', (data) => {
+      const chosenLocation = {
+        ...chosenLocationForTeams,
+        [data.teamName]: data,
+      };
+      const ticketPrices = {
+        ...ticketPricesForLocations,
+        [data.locationId]: data.flyTicketPrice,
+      };
+      setTicketPricesForLocations(ticketPrices);
+      setChosenLocationForTeams(chosenLocation);
       if (parseInt(data.roundId, 10) === parseInt(roundId, 10) && data.teamName === player.teamName) {
         setLocationSelectedForCurrentRound(true, parseInt(data.locationId, 10));
       }
@@ -295,6 +312,9 @@ function LocationPhase() {
             previousLocationId={currentLocationId}
             allLocationDetails={teamsCurrentLocation}
             locations={allLocationHistory}
+            chosenLocationForTeams={chosenLocationForTeams}
+            ticketPricesForLocations={ticketPricesForLocations}
+            setTicketPricesForLocations={setTicketPricesForLocations}
           />
         </div>
       </div>

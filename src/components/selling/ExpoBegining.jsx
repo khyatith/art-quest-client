@@ -165,6 +165,7 @@ function ExpoBeginning() {
   const [hasRevenueUpdated, setHasRevenueUpdated] = useState(false);
   const [calculatedRevenue, setCalculatedRevenue] = useState();
   const [ticketPriceFromAPI, setTicketPriceFromapi] = useState();
+  const [sellingAuctionBidWinner, setSellingAuctionBidWinner] = useState();
   const history = useHistory();
 
   const handleExpandClick = (index) => {
@@ -182,7 +183,7 @@ function ExpoBeginning() {
       setBidAmtError('Ticket value should be within the specified range');
       return;
     }
-    const { interestInArt, demand } = cityData;
+    const { interestInArt, demand, transportCost } = cityData;
     const val = paintings[index].auctionObj.paintingQuality;
     const paintingId = paintings[index].auctionId;
     socket.emit('paintingNominated', {
@@ -197,6 +198,7 @@ function ExpoBeginning() {
       ticketPrice: ticketVal,
       roundId: user.roundId,
       allTeamsInCity: otherTeams.length,
+      transportCost,
     });
   };
 
@@ -249,7 +251,7 @@ function ExpoBeginning() {
     socket.on('goToSellingResults', () => {
       history.push({
         pathname: `/sell/result/${user.playerId}`,
-        state: nominatedPaintings,
+        state: { nominatedPaintings, sellingAuctionBidWinner },
       });
     });
   }, [user, history]);
@@ -300,6 +302,10 @@ function ExpoBeginning() {
       }
     });
   }, [nominatedPaintings]);
+
+  const updateSellingBidWinner = (bidObj) => {
+    setSellingAuctionBidWinner(bidObj);
+  };
 
   const renderCityStats = () => {
     const { interestInArt, demand } = cityData;
@@ -371,33 +377,49 @@ function ExpoBeginning() {
     </CardContent>
   );
 
-  const loadCardSelection = () => (
-    <CardContent className={classes.paintOpt}>
-      {
-        !calculatedRevenue && <h3>Calculating your team's earning...</h3>
-      }
-      {
-        calculatedRevenue
-        && (
-          <div>
-            <h3>
-              Your ticket price:
-              $
-              {ticketPriceFromAPI}
-              {''}
-              per person
-            </h3>
-            <h3>
-              Your earning:
-              $
-              {calculatedRevenue}
-              M
-            </h3>
-          </div>
-        )
-      }
-    </CardContent>
-  );
+  const loadCardSelection = () => {
+    const formattedTransportCost = parseInt(cityData.transportCost, 10) / 1000000;
+    const realRevenue = parseFloat(calculatedRevenue) - parseFloat(formattedTransportCost);
+    return (
+      <CardContent className={classes.paintOpt}>
+        {
+          !calculatedRevenue && <h3>Calculating your team's earning...</h3>
+        }
+        {
+          calculatedRevenue
+          && (
+            <div>
+              <h3>
+                Your ticket price:
+                $
+                {ticketPriceFromAPI}
+                {''}
+                per person
+              </h3>
+              <h3>
+                Calculated earnings:
+                $
+                {calculatedRevenue}
+                M
+              </h3>
+              <h3>
+                Transportation cost:
+                $
+                {formattedTransportCost}
+                M
+              </h3>
+              <h3 style={{ color: 'green' }}>
+                Total earnings:
+                $
+                {realRevenue.toFixed(2)}
+                M
+              </h3>
+            </div>
+          )
+        }
+      </CardContent>
+    );
+  };
 
   return (
     <>
@@ -526,7 +548,7 @@ function ExpoBeginning() {
             display: ((timerValue && timerValue.total <= 15000) ? 'block' : 'none'),
           }}
         >
-          <NewBonusAuctionResult />
+          <NewBonusAuctionResult updateSellingBidWinner={updateSellingBidWinner} />
         </div>
       </div>
     </>

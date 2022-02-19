@@ -31,8 +31,9 @@ const options = {
 
 const BarGraph = (props) => {
   const { result } = props;
+  console.log('results', result);
   return (
-    result && (
+    result && Object.keys(result).length > 0 && (
       <div style={{ marginLeft: '10%' }}>
         <Bar data={result} options={options} />
       </div>
