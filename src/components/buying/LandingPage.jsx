@@ -1,7 +1,7 @@
+/* eslint-disable react/jsx-wrap-multilines */
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { makeStyles } from '@material-ui/core/styles';
-// import ListSubheader from '@material-ui/core/ListSubheader';
 import ImageList from '@material-ui/core/ImageList';
 import ImageListItem from '@material-ui/core/ImageListItem';
 import ImageListItemBar from '@material-ui/core/ImageListItemBar';
@@ -12,6 +12,7 @@ import Grid from '@material-ui/core/Grid';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
+import MoreDetailsModal from './MoreDetailsModal';
 import load from '../../assets/load.webp';
 import { API_URL, TEAM_COLOR_MAP } from '../../global/constants';
 import { socket } from '../../global/socket';
@@ -53,6 +54,7 @@ const useStyles = makeStyles((theme) => ({
   },
   imagelistitem: {
     '&:hover': { transform: 'scale3d(1.05, 1.05, 1)' },
+    cursor: 'pointer',
   },
   playercontent: {
     [theme.breakpoints.up('sm')]: {
@@ -72,6 +74,8 @@ const LandingPage = () => {
   const player = JSON.parse(sessionStorage.getItem('user'));
   const [favoritedItems, setFavoritedItems] = useState();
   const [favoritedByMyTeam, setFavoritedByMyTeam] = useState([]);
+  const [openModalForPainting, setOpenModalForPainting] = useState();
+  const [selectedPaintingDetails, setSelectedPaintingDetails] = useState();
 
   const getRemainingTime = () => {
     const total = parseInt(landingPageTimerValue.total, 10) - 1000;
@@ -134,6 +138,13 @@ const LandingPage = () => {
     socket.emit('addtofavorites', { favoritedItems: result, roomCode: player.hostCode });
   };
 
+  const seeMoreDetails = (itemId) => {
+    const { auctions } = JSON.parse(sessionStorage.getItem('allAuction'));
+    const selectedPainting = auctions.artifacts.filter((item) => item.id === itemId);
+    setSelectedPaintingDetails(selectedPainting[0]);
+    setOpenModalForPainting(itemId);
+  };
+
   const renderArtifacts = () => {
     if (JSON.parse(sessionStorage.getItem('allAuction')) === null) {
       return (
@@ -149,26 +160,7 @@ const LandingPage = () => {
       <>
         <ImageList rowHeight={250} cols={4} className={classes.imageList}>
           {auctions && auctions.artifacts.map((item) => (
-            <ImageListItem key={item.id} className={classes.imagelistitem}>
-              {/* <div style={{
-                backgroundColor: 'rgba(255, 255, 255, 0.54)',
-                width: '100%',
-                height: '50px',
-                position: 'absolute',
-                zIndex: '9999',
-              }}>
-                <div style={{
-                  borderRadius: '50%',
-                  backgroundColor: 'red',
-                  width: '20px',
-                  height: '20px',
-                  top: '10px',
-                  left: '10px',
-                  position: 'absolute',
-                  zIndex: '999999',
-                }}
-                />
-              </div> */}
+            <ImageListItem key={item.id} className={classes.imagelistitem} onClick={() => seeMoreDetails(item.id)}>
               <img src={item.imageURL} alt={item.name} />
               <ImageListItemBar
                 title={item.name}
@@ -232,6 +224,11 @@ const LandingPage = () => {
       <Grid container item xs={12} spacing={3}>
         { renderArtifacts() }
       </Grid>
+      { openModalForPainting && <MoreDetailsModal
+        openModal
+        selectedPaintingDetails={selectedPaintingDetails}
+        setOpenModalForPainting={setOpenModalForPainting}
+      /> }
     </div>
   );
 };
