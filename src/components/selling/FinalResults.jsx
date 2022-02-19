@@ -56,9 +56,9 @@ function FinalResults() {
             const totalArtScore = totalArtScoreForTeams[key];
             let vis = 0;
             const teamVisits = visits.filter((v) => v.teamName === key);
-            vis = teamVisits.length > 0 ? teamVisits[0].visitCount : 0.0;
+            vis = teamVisits && teamVisits.length > 0 && teamVisits[0].totalVisitPrice ? parseInt(teamVisits[0].totalVisitPrice, 10) : 0.00;
             const formattedCash = parseFloat((cash) / 10).toFixed(2);
-            const total = parseFloat(formattedCash) + parseFloat(vis) + parseFloat(totalArtScore);
+            const total = parseFloat(formattedCash) - parseFloat(vis) + parseFloat(totalArtScore);
             tv.push(createDataMap(x, team, vis, cash, total, totalArtScore, formattedCash));
             x += 1;
           });

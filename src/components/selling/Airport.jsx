@@ -92,7 +92,10 @@ const Airport = ({
   // };
 
   const setVisitLocation = () => {
-    const flyTicketPrice = ticketInputRef.current.value;
+    const flyTicketPrice = ticketPricesForLocations && ticketPricesForLocations[selectedRadio]
+      ? ticketPricesForLocations[selectedRadio]
+      : ticketInputRef.current.value;
+    console.log('flyTicketPrice', flyTicketPrice);
     const isValidTicketPrice = validateCurrentBid(flyTicketPrice);
     if (!isValidTicketPrice) {
       setFlyInputError('Please enter a valid ticket price');
@@ -173,7 +176,6 @@ const Airport = ({
     axios
       .get(`${API_URL}/buying/getFlyTicketPriceForLocation?roomId=${player.hostCode}`)
       .then((result) => {
-        console.log('data', result.data);
         if (result && result.data && result.data.ticketPriceByLocation) {
           setTicketPricesForLocations(result.data.ticketPriceByLocation);
         }
@@ -235,6 +237,7 @@ const Airport = ({
                       error={!!flyInputError}
                       helperText={flyInputError && flyInputError}
                       className={classes.form}
+                      disabled={ticketPricesForLocations && !!ticketPricesForLocations[selectedRadio]}
                       name="ticketPrice"
                       label="Enter ticket price"
                       variant="outlined"
@@ -250,10 +253,18 @@ const Airport = ({
           </>
         ) : (
           hasLocationSelected && (
-            <p>
-              Your team&apos;s next destination:
-              {player.currentLocationName && player.currentLocationName}
-            </p>
+            <>
+              <p>
+                Your team&apos;s next destination:
+                {player.currentLocationName && player.currentLocationName}
+              </p>
+              <p>
+                You paid:
+                {' '}
+                $
+                {ticketPricesForLocations[player.currentLocation]}
+              </p>
+            </>
           )
         )}
         <Button className={classes.btnform} variant="contained" onClick={setVisitLocation} disabled={hasLocationSelected}>

@@ -85,7 +85,6 @@ function createData(team, cash, vis, artScore) {
   str.push(formattedCash);
   str.push(vis);
   str.push(artScore);
-  console.log('str?????', str);
   return {
     label: team,
     backgroundColor: TEAM_COLOR_MAP[team],
@@ -113,7 +112,6 @@ function LocationPhase() {
   const { player, setPlayer } = useContext(userContext);
   const history = useHistory();
   const [loading, setLoading] = useState(true);
-  // const [hasLocationPageTimerEnded, setHasLocationPageTimerEnded] = useState(false);
   const [locationPageTimerValue, setLocationPageTimerValue] = useState();
   const [roundId, setRoundId] = useState();
   const [hasLocationSelected, setSelectedLocation] = useState(false);
@@ -138,10 +136,10 @@ function LocationPhase() {
             amountSpentByTeam, totalArtScoreForTeams, visits, locationPhaseTimerValue, roundNumber, allTeams, flyTicketsPrice,
           } = newData.data;
           if (flyTicketsPrice) {
+            console.log('flyTicketPrice>>>>>', flyTicketsPrice);
             setTicketPricesForLocations(flyTicketsPrice.ticketPriceByLocation);
           }
           setTeamsCurrentLocation(newData.data.visits);
-          console.log(visits);
           let x = 1;
           const tv = [];
           const labels = ['Cash Points', 'Visits', 'Art Score'];
@@ -151,7 +149,6 @@ function LocationPhase() {
             const cash = amountSpentByTeam[team] || 0;
             let vis = 0;
             const teamVisits = visits.filter((v) => v.teamName === team);
-            console.log('teamVisits', teamVisits);
             vis = teamVisits && teamVisits.length > 0 && teamVisits[0].totalVisitPrice ? parseInt(teamVisits[0].totalVisitPrice, 10) : 0.00;
             const artScore = totalArtScoreForTeams[team] || 0;
             const formattedCash = parseFloat((cash) / 10).toFixed(2);
