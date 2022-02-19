@@ -96,7 +96,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function SellingResults(props) {
+function SellingResults({ location }) {
   const classes = useStyles();
   const history = useHistory();
   const user = JSON.parse(sessionStorage.getItem('user'));
@@ -149,7 +149,8 @@ function SellingResults(props) {
   };
 
   const loadRevenue = (teamColor, revenueGenerated) => {
-    const ns = props.location.state;
+    const { state } = location;
+    const ns = state;
     if (!paintings || paintings.length === 0) {
       return <h3 style={{ color: '#990000' }}>All teams earned $0. No painting nominations were made.</h3>;
     }
