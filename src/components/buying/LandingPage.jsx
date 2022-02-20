@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { makeStyles } from '@material-ui/core/styles';
+import { useHistory } from 'react-router-dom';
 import ImageList from '@material-ui/core/ImageList';
 import ImageListItem from '@material-ui/core/ImageListItem';
 import ImageListItemBar from '@material-ui/core/ImageListItemBar';
@@ -65,10 +66,21 @@ const useStyles = makeStyles((theme) => ({
     right: '0',
     marginRight: '10px',
   },
+  imagelistitembar: {
+    height: '80px',
+    '&.MuiImageListItemBar-titleWrap': {
+      marginTop: '-10px',
+    },
+  },
+  artiststyle: {
+    marginTop: '0px',
+    marginBottom: '5px',
+  },
 }));
 
 const LandingPage = () => {
   const classes = useStyles();
+  const history = useHistory();
   // const [hasLandingPageTimerEnded, setHasLandingPageTimerEnded] = useState(false);
   const [landingPageTimerValue, setLandingPageTimerValue] = useState();
   const player = JSON.parse(sessionStorage.getItem('user'));
@@ -115,22 +127,28 @@ const LandingPage = () => {
 
   useEffect(() => {
     socket.on('updatedFavorites', (data) => {
-      if (JSON.stringify(favoritedItems) !== JSON.stringify(data)) {
-        console.log('data', data);
-        setFavoritedItems(data);
-      }
+      setFavoritedItems(data);
     });
   });
 
-  const addToFavorites = (itemId) => {
-    let result;
-    if (!favoritedItems || !favoritedItems[itemId]) {
+  useEffect(() => {
+    socket.on('redirectToNextPage', () => {
+      history.push(`/englishAuction/${player.hostCode}`);
+    });
+  }, []);
+
+  const addToFavorites = (e, itemId) => {
+    e.preventDefault();
+    e.stopPropagation();
+    let result = favoritedItems;
+    if (!result || !result[itemId]) {
       result = {
-        ...favoritedItems,
+        ...result,
         [itemId]: [player.teamName],
       };
     } else {
-      result[itemId].push(player.teamName);
+      console.log('inside result', result, itemId);
+      result[`${itemId}`].push(player.teamName);
     }
     if (!favoritedByMyTeam.includes(itemId)) {
       setFavoritedByMyTeam((existingIds) => [...existingIds, itemId]);
@@ -138,9 +156,10 @@ const LandingPage = () => {
     socket.emit('addtofavorites', { favoritedItems: result, roomCode: player.hostCode });
   };
 
-  const seeMoreDetails = (itemId) => {
-    const { auctions } = JSON.parse(sessionStorage.getItem('allAuction'));
-    const selectedPainting = auctions.artifacts.filter((item) => item.id === itemId);
+  const seeMoreDetails = (e, itemId) => {
+    e.preventDefault();
+    const { allPaintings } = JSON.parse(sessionStorage.getItem('allAuction'));
+    const selectedPainting = allPaintings.filter((item) => item.id === itemId);
     setSelectedPaintingDetails(selectedPainting[0]);
     setOpenModalForPainting(itemId);
   };
@@ -155,18 +174,19 @@ const LandingPage = () => {
         </div>
       );
     }
-    const { auctions } = JSON.parse(sessionStorage.getItem('allAuction'));
+    const { allPaintings } = JSON.parse(sessionStorage.getItem('allAuction'));
     return (
       <>
         <ImageList rowHeight={250} cols={4} className={classes.imageList}>
-          {auctions && auctions.artifacts.map((item) => (
-            <ImageListItem key={item.id} className={classes.imagelistitem} onClick={() => seeMoreDetails(item.id)}>
+          {allPaintings && allPaintings.map((item) => (
+            <ImageListItem key={item.id} className={classes.imagelistitem} onClick={(e) => seeMoreDetails(e, item.id)}>
               <img src={item.imageURL} alt={item.name} />
               <ImageListItemBar
+                className={classes.imagelistitembar}
                 title={item.name}
                 subtitle={(
                   <span>
-                    {item.artist}
+                    <h4 className={classes.artiststyle}>{item.artist}</h4>
                     {
                       favoritedItems && favoritedItems[item.id] && favoritedItems[item.id].map((team) => (
                         <div style={{
@@ -176,6 +196,8 @@ const LandingPage = () => {
                           height: '15px',
                           marginTop: '10px',
                           marginBottom: '5px',
+                          display: 'inline-block',
+                          marginRight: '2px',
                         }}
                         />
                       ))
@@ -183,7 +205,7 @@ const LandingPage = () => {
                   </span>
                 )}
                 actionIcon={(
-                  <IconButton aria-label={`info about ${item.name}`} className={classes.icon} onClick={() => addToFavorites(item.id)}>
+                  <IconButton aria-label={`info about ${item.name}`} className={classes.icon} onClick={(e) => addToFavorites(e, item.id)}>
                     { favoritedByMyTeam && favoritedByMyTeam.length > 0 && favoritedByMyTeam.includes(item.id)
                       ? <FavoriteIcon color="secondary" />
                       : <FavoriteBorder /> }

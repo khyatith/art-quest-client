@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import Dialog from '@material-ui/core/Dialog';
 import AppBar from '@material-ui/core/AppBar';
@@ -72,6 +73,11 @@ const MoreDetailsModal = ({ openModal, selectedPaintingDetails, setOpenModalForP
       </Dialog>
     </div>
   );
+};
+MoreDetailsModal.propTypes = {
+  openModal: PropTypes.bool.isRequired,
+  selectedPaintingDetails: PropTypes.object.isRequired,
+  setOpenModalForPainting: PropTypes.func.isRequired,
 };
 
 export default MoreDetailsModal;

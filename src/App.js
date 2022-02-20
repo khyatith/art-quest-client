@@ -11,6 +11,7 @@ import ExpoBegining from './components/selling/ExpoBegining';
 import LocationPhase from './components/selling/LocationPhase';
 import SellingResults from './components/selling/SellingResults';
 import FinalResults from './components/selling/FinalResults';
+import EnglishAuction from './components/buying/EnglishAuction';
 import SellingGameInstructions from './components/selling/SellingGameInstructions';
 
 function App() {
@@ -39,6 +40,7 @@ function App() {
               <Route path="/game/:code">
                 <Game />
               </Route>
+              <Route path="/englishAuction/:code" component={EnglishAuction} />
               <Route path="/sell/:code" exact component={ExpoBegining} />
               <Route path="/sell/location/:code" exact component={LocationPhase} />
               <Route path="/sell/result/:code" exact component={SellingResults} />
