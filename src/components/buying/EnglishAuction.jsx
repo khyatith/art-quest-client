@@ -22,6 +22,7 @@ import SimpleRating from '../Rating';
 import { socket } from '../../global/socket';
 import { API_URL, TEAM_COLOR_MAP } from '../../global/constants';
 import { validateCurrentBid } from '../../global/helpers';
+import Leaderboard from './Leaderboard';
 // import NewLeaderboard from '../NewLeaderboard';
 
 const useStyles = makeStyles((theme) => ({
@@ -61,12 +62,12 @@ const useStyles = makeStyles((theme) => ({
   cardroot: {
     width: 400,
     display: 'inline-block',
-    margin: '150px 20px 20px 20px',
+    margin: '40px 20px 20px 20px',
   },
   disabledcardroot: {
     width: 400,
     display: 'inline-block',
-    margin: '150px 20px 20px 20px',
+    margin: '40px 20px 20px 20px',
     backgroundColor: '#cccccc',
   },
   cardcontentstyle: {
@@ -114,6 +115,10 @@ const useStyles = makeStyles((theme) => ({
     fontSize: '16px',
     fontWeight: '700',
   },
+  leaderboardcontainer: {
+    paddingTop: '100px',
+    paddingLeft: '500px',
+  },
 }));
 
 const EnglishAuction = () => {
@@ -121,6 +126,7 @@ const EnglishAuction = () => {
   const [englishAuctionTimer, setEnglishAuctionTimer] = useState();
   const [englishAuctionResults, setEnglishAuctionResults] = useState();
   const [bidAmtError, setBidAmtError] = useState();
+  const [sendResultEventOnce, setSendResultEventOnce] = useState(false);
   const history = useHistory();
   const player = JSON.parse(sessionStorage.getItem('user'));
   const { auctions } = JSON.parse(sessionStorage.getItem('allAuction'));
@@ -145,8 +151,9 @@ const EnglishAuction = () => {
     const total = parseInt(englishAuctionTimer.total, 10) - 1000;
     const seconds = Math.floor((parseInt(total, 10) / 1000) % 60);
     const minutes = Math.floor((parseInt(total, 10) / 1000 / 60) % 60);
-    if (total < 1000) {
+    if (total < 1000 && !sendResultEventOnce) {
       socket.emit('englishAuctionTimerEnded', player.hostCode);
+      setSendResultEventOnce(true);
     } else {
       const value = {
         total,
@@ -158,7 +165,6 @@ const EnglishAuction = () => {
   };
 
   const goToNextAuctions = () => {
-    console.log('inside go to next auction');
     history.push(`/secretAuctions/${player.playerId}`);
   };
 
@@ -196,19 +202,15 @@ const EnglishAuction = () => {
   useEffect(() => {
     socket.on('renderEnglishAuctionsResults', (data) => {
       if (!englishAuctionResults) {
-        setEnglishAuctionResults(data);
+        setEnglishAuctionResults(data.englishAutionBids);
       }
     });
-    if (englishAuctionResults) {
-      setTimeout(goToNextAuctions, 5000);
-    }
-  });
+  }, []);
 
   const setBidAmt = (auctionId) => {
     const bidInput = bidInputRef.current[auctionId].current.value;
     const currentAuction = auctions.artifacts.filter((auction) => parseInt(auction.id, 10) === parseInt(auctionId, 10));
     const isValidCurrentBid = validateCurrentBid(bidInput);
-    console.log('isValidCurrentBid', isValidCurrentBid);
     if (!isValidCurrentBid) {
       setBidAmtError({
         ...bidAmtError,
@@ -274,6 +276,9 @@ const EnglishAuction = () => {
           </Typography>
         </Toolbar>
       </AppBar>
+      <div className={classes.leaderboardcontainer}>
+        <Leaderboard showAuctionResults={englishAuctionResults} goToNextAuctions={goToNextAuctions} />
+      </div>
       {auctions && auctions.artifacts.map((auction) => {
         const previousBid = previousBidDetails.current[auction.id];
         return (

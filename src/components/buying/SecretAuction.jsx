@@ -158,7 +158,6 @@ const SecretAuction = () => {
   };
 
   const goToNextAuctions = () => {
-    console.log('inside go to next auction');
     history.push(`/secretAuctions/${player.playerId}`);
   };
 
@@ -193,7 +192,6 @@ const SecretAuction = () => {
 
   useEffect(() => {
     socket.on('setLiveStyles', (data) => {
-      console.log('data in live styles', data);
       const { teamName, auctionId, bidAmount } = data;
       const currentLiveStateForAuction = liveStyles.current[`${auctionId}`].current;
       if (!currentLiveStateForAuction) {
@@ -206,7 +204,6 @@ const SecretAuction = () => {
           [teamName]: bidAmount,
         };
       }
-      console.log('inside livestyles', liveStyles.current[`${auctionId}`].current);
     });
   });
 
@@ -282,7 +279,6 @@ const SecretAuction = () => {
       {secretAuctions && secretAuctions.artifacts.map((auction) => {
         const liveStylesForCurrentAuction = liveStyles.current[`${auction.id}`].current;
         const winner = secretAuctionResults && secretAuctionResults[`${auction.id}`] && secretAuctionResults[`${auction.id}`].bidTeam;
-        console.log('winner', winner);
         return (
           <Card
             key={auction.id}
