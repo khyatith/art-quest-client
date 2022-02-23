@@ -218,7 +218,7 @@ const EnglishAuction = () => {
       return;
     }
     const prevBidAmt = previousBidDetails.current[auctionId] && previousBidDetails.current[auctionId].bidAmount;
-    const desiredBid = prevBidAmt ? parseInt(prevBidAmt, 10) + 2 : currentAuction[0].originalValue;
+    const desiredBid = prevBidAmt && parseInt(prevBidAmt, 10) + 2;
     if (parseInt(bidInput, 10) < parseInt(desiredBid, 10)) {
       setBidAmtError({
         ...bidAmtError,
@@ -302,9 +302,6 @@ const EnglishAuction = () => {
             <CardContent className={classes.cardcontentstyle}>
               <p>Painting Quality</p>
               <SimpleRating rating={parseFloat(auction.paintingQuality)} />
-              <Typography component="h6" variant="h6">
-                {`Opening bid : $${auction.originalValue}M`}
-              </Typography>
             </CardContent>
             { !englishAuctionResults && (
             <CardActions className={classes.cardactionsstyle}>

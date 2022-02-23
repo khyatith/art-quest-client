@@ -61,12 +61,12 @@ const useStyles = makeStyles((theme) => ({
   cardroot: {
     width: 400,
     display: 'inline-block',
-    margin: '150px 20px 20px 20px',
+    margin: '40px 20px 20px 20px',
   },
   disabledcardroot: {
     width: 400,
     display: 'inline-block',
-    margin: '150px 20px 20px 20px',
+    margin: '40px 20px 20px 20px',
     backgroundColor: '#cccccc',
   },
   cardcontentstyle: {
@@ -222,31 +222,22 @@ const SecretAuction = () => {
       });
       return;
     }
-    // const prevBidAmt = previousBidDetails.current[auctionId] && previousBidDetails.current[auctionId].bidAmount;
-    const desiredBid = currentAuction[0].originalValue;
-    if (parseInt(bidInput, 10) < parseInt(desiredBid, 10)) {
-      setBidAmtError({
-        ...bidAmtError,
-        [auctionId]: `Your bid should be more than ${desiredBid}`,
-      });
-    } else {
-      setBidAmtError({
-        ...bidAmtError,
-        [auctionId]: null,
-      });
-      const bidInfo = {
-        auctionType: currentAuction[0].auctionType,
-        auctionId: currentAuction[0].id,
-        paintingQuality: currentAuction[0].paintingQuality,
-        imageURL: currentAuction[0].imageURL,
-        player,
-        bidAmount: bidInput,
-        bidAt: +new Date(),
-        bidTeam: player.teamName,
-        bidColor: player.teamColor,
-      };
-      socket.emit('addSecretAuctionBid', bidInfo);
-    }
+    setBidAmtError({
+      ...bidAmtError,
+      [auctionId]: null,
+    });
+    const bidInfo = {
+      auctionType: currentAuction[0].auctionType,
+      auctionId: currentAuction[0].id,
+      paintingQuality: currentAuction[0].paintingQuality,
+      imageURL: currentAuction[0].imageURL,
+      player,
+      bidAmount: bidInput,
+      bidAt: +new Date(),
+      bidTeam: player.teamName,
+      bidColor: player.teamColor,
+    };
+    socket.emit('addSecretAuctionBid', bidInfo);
   };
 
   return (
@@ -306,9 +297,6 @@ const SecretAuction = () => {
             <CardContent className={classes.cardcontentstyle}>
               <p>Painting Quality</p>
               <SimpleRating rating={parseFloat(auction.paintingQuality)} />
-              <Typography component="h6" variant="h6">
-                {`Opening bid : $${auction.originalValue}M`}
-              </Typography>
             </CardContent>
             <CardActions className={classes.cardactionsstyle}>
               {!secretAuctionResults && (
