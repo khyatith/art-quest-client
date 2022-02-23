@@ -28,7 +28,6 @@
 		"prettier": "^2.3.2",
 		"prop-types": "^15.7.2",
 		"react": "^17.0.2",
-		"react-addons-css-transition-group": "^15.6.2",
 		"react-animations": "^1.0.0",
 		"react-chartjs-2": "^3.3.0",
 		"react-confetti": "^6.0.1",

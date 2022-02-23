@@ -82,7 +82,6 @@ function EndBuyingPhase() {
 
   const getWinner = async () => {
     const { data } = await axios.get(`${API_URL}/buying/getWinner/${player.hostCode}`);
-    console.log('data', data);
     if (data && data.leaderBoard) {
       const { teamName } = player;
       const allTeamArt = data.leaderBoard[teamName];
@@ -104,7 +103,6 @@ function EndBuyingPhase() {
       setTotalDebtByTeam(data.totalAmountSpentByTeam);
     }
     if (data && data.totalArtScoreForTeams) {
-      console.log('data', data);
       setTotalArtScore(data.totalArtScoreForTeams);
     }
   };
@@ -221,14 +219,11 @@ function EndBuyingPhase() {
         <div className={classes.root}>
           <ImageList rowHeight={300} className={classes.imageList}>
             {artforTeams
-              && artforTeams.map((item) => {
-                const { auctionObj } = item;
-                return (
-                  <ImageListItem key={item.auctionId}>
-                    <img key={item.auctionId} src={auctionObj.imageURL} alt={auctionObj.name} />
-                  </ImageListItem>
-                );
-              })}
+              && artforTeams.map((item) => (
+                <ImageListItem key={item.auctionId}>
+                  <img key={item.auctionId} src={item.imageURL} alt={item.name} />
+                </ImageListItem>
+              ))}
           </ImageList>
         </div>
       </div>

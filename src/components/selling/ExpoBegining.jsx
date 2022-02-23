@@ -1,5 +1,4 @@
 import React, {
-  useCallback,
   useEffect, useState,
 } from 'react';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
@@ -161,8 +160,8 @@ function ExpoBeginning() {
   const [nominatedPaintings, setNominatedPaintings] = useState([]);
   const [paintingSelected, setPaintingSelected] = useState(-1);
   const [bidAmtError, setBidAmtError] = useState();
-  const [hasSentEnglishAuctionRequest, setHasSentEnglishAuctionRequest] = useState(false);
-  const [hasRevenueUpdated, setHasRevenueUpdated] = useState(false);
+  // const [hasSentEnglishAuctionRequest, setHasSentEnglishAuctionRequest] = useState(false);
+  // const [hasRevenueUpdated, setHasRevenueUpdated] = useState(false);
   const [calculatedRevenue, setCalculatedRevenue] = useState();
   const [ticketPriceFromAPI, setTicketPriceFromapi] = useState();
   const [sellingAuctionBidWinner, setSellingAuctionBidWinner] = useState();
@@ -184,7 +183,7 @@ function ExpoBeginning() {
       return;
     }
     const { interestInArt, demand, transportCost } = cityData;
-    const val = paintings[index].auctionObj.paintingQuality;
+    const val = paintings[index].paintingQuality;
     const paintingId = paintings[index].auctionId;
     socket.emit('paintingNominated', {
       paintingId,
@@ -227,25 +226,25 @@ function ExpoBeginning() {
     }
   }, [user, cityData, paintings]);
 
-  const updateStorageWithCurrentAuction = (data) => {
-    if (Object.keys(data.auctionObj).length > 0) {
-      sessionStorage.setItem('currentSellingEnglishAuction', JSON.stringify(data.auctionObj));
-    }
-  };
+  // const updateStorageWithCurrentAuction = (data) => {
+  //   if (Object.keys(data.auctionObj).length > 0) {
+  //     sessionStorage.setItem('currentSellingEnglishAuction', JSON.stringify(data.auctionObj));
+  //   }
+  // };
 
-  const renderEnglishAuction = useCallback(async () => {
-    if (!hasSentEnglishAuctionRequest) {
-      const { data } = await axios.get(`${API_URL}/buying/getEnglishAuctionForSelling?roomCode=${user.hostCode}&roundId=${user.roundId}`);
-      setTimeout(() => updateStorageWithCurrentAuction(data), 5000);
-    }
-  }, [user]);
+  // const renderEnglishAuction = useCallback(async () => {
+  //   if (!hasSentEnglishAuctionRequest) {
+  //     const { data } = await axios.get(`${API_URL}/buying/getEnglishAuctionForSelling?roomCode=${user.hostCode}&roundId=${user.roundId}`);
+  //     setTimeout(() => updateStorageWithCurrentAuction(data), 5000);
+  //   }
+  // }, [user]);
 
-  useEffect(() => {
-    if (!hasSentEnglishAuctionRequest) {
-      renderEnglishAuction();
-      setHasSentEnglishAuctionRequest(true);
-    }
-  }, [hasSentEnglishAuctionRequest]);
+  // useEffect(() => {
+  //   if (!hasSentEnglishAuctionRequest) {
+  //     // renderEnglishAuction();
+  //     setHasSentEnglishAuctionRequest(true);
+  //   }
+  // }, [hasSentEnglishAuctionRequest]);
 
   useEffect(() => {
     socket.on('goToSellingResults', () => {
@@ -260,14 +259,14 @@ function ExpoBeginning() {
     const total = parseInt(timerValue.total, 10) - 1000;
     const seconds = Math.floor((parseInt(total, 10) / 1000) % 60);
     const minutes = Math.floor((parseInt(total, 10) / 1000 / 60) % 60);
-    if (total < 1000 && !hasRevenueUpdated) {
-      const currentAuctionObj = sessionStorage.getItem('currentSellingEnglishAuction');
-      const obj = currentAuctionObj && JSON.parse(currentAuctionObj);
-      if (obj && Object.keys(obj).length > 0) {
-        await axios.post(`${API_URL}/buying/updateEnglishAuctionResults`, { roomId: user.hostCode, auctionId: obj.id });
-      }
+    if (total < 1000) {
+      // const currentAuctionObj = sessionStorage.getItem('currentSellingEnglishAuction');
+      // const obj = currentAuctionObj && JSON.parse(currentAuctionObj);
+      // if (obj && Object.keys(obj).length > 0) {
+      //   await axios.post(`${API_URL}/buying/updateEnglishAuctionResults`, { roomId: user.hostCode, auctionId: obj.id });
+      // }
       socket.emit('expoBeginningTimerEnded', { hostCode: user.hostCode });
-      setHasRevenueUpdated(true);
+      // setHasRevenueUpdated(true);
     } else {
       const value = {
         total,
@@ -501,7 +500,7 @@ function ExpoBeginning() {
                   <CardMedia
                     sx={(paintingSelected === paintings[index].auctionId) ? { height: 298, filter: 'grayscale(100%)' } : { height: 298 }}
                     component="img"
-                    image={arg.auctionObj.imageURL}
+                    image={arg.imageURL}
                     alt="green iguana"
                   />
                   <CardActions className={(paintingSelected === paintings[index].auctionId) ? classes.nominateBtnDone : classes.nominateBtn}>

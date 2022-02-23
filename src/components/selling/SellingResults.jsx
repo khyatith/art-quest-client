@@ -186,7 +186,7 @@ function SellingResults({ location }) {
                     className={classes.cardTitleStyle}
                     style={{ backgroundColor: TEAM_COLOR_MAP[teamColor], marginTop: '5%' }}
                     title={`Team ${teamColor}`}
-                    subheader={`Round ${user.roundId} earnings: $${revenueGenerated}M`}
+                    subheader={`Round ${user.roundId} earnings: $${parseFloat(revenueGenerated).toFixed(2)}M`}
                   />
                   <h3 style={{ color: 'green', marginLeft: '20px' }}>{`Your spending: $${sellingAuctionSpendingForTeam}M`}</h3>
                   <CardMedia sx={{ height: 338 }} component="img" image={arg.paintingURL} alt={arg.paintingName} />

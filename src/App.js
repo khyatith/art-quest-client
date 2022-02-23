@@ -11,7 +11,10 @@ import ExpoBegining from './components/selling/ExpoBegining';
 import LocationPhase from './components/selling/LocationPhase';
 import SellingResults from './components/selling/SellingResults';
 import FinalResults from './components/selling/FinalResults';
+import EnglishAuction from './components/buying/EnglishAuction';
+import SecretAuction from './components/buying/SecretAuction';
 import SellingGameInstructions from './components/selling/SellingGameInstructions';
+import EndBuyingPhase from './components/EndBuyingPhase';
 
 function App() {
   const [player, setPlayer] = useState({
@@ -36,9 +39,12 @@ function App() {
               <Route path="/" exact component={LaunchScreen} />
               <Route path="/staging/:code" exact component={StagingScreen} />
               <Route path="/art-quest/instructions" exact component={GameInstructions} />
+              <Route path="/buying/results/:code" exact component={EndBuyingPhase} />
               <Route path="/game/:code">
                 <Game />
               </Route>
+              <Route path="/englishAuction/:code" component={EnglishAuction} />
+              <Route path="/secretAuctions/:code" component={SecretAuction} />
               <Route path="/sell/:code" exact component={ExpoBegining} />
               <Route path="/sell/location/:code" exact component={LocationPhase} />
               <Route path="/sell/result/:code" exact component={SellingResults} />
