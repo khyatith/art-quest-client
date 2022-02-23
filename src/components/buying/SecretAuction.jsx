@@ -22,7 +22,7 @@ import SimpleRating from '../Rating';
 import { socket } from '../../global/socket';
 import { API_URL, TEAM_COLOR_MAP } from '../../global/constants';
 import { validateCurrentBid } from '../../global/helpers';
-// import NewLeaderboard from '../NewLeaderboard';
+import Leaderboard from './Leaderboard';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -114,6 +114,10 @@ const useStyles = makeStyles((theme) => ({
     fontSize: '16px',
     fontWeight: '700',
   },
+  leaderboardcontainer: {
+    paddingTop: '100px',
+    paddingLeft: '500px',
+  },
 }));
 
 const SecretAuction = () => {
@@ -158,7 +162,7 @@ const SecretAuction = () => {
   };
 
   const goToNextAuctions = () => {
-    history.push(`/secretAuctions/${player.playerId}`);
+    history.push(`/buying/results/${player.playerId}`);
   };
 
   useEffect(() => {
@@ -234,6 +238,7 @@ const SecretAuction = () => {
         auctionType: currentAuction[0].auctionType,
         auctionId: currentAuction[0].id,
         paintingQuality: currentAuction[0].paintingQuality,
+        imageURL: currentAuction[0].imageURL,
         player,
         bidAmount: bidInput,
         bidAt: +new Date(),
@@ -276,6 +281,9 @@ const SecretAuction = () => {
           </Typography>
         </Toolbar>
       </AppBar>
+      <div className={classes.leaderboardcontainer}>
+        <Leaderboard showAuctionResults={secretAuctionResults} goToNextAuctions={goToNextAuctions} />
+      </div>
       {secretAuctions && secretAuctions.artifacts.map((auction) => {
         const liveStylesForCurrentAuction = liveStyles.current[`${auction.id}`].current;
         const winner = secretAuctionResults && secretAuctionResults[`${auction.id}`] && secretAuctionResults[`${auction.id}`].bidTeam;
@@ -314,7 +322,7 @@ const SecretAuction = () => {
                   name="bidAmount"
                   placeholder="Enter your bid"
                   variant="outlined"
-                  disabled={liveStylesForCurrentAuction && Object.keys(liveStylesForCurrentAuction).includes(player.teamName)}
+                  disabled={!secretAuctionTimer || (liveStylesForCurrentAuction && Object.keys(liveStylesForCurrentAuction).includes(player.teamName))}
                   InputProps={{
                     startAdornment: <InputAdornment position="start">$</InputAdornment>,
                     endAdornment: <InputAdornment position="end">M</InputAdornment>,
@@ -323,7 +331,7 @@ const SecretAuction = () => {
                 <Button
                   variant="contained"
                   color="secondary"
-                  disabled={liveStylesForCurrentAuction && Object.keys(liveStylesForCurrentAuction).includes(player.teamName)}
+                  disabled={!secretAuctionTimer || (liveStylesForCurrentAuction && Object.keys(liveStylesForCurrentAuction).includes(player.teamName))}
                   onClick={() => setBidAmt(auction.id)}
                 >
                   Bid

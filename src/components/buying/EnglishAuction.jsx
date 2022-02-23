@@ -23,7 +23,6 @@ import { socket } from '../../global/socket';
 import { API_URL, TEAM_COLOR_MAP } from '../../global/constants';
 import { validateCurrentBid } from '../../global/helpers';
 import Leaderboard from './Leaderboard';
-// import NewLeaderboard from '../NewLeaderboard';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -234,6 +233,7 @@ const EnglishAuction = () => {
         auctionType: currentAuction[0].auctionType,
         auctionId: currentAuction[0].id,
         paintingQuality: currentAuction[0].paintingQuality,
+        imageURL: currentAuction[0].imageURL,
         player,
         bidAmount: bidInput,
         bidAt: +new Date(),

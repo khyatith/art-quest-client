@@ -37,8 +37,8 @@ export default function Leaderboard({ showAuctionResults, goToNextAuctions }) {
   const classes = useStyles();
   const { allTeams } = JSON.parse(sessionStorage.getItem('allAuction'));
   const player = JSON.parse(sessionStorage.getItem('user'));
-  const [leaderboardData, setLeaderboardData] = useState();
-  // const results = JSON.parse(sessionStorage.getItem('results')) || {};
+  const existingLeaderboard = sessionStorage.getItem('results') ? JSON.parse(sessionStorage.getItem('results')) : {};
+  const [leaderboardData, setLeaderboardData] = useState(existingLeaderboard);
 
   useEffect(() => {
     async function fetchLeaderboard() {
@@ -48,6 +48,7 @@ export default function Leaderboard({ showAuctionResults, goToNextAuctions }) {
         ...prevValues,
         ...data,
       }));
+      sessionStorage.setItem('results', JSON.stringify(data));
     }
     if (showAuctionResults) {
       fetchLeaderboard(player);
