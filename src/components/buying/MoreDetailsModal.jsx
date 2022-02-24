@@ -21,11 +21,11 @@ const useStyles = makeStyles((theme) => ({
   },
   child1: {
     margin: '20px',
-    flex: '0 1 50%',
+    // flex: '0 1 50%',
   },
   paintingstyle: {
-    height: '700px',
-    width: 'auto',
+    height: '600px',
+    maxWidth: '1000px',
   },
 }));
 
@@ -67,6 +67,15 @@ const MoreDetailsModal = ({ openModal, selectedPaintingDetails, setOpenModalForP
               Created by
               {' '}
               {selectedPaintingDetails.artist}
+              ,
+              {' '}
+              {selectedPaintingDetails.materialUsed}
+            </h3>
+            <h3>
+              {selectedPaintingDetails.country}
+              ,
+              {' '}
+              {selectedPaintingDetails.region}
             </h3>
           </div>
         </div>

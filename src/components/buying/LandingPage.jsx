@@ -94,8 +94,7 @@ const LandingPage = () => {
     const seconds = Math.floor((parseInt(total, 10) / 1000) % 60);
     const minutes = Math.floor((parseInt(total, 10) / 1000 / 60) % 60);
     if (total < 1000) {
-      const sesStr = JSON.parse(sessionStorage.getItem('user'));
-      socket.emit('landingPageTimerEnded', JSON.stringify(sesStr));
+      socket.emit('landingPageTimerEnded', JSON.stringify(player));
     } else {
       const value = {
         total,
