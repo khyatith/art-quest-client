@@ -16,24 +16,8 @@
 
 # Connect your local client to local server
 
-1. On your client code, go to src/global/socket.js
-2. Replace the code in the file to 
-
-```
-/* eslint-disable import/prefer-default-export */
-import { io } from 'socket.io-client';
-
-export const socket = io.connect('http://localhost:3001');
-
-export const leaderboardSocket = io.connect('http://localhost:3001/leaderboard-namespace');
-```
-3. Go to src/components/LandingPage.jsx. Replace url in axios call
-
-`https://art-quest-server.herokuapp.com/landing-page/timer/${player.hostCode}` 
-
-with
-
-`http://localhost:3001/buying/timer/${player.hostCode}`
+1. On your client code, go to src/global/constants.js
+2. Comment line 2. Uncomment line 3.
 
 # End
 
