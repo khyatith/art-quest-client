@@ -84,13 +84,14 @@ function LaunchScreen() {
         ...prevValues,
         [name]: value,
       }));
-    } else if (player.playerId === '') {
-      const uid = await getUID();
-      setPlayer((prevValues) => ({
-        ...prevValues,
-        playerId: uid,
-        hostCode: uid,
-      }));
+      if (player.playerId === '') {
+        const uid = await getUID();
+        setPlayer((prevValues) => ({
+          ...prevValues,
+          playerId: uid,
+          hostCode: uid,
+        }));
+      }
     } else {
       const gamer = JSON.parse(sessionStorage.getItem('user'));
       setPlayer((prevValues) => ({

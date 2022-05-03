@@ -25,7 +25,7 @@ import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import { useHistory } from 'react-router-dom';
 import { API_URL, TEAM_COLOR_MAP } from '../../global/constants';
-import SimpleRating from '../Rating';
+// import SimpleRating from '../Rating';
 import { socket } from '../../global/socket';
 import { validateCurrentBid } from '../../global/helpers';
 import NewBonusAuction from './NewBonusAuction';
@@ -183,7 +183,6 @@ function ExpoBeginning() {
       return;
     }
     const { interestInArt, demand, transportCost } = cityData;
-    const val = paintings[index].paintingQuality;
     const paintingId = paintings[index].auctionId;
     socket.emit('paintingNominated', {
       paintingId,
@@ -192,7 +191,6 @@ function ExpoBeginning() {
       population: demand,
       cityId: user.currentLocation,
       teamName: user.teamName,
-      paintingQuality: val,
       artifactId: paintingId,
       ticketPrice: ticketVal,
       roundId: user.roundId,
@@ -523,10 +521,10 @@ function ExpoBeginning() {
                     {(paintingSelected === paintings[index].auctionId) && loadCardSelection()}
                   </Collapse>
                 </Card>
-                <div className={classes.contentstyle}>
+                {/* <div className={classes.contentstyle}>
                   <p>Painting Quality</p>
                   <SimpleRating rating={parseFloat(arg.paintingQuality)} />
-                </div>
+                </div> */}
               </Box>
             ))}
         </Box>

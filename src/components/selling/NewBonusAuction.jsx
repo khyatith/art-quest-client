@@ -10,7 +10,7 @@ import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import { socket } from '../../global/socket';
-import SimpleRating from '../Rating';
+// import SimpleRating from '../Rating';
 import { validateCurrentBid } from '../../global/helpers';
 
 const useStyles = makeStyles((theme) => ({
@@ -130,7 +130,6 @@ const NewBonusAuction = () => {
       const bidInfo = {
         auctionType: auctionObj.auctionType,
         auctionId: auctionObj.id,
-        paintingQuality: auctionObj.paintingQuality,
         auctionObj,
         player,
         bidAmount: bidInput,
@@ -205,10 +204,10 @@ const NewBonusAuction = () => {
                 </div>
               </CardActions>
             </Card>
-            <div>
+            {/* <div>
               <h3>Painting Quality</h3>
               <SimpleRating rating={parseFloat(auctionObj.paintingQuality)} />
-            </div>
+            </div> */}
           </Grid>
         )}
       </Grid>

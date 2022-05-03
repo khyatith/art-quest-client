@@ -13,7 +13,7 @@ import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import { rubberBand } from 'react-animations';
 import { API_URL, TEAM_COLOR_MAP } from '../global/constants';
-import SimpleRating from './Rating';
+// import SimpleRating from './Rating';
 import { socket } from '../global/socket';
 
 const useStyles = makeStyles((theme) => ({
@@ -137,7 +137,6 @@ function DutchAuction() {
   `;
 
   const handleSelectPainting = (index) => {
-    const val = paintings[index].paintingQuality;
     const paintingId = paintings[index].id;
     socket.emit('addNewBid', {
       auctionId: paintingId,
@@ -145,7 +144,6 @@ function DutchAuction() {
       player: user,
       auctionObj: paintings,
       bidAt: +new Date(),
-      paintingQuality: val,
       auctionType: '5',
       bidColor: user.teamColor,
       bidAmount: paintings[index].originalValue,
@@ -365,10 +363,10 @@ function DutchAuction() {
                     {!nominatedPaintings.includes(paintings[index].id) && loadCardContent(index)}
                     {nominatedPaintings.includes(paintings[index].id) && loadCardSelection(index)}
                   </Card>
-                  <div className={classes.contentstyle}>
+                  {/* <div className={classes.contentstyle}>
                     <p>Painting Quality</p>
                     <SimpleRating rating={parseFloat(arg.paintingQuality)} />
-                  </div>
+                  </div> */}
                 </Box>
               </>
             ))}

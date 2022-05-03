@@ -12,13 +12,13 @@ import axios from 'axios';
 import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
 import CardMedia from '@material-ui/core/CardMedia';
-import CardContent from '@material-ui/core/CardContent';
+// import CardContent from '@material-ui/core/CardContent';
 import CardActions from '@material-ui/core/CardActions';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import { useHistory } from 'react-router';
-import SimpleRating from '../Rating';
+// import SimpleRating from '../Rating';
 import { socket } from '../../global/socket';
 import { API_URL, TEAM_COLOR_MAP } from '../../global/constants';
 import { validateCurrentBid } from '../../global/helpers';
@@ -232,7 +232,6 @@ const EnglishAuction = () => {
       const bidInfo = {
         auctionType: currentAuction[0].auctionType,
         auctionId: currentAuction[0].id,
-        paintingQuality: currentAuction[0].paintingQuality,
         imageURL: currentAuction[0].imageURL,
         player,
         bidAmount: bidInput,
@@ -299,10 +298,10 @@ const EnglishAuction = () => {
               title={auction.name}
               // style={{ backgroundColor: previousBid.bidTeam && `${TEAM_COLOR_MAP[previousBid.bidTeam]}` }}
             />
-            <CardContent className={classes.cardcontentstyle}>
+            {/* <CardContent className={classes.cardcontentstyle}>
               <p>Painting Quality</p>
               <SimpleRating rating={parseFloat(auction.paintingQuality)} />
-            </CardContent>
+            </CardContent> */}
             { !englishAuctionResults && (
             <CardActions className={classes.cardactionsstyle}>
               <div className={classes.textcontainer}>
