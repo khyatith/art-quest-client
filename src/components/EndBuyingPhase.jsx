@@ -64,13 +64,11 @@ function EndBuyingPhase() {
   const classes = useStyles();
   const history = useHistory();
   const [artforTeams, setArtForTeams] = useState();
-  const [gameWinner, setGameWinner] = useState();
   // const [teamEfficiency, setTeamEfficiency] = useState({});
   const [totalDebtByTeam, setTotalDebtByTeam] = useState({});
-  const [teamsByRank, setTeamsByRank] = useState([]);
-  // const [showWinner, setShowWinner] = useState(false);
   const [totalPaintingsWonByTeam, setTotalPaintingsWonByTeam] = useState({});
   const [totalArtScore, setTotalArtScore] = useState({});
+  const [allTeams, setAllTeams] = useState([]);
   // const { setPlayer } = useContext(userContext);
   // const { setLeaderboardData } = useContext(leaderboardContext);
   // const [sortedTeamsByPaintingsWon, setSortedTeamsByPaintingsWon] = useState({});
@@ -87,12 +85,12 @@ function EndBuyingPhase() {
       const allTeamArt = data.leaderBoard[teamName];
       setArtForTeams(allTeamArt);
     }
-    if (data && data.winner) {
-      setGameWinner(data.winner);
+    if (data && data.allTeams) {
+      setAllTeams(data.allTeams);
     }
-    if (data && data.teamsByRank) {
-      setTeamsByRank(data.teamsByRank);
-    }
+    // if (data && data.teamsByRank) {
+    //   setTeamsByRank(data.teamsByRank);
+    // }
     if (data && data.totalPaintingsWonByTeam) {
       setTotalPaintingsWonByTeam(data.totalPaintingsWonByTeam);
     }
@@ -108,13 +106,13 @@ function EndBuyingPhase() {
   };
 
   useEffect(() => {
-    if (!gameWinner) {
+    if (!allTeams) {
       getWinner();
     }
-  }, [gameWinner]);
+  }, [allTeams]);
 
   const renderLeaderboardData = () => {
-    const tableData = teamsByRank.map((key) => ({
+    const tableData = allTeams.map((key) => ({
       key,
       debt: totalDebtByTeam[key],
       totalPaintings: totalPaintingsWonByTeam[key],
@@ -206,7 +204,7 @@ function EndBuyingPhase() {
       >
         <h3>Starting Phase 2 in 15 seconds ...</h3>
       </div>
-      {teamsByRank && totalPaintingsWonByTeam && totalArtScore && renderLeaderboardData()}
+      {allTeams && totalPaintingsWonByTeam && totalArtScore && renderLeaderboardData()}
       {/* <div style={{ margin: '40px auto', textAlign: 'center' }}>
         <Button className={classes.btnform} variant="contained" onClick={resetApplication}>
           Start New Game

@@ -17,6 +17,7 @@ import CardActions from '@material-ui/core/CardActions';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import InputAdornment from '@material-ui/core/InputAdornment';
+import { useLocation } from 'react-router-dom';
 import { useHistory } from 'react-router';
 // import SimpleRating from '../Rating';
 import { socket } from '../../global/socket';
@@ -122,12 +123,14 @@ const useStyles = makeStyles((theme) => ({
 
 const SecretAuction = () => {
   const classes = useStyles();
+  const location = useLocation();
   const [secretAuctionTimer, setSecretAuctionTimer] = useState();
   const [secretAuctionResults, setSecretAuctionResults] = useState();
   const [bidAmtError, setBidAmtError] = useState();
   const history = useHistory();
   const player = JSON.parse(sessionStorage.getItem('user'));
-  const { secretAuctions } = JSON.parse(sessionStorage.getItem('allAuction'));
+  const allAuctionsObj = JSON.parse(sessionStorage.getItem('allAuction'));
+  const secretAuctions = location.state.secretAuctionsNumber === 2 ? allAuctionsObj.secretAuctions1 : allAuctionsObj.secretAuctions2;
   const bidInputRef = useRef(secretAuctions.artifacts.reduce((acc, a) => {
     /* eslint-disable  no-param-reassign */
     acc = {
@@ -136,6 +139,7 @@ const SecretAuction = () => {
     };
     return acc;
   }, {}));
+
   const liveStyles = useRef(secretAuctions.artifacts.reduce((acc, a) => {
     /* eslint-disable  no-param-reassign */
     acc = {
@@ -162,12 +166,19 @@ const SecretAuction = () => {
   };
 
   const goToNextAuctions = () => {
-    history.push(`/buying/results/${player.playerId}`);
+    if (location.state.secretAuctionsNumber === 2) {
+      history.push({
+        pathname: `/englishAuction/${player.hostCode}`,
+        state: { englishAuctionsNumber: 3 },
+      });
+    } else {
+      history.push(`/buying/results/${player.hostCode}`);
+    }
   };
 
   useEffect(() => {
     async function fetchTimerValue() {
-      const { data } = await axios.get(`${API_URL}/buying/secretauctionTimer/${player.hostCode}`);
+      const { data } = await axios.get(`${API_URL}/buying/secretauctionTimer/${player.hostCode}/${location.state.secretAuctionsNumber}`);
       setSecretAuctionTimer(data.secretAuctionTimer);
     }
     if (!secretAuctionTimer) {
@@ -197,7 +208,7 @@ const SecretAuction = () => {
   useEffect(() => {
     socket.on('setLiveStyles', (data) => {
       const { teamName, auctionId, bidAmount } = data;
-      const currentLiveStateForAuction = liveStyles.current[`${auctionId}`].current;
+      const currentLiveStateForAuction = liveStyles.current[auctionId].current;
       if (!currentLiveStateForAuction) {
         liveStyles.current[`${auctionId}`].current = {
           [teamName]: bidAmount,
@@ -230,6 +241,8 @@ const SecretAuction = () => {
       auctionType: currentAuction[0].auctionType,
       auctionId: currentAuction[0].id,
       imageURL: currentAuction[0].imageURL,
+      artMovement: currentAuction[0]?.artMovementName,
+      artMovementId: currentAuction[0]?.artMovementId,
       player,
       bidAmount: bidInput,
       bidAt: +new Date(),
@@ -275,7 +288,7 @@ const SecretAuction = () => {
         <Leaderboard showAuctionResults={secretAuctionResults} goToNextAuctions={goToNextAuctions} />
       </div>
       {secretAuctions && secretAuctions.artifacts.map((auction) => {
-        const liveStylesForCurrentAuction = liveStyles.current[`${auction.id}`].current;
+        const liveStylesForCurrentAuction = liveStyles && liveStyles.current[`${auction.id}`].current;
         const winner = secretAuctionResults && secretAuctionResults[`${auction.id}`] && secretAuctionResults[`${auction.id}`].bidTeam;
         return (
           <Card
