@@ -79,12 +79,12 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function createData(team, cash, vis, artScore) {
+function createData(team, cash, vis, classifyPoints) {
   const str = [];
   const formattedCash = parseFloat((cash) / 10).toFixed(2);
   str.push(formattedCash);
   str.push(vis);
-  str.push(artScore);
+  str.push(classifyPoints);
   return {
     label: team,
     backgroundColor: TEAM_COLOR_MAP[team],
@@ -93,14 +93,14 @@ function createData(team, cash, vis, artScore) {
   };
 }
 
-function createDataMap(id, team, visits, cash, total, artScore, cashPoints) {
+function createDataMap(id, team, visits, cash, total, classifyPoints, cashPoints) {
   return {
     id,
     team,
     visits,
     cash,
     total,
-    artScore,
+    classifyPoints,
     cashPoints,
   };
 }
@@ -133,7 +133,7 @@ function LocationPhase() {
         .get(`${API_URL}/buying/getSellingResults?roomId=${player.hostCode}`)
         .then((newData) => {
           const {
-            amountSpentByTeam, totalArtScoreForTeams, visits, locationPhaseTimerValue, roundNumber, allTeams, flyTicketsPrice,
+            amountSpentByTeam, visits, locationPhaseTimerValue, roundNumber, allTeams, flyTicketsPrice,
           } = newData.data;
           if (flyTicketsPrice) {
             console.log('flyTicketPrice>>>>>', flyTicketsPrice);
@@ -142,7 +142,7 @@ function LocationPhase() {
           setTeamsCurrentLocation(newData.data.visits);
           let x = 1;
           const tv = [];
-          const labels = ['Cash Points', 'Visits', 'Art Score'];
+          const labels = ['Cash Points', 'Visits', 'Classify Points'];
           const teams = [];
           allTeams.forEach((value) => {
             const team = value;
@@ -150,12 +150,12 @@ function LocationPhase() {
             let vis = 0;
             const teamVisits = visits.filter((v) => v.teamName === team);
             vis = teamVisits && teamVisits.length > 0 && teamVisits[0].totalVisitPrice ? parseInt(teamVisits[0].totalVisitPrice, 10) : 0.00;
-            const artScore = totalArtScoreForTeams[team] || 0;
+            // const artScore = totalArtScoreForTeams[team] || 0;
             const formattedCash = parseFloat((cash) / 10).toFixed(2);
-            const total = parseFloat(formattedCash) - parseFloat(vis) + parseFloat(artScore);
+            const total = parseFloat(formattedCash) - parseFloat(vis) + 0;// need to replace 0 with classifyPoints
             // eslint-disable-next-line no-nested-ternary
-            datasets.push(createData(team, cash, vis, artScore));
-            tv.push(createDataMap(x, team, vis, cash, total, artScore, formattedCash));
+            datasets.push(createData(team, cash, vis, 0));// need to replace 0 with classifyPoints
+            tv.push(createDataMap(x, team, vis, cash, total, 0, formattedCash));// need to replace 0 with classifyPoints
             teams.push(team);
             x += 1;
           });

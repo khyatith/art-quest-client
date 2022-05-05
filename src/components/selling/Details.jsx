@@ -33,14 +33,15 @@ const Details = (props) => {
               <StyledTableCell align="right">Cash</StyledTableCell>
               <StyledTableCell align="right">Cash Points</StyledTableCell>
               <StyledTableCell align="right">Visits</StyledTableCell>
-              <StyledTableCell align="right">Art Score</StyledTableCell>
+              <StyledTableCell align="right">Classify Points</StyledTableCell>
               <StyledTableCell align="right">Total</StyledTableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {rows && rows.map((row) => {
               const formattedCash = parseFloat((row.cash) / 10).toFixed(2);
-              const total = parseFloat(formattedCash) - parseFloat(row.visits) + parseFloat(row.artScore);
+              const total = parseFloat(formattedCash) - parseFloat(row.visits);
+              // + parseFloat(row.artScore)     //need to add classify point here
               return (
                 <TableRow key={row.id} style={{ backgroundColor: `${TEAM_COLOR_MAP[row.team]}` }}>
                   <StyledTableCell component="th" scope="row">
@@ -50,7 +51,9 @@ const Details = (props) => {
                   <StyledTableCell align="right">{`$${parseFloat(row.cash).toFixed(2)}M`}</StyledTableCell>
                   <StyledTableCell align="right">{formattedCash}</StyledTableCell>
                   <StyledTableCell align="right">{row.visits}</StyledTableCell>
-                  <StyledTableCell align="right">{parseFloat(row.artScore).toFixed(2)}</StyledTableCell>
+                  <StyledTableCell align="right">{row.classifyPoints}</StyledTableCell>
+                  {// need to show classify point here
+                        }
                   <StyledTableCell align="right">{parseFloat(total).toFixed(2)}</StyledTableCell>
                 </TableRow>
               );

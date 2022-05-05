@@ -22,14 +22,14 @@ const StyledTableCell = withStyles((theme) => ({
   },
 }))(TableCell);
 
-function createDataMap(id, team, visits, cash, total, totalArtScore, cashPoints) {
+function createDataMap(id, team, visits, cash, total, classifyPoints, cashPoints) {
   return {
     id,
     team,
     visits,
     cash,
     total: parseFloat(total).toFixed(2),
-    totalArtScore,
+    classifyPoints,
     cashPoints,
   };
 }
@@ -47,19 +47,18 @@ function FinalResults() {
       axios
         .get(`${API_URL}/buying/getSellingResults?roomId=${user.hostCode}`)
         .then((newData) => {
-          const { amountSpentByTeam, visits, totalArtScoreForTeams } = newData.data;
+          const { amountSpentByTeam, visits } = newData.data;
           let x = 1;
           const tv = [];
           Object.entries(amountSpentByTeam).forEach(([key, value]) => {
             const team = key;
             const cash = value;
-            const totalArtScore = totalArtScoreForTeams[key];
             let vis = 0;
             const teamVisits = visits.filter((v) => v.teamName === key);
             vis = teamVisits && teamVisits.length > 0 && teamVisits[0].totalVisitPrice ? parseInt(teamVisits[0].totalVisitPrice, 10) : 0.00;
             const formattedCash = parseFloat((cash) / 10).toFixed(2);
-            const total = parseFloat(formattedCash) - parseFloat(vis) + parseFloat(totalArtScore);
-            tv.push(createDataMap(x, team, vis, cash, total, totalArtScore, formattedCash));
+            const total = parseFloat(formattedCash) - parseFloat(vis) + 0;// need to add classify point here in place of 0
+            tv.push(createDataMap(x, team, vis, cash, total, 0, formattedCash));// need to add classify point here in place of 0
             x += 1;
           });
           tv.sort((a, b) => b.total - a.total);
@@ -137,7 +136,7 @@ function FinalResults() {
                 <StyledTableCell align="right">Cash</StyledTableCell>
                 <StyledTableCell align="right">Cash points</StyledTableCell>
                 <StyledTableCell align="right">Visits</StyledTableCell>
-                <StyledTableCell align="right">Art score</StyledTableCell>
+                <StyledTableCell align="right">Classify Points</StyledTableCell>
                 <StyledTableCell align="right">Total</StyledTableCell>
               </TableRow>
             </TableHead>
@@ -151,7 +150,7 @@ function FinalResults() {
                   <StyledTableCell align="right">{`$${row.cash}M`}</StyledTableCell>
                   <StyledTableCell align="right">{row.cashPoints}</StyledTableCell>
                   <StyledTableCell align="right">{row.visits}</StyledTableCell>
-                  <StyledTableCell align="right">{row.totalArtScore}</StyledTableCell>
+                  <StyledTableCell align="right">{row.classifyPoints}</StyledTableCell>
                   <StyledTableCell align="right">{row.total}</StyledTableCell>
                 </TableRow>
               ))}
