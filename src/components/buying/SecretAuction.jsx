@@ -130,7 +130,7 @@ const SecretAuction = () => {
   const history = useHistory();
   const player = JSON.parse(sessionStorage.getItem('user'));
   const allAuctionsObj = JSON.parse(sessionStorage.getItem('allAuction'));
-  const secretAuctions = location.state.secretAuctionsNumber === 1 ? allAuctionsObj.secretAuctions1 : allAuctionsObj.secretAuctions2;
+  const secretAuctions = location.state.secretAuctionsNumber === 2 ? allAuctionsObj.secretAuctions1 : allAuctionsObj.secretAuctions2;
   const bidInputRef = useRef(secretAuctions.artifacts.reduce((acc, a) => {
     /* eslint-disable  no-param-reassign */
     acc = {
@@ -147,6 +147,8 @@ const SecretAuction = () => {
     };
     return acc;
   }, {}));
+
+  console.log('liveStyles', liveStyles);
 
   const getRemainingTime = () => {
     const total = parseInt(secretAuctionTimer.total, 10) - 1000;
@@ -165,19 +167,19 @@ const SecretAuction = () => {
   };
 
   const goToNextAuctions = () => {
-    if (location.state.secretAuctionsNumber === 1) {
+    if (location.state.secretAuctionsNumber === 2) {
       history.push({
-        pathname: `/buying/englishAuctions/${player.playerId}`,
-        state: { englishAuctionsNumber: 2 },
+        pathname: `/englishAuction/${player.hostCode}`,
+        state: { englishAuctionsNumber: 3 },
       });
     } else {
-      history.push(`/buying/results/${player.playerId}`);
+      history.push(`/buying/results/${player.hostCode}`);
     }
   };
 
   useEffect(() => {
     async function fetchTimerValue() {
-      const { data } = await axios.get(`${API_URL}/buying/secretauctionTimer/${player.hostCode}`);
+      const { data } = await axios.get(`${API_URL}/buying/secretauctionTimer/${player.hostCode}/${location.state.secretAuctionsNumber}`);
       setSecretAuctionTimer(data.secretAuctionTimer);
     }
     if (!secretAuctionTimer) {

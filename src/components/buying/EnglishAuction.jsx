@@ -167,11 +167,7 @@ const EnglishAuction = () => {
   };
 
   const goToNextAuctions = () => {
-    // history.push({
-    //   pathname: `/secretAuctions/${player.playerId}`,
-    //   state: { detail: 'some_value' },
-    // });
-    const auctionNumber = location.state.englishAuctionsNumber ? 1 : 2;
+    const auctionNumber = location.state.englishAuctionsNumber === 1 ? 2 : 4;
     history.push({
       pathname: `/secretAuctions/${player.playerId}`,
       state: { secretAuctionsNumber: auctionNumber },
@@ -180,7 +176,7 @@ const EnglishAuction = () => {
 
   useEffect(() => {
     async function fetchTimerValue() {
-      const { data } = await axios.get(`${API_URL}/buying/englishauctionTimer/${player.hostCode}`);
+      const { data } = await axios.get(`${API_URL}/buying/englishauctionTimer/${player.hostCode}/${location.state.englishAuctionsNumber}`);
       setEnglishAuctionTimer(data.englishAuctionTimer);
     }
     if (!englishAuctionTimer) {
