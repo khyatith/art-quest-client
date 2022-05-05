@@ -132,7 +132,10 @@ const LandingPage = () => {
 
   useEffect(() => {
     socket.on('redirectToNextPage', () => {
-      history.push(`/englishAuction/${player.hostCode}`);
+      history.push({
+        pathname: `/englishAuction/${player.hostCode}`,
+        state: { englishAuctionsNumber: 1 },
+      });
     });
   }, []);
 

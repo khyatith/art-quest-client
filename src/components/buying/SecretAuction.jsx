@@ -17,6 +17,7 @@ import CardActions from '@material-ui/core/CardActions';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import InputAdornment from '@material-ui/core/InputAdornment';
+import { useLocation } from 'react-router-dom';
 import { useHistory } from 'react-router';
 import SimpleRating from '../Rating';
 import { socket } from '../../global/socket';
@@ -122,12 +123,14 @@ const useStyles = makeStyles((theme) => ({
 
 const SecretAuction = () => {
   const classes = useStyles();
+  const location = useLocation();
   const [secretAuctionTimer, setSecretAuctionTimer] = useState();
   const [secretAuctionResults, setSecretAuctionResults] = useState();
   const [bidAmtError, setBidAmtError] = useState();
   const history = useHistory();
   const player = JSON.parse(sessionStorage.getItem('user'));
-  const { secretAuctions } = JSON.parse(sessionStorage.getItem('allAuction'));
+  const allAuctionsObj = JSON.parse(sessionStorage.getItem('allAuction'));
+  const secretAuctions = location.state.secretAuctionsNumber === 1 ? allAuctionsObj.secretAuctions1 : allAuctionsObj.secretAuctions2;
   const bidInputRef = useRef(secretAuctions.artifacts.reduce((acc, a) => {
     /* eslint-disable  no-param-reassign */
     acc = {
@@ -162,7 +165,14 @@ const SecretAuction = () => {
   };
 
   const goToNextAuctions = () => {
-    history.push(`/buying/results/${player.playerId}`);
+    if (location.state.secretAuctionsNumber === 1) {
+      history.push({
+        pathname: `/buying/englishAuctions/${player.playerId}`,
+        state: { englishAuctionsNumber: 2 },
+      });
+    } else {
+      history.push(`/buying/results/${player.playerId}`);
+    }
   };
 
   useEffect(() => {
