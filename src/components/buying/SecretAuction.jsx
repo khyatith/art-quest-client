@@ -139,6 +139,7 @@ const SecretAuction = () => {
     };
     return acc;
   }, {}));
+
   const liveStyles = useRef(secretAuctions.artifacts.reduce((acc, a) => {
     /* eslint-disable  no-param-reassign */
     acc = {
@@ -147,8 +148,6 @@ const SecretAuction = () => {
     };
     return acc;
   }, {}));
-
-  console.log('liveStyles', liveStyles);
 
   const getRemainingTime = () => {
     const total = parseInt(secretAuctionTimer.total, 10) - 1000;
@@ -209,7 +208,7 @@ const SecretAuction = () => {
   useEffect(() => {
     socket.on('setLiveStyles', (data) => {
       const { teamName, auctionId, bidAmount } = data;
-      const currentLiveStateForAuction = liveStyles.current[`${auctionId}`].current;
+      const currentLiveStateForAuction = liveStyles.current[auctionId].current;
       if (!currentLiveStateForAuction) {
         liveStyles.current[`${auctionId}`].current = {
           [teamName]: bidAmount,
@@ -290,7 +289,7 @@ const SecretAuction = () => {
         <Leaderboard showAuctionResults={secretAuctionResults} goToNextAuctions={goToNextAuctions} />
       </div>
       {secretAuctions && secretAuctions.artifacts.map((auction) => {
-        const liveStylesForCurrentAuction = liveStyles.current[`${auction.id}`].current;
+        const liveStylesForCurrentAuction = liveStyles && liveStyles.current[`${auction.id}`].current;
         const winner = secretAuctionResults && secretAuctionResults[`${auction.id}`] && secretAuctionResults[`${auction.id}`].bidTeam;
         return (
           <Card

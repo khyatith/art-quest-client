@@ -167,11 +167,14 @@ const EnglishAuction = () => {
   };
 
   const goToNextAuctions = () => {
-    const auctionNumber = location.state.englishAuctionsNumber === 1 ? 2 : 4;
-    history.push({
-      pathname: `/secretAuctions/${player.playerId}`,
-      state: { secretAuctionsNumber: auctionNumber },
-    });
+    if (location.state.englishAuctionsNumber === 1) {
+      history.push({
+        pathname: `/secretAuctions/${player.hostCode}`,
+        state: { secretAuctionsNumber: 2 },
+      });
+    } else {
+      history.push(`/buying/results/${player.hostCode}`);
+    }
   };
 
   useEffect(() => {
