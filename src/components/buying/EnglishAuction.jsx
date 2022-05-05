@@ -18,6 +18,7 @@ import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import { useHistory } from 'react-router';
+import { useLocation } from 'react-router-dom';
 import SimpleRating from '../Rating';
 import { socket } from '../../global/socket';
 import { API_URL, TEAM_COLOR_MAP } from '../../global/constants';
@@ -122,13 +123,15 @@ const useStyles = makeStyles((theme) => ({
 
 const EnglishAuction = () => {
   const classes = useStyles();
+  const location = useLocation();
   const [englishAuctionTimer, setEnglishAuctionTimer] = useState();
   const [englishAuctionResults, setEnglishAuctionResults] = useState();
   const [bidAmtError, setBidAmtError] = useState();
   const [sendResultEventOnce, setSendResultEventOnce] = useState(false);
   const history = useHistory();
   const player = JSON.parse(sessionStorage.getItem('user'));
-  const { auctions } = JSON.parse(sessionStorage.getItem('allAuction'));
+  const allAuctionsObj = JSON.parse(sessionStorage.getItem('allAuction'));
+  const auctions = location.state.englishAuctionsNumber === 1 ? allAuctionsObj.englishAuctions1 : allAuctionsObj.englishAuctions2;
   const bidInputRef = useRef(auctions.artifacts.reduce((acc, a) => {
     /* eslint-disable  no-param-reassign */
     acc = {
@@ -164,12 +167,19 @@ const EnglishAuction = () => {
   };
 
   const goToNextAuctions = () => {
-    history.push(`/secretAuctions/${player.playerId}`);
+    if (location.state.englishAuctionsNumber === 1) {
+      history.push({
+        pathname: `/secretAuctions/${player.hostCode}`,
+        state: { secretAuctionsNumber: 2 },
+      });
+    } else {
+      history.push(`/buying/results/${player.hostCode}`);
+    }
   };
 
   useEffect(() => {
     async function fetchTimerValue() {
-      const { data } = await axios.get(`${API_URL}/buying/englishauctionTimer/${player.hostCode}`);
+      const { data } = await axios.get(`${API_URL}/buying/englishauctionTimer/${player.hostCode}/${location.state.englishAuctionsNumber}`);
       setEnglishAuctionTimer(data.englishAuctionTimer);
     }
     if (!englishAuctionTimer) {
