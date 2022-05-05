@@ -231,6 +231,8 @@ const SecretAuction = () => {
       auctionId: currentAuction[0].id,
       paintingQuality: currentAuction[0].paintingQuality,
       imageURL: currentAuction[0].imageURL,
+      artMovement: currentAuction[0]?.artMovementName,
+      artMovementId: currentAuction[0]?.artMovementId,
       player,
       bidAmount: bidInput,
       bidAt: +new Date(),
