@@ -71,7 +71,6 @@ function EndBuyingPhase() {
   // const { setPlayer } = useContext(userContext);
   // const { setLeaderboardData } = useContext(leaderboardContext);
   // const [sortedTeamsByPaintingsWon, setSortedTeamsByPaintingsWon] = useState({});
-  // const [avgPaintingQualityByTeam, setAvgPaintingQualityByTeam] = useState({});
   // const [showWinner, setShowWinner] = useState(false);
   // const { setPlayer } = useContext(userContext);
   // const { setLeaderboardData } = useContext(leaderboardContext);

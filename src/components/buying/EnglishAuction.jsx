@@ -19,7 +19,6 @@ import Toolbar from '@material-ui/core/Toolbar';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import { useHistory } from 'react-router';
 import { useLocation } from 'react-router-dom';
-// import SimpleRating from '../Rating';
 import { socket } from '../../global/socket';
 import { API_URL, TEAM_COLOR_MAP } from '../../global/constants';
 import { validateCurrentBid } from '../../global/helpers';
@@ -310,10 +309,6 @@ const EnglishAuction = () => {
               title={auction.name}
               // style={{ backgroundColor: previousBid.bidTeam && `${TEAM_COLOR_MAP[previousBid.bidTeam]}` }}
             />
-            {/* <CardContent className={classes.cardcontentstyle}>
-              <p>Painting Quality</p>
-              <SimpleRating rating={parseFloat(auction.paintingQuality)} />
-            </CardContent> */}
             { !englishAuctionResults && (
             <CardActions className={classes.cardactionsstyle}>
               <div className={classes.textcontainer}>
