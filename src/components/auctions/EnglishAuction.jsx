@@ -19,7 +19,6 @@ import InputAdornment from '@material-ui/core/InputAdornment';
 import { API_URL } from '../../global/constants';
 import { socket } from '../../global/socket';
 import NewLeaderboard from '../NewLeaderboard';
-import SimpleRating from '../Rating';
 import RoundsInfo from '../RoundsInfo';
 import TeamInfo from '../TeamInfo';
 // import leaderboardContext from '../../global/leaderboardContext';
@@ -213,7 +212,6 @@ function EnglishAuction({
       const bidInfo = {
         auctionType: auctionObj.auctionType,
         auctionId: auctionObj.id,
-        paintingQuality: auctionObj.paintingQuality,
         auctionObj,
         player,
         bidAmount: bidInput,
@@ -240,7 +238,6 @@ function EnglishAuction({
         bidType: 'maxBid',
         auctionType: auctionObj.auctionType,
         auctionId: auctionObj.id,
-        paintingQuality: auctionObj.paintingQuality,
         auctionObj,
         player,
         bidAmount: bidInput,
@@ -292,8 +289,6 @@ function EnglishAuction({
             {/* <CardHeader className={classes.titlestyle} title={auctionObj.name} subheader={`Created By: ${auctionObj.artist}`} /> */}
             <CardMedia className={classes.media} component="img" image={`${auctionObj.imageURL}`} title={auctionObj.name} />
             <CardContent className={classes.cardcontentstyle}>
-              <p>Painting Quality</p>
-              <SimpleRating rating={parseFloat(auctionObj.paintingQuality)} />
               <Typography component="h6" variant="h6">
                 {`Opening bid : $${auctionObj.originalValue}M`}
               </Typography>

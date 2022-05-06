@@ -18,7 +18,6 @@ import Toolbar from '@material-ui/core/Toolbar';
 import axios from 'axios';
 import { socket } from '../../global/socket';
 import NewLeaderboard from '../NewLeaderboard';
-import SimpleRating from '../Rating';
 import RoundsInfo from '../RoundsInfo';
 import TeamInfo from '../TeamInfo';
 import leaderboardContext from '../../global/leaderboardContext';
@@ -166,7 +165,6 @@ function AllPayAuctions({ totalNumberOfPaintings, getNextAuctionObj }) {
       const bidInfo = {
         auctionType: auctionObj.auctionType,
         auctionId: auctionObj.id,
-        paintingQuality: auctionObj.paintingQuality,
         auctionObj,
         bidAmount: bidInput,
         bidAt: +new Date(),
@@ -218,8 +216,6 @@ function AllPayAuctions({ totalNumberOfPaintings, getNextAuctionObj }) {
             <CardHeader className={classes.titlestyle} title={auctionObj.name} subheader={`Created By: ${auctionObj.artist}`} />
             <CardMedia className={classes.media} component="img" image={`${auctionObj.imageURL}`} title={auctionObj.name} />
             <CardContent className={classes.cardcontentstyle}>
-              <p>Painting Quality</p>
-              <SimpleRating rating={parseFloat(auctionObj.paintingQuality)} />
               <Typography component="h6" variant="h6">
                 {`Opening bid : ${formatNumberToCurrency(auctionObj.originalValue)}`}
               </Typography>

@@ -67,9 +67,6 @@ const MoreDetailsModal = ({ openModal, selectedPaintingDetails, setOpenModalForP
               Created by
               {' '}
               {selectedPaintingDetails.artist}
-              ,
-              {' '}
-              {selectedPaintingDetails.materialUsed}
             </h3>
             <h3>
               {selectedPaintingDetails.country}

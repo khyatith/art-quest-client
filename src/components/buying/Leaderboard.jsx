@@ -58,7 +58,7 @@ export default function Leaderboard({ showAuctionResults, goToNextAuctions }) {
 
   const renderLeaderboard = () => {
     const {
-      totalAmountByTeam, totalPaintingsWonByTeams, totalArtScoreForTeams,
+      totalAmountByTeam, totalPaintingsWonByTeams,
     } = leaderboardData || {};
     // if (!leaderboard) return <></>;
     return (
@@ -68,7 +68,7 @@ export default function Leaderboard({ showAuctionResults, goToNextAuctions }) {
             <TableRow>
               <StyledTableCell align="right">Team</StyledTableCell>
               <StyledTableCell align="right">Total Paintings</StyledTableCell>
-              <StyledTableCell align="right">Art Score</StyledTableCell>
+              <StyledTableCell align="right">Classify Points</StyledTableCell>
               <StyledTableCell align="right">Debt</StyledTableCell>
             </TableRow>
           </TableHead>
@@ -84,7 +84,7 @@ export default function Leaderboard({ showAuctionResults, goToNextAuctions }) {
                     {totalPaintingsWonByTeams && totalPaintingsWonByTeams[`${teamName}`] ? totalPaintingsWonByTeams[`${teamName}`] : 0}
                   </StyledTableCell>
                   <StyledTableCell align="right">
-                    {totalArtScoreForTeams && totalArtScoreForTeams[`${teamName}`] ? parseFloat(totalArtScoreForTeams[`${teamName}`]).toFixed(2) : 0}
+                    {0}
                   </StyledTableCell>
                   <StyledTableCell component="th" scope="row" align="right">
                     $

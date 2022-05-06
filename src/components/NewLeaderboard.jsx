@@ -65,7 +65,7 @@ export default function NewLeaderboard({ hasAuctionTimerEnded }) {
 
   const renderLeaderboard = () => {
     const {
-      totalAmountByTeam, totalPaintingsWonByTeams, teamRanks, totalArtScoreForTeams,
+      totalAmountByTeam, totalPaintingsWonByTeams, teamRanks,
     } = leaderboardData;
     // if (!leaderboard) return <></>;
     return (
@@ -75,7 +75,7 @@ export default function NewLeaderboard({ hasAuctionTimerEnded }) {
             <TableRow>
               <StyledTableCell>Team</StyledTableCell>
               <StyledTableCell align="right">Total Paintings</StyledTableCell>
-              <StyledTableCell align="right">Art Score</StyledTableCell>
+              <StyledTableCell align="right">Classify Points</StyledTableCell>
               <StyledTableCell align="right">Debt</StyledTableCell>
             </TableRow>
           </TableHead>
@@ -88,7 +88,9 @@ export default function NewLeaderboard({ hasAuctionTimerEnded }) {
                     {teamName}
                   </StyledTableCell>
                   <StyledTableCell align="right">{totalPaintingsWonByTeams[`${teamName}`]}</StyledTableCell>
-                  <StyledTableCell align="right">{parseFloat(totalArtScoreForTeams[`${teamName}`]).toFixed(2)}</StyledTableCell>
+                  <StyledTableCell align="right">{0}</StyledTableCell>
+                  {// need to replace 0 with classifyPoint
+                  }
                   <StyledTableCell component="th" scope="row" align="right">
                     $
                     {parseFloat(totalAmountByTeam[`${teamName}`])}
