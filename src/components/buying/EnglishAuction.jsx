@@ -194,7 +194,7 @@ const EnglishAuction = () => {
     if (isFirstBid) {
       socket.emit('biddingStarted', player.hostCode);
     }
-  }, [isFirstBid]);
+  }, [isFirstBid, player.hostCode]);
   // eslint-disable-next-line consistent-return
   useEffect(() => {
     if (englishAuctionTimer) {
@@ -202,10 +202,12 @@ const EnglishAuction = () => {
       return () => clearInterval(interval);
     }
   });
-  socket.on('startBidding', (res) => {
-    if (res && !isFirstBid) {
-      setIsFirstBid(true);
-    }
+  useEffect(() => {
+    socket.on('startBidding', (res) => {
+      if (res && !isFirstBid) {
+        setIsFirstBid(true);
+      }
+    });
   });
   useEffect(() => {
     socket.on('setPreviousEnglishAuctionBid', (previousBid) => {
