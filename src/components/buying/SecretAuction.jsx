@@ -127,6 +127,7 @@ const SecretAuction = () => {
   const [bidAmtError, setBidAmtError] = useState();
   const history = useHistory();
   const player = JSON.parse(sessionStorage.getItem('user'));
+  const [isFirstBid, setIsFirstBid] = useState(false);
   const allAuctionsObj = JSON.parse(sessionStorage.getItem('allAuction'));
   const secretAuctions = location.state.secretAuctionsNumber === 2 ? allAuctionsObj.secretAuctions1 : allAuctionsObj.secretAuctions2;
   const bidInputRef = useRef(secretAuctions.artifacts.reduce((acc, a) => {
@@ -179,11 +180,19 @@ const SecretAuction = () => {
       const { data } = await axios.get(`${API_URL}/buying/secretauctionTimer/${player.hostCode}/${location.state.secretAuctionsNumber}`);
       setSecretAuctionTimer(data.secretAuctionTimer);
     }
-    if (!secretAuctionTimer) {
-      setTimeout(() => fetchTimerValue(), 10000);
+    if (isFirstBid) {
+      fetchTimerValue();
     }
-  }, [secretAuctionTimer, player.hostCode]);
+    // if (!secretAuctionTimer) {
+    //   setTimeout(() => fetchTimerValue(), 10000);
+    // }
+  }, [player.hostCode, isFirstBid]);
 
+  useEffect(() => {
+    if (isFirstBid) {
+      socket.emit('biddingStarted', player.hostCode);
+    }
+  }, [isFirstBid, player.hostCode]);
   // eslint-disable-next-line consistent-return
   useEffect(() => {
     if (secretAuctionTimer) {
@@ -192,6 +201,13 @@ const SecretAuction = () => {
     }
   });
 
+  useEffect(() => {
+    socket.on('startBidding', (res) => {
+      if (res && !isFirstBid) {
+        setIsFirstBid(true);
+      }
+    });
+  });
   useEffect(() => {
     socket.on('renderSecretAuctionsResult', (data) => {
       if (!secretAuctionResults) {
@@ -247,6 +263,9 @@ const SecretAuction = () => {
       bidTeam: player.teamName,
       bidColor: player.teamColor,
     };
+    if (!isFirstBid) {
+      setIsFirstBid(true);
+    }
     socket.emit('addSecretAuctionBid', bidInfo);
   };
 
@@ -291,7 +310,7 @@ const SecretAuction = () => {
         return (
           <Card
             key={auction.id}
-            className={!secretAuctionTimer ? classes.disabledcardroot : classes.cardroot}
+            className={(!secretAuctionTimer && false) ? classes.disabledcardroot : classes.cardroot}
             style={{ border: winner && `4px solid ${TEAM_COLOR_MAP[winner]}` }}
           >
             <CardHeader
@@ -316,7 +335,8 @@ const SecretAuction = () => {
                   name="bidAmount"
                   placeholder="Enter your bid"
                   variant="outlined"
-                  disabled={!secretAuctionTimer || (liveStylesForCurrentAuction && Object.keys(liveStylesForCurrentAuction).includes(player.teamName))}
+                  disabled={(!secretAuctionTimer && false)
+                     || (liveStylesForCurrentAuction && Object.keys(liveStylesForCurrentAuction).includes(player.teamName))}
                   InputProps={{
                     startAdornment: <InputAdornment position="start">$</InputAdornment>,
                     endAdornment: <InputAdornment position="end">M</InputAdornment>,
@@ -325,7 +345,8 @@ const SecretAuction = () => {
                 <Button
                   variant="contained"
                   color="secondary"
-                  disabled={!secretAuctionTimer || (liveStylesForCurrentAuction && Object.keys(liveStylesForCurrentAuction).includes(player.teamName))}
+                  disabled={(!secretAuctionTimer && false)
+                    || (liveStylesForCurrentAuction && Object.keys(liveStylesForCurrentAuction).includes(player.teamName))}
                   onClick={() => setBidAmt(auction.id)}
                 >
                   Bid

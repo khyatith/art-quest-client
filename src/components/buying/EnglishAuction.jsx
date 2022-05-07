@@ -127,6 +127,7 @@ const EnglishAuction = () => {
   const [englishAuctionResults, setEnglishAuctionResults] = useState();
   const [bidAmtError, setBidAmtError] = useState();
   const [sendResultEventOnce, setSendResultEventOnce] = useState(false);
+  const [isFirstBid, setIsFirstBid] = useState(false);
   const history = useHistory();
   const player = JSON.parse(sessionStorage.getItem('user'));
   const allAuctionsObj = JSON.parse(sessionStorage.getItem('allAuction'));
@@ -181,11 +182,19 @@ const EnglishAuction = () => {
       const { data } = await axios.get(`${API_URL}/buying/englishauctionTimer/${player.hostCode}/${location.state.englishAuctionsNumber}`);
       setEnglishAuctionTimer(data.englishAuctionTimer);
     }
-    if (!englishAuctionTimer) {
-      setTimeout(() => fetchTimerValue(), 5000);
+    if (isFirstBid) {
+      fetchTimerValue();
     }
-  }, [englishAuctionTimer, player.hostCode]);
+    // if (!englishAuctionTimer) {
+    //   setTimeout(() => fetchTimerValue(), 5000);
+    // }
+  }, [player.hostCode, isFirstBid]);
 
+  useEffect(() => {
+    if (isFirstBid) {
+      socket.emit('biddingStarted', player.hostCode);
+    }
+  }, [isFirstBid, player.hostCode]);
   // eslint-disable-next-line consistent-return
   useEffect(() => {
     if (englishAuctionTimer) {
@@ -193,7 +202,13 @@ const EnglishAuction = () => {
       return () => clearInterval(interval);
     }
   });
-
+  useEffect(() => {
+    socket.on('startBidding', (res) => {
+      if (res && !isFirstBid) {
+        setIsFirstBid(true);
+      }
+    });
+  });
   useEffect(() => {
     socket.on('setPreviousEnglishAuctionBid', (previousBid) => {
       // setAuctionTimerEnded(false);
@@ -250,6 +265,10 @@ const EnglishAuction = () => {
         bidTeam: player.teamName,
         bidColor: player.teamColor,
       };
+      // console.log('bidding !!');
+      if (!isFirstBid) {
+        setIsFirstBid(true);
+      }
       socket.emit('addEnglishAuctionBid', bidInfo);
     }
   };
@@ -294,7 +313,7 @@ const EnglishAuction = () => {
         return (
           <Card
             key={auction.id}
-            className={!englishAuctionTimer ? classes.disabledcardroot : classes.cardroot}
+            className={(!englishAuctionTimer && false) ? classes.disabledcardroot : classes.cardroot}
             style={{ border: previousBid.bidTeam && `4px solid ${TEAM_COLOR_MAP[previousBid.bidTeam]}` }}
           >
             <CardHeader
@@ -331,7 +350,7 @@ const EnglishAuction = () => {
                   variant="contained"
                   color="secondary"
                   onClick={() => setBidAmt(auction.id)}
-                  disabled={!englishAuctionTimer || (
+                  disabled={(!englishAuctionTimer && false) || (
                     previousBid
                     && (previousBid.bidTeam === player.teamName))}
                 >
