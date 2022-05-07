@@ -10,6 +10,7 @@ import TextField from '@material-ui/core/TextField';
 import { useHistory } from 'react-router';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
+import { MenuItem } from '@material-ui/core';
 import { socket } from '../global/socket';
 import userContext from '../global/userContext';
 import GameInstructions from './GameInstructions';
@@ -127,46 +128,56 @@ function LaunchScreen() {
   return (
     <>
       {!loadInstructions && (
-      <>
-        <div className={classes.grow}>
-          <AppBar className={classes.appbar} position="static">
-            <Toolbar>
-              <Typography variant="h6" className={classes.title}>
-                ART QUEST
-              </Typography>
-            </Toolbar>
-          </AppBar>
-        </div>
-        <div className={classes.root}>
-          { joinError && <h3 style={{ color: '#FF0000' }}>{joinError}</h3> }
-          <TextField className={classes.form} name="playerName" label="Player Name" variant="outlined" onChange={handleChange} />
-          <FormControl variant="outlined" className={classes.form}>
-            <InputLabel htmlFor="outlined-age-native-simple">Team Colour</InputLabel>
-            <Select
-              native
-              onChange={handleTeamSelect}
-              label="teamColours"
-            >
-              <option aria-label="None" value="" />
-              {
-                Object.entries(TEAM_COLOR_MAP).map(([key]) => (<option key={key} value={key}>{key}</option>))
-              }
-            </Select>
-          </FormControl>
-          <TextField className={classes.form} name="hostCode" label="Game Code" variant="outlined" onChange={handleChange} />
-          <Button className={classes.btnform} variant="contained" onClick={handleJoin}>
-            Join Game
-          </Button>
-          <Typography className={classes.form}>Or</Typography>
-          <Button className={classes.btnform} variant="contained" onClick={handleCreate}>
-            Create Game
-          </Button>
-        </div>
-      </>
+        <>
+          <div className={classes.grow}>
+            <AppBar className={classes.appbar} position="static">
+              <Toolbar>
+                <Typography variant="h6" className={classes.title}>
+                  ART QUEST
+                </Typography>
+              </Toolbar>
+            </AppBar>
+          </div>
+          <div style={{ textAlign: 'center', marginTop: '8rem' }}>
+            {joinError && <h3 style={{ color: '#FF0000' }}>{joinError}</h3>}
+            <div>
+              <TextField className={classes.form} name="playerName" label="Player Name" variant="outlined" onChange={handleChange} />
+            </div>
+
+            <div>
+              <FormControl variant="outlined" className={classes.form}>
+                <InputLabel htmlFor="outlined-age-native-simple">Team Colour</InputLabel>
+                <Select onChange={handleTeamSelect} label="teamColours">
+                  <MenuItem style={{ height: '2rem' }} value="" />
+                  {Object.entries(TEAM_COLOR_MAP).map(([key]) => (
+                    <MenuItem key={key} value={key}>
+                      {key}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </div>
+
+            <div>
+              <TextField className={classes.form} name="hostCode" label="Game Code" variant="outlined" onChange={handleChange} />
+            </div>
+
+            <Button className={classes.btnform} variant="contained" onClick={handleJoin}>
+              Join Game
+            </Button>
+
+            <div style={{ textAlign: 'center' }}>
+              <Typography>Or</Typography>
+              <br />
+            </div>
+
+            <Button className={classes.btnform} variant="contained" onClick={handleCreate}>
+              Create Game
+            </Button>
+          </div>
+        </>
       )}
-      {
-        loadInstructions && <GameInstructions />
-      }
+      {loadInstructions && <GameInstructions />}
     </>
   );
 }

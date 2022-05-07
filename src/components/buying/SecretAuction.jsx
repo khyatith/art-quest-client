@@ -1,3 +1,7 @@
+/* eslint-disable indent */
+/* eslint-disable no-tabs */
+/* eslint-disable no-unused-vars */
+/* eslint-disable semi */
 /* eslint-disable react/jsx-wrap-multilines */
 import React, {
   useState,
@@ -124,6 +128,7 @@ const SecretAuction = () => {
   const location = useLocation();
   const [secretAuctionTimer, setSecretAuctionTimer] = useState();
   const [secretAuctionResults, setSecretAuctionResults] = useState();
+  const [classifyPoints, setClassifyPoints] = useState({})
   const [bidAmtError, setBidAmtError] = useState();
   const history = useHistory();
   const player = JSON.parse(sessionStorage.getItem('user'));
@@ -210,6 +215,11 @@ const SecretAuction = () => {
   });
   useEffect(() => {
     socket.on('renderSecretAuctionsResult', (data) => {
+		// eslint-disable-next-line indent
+		// eslint-disable-next-line indent
+		setClassifyPoints(data.classifyPoints)
+		// eslint-disable-next-line spaced-comment
+		//console.log(data)
       if (!secretAuctionResults) {
         setSecretAuctionResults(data);
       }
@@ -302,7 +312,7 @@ const SecretAuction = () => {
         </Toolbar>
       </AppBar>
       <div className={classes.leaderboardcontainer}>
-        <Leaderboard showAuctionResults={secretAuctionResults} goToNextAuctions={goToNextAuctions} />
+        <Leaderboard classifyPoints={classifyPoints} showAuctionResults={secretAuctionResults} goToNextAuctions={goToNextAuctions} />
       </div>
       {secretAuctions && secretAuctions.artifacts.map((auction) => {
         const liveStylesForCurrentAuction = liveStyles && liveStyles.current[`${auction.id}`].current;
