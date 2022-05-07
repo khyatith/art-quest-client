@@ -1,14 +1,15 @@
+/* eslint-disable operator-linebreak */
+/* eslint-disable object-curly-newline */
+/* eslint-disable react/jsx-closing-bracket-location */
+/* eslint-disable react/jsx-one-expression-per-line */
+/* eslint-disable react/jsx-closing-tag-location */
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable indent */
 /* eslint-disable no-tabs */
 /* eslint-disable no-unused-vars */
 /* eslint-disable semi */
 /* eslint-disable react/jsx-wrap-multilines */
-import React, {
-  useState,
-  useEffect,
-  useRef,
-  createRef,
-} from 'react';
+import React, { useState, useEffect, useRef, createRef } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { Typography, TextField } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
@@ -128,37 +129,47 @@ const SecretAuction = () => {
   const location = useLocation();
   const [secretAuctionTimer, setSecretAuctionTimer] = useState();
   const [secretAuctionResults, setSecretAuctionResults] = useState();
-  const [classifyPoints, setClassifyPoints] = useState({})
+  const [classifyPoints, setClassifyPoints] = useState({});
+  const [isFetched, setIsFetched] = useState(false);
   const [bidAmtError, setBidAmtError] = useState();
   const history = useHistory();
   const player = JSON.parse(sessionStorage.getItem('user'));
   const [isFirstBid, setIsFirstBid] = useState(false);
   const allAuctionsObj = JSON.parse(sessionStorage.getItem('allAuction'));
   const secretAuctions = location.state.secretAuctionsNumber === 2 ? allAuctionsObj.secretAuctions1 : allAuctionsObj.secretAuctions2;
-  const bidInputRef = useRef(secretAuctions.artifacts.reduce((acc, a) => {
-    /* eslint-disable  no-param-reassign */
-    acc = {
-      ...acc,
-      [a.id]: createRef(),
-    };
-    return acc;
-  }, {}));
+  const bidInputRef = useRef(
+    secretAuctions.artifacts.reduce((acc, a) => {
+      /* eslint-disable  no-param-reassign */
+      acc = {
+        ...acc,
+        [a.id]: createRef(),
+      };
+      return acc;
+    }, {}),
+  );
 
-  const liveStyles = useRef(secretAuctions.artifacts.reduce((acc, a) => {
-    /* eslint-disable  no-param-reassign */
-    acc = {
-      ...acc,
-      [a.id]: createRef(),
-    };
-    return acc;
-  }, {}));
+  const liveStyles = useRef(
+    secretAuctions.artifacts.reduce((acc, a) => {
+      /* eslint-disable  no-param-reassign */
+      acc = {
+        ...acc,
+        [a.id]: createRef(),
+      };
+      return acc;
+    }, {}),
+  );
 
   const getRemainingTime = () => {
     const total = parseInt(secretAuctionTimer.total, 10) - 1000;
     const seconds = Math.floor((parseInt(total, 10) / 1000) % 60);
     const minutes = Math.floor((parseInt(total, 10) / 1000 / 60) % 60);
     if (total < 1000) {
-      socket.emit('secretAuctionTimerEnded', player.hostCode);
+      if (!isFetched) {
+        if (Object.keys(classifyPoints).length === 0) {
+          setIsFetched(true);
+          socket.emit('secretAuctionTimerEnded', player.hostCode);
+        }
+      }
     } else {
       const value = {
         total,
@@ -215,11 +226,9 @@ const SecretAuction = () => {
   });
   useEffect(() => {
     socket.on('renderSecretAuctionsResult', (data) => {
-		// eslint-disable-next-line indent
-		// eslint-disable-next-line indent
-		setClassifyPoints(data.classifyPoints)
-		// eslint-disable-next-line spaced-comment
-		//console.log(data)
+      // eslint-disable-next-line indent
+      // eslint-disable-next-line indent
+      // eslint-disable-next-line spaced-comment
       if (!secretAuctionResults) {
         setSecretAuctionResults(data);
       }
@@ -227,7 +236,13 @@ const SecretAuction = () => {
     if (secretAuctionResults) {
       setTimeout(goToNextAuctions, 10000);
     }
-  });
+  }, []);
+
+  useEffect(() => {
+    socket.on('renderSecretAuctionsResult', (data) => {
+      setClassifyPoints(data.classifyPoints);
+    });
+  }, []);
 
   useEffect(() => {
     socket.on('setLiveStyles', (data) => {
@@ -244,7 +259,7 @@ const SecretAuction = () => {
         };
       }
     });
-  });
+  }, []);
 
   const setBidAmt = (auctionId) => {
     const bidInput = bidInputRef.current[auctionId].current.value;
@@ -287,138 +302,103 @@ const SecretAuction = () => {
             ART QUEST
           </Typography>
           <Typography className={classes.timercontent} variant="h5" noWrap>
-            { !secretAuctionTimer && 'Auctions start in 10 seconds' }
-            { secretAuctionTimer
-            && !secretAuctionResults && (
-            <>
-              Time left in Auction:
-              {' '}
-              {secretAuctionTimer && secretAuctionTimer.minutes}
-              :
-              {secretAuctionTimer && secretAuctionTimer.seconds}
-            </>)}
-            { secretAuctionResults && Object.keys(secretAuctionResults).length > 0 && (
-              'Starting next auction in 10 seconds...'
+            {!secretAuctionTimer && 'Auctions start in 10 seconds'}
+            {secretAuctionTimer && !secretAuctionResults && (
+              <>
+                Time left in Auction: {secretAuctionTimer && secretAuctionTimer.minutes}:{secretAuctionTimer && secretAuctionTimer.seconds}
+              </>
             )}
+            {secretAuctionResults && Object.keys(secretAuctionResults).length > 0 && 'Starting next auction in 10 seconds...'}
           </Typography>
           <Typography variant="h6" className={classes.playercontent}>
-            {player.playerName}
-            ,
-            {' '}
-            Team
-            {' '}
-            {player.teamName}
+            {player.playerName}, Team {player.teamName}
           </Typography>
         </Toolbar>
       </AppBar>
       <div className={classes.leaderboardcontainer}>
         <Leaderboard classifyPoints={classifyPoints} showAuctionResults={secretAuctionResults} goToNextAuctions={goToNextAuctions} />
       </div>
-      {secretAuctions && secretAuctions.artifacts.map((auction) => {
-        const liveStylesForCurrentAuction = liveStyles && liveStyles.current[`${auction.id}`].current;
-        const winner = secretAuctionResults && secretAuctionResults[`${auction.id}`] && secretAuctionResults[`${auction.id}`].bidTeam;
-        return (
-          <Card
-            key={auction.id}
-            className={(!secretAuctionTimer && false) ? classes.disabledcardroot : classes.cardroot}
-            style={{ border: winner && `4px solid ${TEAM_COLOR_MAP[winner]}` }}
-          >
-            <CardHeader
-              title={auction.name}
-              subheader={`${auction.artist}, ${auction.country}, ${auction.dateCreated}`}
-            />
-            <CardMedia
-              className={classes.media}
-              component="img"
-              image={`${auction.imageURL}`}
-              title={auction.name}
-            />
-            <CardActions className={classes.cardactionsstyle}>
-              {!secretAuctionResults && (
-              <div className={classes.textcontainer}>
-                <TextField
-                  inputRef={bidInputRef.current[auction.id]}
-                  error={bidAmtError && !!bidAmtError[auction.id]}
-                  helperText={bidAmtError && bidAmtError[auction.id]}
-                  className={classes.textfieldstyle}
-                  size="small"
-                  name="bidAmount"
-                  placeholder="Enter your bid"
-                  variant="outlined"
-                  disabled={(!secretAuctionTimer && false)
-                     || (liveStylesForCurrentAuction && Object.keys(liveStylesForCurrentAuction).includes(player.teamName))}
-                  InputProps={{
-                    startAdornment: <InputAdornment position="start">$</InputAdornment>,
-                    endAdornment: <InputAdornment position="end">M</InputAdornment>,
-                  }}
-                />
-                <Button
-                  variant="contained"
-                  color="secondary"
-                  disabled={(!secretAuctionTimer && false)
-                    || (liveStylesForCurrentAuction && Object.keys(liveStylesForCurrentAuction).includes(player.teamName))}
-                  onClick={() => setBidAmt(auction.id)}
-                >
-                  Bid
-                </Button>
-              </div>
-              )}
-              <div className={classes.bottomcontainer}>
-                <div className={classes.lastbidcontainer}>
-                  { liveStylesForCurrentAuction && Object.entries(liveStylesForCurrentAuction).map(([key, value]) => {
-                    const bidAmt = winner && value;
-                    return (
+      {secretAuctions &&
+        secretAuctions.artifacts.map((auction) => {
+          const liveStylesForCurrentAuction = liveStyles && liveStyles.current[`${auction.id}`].current;
+          const winner = secretAuctionResults && secretAuctionResults[`${auction.id}`] && secretAuctionResults[`${auction.id}`].bidTeam;
+          return (
+            <Card
+              key={auction.id}
+              className={!secretAuctionTimer ? classes.disabledcardroot : classes.cardroot}
+              style={{ border: winner && `4px solid ${TEAM_COLOR_MAP[winner]}` }}>
+              <CardHeader title={auction.name} subheader={`${auction.artist}, ${auction.country}, ${auction.dateCreated}`} />
+              <CardMedia className={classes.media} component="img" image={`${auction.imageURL}`} title={auction.name} />
+              <CardActions className={classes.cardactionsstyle}>
+                {!secretAuctionResults && (
+                  <div className={classes.textcontainer}>
+                    <TextField
+                      inputRef={bidInputRef.current[auction.id]}
+                      error={bidAmtError && !!bidAmtError[auction.id]}
+                      helperText={bidAmtError && bidAmtError[auction.id]}
+                      className={classes.textfieldstyle}
+                      size="small"
+                      name="bidAmount"
+                      placeholder="Enter your bid"
+                      variant="outlined"
+                      disabled={!secretAuctionTimer || (liveStylesForCurrentAuction && Object.keys(liveStylesForCurrentAuction).includes(player.teamName))}
+                      InputProps={{
+                        startAdornment: <InputAdornment position="start">$</InputAdornment>,
+                        endAdornment: <InputAdornment position="end">M</InputAdornment>,
+                      }}
+                    />
+                    <Button
+                      variant="contained"
+                      color="secondary"
+                      disabled={!secretAuctionTimer || (liveStylesForCurrentAuction && Object.keys(liveStylesForCurrentAuction).includes(player.teamName))}
+                      onClick={() => setBidAmt(auction.id)}>
+                      Bid
+                    </Button>
+                  </div>
+                )}
+                <div className={classes.bottomcontainer}>
+                  <div className={classes.lastbidcontainer}>
+                    {liveStylesForCurrentAuction &&
+                      Object.entries(liveStylesForCurrentAuction).map(([key, value]) => {
+                        const bidAmt = winner && value;
+                        return (
+                          <>
+                            <div
+                              style={{
+                                borderRadius: '50%',
+                                backgroundColor: TEAM_COLOR_MAP[key],
+                                width: '20px',
+                                height: '20px',
+                                margin: '0 15px',
+                                display: 'inline-block',
+                                textAlign: 'center',
+                              }}>
+                              {bidAmt && <h5>${bidAmt}M</h5>}
+                            </div>
+                          </>
+                        );
+                      })}
+                    {winner && (
                       <>
-                        <div style={{
-                          borderRadius: '50%',
-                          backgroundColor: TEAM_COLOR_MAP[key],
-                          width: '20px',
-                          height: '20px',
-                          margin: '0 15px',
-                          display: 'inline-block',
-                          textAlign: 'center',
-                        }}
-                        >
-                          { bidAmt && (
-                            <h5>
-                              $
-                              {bidAmt}
-                              M
-                            </h5>
-                          )}
+                        <div
+                          style={{
+                            backgroundColor: `${TEAM_COLOR_MAP[winner]}`,
+                            height: '70px',
+                            lineHeight: '40px',
+                            marginTop: '-10px',
+                          }}>
+                          <h4>
+                            Won by Team {winner} for ${secretAuctionResults[`${auction.id}`].bidAmount}M
+                          </h4>
                         </div>
                       </>
-                    );
-                  })}
-                  { winner && (
-                    <>
-                      <div style={{
-                        backgroundColor: `${TEAM_COLOR_MAP[winner]}`,
-                        height: '70px',
-                        lineHeight: '40px',
-                        marginTop: '-10px',
-                      }}
-                      >
-                        <h4>
-                          Won by Team
-                          {' '}
-                          {winner}
-                          {' '}
-                          for
-                          {' '}
-                          $
-                          {secretAuctionResults[`${auction.id}`].bidAmount}
-                          M
-                        </h4>
-                      </div>
-                    </>
-                  )}
+                    )}
+                  </div>
                 </div>
-              </div>
-            </CardActions>
-          </Card>
-        );
-      })}
+              </CardActions>
+            </Card>
+          );
+        })}
     </div>
   );
 };
