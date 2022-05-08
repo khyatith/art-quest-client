@@ -33,7 +33,7 @@ const StyledTableCell = withStyles((theme) => ({
   },
 }))(TableCell);
 
-export default function Leaderboard({ showAuctionResults, goToNextAuctions }) {
+export default function Leaderboard({ showAuctionResults, goToNextAuctions, classifyPoints }) {
   const classes = useStyles();
   const { allTeams } = JSON.parse(sessionStorage.getItem('allAuction'));
   const player = JSON.parse(sessionStorage.getItem('user'));
@@ -84,7 +84,7 @@ export default function Leaderboard({ showAuctionResults, goToNextAuctions }) {
                     {totalPaintingsWonByTeams && totalPaintingsWonByTeams[`${teamName}`] ? totalPaintingsWonByTeams[`${teamName}`] : 0}
                   </StyledTableCell>
                   <StyledTableCell align="right">
-                    {0}
+                    {classifyPoints[teamName] ? classifyPoints[teamName] : 0}
                   </StyledTableCell>
                   <StyledTableCell component="th" scope="row" align="right">
                     $
