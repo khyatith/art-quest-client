@@ -325,7 +325,7 @@ const SecretAuction = () => {
           return (
             <Card
               key={auction.id}
-              className={!secretAuctionTimer ? classes.disabledcardroot : classes.cardroot}
+              className={classes.cardroot}
               style={{ border: winner && `4px solid ${TEAM_COLOR_MAP[winner]}` }}>
               <CardHeader title={auction.name} subheader={`${auction.artist}, ${auction.country}, ${auction.dateCreated}`} />
               <CardMedia className={classes.media} component="img" image={`${auction.imageURL}`} title={auction.name} />
@@ -341,7 +341,7 @@ const SecretAuction = () => {
                       name="bidAmount"
                       placeholder="Enter your bid"
                       variant="outlined"
-                      disabled={!secretAuctionTimer || (liveStylesForCurrentAuction && Object.keys(liveStylesForCurrentAuction).includes(player.teamName))}
+                      disabled={liveStylesForCurrentAuction && Object.keys(liveStylesForCurrentAuction).includes(player.teamName)}
                       InputProps={{
                         startAdornment: <InputAdornment position="start">$</InputAdornment>,
                         endAdornment: <InputAdornment position="end">M</InputAdornment>,
@@ -350,7 +350,7 @@ const SecretAuction = () => {
                     <Button
                       variant="contained"
                       color="secondary"
-                      disabled={!secretAuctionTimer || (liveStylesForCurrentAuction && Object.keys(liveStylesForCurrentAuction).includes(player.teamName))}
+                      disabled={liveStylesForCurrentAuction && Object.keys(liveStylesForCurrentAuction).includes(player.teamName)}
                       onClick={() => setBidAmt(auction.id)}>
                       Bid
                     </Button>
