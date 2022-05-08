@@ -371,53 +371,53 @@ const EnglishAuction = () => {
                       {`$${parseInt(previousBid.bidAmount, 10) + 2}M`}
                     </p>
                     )}
-                    {previousBid.bidAmount && previousBid.bidTeam === player.teamName && <p>* Waiting for bids from other teams</p>}
-                  </div>
-                  <div className={classes.bottomcontainer}>
-                    {previousBid && previousBid.bidTeam && previousBid.bidAmount ? (
-                      <div className={classes.lastbidcontainer} style={{ backgroundColor: `${previousBid.bidColor}` }}>
-                        <p className={classes.lastbidby}>
-                          Last Bid By:
-                          {`Team ${previousBid.bidTeam}`}
-                        </p>
-                        <p className={classes.lastbidamount}>
-                          Last Bid Amount:
-                          {`$${parseInt(previousBid.bidAmount, 10)}M`}
-                        </p>
-                      </div>
-                    ) : (
-                      <div className={classes.lastbidcontainer}>
-                        <p className={classes.lastbidby}>Highest bid will show here</p>
-                      </div>
-                    )}
-                  </div>
-                </CardActions>
-              )}
-              {englishAuctionResults && englishAuctionResults[auction.id] && (
-                <div className={classes.bottomcontainer}>
-                  <div className={classes.lastbidcontainer} style={{ backgroundColor: `${englishAuctionResults[auction.id].bidColor}` }}>
+                {previousBid.bidAmount && previousBid.bidTeam === player.teamName && <p>* Waiting for bids from other teams</p>}
+              </div>
+              <div className={classes.bottomcontainer}>
+                {previousBid && previousBid.bidTeam && previousBid.bidAmount ? (
+                  <div className={classes.lastbidcontainer} style={{ backgroundColor: `${previousBid.bidColor}` }}>
                     <p className={classes.lastbidby}>
-                      Won by
-                      {' '}
-                      {`Team ${englishAuctionResults[auction.id].bidTeam}`}
-                      {' '}
-                      for
-                      {' '}
-                      {`$${parseInt(englishAuctionResults[auction.id].bidAmount, 10)}M`}
+                      Last Bid By:
+                      {`Team ${previousBid.bidTeam}`}
+                    </p>
+                    <p className={classes.lastbidamount}>
+                      Last Bid Amount:
+                      {`$${parseInt(previousBid.bidAmount, 10)}M`}
                     </p>
                   </div>
-                </div>
-              )}
-              {englishAuctionResults && !englishAuctionResults[auction.id] && (
-                <div className={classes.bottomcontainer}>
+                ) : (
                   <div className={classes.lastbidcontainer}>
-                    <p className={classes.lastbidby}>No bids were placed</p>
+                    <p className={classes.lastbidby}>Highest bid will show here</p>
                   </div>
+                )}
+              </div>
+            </CardActions>
+            )}
+            {englishAuctionResults && englishAuctionResults[auction.id] && (
+              <div className={classes.bottomcontainer}>
+                <div className={classes.lastbidcontainer} style={{ backgroundColor: `${englishAuctionResults[auction.id].bidColor}` }}>
+                  <p className={classes.lastbidby}>
+                    Won by
+                    {' '}
+                    {`Team ${englishAuctionResults[auction.id].bidTeam}`}
+                    {' '}
+                    for
+                    {' '}
+                    {`$${parseInt(englishAuctionResults[auction.id].bidAmount, 10)}M`}
+                  </p>
                 </div>
-              )}
-            </Card>
-          );
-        })}
+              </div>
+            )}
+            {englishAuctionResults && !englishAuctionResults[auction.id] && (
+              <div className={classes.bottomcontainer}>
+                <div className={classes.lastbidcontainer}>
+                  <p className={classes.lastbidby}>No bids were placed</p>
+                </div>
+              </div>
+            )}
+          </Card>
+        );
+      })}
     </div>
   );
 };
