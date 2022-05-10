@@ -332,6 +332,7 @@ const EnglishAuction = () => {
               title={auction.name}
               // style={{ backgroundColor: previousBid.bidTeam && `${TEAM_COLOR_MAP[previousBid.bidTeam]}` }}
             />
+            <Typography variant="h6" style={{ marginTop: '0.5rem' }}>{auction.artMovementName}</Typography>
             { !englishAuctionResults && (
             <CardActions className={classes.cardactionsstyle}>
               <div className={classes.textcontainer}>
