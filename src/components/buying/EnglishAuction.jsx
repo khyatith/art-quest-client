@@ -1,7 +1,9 @@
-/* eslint-disable no-unused-vars */
 /* eslint-disable react/jsx-wrap-multilines */
 import React, {
-  useState, useEffect, useRef, createRef,
+  useState,
+  useEffect,
+  useRef,
+  createRef,
 } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { Typography, TextField } from '@material-ui/core';
@@ -131,26 +133,22 @@ const EnglishAuction = () => {
   const player = JSON.parse(sessionStorage.getItem('user'));
   const allAuctionsObj = JSON.parse(sessionStorage.getItem('allAuction'));
   const auctions = location.state.englishAuctionsNumber === 1 ? allAuctionsObj.englishAuctions1 : allAuctionsObj.englishAuctions2;
-  const bidInputRef = useRef(
-    auctions.artifacts.reduce((acc, a) => {
-      /* eslint-disable  no-param-reassign */
-      acc = {
-        ...acc,
-        [a.id]: createRef(),
-      };
-      return acc;
-    }, {}),
-  );
-  const previousBidDetails = useRef(
-    auctions.artifacts.reduce((acc, a) => {
-      /* eslint-disable  no-param-reassign */
-      acc = {
-        ...acc,
-        [a.id]: createRef(),
-      };
-      return acc;
-    }, {}),
-  );
+  const bidInputRef = useRef(auctions.artifacts.reduce((acc, a) => {
+    /* eslint-disable  no-param-reassign */
+    acc = {
+      ...acc,
+      [a.id]: createRef(),
+    };
+    return acc;
+  }, {}));
+  const previousBidDetails = useRef(auctions.artifacts.reduce((acc, a) => {
+    /* eslint-disable  no-param-reassign */
+    acc = {
+      ...acc,
+      [a.id]: createRef(),
+    };
+    return acc;
+  }, {}));
 
   const getRemainingTime = () => {
     const total = parseInt(englishAuctionTimer.total, 10) - 1000;
@@ -231,12 +229,8 @@ const EnglishAuction = () => {
   }, [previousBidDetails]);
 
   useEffect(() => {
-    // eslint-disable-next-line no-console
-    // eslint-disable-next-line brace-style
     socket.on('renderEnglishAuctionsResults', (data) => {
       setClassifyPoints(data.classifyPoints.classify);
-      // eslint-disable-next-line spaced-comment
-      //console.log(data);
       if (!englishAuctionResults) {
         setEnglishAuctionResults(data.englishAutionBids);
       }
@@ -307,11 +301,12 @@ const EnglishAuction = () => {
             { englishAuctionResults && Object.keys(englishAuctionResults).length > 0 && (
               'Starting next auction in 10 seconds...'
             )}
-            {englishAuctionResults && Object.keys(englishAuctionResults).length > 0 && 'Starting next auction in 10 seconds...'}
           </Typography>
           <Typography variant="h6" className={classes.playercontent}>
             {player.playerName}
-            , Team
+            ,
+            {' '}
+            Team
             {' '}
             {player.teamName}
           </Typography>
@@ -384,10 +379,15 @@ const EnglishAuction = () => {
                       {`$${parseInt(previousBid.bidAmount, 10) + 2}M`}
                     </p>
                     )}
-                {previousBid.bidAmount && previousBid.bidTeam === player.teamName && <p>* Waiting for bids from other teams</p>}
+                { (previousBid.bidAmount && (previousBid.bidTeam === player.teamName))
+                    && (
+                    <p>
+                      * Waiting for bids from other teams
+                    </p>
+                    )}
               </div>
               <div className={classes.bottomcontainer}>
-                {previousBid && previousBid.bidTeam && previousBid.bidAmount ? (
+                { previousBid && previousBid.bidTeam && previousBid.bidAmount ? (
                   <div className={classes.lastbidcontainer} style={{ backgroundColor: `${previousBid.bidColor}` }}>
                     <p className={classes.lastbidby}>
                       Last Bid By:
@@ -424,7 +424,9 @@ const EnglishAuction = () => {
             {englishAuctionResults && !englishAuctionResults[auction.id] && (
               <div className={classes.bottomcontainer}>
                 <div className={classes.lastbidcontainer}>
-                  <p className={classes.lastbidby}>No bids were placed</p>
+                  <p className={classes.lastbidby}>
+                    No bids were placed
+                  </p>
                 </div>
               </div>
             )}
