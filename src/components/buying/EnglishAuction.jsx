@@ -175,6 +175,11 @@ const EnglishAuction = () => {
         pathname: `/secretAuctions/${player.hostCode}`,
         state: { secretAuctionsNumber: 2 },
       });
+    // } else if (location.state.englishAuctionsNumber === 2) {
+    //   history.push({
+    //     pathname: `/dutchAuction/${player.hostCode}`,
+    //     state: { dutchAuctionNumber: 1 },
+    //   });
     } else {
       history.push(`/buying/results/${player.hostCode}`);
     }
@@ -289,15 +294,18 @@ const EnglishAuction = () => {
             ART QUEST
           </Typography>
           <Typography className={classes.timercontent} variant="h5" noWrap>
-            {!englishAuctionTimer && 'Auctions start in 10 seconds'}
-            {englishAuctionTimer && !englishAuctionResults && (
-              <>
-                Time left in Auction:
-                {' '}
-                {englishAuctionTimer && englishAuctionTimer.minutes}
-                :
-                {englishAuctionTimer && englishAuctionTimer.seconds}
-              </>
+            { !englishAuctionTimer && 'Auction starts when team start bidding.' }
+            { englishAuctionTimer
+            && !englishAuctionResults && (
+            <>
+              Time left in Auction:
+              {' '}
+              {englishAuctionTimer && englishAuctionTimer.minutes}
+              :
+              {englishAuctionTimer && englishAuctionTimer.seconds}
+            </>)}
+            { englishAuctionResults && Object.keys(englishAuctionResults).length > 0 && (
+              'Starting next auction in 10 seconds...'
             )}
             {englishAuctionResults && Object.keys(englishAuctionResults).length > 0 && 'Starting next auction in 10 seconds...'}
           </Typography>

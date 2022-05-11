@@ -134,7 +134,7 @@ function DutchAuction() {
   const Bounce = styled.div`
     animation: 1.2s ${keyframes`${rubberBand}`};
   `;
-
+  console.log('priceDropSeq-->', priceDropSequence, valueDrop);
   const handleSelectPainting = (index) => {
     const paintingId = paintings[index].id;
     socket.emit('addNewBid', {
@@ -164,11 +164,12 @@ function DutchAuction() {
         seconds: seconds.toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }),
       };
       setDutchAuctionTimerValue(value);
-      if (!hasDutchAuctionTimerEnded && seconds % 3 === 0 && !nominatedPaintings.includes(paintings[priceDropSequence[valueDrop]].id)) {
+      if (!hasDutchAuctionTimerEnded && seconds % 3 === 0 && !nominatedPaintings.includes(paintings[valueDrop % initialPaintings?.length]?.id)) {
         const newValue = paintings;
-        newValue[priceDropSequence[valueDrop]].originalValue = ((newValue[priceDropSequence[valueDrop]].originalValue * 9) / 10).toFixed(2);
-        setPaintings(newValue);
+        newValue[valueDrop % initialPaintings?.length].originalValue = Math.max(newValue[valueDrop % initialPaintings?.length].originalValue - 2,
+          newValue[valueDrop % initialPaintings?.length].basePrice);
         setAnimateChange(true);
+        setPaintings(newValue);
         setValueDrop(valueDrop + 1);
       } else if (seconds % 3 === 0) {
         setValueDrop(valueDrop + 1);
@@ -186,7 +187,7 @@ function DutchAuction() {
   // Hooks and methods
   useEffect(() => {
     // setLoading(true);
-    async function getSellingInfo() {
+    const getSellingInfo = async () => {
       const { data } = await axios.get(`${API_URL}/buying/getDutchAuctionData/${user.hostCode}`);
       const { artifacts } = data.dutchAuctions;
       setDutchAuctionTimerValue(data.dutchAuctionTimerValue);
@@ -198,8 +199,9 @@ function DutchAuction() {
         }
         setInitialPaintings(tempArr);
         setPaintings(artifacts);
+        console.log('paintingData ->', artifacts);
       }
-    }
+    };
     if (!paintings) {
       getSellingInfo();
     }
@@ -223,7 +225,7 @@ function DutchAuction() {
     });
     console.log(nominatedPaintings);
   }, [nominatedPaintings]);
-
+  console.log('-> ', initialPaintings);
   const loadCardContent = (index) => (
     <CardContent className={classes.paintOpt}>
       {initialPaintings
@@ -241,7 +243,7 @@ function DutchAuction() {
         M
       </p>
       )}
-      {(index === priceDropSequence[valueDrop - 1] && animateChange) && (initialPaintings[index] !== paintings[index].originalValue)(
+      {((index === valueDrop % initialPaintings?.length) && animateChange) && (initialPaintings[index] !== paintings[index].originalValue) && (
         <Bounce>
           <p style={{
             color: '#000000',
@@ -255,9 +257,9 @@ function DutchAuction() {
             {' '}
             M
           </p>
-        </Bounce>,
+        </Bounce>
       )}
-      {(index !== priceDropSequence[valueDrop - 1] || !animateChange) && (initialPaintings[index] !== paintings[index].originalValue) && (
+      {((index !== valueDrop % initialPaintings?.length) || !animateChange) && (initialPaintings[index] !== paintings[index].originalValue) && (
         <p style={{
           color: '#000000',
           fontWeight: '700',
@@ -335,7 +337,8 @@ function DutchAuction() {
                       backgroundColor: 'white',
                       margin: 'auto',
                       marginTop: '3%',
-                      boxShadow: (index === priceDropSequence[valueDrop - 1]) ? 'rgb(255,215,0,0.9) 0px 0px 7px 9px' : 'none',
+                      boxShadow: ((index === valueDrop % initialPaintings?.length) && !nominatedPaintings.includes(paintings[index].id))
+                        ? 'rgb(255,215,0,0.9) 0px 0px 7px 9px' : 'none',
                     }}
                     className={classes.cardStyle}
                     disabled
