@@ -175,6 +175,11 @@ const EnglishAuction = () => {
         pathname: `/secretAuctions/${player.hostCode}`,
         state: { secretAuctionsNumber: 2 },
       });
+    // } else if (location.state.englishAuctionsNumber === 2) {
+    //   history.push({
+    //     pathname: `/dutchAuction/${player.hostCode}`,
+    //     state: { dutchAuctionNumber: 1 },
+    //   });
     } else {
       history.push(`/buying/results/${player.hostCode}`);
     }
