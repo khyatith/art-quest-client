@@ -15,6 +15,7 @@ import EnglishAuction from './components/buying/EnglishAuction';
 import SecretAuction from './components/buying/SecretAuction';
 import SellingGameInstructions from './components/selling/SellingGameInstructions';
 import EndBuyingPhase from './components/EndBuyingPhase';
+import DutchAuction from './components/DutchAuction';
 
 function App() {
   const [player, setPlayer] = useState({
@@ -45,6 +46,7 @@ function App() {
               </Route>
               <Route path="/englishAuction/:code" component={EnglishAuction} />
               <Route path="/secretAuctions/:code" component={SecretAuction} />
+              <Route path="/dutchAuction/:code" component={DutchAuction} />
               <Route path="/sell/:code" exact component={ExpoBegining} />
               <Route path="/sell/location/:code" exact component={LocationPhase} />
               <Route path="/sell/result/:code" exact component={SellingResults} />
