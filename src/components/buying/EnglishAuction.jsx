@@ -168,16 +168,16 @@ const EnglishAuction = () => {
   };
 
   const goToNextAuctions = () => {
-    if (location.state.englishAuctionsNumber === 1) {
+    if (location.state.englishAuctionsNumber === 7) { // 1
       history.push({
         pathname: `/secretAuctions/${player.hostCode}`,
-        state: { secretAuctionsNumber: 2 },
+        state: { secretAuctionsNumber: 1 },
       });
-    // } else if (location.state.englishAuctionsNumber === 2) {
-    //   history.push({
-    //     pathname: `/dutchAuction/${player.hostCode}`,
-    //     state: { dutchAuctionNumber: 1 },
-    //   });
+    } else if (location.state.englishAuctionsNumber === 1) { // 2
+      history.push({
+        pathname: `/dutchAuction/${player.hostCode}`,
+        state: { dutchAuctionsNumber: 1 },
+      });
     } else {
       history.push(`/buying/results/${player.hostCode}`);
     }
@@ -279,7 +279,7 @@ const EnglishAuction = () => {
       socket.emit('addEnglishAuctionBid', bidInfo);
     }
   };
-
+  console.log('->>>', englishAuctionResults);
   return (
     <div className={classes.root}>
       <AppBar className={classes.appbar} position="static">
@@ -311,7 +311,7 @@ const EnglishAuction = () => {
         </Toolbar>
       </AppBar>
       <div className={classes.leaderboardcontainer}>
-        <Leaderboard  classifyPoints={classifyPoints} showAuctionResults={englishAuctionResults} goToNextAuctions={goToNextAuctions} />
+        <Leaderboard classifyPoints={classifyPoints} showAuctionResults={englishAuctionResults} goToNextAuctions={goToNextAuctions} />
       </div>
       {auctions && auctions.artifacts.map((auction) => {
         const previousBid = previousBidDetails.current[auction.id];

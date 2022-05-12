@@ -1,4 +1,7 @@
 import React, { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
+import { useHistory } from 'react-router';
+
 import { makeStyles } from '@material-ui/core/styles';
 import styled, { keyframes } from 'styled-components';
 import axios from 'axios';
@@ -14,6 +17,7 @@ import Toolbar from '@material-ui/core/Toolbar';
 import { rubberBand } from 'react-animations';
 import { API_URL, TEAM_COLOR_MAP } from '../global/constants';
 import { socket } from '../global/socket';
+import Leaderboard from './buying/Leaderboard';
 
 const useStyles = makeStyles((theme) => ({
   paintOpt: {
@@ -119,6 +123,11 @@ const useStyles = makeStyles((theme) => ({
 
 function DutchAuction() {
   const classes = useStyles();
+  const location = useLocation();
+  const history = useHistory();
+
+  // eslint-disable-next-line no-unused-vars
+  const [classifyPoints, setClassifyPoints] = useState({});
   const [paintings, setPaintings] = useState();
   const [initialPaintings, setInitialPaintings] = useState();
   const user = JSON.parse(sessionStorage.getItem('user'));
@@ -128,13 +137,15 @@ function DutchAuction() {
   const [paintingTeams, setPaintingTeams] = useState({});
   const [dutchAuctionTimerValue, setDutchAuctionTimerValue] = useState();
   const [hasDutchAuctionTimerEnded, setHasDutchAuctionTimerEnded] = useState(false);
-  const [priceDropSequence, setPriceDropSequence] = useState();
   const [animateChange, setAnimateChange] = useState(false);
   const [valueDrop, setValueDrop] = useState(0);
+  const [dutchAuctionResults, setDutchAuctionResults] = useState([]);
+
   const Bounce = styled.div`
     animation: 1.2s ${keyframes`${rubberBand}`};
   `;
-  console.log('priceDropSeq-->', priceDropSequence, valueDrop);
+  const player = JSON.parse(sessionStorage.getItem('user'));
+
   const handleSelectPainting = (index) => {
     const paintingId = paintings[index].id;
     socket.emit('addNewBid', {
@@ -142,6 +153,8 @@ function DutchAuction() {
       bidTeam: user.teamName,
       player: user,
       auctionObj: paintings,
+      artMovement: paintings[index].artMovementName,
+      artMovementId: paintings[index].artMovementId,
       bidAt: +new Date(),
       auctionType: '5',
       bidColor: user.teamColor,
@@ -149,6 +162,16 @@ function DutchAuction() {
     });
   };
 
+  const goToNextAuctions = () => {
+    if (location.state.dutchAuctionsNumber === 1) {
+      history.push({
+        pathname: `/englishAuction/${player.hostCode}`,
+        state: { englishAuctionsNumber: 3 },
+      });
+    } else {
+      history.push(`/buying/results/${player.hostCode}`);
+    }
+  };
   const getRemainingTime = async () => {
     setAnimateChange(false);
     const total = parseInt(dutchAuctionTimerValue.total, 10) - 1000;
@@ -156,6 +179,10 @@ function DutchAuction() {
     const minutes = Math.floor((parseInt(total, 10) / 1000 / 60) % 60);
     if (total < 1000) {
       await axios.put(`${API_URL}/buying/updateDutchAuctionResults/${user.hostCode}`);
+      // console.log('dutch result->', r.data);
+      // setDutchAuctionResult(r.data);
+      socket.emit('dutchAuctionTimerEnded', player.hostCode);
+
       setHasDutchAuctionTimerEnded(true);
     } else {
       const value = {
@@ -181,6 +208,7 @@ function DutchAuction() {
     if (hasDutchAuctionTimerEnded) {
       console.log('timer ended');
       // redirect to selling instructions
+      // goToNextAuctions();
     }
   }, [hasDutchAuctionTimerEnded]);
 
@@ -191,7 +219,6 @@ function DutchAuction() {
       const { data } = await axios.get(`${API_URL}/buying/getDutchAuctionData/${user.hostCode}`);
       const { artifacts } = data.dutchAuctions;
       setDutchAuctionTimerValue(data.dutchAuctionTimerValue);
-      setPriceDropSequence(data.dutchAuctionsOrder);
       if (artifacts) {
         const tempArr = [];
         for (let i = 0; i < artifacts.length; ++i) {
@@ -199,7 +226,6 @@ function DutchAuction() {
         }
         setInitialPaintings(tempArr);
         setPaintings(artifacts);
-        console.log('paintingData ->', artifacts);
       }
     };
     if (!paintings) {
@@ -223,9 +249,17 @@ function DutchAuction() {
         setNominatedPaintings((existingValues) => [data.paintingId, ...existingValues]);
       }
     });
-    console.log(nominatedPaintings);
   }, [nominatedPaintings]);
-  console.log('-> ', initialPaintings);
+
+  useEffect(() => {
+    socket.on('renderDutchAuctionsResults', (data) => {
+      console.log('recieved data->', data);
+      setClassifyPoints(data.classifyPoints.classify);
+      if (!dutchAuctionResults) {
+        setDutchAuctionResults(data.dutchAutionBids);
+      }
+    });
+  }, []);
   const loadCardContent = (index) => (
     <CardContent className={classes.paintOpt}>
       {initialPaintings
@@ -315,6 +349,9 @@ function DutchAuction() {
           )}
         </Toolbar>
       </AppBar>
+      <div className={classes.leaderboardcontainer}>
+        <Leaderboard classifyPoints={classifyPoints} showAuctionResults={hasDutchAuctionTimerEnded} goToNextAuctions={goToNextAuctions} />
+      </div>
       <div className={classes.parent}>
         <Box className={classes.child1} justifyContent="center" display="flex" flexWrap="wrap">
           {paintings

@@ -14,7 +14,7 @@ function generateLine(x1, y1, x2, y2) {
   return new Array(361).fill(1).map((d, i) => [x1 - x * i, y1 - y * i]);
 }
 
-function Mapping({ disabledLocations }) {
+function Mapping({ disabledLocations, teamLocations }) {
   const [mapValues, setMapValues] = useState({});
   const [valRet, setValRet] = useState(false);
   const geoUrl = 'https://raw.githubusercontent.com/zcreativelabs/react-simple-maps/master/topojson-maps/world-110m.json';
@@ -30,6 +30,8 @@ function Mapping({ disabledLocations }) {
       setValRet(true);
     }
   }, [valRet]);
+  console.log('->', teamLocations);
+  console.log('map ->', mapValues);
 
   return (
     <>
@@ -81,6 +83,21 @@ function Mapping({ disabledLocations }) {
               </text>
             </Marker>
           ))}
+          {
+          Array.isArray(mapValues) && teamLocations && teamLocations?.map((items, idx) => {
+            console.log('map of team cities', items);
+            const location = mapValues?.filter((item) => (
+              item.cityId === items.locationId
+            ));
+            console.log('found loc->', location);
+            return (
+              // eslint-disable-next-line react/no-array-index-key
+              <Marker key={idx} coordinates={[location[0].longitude, location[0].latitude]}>
+                <circle r={10} fill={items.color.toLowerCase()} stroke="#fff" strokeWidth={2} />
+              </Marker>
+            );
+          })
+          }
         </ComposableMap>
       </div>
     </>
