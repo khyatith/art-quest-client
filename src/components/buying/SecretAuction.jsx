@@ -181,10 +181,10 @@ const SecretAuction = () => {
   };
 
   const goToNextAuctions = () => {
-    if (location.state.secretAuctionsNumber === 2) {
+    if (location.state.secretAuctionsNumber === 1) {
       history.push({
         pathname: `/englishAuction/${player.hostCode}`,
-        state: { englishAuctionsNumber: 3 },
+        state: { englishAuctionsNumber: 2 },
       });
     } else {
       history.push(`/buying/results/${player.hostCode}`);

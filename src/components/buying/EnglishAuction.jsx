@@ -168,16 +168,16 @@ const EnglishAuction = () => {
   };
 
   const goToNextAuctions = () => {
-    if (location.state.englishAuctionsNumber === 1) {
+    if (location.state.englishAuctionsNumber === 7) { // 1
       history.push({
         pathname: `/secretAuctions/${player.hostCode}`,
-        state: { secretAuctionsNumber: 2 },
+        state: { secretAuctionsNumber: 1 },
       });
-    // } else if (location.state.englishAuctionsNumber === 2) {
-    //   history.push({
-    //     pathname: `/dutchAuction/${player.hostCode}`,
-    //     state: { dutchAuctionNumber: 1 },
-    //   });
+    } else if (location.state.englishAuctionsNumber === 1) { // 2
+      history.push({
+        pathname: `/dutchAuction/${player.hostCode}`,
+        state: { dutchAuctionsNumber: 1 },
+      });
     } else {
       history.push(`/buying/results/${player.hostCode}`);
     }
@@ -279,7 +279,7 @@ const EnglishAuction = () => {
       socket.emit('addEnglishAuctionBid', bidInfo);
     }
   };
-
+  console.log('->>>', englishAuctionResults);
   return (
     <div className={classes.root}>
       <AppBar className={classes.appbar} position="static">
@@ -298,9 +298,7 @@ const EnglishAuction = () => {
               :
               {englishAuctionTimer && englishAuctionTimer.seconds}
             </>)}
-            { englishAuctionResults && Object.keys(englishAuctionResults).length > 0 && (
-              'Starting next auction in 10 seconds...'
-            )}
+            {englishAuctionResults && Object.keys(englishAuctionResults).length > 0 && 'Starting next auction in 10 seconds...'}
           </Typography>
           <Typography variant="h6" className={classes.playercontent}>
             {player.playerName}
