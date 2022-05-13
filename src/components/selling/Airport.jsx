@@ -63,10 +63,10 @@ const Airport = ({
   selectedLocationId,
   previousLocationId,
   allLocationDetails,
-  locations,
   chosenLocationForTeams,
   ticketPricesForLocations,
   setTicketPricesForLocations,
+  disabledLocations,
 }) => {
   const classes = useStyles();
   const ticketInputRef = useRef();
@@ -136,19 +136,10 @@ const Airport = ({
   useEffect(() => {
     async function getMapVal() {
       const { data } = await axios.get(`${API_URL}/buying/getMap`);
-      for (let i = 0; i < data.length; ++i) {
-        if (parseInt(data[i].cityId, 10) === parseInt(previousLocationId, 10)) {
-          if ((locations.filter((v) => (parseInt(v, 10) === parseInt(previousLocationId, 10))).length) >= 2) {
-            for (let j = 0; j < data[i].allowedToVisit.length; ++j) {
-              if ((locations.filter((v) => (parseInt(v, 10) === parseInt(data[i].allowedToVisit[j], 10))).length) < 2) {
-                setSelectedRadio(parseInt(data[i].allowedToVisit[j], 10));
-                // updateSelectedLocationTicketPrice();
-                break;
-              }
-            }
-          }
-          break;
-        }
+      if (disabledLocations.includes(parseInt(previousLocationId, 10))) {
+        const selectedRadioOption = Object.entries(data).map((items) => items[1].allowedToVisit)
+          .find((av) => parseInt(av, 10) !== parseInt(previousLocationId, 10));
+        setSelectedRadio(selectedRadioOption);
       }
       setMapValues(data);
     }
@@ -215,7 +206,7 @@ const Airport = ({
                             type="radio"
                             value={obj.cityId}
                             key={obj.cityId}
-                            disabled={hasLocationSelected || (locations.filter((v) => (parseInt(v, 10) === parseInt(obj.cityId, 10))).length) >= 2}
+                            disabled={hasLocationSelected || disabledLocations.includes(obj.cityId)}
                             name="location"
                             checked={parseInt(selectedRadio, 10) === parseInt(obj.cityId, 10)}
                             onChange={updateSelectedLocation}

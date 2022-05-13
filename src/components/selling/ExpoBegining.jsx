@@ -151,6 +151,7 @@ function ExpoBeginning() {
   const [paintings, setPaintings] = useState([]);
   const [cityData, setCityData] = useState();
   const user = JSON.parse(sessionStorage.getItem('user'));
+  const [hasSentRequest, setHasSentRequest] = useState(false);
   const [otherTeams, setOtherTeams] = useState([]);
   const [expanded, setExpanded] = React.useState(-1);
   // const ticketPrice = useRef();
@@ -218,30 +219,11 @@ function ExpoBeginning() {
       }
       setTimerValue(sellPaintingTimerValue);
     }
-    if (paintings.length === 0 || !cityData) {
+    if (!hasSentRequest) {
+      setHasSentRequest(true);
       getSellingInfo();
     }
   }, [user, cityData, paintings]);
-
-  // const updateStorageWithCurrentAuction = (data) => {
-  //   if (Object.keys(data.auctionObj).length > 0) {
-  //     sessionStorage.setItem('currentSellingEnglishAuction', JSON.stringify(data.auctionObj));
-  //   }
-  // };
-
-  // const renderEnglishAuction = useCallback(async () => {
-  //   if (!hasSentEnglishAuctionRequest) {
-  //     const { data } = await axios.get(`${API_URL}/buying/getEnglishAuctionForSelling?roomCode=${user.hostCode}&roundId=${user.roundId}`);
-  //     setTimeout(() => updateStorageWithCurrentAuction(data), 5000);
-  //   }
-  // }, [user]);
-
-  // useEffect(() => {
-  //   if (!hasSentEnglishAuctionRequest) {
-  //     // renderEnglishAuction();
-  //     setHasSentEnglishAuctionRequest(true);
-  //   }
-  // }, [hasSentEnglishAuctionRequest]);
 
   useEffect(() => {
     socket.on('goToSellingResults', () => {

@@ -74,7 +74,7 @@ const useStyles = makeStyles((theme) => ({
   cardactionsstyle: {
     textAlign: 'center',
     display: 'block',
-    padding: '0px',
+    padding: '10px 0px',
   },
   textcontainer: {
     padding: '10px',
@@ -332,6 +332,11 @@ const EnglishAuction = () => {
               title={auction.name}
               // style={{ backgroundColor: previousBid.bidTeam && `${TEAM_COLOR_MAP[previousBid.bidTeam]}` }}
             />
+            <Typography variant="h6" style={{ marginTop: '0.5rem' }}>
+              Art Movement:
+              {' '}
+              {auction.artMovementName}
+            </Typography>
             { !englishAuctionResults && (
             <CardActions className={classes.cardactionsstyle}>
               <div className={classes.textcontainer}>

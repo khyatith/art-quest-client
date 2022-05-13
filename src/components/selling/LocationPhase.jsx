@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useEffect, useState, useContext } from 'react';
 import axios from 'axios';
 import { makeStyles } from '@material-ui/core/styles';
@@ -81,7 +82,7 @@ const useStyles = makeStyles((theme) => ({
 
 function createData(team, cash, vis, classifyPoints) {
   const str = [];
-  const formattedCash = parseFloat((cash) / 10).toFixed(2);
+  const formattedCash = parseFloat(cash / 10).toFixed(2);
   str.push(formattedCash);
   str.push(vis);
   str.push(classifyPoints);
@@ -121,6 +122,7 @@ function LocationPhase() {
   const [chosenLocationForTeams, setChosenLocationForTeams] = useState();
   const [allLocationHistory, setAllLocationHistory] = useState([]);
   const [currentRoundData, setCurrentRoundData] = useState(false);
+  const [disabledLocations, setDisabledLocations] = useState([]);
   const [ticketPricesForLocations, setTicketPricesForLocations] = useState();
 
   // Hooks and methods
@@ -135,11 +137,14 @@ function LocationPhase() {
           const {
             amountSpentByTeam, visits, locationPhaseTimerValue, roundNumber, allTeams, flyTicketsPrice,
           } = newData.data;
+          if (newData.data.disabledLocations && newData.data.disabledLocations.length > 0) {
+            setDisabledLocations(newData.data.disabledLocations);
+          }
           if (flyTicketsPrice) {
             console.log('flyTicketPrice>>>>>', flyTicketsPrice);
             setTicketPricesForLocations(flyTicketsPrice.ticketPriceByLocation);
           }
-          setTeamsCurrentLocation(newData.data.visits);
+          setTeamsCurrentLocation(visits);
           let x = 1;
           const tv = [];
           const labels = ['Cash Points', 'Visits', 'Classify Points'];
@@ -149,13 +154,13 @@ function LocationPhase() {
             const cash = amountSpentByTeam[team] || 0;
             let vis = 0;
             const teamVisits = visits.filter((v) => v.teamName === team);
-            vis = teamVisits && teamVisits.length > 0 && teamVisits[0].totalVisitPrice ? parseInt(teamVisits[0].totalVisitPrice, 10) : 0.00;
+            vis = teamVisits && teamVisits.length > 0 && teamVisits[0].totalVisitPrice ? parseInt(teamVisits[0].totalVisitPrice, 10) : 0.0;
             // const artScore = totalArtScoreForTeams[team] || 0;
-            const formattedCash = parseFloat((cash) / 10).toFixed(2);
-            const total = parseFloat(formattedCash) - parseFloat(vis) + 0;// need to replace 0 with classifyPoints
+            const formattedCash = parseFloat(cash / 10).toFixed(2);
+            const total = parseFloat(formattedCash) - parseFloat(vis) + 0; // need to replace 0 with classifyPoints
             // eslint-disable-next-line no-nested-ternary
-            datasets.push(createData(team, cash, vis, 0));// need to replace 0 with classifyPoints
-            tv.push(createDataMap(x, team, vis, cash, total, 0, formattedCash));// need to replace 0 with classifyPoints
+            datasets.push(createData(team, cash, vis, 0)); // need to replace 0 with classifyPoints
+            tv.push(createDataMap(x, team, vis, cash, total, 0, formattedCash)); // need to replace 0 with classifyPoints
             teams.push(team);
             x += 1;
           });
@@ -250,6 +255,7 @@ function LocationPhase() {
       };
       setTicketPricesForLocations(ticketPrices);
       setChosenLocationForTeams(chosenLocation);
+      setDisabledLocations(data.disabledLocations);
       if (parseInt(data.roundId, 10) === parseInt(roundId, 10) && data.teamName === player.teamName) {
         setLocationSelectedForCurrentRound(true, parseInt(data.locationId, 10));
       }
@@ -277,8 +283,7 @@ function LocationPhase() {
             :
             {locationPageTimerValue && locationPageTimerValue.seconds}
           </Typography>
-          { player
-            && (
+          {player && (
             <div className={classes.playerdiv}>
               <p>
                 {player.playerName}
@@ -289,7 +294,7 @@ function LocationPhase() {
                 {player.playerId}
               </p>
             </div>
-            )}
+          )}
         </Toolbar>
       </AppBar>
       <RoundsInfo label={`Round ${roundId} of 4`} />
@@ -312,13 +317,14 @@ function LocationPhase() {
             chosenLocationForTeams={chosenLocationForTeams}
             ticketPricesForLocations={ticketPricesForLocations}
             setTicketPricesForLocations={setTicketPricesForLocations}
+            disabledLocations={disabledLocations}
           />
         </div>
       </div>
       <hr />
       <div className={classes.parent2}>
         <div className={classes.child2}>
-          <Mapping />
+          <Mapping disabledLocations={disabledLocations} />
         </div>
         <div className={classes.levelOfInterest}>
           <h3>Level of Interest In Art</h3>
