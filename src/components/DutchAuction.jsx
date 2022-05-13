@@ -164,7 +164,7 @@ function DutchAuction() {
   };
 
   const goToNextAuctions = () => {
-    if (location.state.dutchAuctionsNumber === 4) { // 1
+    if (location.state.dutchAuctionsNumber === 1) { // 1
       history.push({
         pathname: `/englishAuction/${player.hostCode}`,
         state: { englishAuctionsNumber: 3 },
@@ -209,7 +209,7 @@ function DutchAuction() {
     if (hasDutchAuctionTimerEnded) {
       console.log('timer ended');
       // redirect to selling instructions
-      goToNextAuctions();
+      // goToNextAuctions();
     }
   }, [hasDutchAuctionTimerEnded]);
 
@@ -330,13 +330,19 @@ function DutchAuction() {
     <>
       <AppBar className={classes.appbar}>
         <Toolbar>
-          <Typography variant="h6" className={classes.timercontent}>
-            Time left :
-            {' '}
-            {dutchAuctionTimerValue && dutchAuctionTimerValue.minutes}
-            :
-            {dutchAuctionTimerValue && dutchAuctionTimerValue.seconds}
-          </Typography>
+          {!hasDutchAuctionTimerEnded ? (
+            <Typography variant="h6" className={classes.timercontent}>
+              Time left :
+              {' '}
+              {dutchAuctionTimerValue && dutchAuctionTimerValue.minutes}
+              :
+              {dutchAuctionTimerValue && dutchAuctionTimerValue.seconds}
+            </Typography>
+          ) : (
+            <Typography variant="h6" className={classes.timercontent}>
+              Next Auction starts in 10 seconds.
+            </Typography>
+          )}
           {user && (
             <div className={classes.playerdiv}>
               <p>
@@ -387,19 +393,22 @@ function DutchAuction() {
                       image={arg.imageURL}
                       alt="green iguana"
                     />
-                    <CardActions className={nominatedPaintings.includes(paintings[index].id) ? classes.nominateBtnDone : classes.nominateBtn}>
-                      <Button
-                        size="small"
-                        style={{ color: '#000000', fontWeight: 'bold', width: '100%' }}
-                        className={clsx(classes.expand, {
-                          [classes.expandOpen]: true,
-                        })}
-                        onClick={() => handleSelectPainting(index)}
-                        disabled={nominatedPaintings.includes(paintings[index].id)}
-                      >
-                        BID
-                      </Button>
-                    </CardActions>
+                    { !hasDutchAuctionTimerEnded
+                      && (
+                      <CardActions className={nominatedPaintings.includes(paintings[index].id) ? classes.nominateBtnDone : classes.nominateBtn}>
+                        <Button
+                          size="small"
+                          style={{ color: '#000000', fontWeight: 'bold', width: '100%' }}
+                          className={clsx(classes.expand, {
+                            [classes.expandOpen]: true,
+                          })}
+                          onClick={() => handleSelectPainting(index)}
+                          disabled={nominatedPaintings.includes(paintings[index].id)}
+                        >
+                          BID
+                        </Button>
+                      </CardActions>
+                      )}
                     {!nominatedPaintings.includes(paintings[index].id) && loadCardContent(index)}
                     {nominatedPaintings.includes(paintings[index].id) && loadCardSelection(index)}
                   </Card>
