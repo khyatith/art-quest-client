@@ -63,7 +63,6 @@ const Airport = ({
   selectedLocationId,
   previousLocationId,
   allLocationDetails,
-  locations,
   chosenLocationForTeams,
   ticketPricesForLocations,
   setTicketPricesForLocations,

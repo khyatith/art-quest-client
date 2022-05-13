@@ -329,6 +329,7 @@ const SecretAuction = () => {
               style={{ border: winner && `4px solid ${TEAM_COLOR_MAP[winner]}` }}>
               <CardHeader title={auction.name} subheader={`${auction.artist}, ${auction.country}, ${auction.dateCreated}`} />
               <CardMedia className={classes.media} component="img" image={`${auction.imageURL}`} title={auction.name} />
+              <Typography variant="h6" style={{ marginTop: '0.5rem' }}>Art Movement: {auction.artMovementName}</Typography>
               <CardActions className={classes.cardactionsstyle}>
                 {!secretAuctionResults && (
                   <div className={classes.textcontainer}>
