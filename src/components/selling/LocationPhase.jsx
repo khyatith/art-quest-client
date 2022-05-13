@@ -122,6 +122,7 @@ function LocationPhase() {
   const [chosenLocationForTeams, setChosenLocationForTeams] = useState();
   const [allLocationHistory, setAllLocationHistory] = useState([]);
   const [currentRoundData, setCurrentRoundData] = useState(false);
+  const [disabledLocations, setDisabledLocations] = useState([]);
   const [ticketPricesForLocations, setTicketPricesForLocations] = useState();
 
   // Hooks and methods
@@ -136,11 +137,14 @@ function LocationPhase() {
           const {
             amountSpentByTeam, visits, locationPhaseTimerValue, roundNumber, allTeams, flyTicketsPrice,
           } = newData.data;
+          if (newData.data.disabledLocations && newData.data.disabledLocations.length > 0) {
+            setDisabledLocations(newData.data.disabledLocations);
+          }
           if (flyTicketsPrice) {
             console.log('flyTicketPrice>>>>>', flyTicketsPrice);
             setTicketPricesForLocations(flyTicketsPrice.ticketPriceByLocation);
           }
-          setTeamsCurrentLocation(newData.data.visits);
+          setTeamsCurrentLocation(visits);
           let x = 1;
           const tv = [];
           const labels = ['Cash Points', 'Visits', 'Classify Points'];
@@ -251,6 +255,7 @@ function LocationPhase() {
       };
       setTicketPricesForLocations(ticketPrices);
       setChosenLocationForTeams(chosenLocation);
+      setDisabledLocations(data.disabledLocations);
       if (parseInt(data.roundId, 10) === parseInt(roundId, 10) && data.teamName === player.teamName) {
         setLocationSelectedForCurrentRound(true, parseInt(data.locationId, 10));
       }
@@ -312,13 +317,14 @@ function LocationPhase() {
             chosenLocationForTeams={chosenLocationForTeams}
             ticketPricesForLocations={ticketPricesForLocations}
             setTicketPricesForLocations={setTicketPricesForLocations}
+            disabledLocations={disabledLocations}
           />
         </div>
       </div>
       <hr />
       <div className={classes.parent2}>
         <div className={classes.child2}>
-          <Mapping />
+          <Mapping disabledLocations={disabledLocations} />
         </div>
         <div className={classes.levelOfInterest}>
           <h3>Level of Interest In Art</h3>

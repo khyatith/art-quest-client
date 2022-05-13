@@ -115,11 +115,11 @@ function SellingResults({ location }) {
       setLoading(false);
     };
     if (user && !hasRequestedResult) {
-      sessionStorage.setItem('currentSellingEnglishAuction', null);
       setHasRequestedResult(true);
+      sessionStorage.setItem('currentSellingEnglishAuction', null);
       getEarnings();
     }
-  }, [earnings, user, timerValue]);
+  }, [earnings, user]);
 
   useEffect(() => {
     socket.on('startNextRound', () => {

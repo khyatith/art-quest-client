@@ -1,12 +1,10 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable consistent-return */
-/* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 // eslint-disable-next-line object-curly-newline
 import { ComposableMap, Geographies, Geography, Marker, Line } from 'react-simple-maps';
 import { API_URL } from '../../global/constants';
-import { socket } from '../../global/socket';
 
 function generateLine(x1, y1, x2, y2) {
   let x = x1 - x2;
@@ -16,11 +14,10 @@ function generateLine(x1, y1, x2, y2) {
   return new Array(361).fill(1).map((d, i) => [x1 - x * i, y1 - y * i]);
 }
 
-function Mapping() {
+function Mapping({ disabledLocations }) {
   const [mapValues, setMapValues] = useState({});
   const [valRet, setValRet] = useState(false);
   const geoUrl = 'https://raw.githubusercontent.com/zcreativelabs/react-simple-maps/master/topojson-maps/world-110m.json';
-  const [disabledLocations, setDisabledLocations] = useState([]);
 
   // Hooks and methods
   useEffect(() => {
@@ -33,22 +30,6 @@ function Mapping() {
       setValRet(true);
     }
   }, [valRet]);
-
-  useEffect(() => {
-    socket.on('locationUpdatedForTeam', (data) => {
-      setDisabledLocations(data.disabledLocations);
-    });
-  }, []);
-
-  const isLocationDisabled = (locationId) => {
-    if (disabledLocations) {
-      if (disabledLocations.length !== 0) {
-        const searchedResult = disabledLocations.find((dl) => dl === locationId);
-        return searchedResult;
-      }
-      return null;
-    }
-  };
 
   return (
     <>
@@ -88,7 +69,7 @@ function Mapping() {
             <Marker id={items[1].cityName} key={items[1].cityId} coordinates={[items[1].longitude, items[1].latitude]}>
               <circle
                 r={items[1].transportCost / 100000 + 35}
-                fill={isLocationDisabled(items.cityId) !== undefined ? '#000000' : '#808080'}
+                fill={disabledLocations.includes(items[1].cityId) ? '#cccccc' : '#000000'}
                 margin="45px"
                 style={{ margin: '45px' }}
               />
