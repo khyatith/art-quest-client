@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useHistory } from 'react-router';
@@ -163,7 +164,7 @@ function DutchAuction() {
   };
 
   const goToNextAuctions = () => {
-    if (location.state.dutchAuctionsNumber === 1) {
+    if (location.state.dutchAuctionsNumber === 4) { // 1
       history.push({
         pathname: `/englishAuction/${player.hostCode}`,
         state: { englishAuctionsNumber: 3 },
@@ -177,7 +178,7 @@ function DutchAuction() {
     const total = parseInt(dutchAuctionTimerValue.total, 10) - 1000;
     const seconds = Math.floor((parseInt(total, 10) / 1000) % 60);
     const minutes = Math.floor((parseInt(total, 10) / 1000 / 60) % 60);
-    if (total < 1000) {
+    if (total < 1000 && !hasDutchAuctionTimerEnded) {
       await axios.put(`${API_URL}/buying/updateDutchAuctionResults/${user.hostCode}`);
       // console.log('dutch result->', r.data);
       // setDutchAuctionResult(r.data);
@@ -208,7 +209,7 @@ function DutchAuction() {
     if (hasDutchAuctionTimerEnded) {
       console.log('timer ended');
       // redirect to selling instructions
-      // goToNextAuctions();
+      goToNextAuctions();
     }
   }, [hasDutchAuctionTimerEnded]);
 
