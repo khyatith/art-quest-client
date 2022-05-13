@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useEffect, useState, useContext } from 'react';
 import axios from 'axios';
 import { makeStyles } from '@material-ui/core/styles';
@@ -81,7 +82,7 @@ const useStyles = makeStyles((theme) => ({
 
 function createData(team, cash, vis, classifyPoints) {
   const str = [];
-  const formattedCash = parseFloat((cash) / 10).toFixed(2);
+  const formattedCash = parseFloat(cash / 10).toFixed(2);
   str.push(formattedCash);
   str.push(vis);
   str.push(classifyPoints);
@@ -149,13 +150,13 @@ function LocationPhase() {
             const cash = amountSpentByTeam[team] || 0;
             let vis = 0;
             const teamVisits = visits.filter((v) => v.teamName === team);
-            vis = teamVisits && teamVisits.length > 0 && teamVisits[0].totalVisitPrice ? parseInt(teamVisits[0].totalVisitPrice, 10) : 0.00;
+            vis = teamVisits && teamVisits.length > 0 && teamVisits[0].totalVisitPrice ? parseInt(teamVisits[0].totalVisitPrice, 10) : 0.0;
             // const artScore = totalArtScoreForTeams[team] || 0;
-            const formattedCash = parseFloat((cash) / 10).toFixed(2);
-            const total = parseFloat(formattedCash) - parseFloat(vis) + 0;// need to replace 0 with classifyPoints
+            const formattedCash = parseFloat(cash / 10).toFixed(2);
+            const total = parseFloat(formattedCash) - parseFloat(vis) + 0; // need to replace 0 with classifyPoints
             // eslint-disable-next-line no-nested-ternary
-            datasets.push(createData(team, cash, vis, 0));// need to replace 0 with classifyPoints
-            tv.push(createDataMap(x, team, vis, cash, total, 0, formattedCash));// need to replace 0 with classifyPoints
+            datasets.push(createData(team, cash, vis, 0)); // need to replace 0 with classifyPoints
+            tv.push(createDataMap(x, team, vis, cash, total, 0, formattedCash)); // need to replace 0 with classifyPoints
             teams.push(team);
             x += 1;
           });
@@ -277,8 +278,7 @@ function LocationPhase() {
             :
             {locationPageTimerValue && locationPageTimerValue.seconds}
           </Typography>
-          { player
-            && (
+          {player && (
             <div className={classes.playerdiv}>
               <p>
                 {player.playerName}
@@ -289,7 +289,7 @@ function LocationPhase() {
                 {player.playerId}
               </p>
             </div>
-            )}
+          )}
         </Toolbar>
       </AppBar>
       <RoundsInfo label={`Round ${roundId} of 4`} />
