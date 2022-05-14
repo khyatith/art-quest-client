@@ -1,13 +1,12 @@
 import React from 'react';
-// import LandingPage from './LandingPage';
-// import LocationPhase from './selling/LocationPhase';
-import LandingPage from './buying/LandingPage'; // using this one
+// import LandingPage from './buying/LandingPage'; // using this one
+import LocationPhase from './selling/LocationPhase';
 
 function Game() {
   return (
     <div>
-      <LandingPage />
-      {/* <LocationPhase /> */}
+      {/* <LandingPage /> */}
+      <LocationPhase />
     </div>
   );
 }

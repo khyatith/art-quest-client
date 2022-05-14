@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Bar } from 'react-chartjs-2';
 
@@ -31,11 +31,18 @@ const options = {
 
 const BarGraph = (props) => {
   const { result } = props;
-  console.log('results', result);
+  const [barResults, setBarResults] = useState({});
+
+  useEffect(() => {
+    if (!barResults || Object.keys(barResults).length === 0) {
+      setBarResults(result);
+    }
+  }, [result]);
+
   return (
-    result && Object.keys(result).length > 0 && (
+    barResults && Object.keys(barResults).length > 0 && (
       <div style={{ marginLeft: '10%' }}>
-        <Bar data={result} options={options} />
+        <Bar data={barResults} options={options} />
       </div>
     )
   );
