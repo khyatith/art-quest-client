@@ -294,7 +294,7 @@ const EnglishAuction = () => {
             ART QUEST
           </Typography>
           <Typography className={classes.timercontent} variant="h5" noWrap>
-            {!englishAuctionTimer && 'Auctions start in 10 seconds'}
+            {!englishAuctionTimer && 'Timer starts when someone starts Bidding.'}
             {englishAuctionTimer && !englishAuctionResults && (
               <>
                 Time left in Auction:
