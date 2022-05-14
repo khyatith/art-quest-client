@@ -33,17 +33,17 @@ const StyledTableCell = withStyles((theme) => ({
   },
 }))(TableCell);
 
-export default function Leaderboard({ showAuctionResults, goToNextAuctions, classifyPoints }) {
+export default function Leaderboard({ showAuctionResults, goToNextAuctions }) {
   const classes = useStyles();
   const { allTeams } = JSON.parse(sessionStorage.getItem('allAuction'));
   const player = JSON.parse(sessionStorage.getItem('user'));
   const existingLeaderboard = sessionStorage.getItem('results') ? JSON.parse(sessionStorage.getItem('results')) : {};
   const [leaderboardData, setLeaderboardData] = useState(existingLeaderboard);
-
+  console.log('auctionREsult->', leaderboardData);
   useEffect(() => {
     async function fetchLeaderboard() {
       const { data } = await axios.get(`${API_URL}/buying/getResults/${player.hostCode}`);
-      console.log('data', data);
+      console.log('data->', data);
       setLeaderboardData((prevValues) => ({
         ...prevValues,
         ...data,
@@ -55,11 +55,12 @@ export default function Leaderboard({ showAuctionResults, goToNextAuctions, clas
       setTimeout(goToNextAuctions, 5000);
     }
   }, [showAuctionResults]);
-
+  console.log('showAuctionResults->', showAuctionResults);
   const renderLeaderboard = () => {
     const {
       totalAmountByTeam, totalPaintingsWonByTeams,
     } = leaderboardData || {};
+    const classifyPoints = leaderboardData?.classifyPoints?.classify;
     // if (!leaderboard) return <></>;
     return (
       <TableContainer className={classes.paper} component={Paper}>
@@ -84,7 +85,7 @@ export default function Leaderboard({ showAuctionResults, goToNextAuctions, clas
                     {totalPaintingsWonByTeams && totalPaintingsWonByTeams[`${teamName}`] ? totalPaintingsWonByTeams[`${teamName}`] : 0}
                   </StyledTableCell>
                   <StyledTableCell align="right">
-                    {classifyPoints[teamName] ? classifyPoints[teamName] : 0}
+                    {classifyPoints && classifyPoints[teamName] ? classifyPoints[teamName] : 0}
                   </StyledTableCell>
                   <StyledTableCell component="th" scope="row" align="right">
                     $

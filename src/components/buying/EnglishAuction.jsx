@@ -168,12 +168,12 @@ const EnglishAuction = () => {
   };
 
   const goToNextAuctions = () => {
-    if (location.state.englishAuctionsNumber === 1) { // 1
+    if (location.state.englishAuctionsNumber === 5) { // 1
       history.push({
         pathname: `/secretAuctions/${player.hostCode}`,
         state: { secretAuctionsNumber: 1 },
       });
-    } else if (location.state.englishAuctionsNumber === 2) { // 2
+    } else if (location.state.englishAuctionsNumber === 1) { // 2
       history.push({
         pathname: `/dutchAuction/${player.hostCode}`,
         state: { dutchAuctionsNumber: 1 },
