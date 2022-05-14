@@ -100,7 +100,7 @@ function Mapping({ disabledLocations, teamLocations }) {
             <Marker id={items[1].cityName} key={items[1].cityId} coordinates={[items[1].longitude, items[1].latitude]}>
               <circle
                 r={items[1].transportCost / 100000 + 35}
-                fill={disabledLocations.includes(items[1].cityId) ? '#cccccc' : '#000000'}
+                fill={disabledLocations && disabledLocations.includes(items[1].cityId) ? '#cccccc' : '#000000'}
                 margin="45px"
                 style={{ margin: '45px' }}
               />

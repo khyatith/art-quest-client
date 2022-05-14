@@ -240,11 +240,29 @@ function LocationPhase() {
     const seconds = Math.floor((parseInt(total, 10) / 1000) % 60);
     const minutes = Math.floor((parseInt(total, 10) / 1000 / 60) % 60);
     if (total < 1000) {
-      socket.emit('locationPhaseTimerEnded', { player });
+      // console.log('selectedLocationId', selectedLocationId);
+      // console.log('currentLocationId', currentLocationId);
       if (!selectedLocationId) {
-        setLocationSelectedForCurrentRound(true, currentLocationId);
+        console.log('inside !selected location id');
+        socket.emit('putCurrentLocation', {
+          roomId: player.hostCode,
+          locationId: currentLocationId,
+          teamName: player.teamName,
+          roundId,
+          flyTicketPrice: 100,
+        });
+        setTimeout(() => {
+          setSelectedLocation(false);
+          socket.emit('locationPhaseTimerEnded', { player });
+        }, 5000);
       }
-      setSelectedLocation(false);
+      if (selectedLocationId) {
+        socket.emit('locationPhaseTimerEnded', { player });
+        setSelectedLocation(false);
+      }
+      // if (!selectedLocationId) {
+      //   setLocationSelectedForCurrentRound(true, currentLocationId);
+      // }
       // setHasLocationPageTimerEnded(true);
     } else {
       const value = {

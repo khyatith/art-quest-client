@@ -137,7 +137,7 @@ const Airport = ({
   useEffect(() => {
     async function getMapVal() {
       const { data } = await axios.get(`${API_URL}/buying/getMap`);
-      if (disabledLocations.includes(parseInt(previousLocationId, 10))) {
+      if (disabledLocations && disabledLocations.includes(parseInt(previousLocationId, 10))) {
         const selectedRadioOption = Object.entries(data).map((items) => items[1].allowedToVisit)
           .find((av) => parseInt(av, 10) !== parseInt(previousLocationId, 10));
         setSelectedRadio(selectedRadioOption);
@@ -207,7 +207,7 @@ const Airport = ({
                             type="radio"
                             value={obj.cityId}
                             key={obj.cityId}
-                            disabled={hasLocationSelected || disabledLocations.includes(obj.cityId)}
+                            disabled={hasLocationSelected || (disabledLocations && disabledLocations.includes(obj.cityId))}
                             name="location"
                             checked={parseInt(selectedRadio, 10) === parseInt(obj.cityId, 10)}
                             onChange={updateSelectedLocation}
