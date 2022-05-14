@@ -39,11 +39,12 @@ export default function Leaderboard({ showAuctionResults, goToNextAuctions }) {
   const player = JSON.parse(sessionStorage.getItem('user'));
   const existingLeaderboard = sessionStorage.getItem('results') ? JSON.parse(sessionStorage.getItem('results')) : {};
   const [leaderboardData, setLeaderboardData] = useState(existingLeaderboard);
-  console.log('auctionREsult->', leaderboardData);
+  console.log('leaderBoardData->', leaderboardData);
   useEffect(() => {
     async function fetchLeaderboard() {
+      console.log('fetching leaderboard');
       const { data } = await axios.get(`${API_URL}/buying/getResults/${player.hostCode}`);
-      console.log('data->', data);
+      console.log('fetch Leaderboard res->', data);
       setLeaderboardData((prevValues) => ({
         ...prevValues,
         ...data,

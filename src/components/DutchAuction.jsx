@@ -181,7 +181,6 @@ function DutchAuction() {
     if (total < 1000 && !hasDutchAuctionTimerEnded) {
       setHasDutchAuctionTimerEnded(true);
       socket.emit('dutchAuctionTimerEnded', player.hostCode);
-      await axios.put(`${API_URL}/buying/updateDutchAuctionResults/${user.hostCode}`);
       // console.log('dutch result->', r.data);
       // setDutchAuctionResult(r.data);
     } else {
@@ -205,12 +204,12 @@ function DutchAuction() {
   };
 
   useEffect(() => {
+    console.log('timer ended');
+    const sendReq = async () => {
+      await axios.put(`${API_URL}/buying/updateDutchAuctionResults/${user.hostCode}`);
+    };
     if (hasDutchAuctionTimerEnded) {
-      console.log('timer ended');
-      // redirect to selling instructions
-      // setTimeout(goToNextAuctions, 5000);
-
-      // goToNextAuctions();
+      sendReq();
     }
   }, [hasDutchAuctionTimerEnded]);
 
@@ -254,10 +253,13 @@ function DutchAuction() {
   }, [nominatedPaintings]);
 
   useEffect(() => {
+    let flag = false;
     socket.on('renderDutchAuctionsResults', (data) => {
       console.log('recieved data->', data);
       setClassifyPoints(data.classifyPoints);
-      if (!dutchAuctionResults) {
+      // const dutchResult = data.dutchAutionBids;
+      if (!flag) {
+        flag = true;
         setDutchAuctionResults(data.dutchAutionBids);
       }
     });
