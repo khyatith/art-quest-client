@@ -132,7 +132,9 @@ const EnglishAuction = () => {
   const history = useHistory();
   const player = JSON.parse(sessionStorage.getItem('user'));
   const allAuctionsObj = JSON.parse(sessionStorage.getItem('allAuction'));
-  const auctions = location.state.englishAuctionsNumber === 1 ? allAuctionsObj.englishAuctions1 : allAuctionsObj.englishAuctions2;
+  // const auctions = location.state.englishAuctionsNumber === 1 ? allAuctionsObj.englishAuctions1 : allAuctionsObj.englishAuctions2;
+  // eslint-disable-next-line no-unused-vars
+  const [auctions, setAuctions] = useState(location.state.englishAuctionsNumber === 1 ? allAuctionsObj.englishAuctions1 : allAuctionsObj.englishAuctions2);
   const bidInputRef = useRef(auctions.artifacts.reduce((acc, a) => {
     /* eslint-disable  no-param-reassign */
     acc = {
@@ -168,16 +170,20 @@ const EnglishAuction = () => {
   };
 
   const goToNextAuctions = () => {
-    if (location.state.englishAuctionsNumber === 5) { // 1
+    if (location.state.englishAuctionsNumber === 1) { // 1
       history.push({
         pathname: `/secretAuctions/${player.hostCode}`,
         state: { secretAuctionsNumber: 1 },
       });
-    } else if (location.state.englishAuctionsNumber === 1) { // 2
+    } else if (location.state.englishAuctionsNumber === 5) { // 2
       history.push({
-        pathname: `/dutchAuction/${player.hostCode}`,
-        state: { dutchAuctionsNumber: 1 },
+        pathname: `/englishAuction/${player.hostCode}`,
+        state: { englishAuctionsNumber: 3 },
       });
+      // history.push({
+      //   pathname: `/dutchAuction/${player.hostCode}`,
+      //   state: { dutchAuctionsNumber: 1 },
+      // });
     } else {
       history.push(`/buying/results/${player.hostCode}`);
     }

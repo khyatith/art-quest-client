@@ -258,6 +258,7 @@ function LocationPhase() {
 
   useEffect(() => {
     socket.on('goToExpo', () => {
+      console.log('expo');
       history.push(`/sell/${player.playerId}`);
     });
   }, []);
@@ -364,7 +365,7 @@ function LocationPhase() {
                 {player.playerId}
               </p>
             </div>
-          )}
+            )}
         </Toolbar>
       </AppBar>
       <RoundsInfo label={`Round ${roundId} of 4`} />
