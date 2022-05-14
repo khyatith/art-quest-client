@@ -7,9 +7,9 @@ import { TextField, InputAdornment } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import userContext from '../../global/userContext';
-import { API_URL, TEAM_COLOR_MAP } from '../../global/constants';
+import { API_URL } from '../../global/constants';
 import { validateCurrentBid } from '../../global/helpers';
-import RoundsInfo from '../RoundsInfo';
+// import RoundsInfo from '../RoundsInfo';
 import { socket } from '../../global/socket';
 
 const useStyles = makeStyles(() => ({
@@ -62,8 +62,9 @@ const Airport = ({
   hasLocationSelected,
   selectedLocationId,
   previousLocationId,
-  allLocationDetails,
-  chosenLocationForTeams,
+  // allLocationDetails,
+  // locations,
+  // chosenLocationForTeams,
   ticketPricesForLocations,
   setTicketPricesForLocations,
   disabledLocations,
@@ -186,7 +187,7 @@ const Airport = ({
   return (
     <>
       <div className={classes.root}>
-        {mapValues && previousLocationId && <RoundsInfo marginTop="20px" label={`You are currently in ${getLocationNameById(previousLocationId)}`} />}
+        {/* {mapValues && previousLocationId && <RoundsInfo marginTop="20px" label={`You are currently in ${getLocationNameById(previousLocationId)}`} />} */}
         {!hasLocationSelected ? (
           <>
             <p style={{ marginTop: '40px' }}>Fly to : </p>
@@ -261,7 +262,7 @@ const Airport = ({
         <Button className={classes.btnform} variant="contained" onClick={setVisitLocation} disabled={hasLocationSelected}>
           Fly
         </Button>
-        <div className={classes.parent}>
+        {/* <div className={classes.parent}>
           {allLocationDetails
             && mapValues
             && allLocationDetails.map((arg) => {
@@ -279,9 +280,9 @@ const Airport = ({
                 </div>
               );
             })}
-        </div>
+        </div> */}
         <hr className={classes.hr} />
-        <div className={classes.parent}>
+        {/* <div className={classes.parent}>
           {chosenLocationForTeams && <h4>All team's next destination</h4>}
           {chosenLocationForTeams
             && Object.values(chosenLocationForTeams).map((chosenLocation) => {
@@ -293,7 +294,7 @@ const Airport = ({
                 </div>
               );
             })}
-        </div>
+        </div> */}
       </div>
     </>
   );

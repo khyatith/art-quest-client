@@ -125,6 +125,7 @@ function LocationPhase() {
   const [disabledLocations, setDisabledLocations] = useState([]);
   const [ticketPricesForLocations, setTicketPricesForLocations] = useState();
   const [teamLastVisits, setTeamLastVisits] = useState([]);
+  const [startTimer, setStartTimer] = useState(false);
 
   // Hooks and methods
   console.log('teams LastVisits', teamLastVisits);
@@ -263,12 +264,24 @@ function LocationPhase() {
 
   // eslint-disable-next-line consistent-return
   useEffect(() => {
-    if (locationPageTimerValue) {
+    if (locationPageTimerValue && startTimer) {
       const interval = setInterval(() => getRemainingTime(), 1000);
       return () => clearInterval(interval);
     }
   });
+  useEffect(() => {
+    if (startTimer) {
+      socket.emit('startTimer', { player });
+    }
+  }, [startTimer]);
 
+  useEffect(() => {
+    socket.on('timerStarted', () => {
+      if (!startTimer) {
+        setStartTimer(true);
+      }
+    });
+  });
   useEffect(() => {
     socket.on('locationUpdatedForTeam', (data) => {
       const chosenLocation = {
@@ -284,6 +297,9 @@ function LocationPhase() {
       setDisabledLocations(data.disabledLocations);
       if (parseInt(data.roundId, 10) === parseInt(roundId, 10) && data.teamName === player.teamName) {
         setLocationSelectedForCurrentRound(true, parseInt(data.locationId, 10));
+      }
+      if (!startTimer) {
+        setStartTimer(true);
       }
     });
   });
@@ -322,14 +338,22 @@ function LocationPhase() {
     <>
       <AppBar className={classes.appbar}>
         <Toolbar>
-          <Typography variant="h6" className={classes.timercontent}>
-            Time left to fly
-            {' '}
-            {locationPageTimerValue && locationPageTimerValue.minutes}
-            :
-            {locationPageTimerValue && locationPageTimerValue.seconds}
-          </Typography>
-          {player && (
+          {startTimer ? (
+
+            <Typography variant="h6" className={classes.timercontent}>
+              Time left to fly
+              {' '}
+              {locationPageTimerValue && locationPageTimerValue.minutes}
+              :
+              {locationPageTimerValue && locationPageTimerValue.seconds}
+            </Typography>
+          ) : (
+            <Typography variant="h6" className={classes.timercontent}>
+              Timer starts when someone select their destination.
+            </Typography>
+          )}
+          { player
+            && (
             <div className={classes.playerdiv}>
               <p>
                 {player.playerName}
