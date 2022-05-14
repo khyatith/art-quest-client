@@ -140,7 +140,7 @@ function DutchAuction() {
   const [hasDutchAuctionTimerEnded, setHasDutchAuctionTimerEnded] = useState(false);
   const [animateChange, setAnimateChange] = useState(false);
   const [valueDrop, setValueDrop] = useState(0);
-  const [dutchAuctionResults, setDutchAuctionResults] = useState([]);
+  const [dutchAuctionResults, setDutchAuctionResults] = useState();
 
   const Bounce = styled.div`
     animation: 1.2s ${keyframes`${rubberBand}`};
@@ -179,12 +179,11 @@ function DutchAuction() {
     const seconds = Math.floor((parseInt(total, 10) / 1000) % 60);
     const minutes = Math.floor((parseInt(total, 10) / 1000 / 60) % 60);
     if (total < 1000 && !hasDutchAuctionTimerEnded) {
+      setHasDutchAuctionTimerEnded(true);
+      socket.emit('dutchAuctionTimerEnded', player.hostCode);
       await axios.put(`${API_URL}/buying/updateDutchAuctionResults/${user.hostCode}`);
       // console.log('dutch result->', r.data);
       // setDutchAuctionResult(r.data);
-      socket.emit('dutchAuctionTimerEnded', player.hostCode);
-
-      setHasDutchAuctionTimerEnded(true);
     } else {
       const value = {
         total,
@@ -209,6 +208,8 @@ function DutchAuction() {
     if (hasDutchAuctionTimerEnded) {
       console.log('timer ended');
       // redirect to selling instructions
+      // setTimeout(goToNextAuctions, 5000);
+
       // goToNextAuctions();
     }
   }, [hasDutchAuctionTimerEnded]);
@@ -255,12 +256,13 @@ function DutchAuction() {
   useEffect(() => {
     socket.on('renderDutchAuctionsResults', (data) => {
       console.log('recieved data->', data);
-      setClassifyPoints(data.classifyPoints.classify);
+      setClassifyPoints(data.classifyPoints);
       if (!dutchAuctionResults) {
         setDutchAuctionResults(data.dutchAutionBids);
       }
     });
   }, []);
+  console.log('classifyPoints->', classifyPoints, dutchAuctionResults);
   const loadCardContent = (index) => (
     <CardContent className={classes.paintOpt}>
       {initialPaintings
@@ -357,7 +359,7 @@ function DutchAuction() {
         </Toolbar>
       </AppBar>
       <div className={classes.leaderboardcontainer}>
-        <Leaderboard classifyPoints={classifyPoints} showAuctionResults={hasDutchAuctionTimerEnded} goToNextAuctions={goToNextAuctions} />
+        <Leaderboard classifyPoints={classifyPoints} showAuctionResults={dutchAuctionResults} goToNextAuctions={goToNextAuctions} />
       </div>
       <div className={classes.parent}>
         <Box className={classes.child1} justifyContent="center" display="flex" flexWrap="wrap">
