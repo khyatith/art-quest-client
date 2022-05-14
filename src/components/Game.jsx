@@ -1,7 +1,7 @@
 import React from 'react';
 // import LandingPage from './LandingPage';
-import LandingPage from './buying/LandingPage';
 // import LocationPhase from './selling/LocationPhase';
+import LandingPage from './buying/LandingPage'; // using this one
 
 function Game() {
   return (

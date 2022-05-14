@@ -124,9 +124,11 @@ function LocationPhase() {
   const [currentRoundData, setCurrentRoundData] = useState(false);
   const [disabledLocations, setDisabledLocations] = useState([]);
   const [ticketPricesForLocations, setTicketPricesForLocations] = useState();
+  const [teamLastVisits, setTeamLastVisits] = useState([]);
+  const [startTimer, setStartTimer] = useState(false);
 
   // Hooks and methods
-
+  console.log('teams LastVisits', teamLastVisits);
   useEffect(() => {
     const datasets = [];
     if (!currentRoundData) {
@@ -135,6 +137,7 @@ function LocationPhase() {
         .get(`${API_URL}/buying/getSellingResults?roomId=${player.hostCode}`)
         .then((newData) => {
           const {
+            // eslint-disable-next-line no-unused-vars
             amountSpentByTeam, visits, locationPhaseTimerValue, roundNumber, allTeams, flyTicketsPrice,
           } = newData.data;
           if (newData.data.disabledLocations && newData.data.disabledLocations.length > 0) {
@@ -149,6 +152,17 @@ function LocationPhase() {
           const tv = [];
           const labels = ['Cash Points', 'Visits', 'Classify Points'];
           const teams = [];
+          console.log('teams->', allTeams);
+          const tmpArr = teamLastVisits;
+          if (tmpArr?.length === 0) {
+            allTeams.map((team) => (
+              tmpArr.push({
+                color: team,
+                locationId: 1,
+              })
+            ));
+          }
+          setTeamLastVisits(tmpArr);
           allTeams.forEach((value) => {
             const team = value;
             const cash = amountSpentByTeam[team] || 0;
@@ -165,7 +179,20 @@ function LocationPhase() {
             x += 1;
           });
           const currentTeamVisits = visits.filter((v) => v.teamName === player.teamName);
+          console.log('teams Locations Data->', visits);
           const currentLocationForTeam = currentTeamVisits.length === 0 ? 1 : currentTeamVisits[0].currentLocation;
+          let opArr = teamLastVisits;
+          visits.forEach((v) => {
+            const array2 = opArr.map((a) => {
+              const returnValue = { ...a };
+              if (a.color === v.teamName) {
+                returnValue.locationId = +v.currentLocation ? +v.currentLocation : 1;
+              }
+              return returnValue;
+            });
+            opArr = array2;
+          });
+          setTeamLastVisits(opArr);
           const locationHistory = currentTeamVisits.length === 0 ? [] : currentTeamVisits[0].allVisitLocations;
           setAllLocationHistory(locationHistory);
           tv.sort((a, b) => b.total - a.total);
@@ -231,18 +258,31 @@ function LocationPhase() {
 
   useEffect(() => {
     socket.on('goToExpo', () => {
+      console.log('expo');
       history.push(`/sell/${player.playerId}`);
     });
   }, []);
 
   // eslint-disable-next-line consistent-return
   useEffect(() => {
-    if (locationPageTimerValue) {
+    if (locationPageTimerValue && startTimer) {
       const interval = setInterval(() => getRemainingTime(), 1000);
       return () => clearInterval(interval);
     }
   });
+  useEffect(() => {
+    if (startTimer) {
+      socket.emit('startTimer', { player });
+    }
+  }, [startTimer]);
 
+  useEffect(() => {
+    socket.on('timerStarted', () => {
+      if (!startTimer) {
+        setStartTimer(true);
+      }
+    });
+  });
   useEffect(() => {
     socket.on('locationUpdatedForTeam', (data) => {
       const chosenLocation = {
@@ -259,9 +299,32 @@ function LocationPhase() {
       if (parseInt(data.roundId, 10) === parseInt(roundId, 10) && data.teamName === player.teamName) {
         setLocationSelectedForCurrentRound(true, parseInt(data.locationId, 10));
       }
+      if (!startTimer) {
+        setStartTimer(true);
+      }
     });
   });
 
+  useEffect(() => {
+    let opArr = teamLastVisits;
+    if (chosenLocationForTeams) {
+      Object.entries(chosenLocationForTeams).forEach((items) => {
+        const { teamName } = items[1];
+        const locId = items[1].locationId;
+        const array2 = opArr.map((a) => {
+          const returnValue = { ...a };
+          if (a.color === teamName) {
+            returnValue.locationId = +locId ? +locId : 1;
+          }
+          return returnValue;
+        });
+        opArr = array2;
+      });
+      setTeamLastVisits(opArr);
+    }
+  }, [chosenLocationForTeams]);
+  console.log('location for team', chosenLocationForTeams);
+  console.log('Currentlocation for team', currentLocationId);
   if (loading) {
     return (
       <div style={{ marginTop: '12%', marginLeft: '43%' }}>
@@ -276,14 +339,22 @@ function LocationPhase() {
     <>
       <AppBar className={classes.appbar}>
         <Toolbar>
-          <Typography variant="h6" className={classes.timercontent}>
-            Time left to fly
-            {' '}
-            {locationPageTimerValue && locationPageTimerValue.minutes}
-            :
-            {locationPageTimerValue && locationPageTimerValue.seconds}
-          </Typography>
-          {player && (
+          {startTimer ? (
+
+            <Typography variant="h6" className={classes.timercontent}>
+              Time left to fly
+              {' '}
+              {locationPageTimerValue && locationPageTimerValue.minutes}
+              :
+              {locationPageTimerValue && locationPageTimerValue.seconds}
+            </Typography>
+          ) : (
+            <Typography variant="h6" className={classes.timercontent}>
+              Timer starts when someone select their destination.
+            </Typography>
+          )}
+          { player
+            && (
             <div className={classes.playerdiv}>
               <p>
                 {player.playerName}
@@ -294,7 +365,7 @@ function LocationPhase() {
                 {player.playerId}
               </p>
             </div>
-          )}
+            )}
         </Toolbar>
       </AppBar>
       <RoundsInfo label={`Round ${roundId} of 4`} />
@@ -324,7 +395,7 @@ function LocationPhase() {
       <hr />
       <div className={classes.parent2}>
         <div className={classes.child2}>
-          <Mapping disabledLocations={disabledLocations} />
+          <Mapping disabledLocations={disabledLocations} teamLocations={teamLastVisits} />
         </div>
         <div className={classes.levelOfInterest}>
           <h3>Level of Interest In Art</h3>

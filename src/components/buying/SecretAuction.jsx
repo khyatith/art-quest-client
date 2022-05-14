@@ -181,10 +181,10 @@ const SecretAuction = () => {
   };
 
   const goToNextAuctions = () => {
-    if (location.state.secretAuctionsNumber === 2) {
+    if (location.state.secretAuctionsNumber === 1) {
       history.push({
         pathname: `/englishAuction/${player.hostCode}`,
-        state: { englishAuctionsNumber: 3 },
+        state: { englishAuctionsNumber: 2 },
       });
     } else {
       history.push(`/buying/results/${player.hostCode}`);
@@ -302,7 +302,7 @@ const SecretAuction = () => {
             ART QUEST
           </Typography>
           <Typography className={classes.timercontent} variant="h5" noWrap>
-            {!secretAuctionTimer && 'Auctions start in 10 seconds'}
+            {!secretAuctionTimer && 'Auctions starts when someone start Bidding.'}
             {secretAuctionTimer && !secretAuctionResults && (
               <>
                 Time left in Auction: {secretAuctionTimer && secretAuctionTimer.minutes}:{secretAuctionTimer && secretAuctionTimer.seconds}

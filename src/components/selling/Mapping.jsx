@@ -14,7 +14,7 @@ function generateLine(x1, y1, x2, y2) {
   return new Array(361).fill(1).map((d, i) => [x1 - x * i, y1 - y * i]);
 }
 
-function Mapping({ disabledLocations }) {
+function Mapping({ disabledLocations, teamLocations }) {
   const [mapValues, setMapValues] = useState({});
   const [valRet, setValRet] = useState(false);
   const geoUrl = 'https://raw.githubusercontent.com/zcreativelabs/react-simple-maps/master/topojson-maps/world-110m.json';
@@ -30,7 +30,38 @@ function Mapping({ disabledLocations }) {
       setValRet(true);
     }
   }, [valRet]);
-
+  console.log('->', teamLocations);
+  console.log('map ->', mapValues);
+  const offset = [
+    // {
+    //   x: '+ 16',
+    //   y: '+ 7',
+    // },
+    {
+      x: '+ 10',
+      y: '- 9',
+    },
+    {
+      x: '+ 0',
+      y: '+ 8',
+    },
+    {
+      x: '+ 1',
+      y: '- 10',
+    },
+    {
+      x: '- 9',
+      y: '- 10',
+    },
+    {
+      x: '- 13',
+      y: '+ 7',
+    },
+    {
+      x: '- 14',
+      y: '+ 2',
+    },
+  ];
   return (
     <>
       <div
@@ -81,6 +112,31 @@ function Mapping({ disabledLocations }) {
               </text>
             </Marker>
           ))}
+          {
+          Array.isArray(mapValues) && teamLocations && teamLocations?.map((items, idx) => {
+            console.log('map of team cities', items);
+            const location = mapValues?.filter((item) => (
+              item.cityId === items.locationId
+            ));
+            const x = location[0].longitude.toLocaleString() + offset[idx].x;
+            const y = location[0].latitude.toLocaleString() + offset[idx].y;
+            // eslint-disable-next-line no-eval
+            console.log('found loc->', location);
+            return (
+              <Marker
+                // eslint-disable-next-line react/no-array-index-key
+                key={idx}
+                // eslint-disable-next-line react-perf/jsx-no-new-array-as-prop
+                // eslint-disable-next-line no-eval
+                coordinates={[eval(x),
+                  // eslint-disable-next-line no-eval
+                  eval(y)]}
+              >
+                <circle r={15} fill={items.color.toLowerCase()} stroke="#fff" strokeWidth={2} />
+              </Marker>
+            );
+          })
+          }
         </ComposableMap>
       </div>
     </>

@@ -1,4 +1,8 @@
+/* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
+import { useHistory } from 'react-router';
+
 import { makeStyles } from '@material-ui/core/styles';
 import styled, { keyframes } from 'styled-components';
 import axios from 'axios';
@@ -14,6 +18,7 @@ import Toolbar from '@material-ui/core/Toolbar';
 import { rubberBand } from 'react-animations';
 import { API_URL, TEAM_COLOR_MAP } from '../global/constants';
 import { socket } from '../global/socket';
+import Leaderboard from './buying/Leaderboard';
 
 const useStyles = makeStyles((theme) => ({
   paintOpt: {
@@ -119,6 +124,11 @@ const useStyles = makeStyles((theme) => ({
 
 function DutchAuction() {
   const classes = useStyles();
+  const location = useLocation();
+  const history = useHistory();
+
+  // eslint-disable-next-line no-unused-vars
+  const [classifyPoints, setClassifyPoints] = useState({});
   const [paintings, setPaintings] = useState();
   const [initialPaintings, setInitialPaintings] = useState();
   const user = JSON.parse(sessionStorage.getItem('user'));
@@ -128,12 +138,14 @@ function DutchAuction() {
   const [paintingTeams, setPaintingTeams] = useState({});
   const [dutchAuctionTimerValue, setDutchAuctionTimerValue] = useState();
   const [hasDutchAuctionTimerEnded, setHasDutchAuctionTimerEnded] = useState(false);
-  const [priceDropSequence, setPriceDropSequence] = useState();
   const [animateChange, setAnimateChange] = useState(false);
   const [valueDrop, setValueDrop] = useState(0);
+  const [dutchAuctionResults, setDutchAuctionResults] = useState();
+
   const Bounce = styled.div`
     animation: 1.2s ${keyframes`${rubberBand}`};
   `;
+  const player = JSON.parse(sessionStorage.getItem('user'));
 
   const handleSelectPainting = (index) => {
     const paintingId = paintings[index].id;
@@ -142,6 +154,8 @@ function DutchAuction() {
       bidTeam: user.teamName,
       player: user,
       auctionObj: paintings,
+      artMovement: paintings[index].artMovementName,
+      artMovementId: paintings[index].artMovementId,
       bidAt: +new Date(),
       auctionType: '5',
       bidColor: user.teamColor,
@@ -149,14 +163,26 @@ function DutchAuction() {
     });
   };
 
+  const goToNextAuctions = () => {
+    if (location.state.dutchAuctionsNumber === 1) { // 1
+      history.push({
+        pathname: `/englishAuction/${player.hostCode}`,
+        state: { englishAuctionsNumber: 3 },
+      });
+    } else {
+      history.push(`/buying/results/${player.hostCode}`);
+    }
+  };
   const getRemainingTime = async () => {
     setAnimateChange(false);
     const total = parseInt(dutchAuctionTimerValue.total, 10) - 1000;
     const seconds = Math.floor((parseInt(total, 10) / 1000) % 60);
     const minutes = Math.floor((parseInt(total, 10) / 1000 / 60) % 60);
-    if (total < 1000) {
-      await axios.put(`${API_URL}/buying/updateDutchAuctionResults/${user.hostCode}`);
+    if (total < 1000 && !hasDutchAuctionTimerEnded) {
       setHasDutchAuctionTimerEnded(true);
+      socket.emit('dutchAuctionTimerEnded', player.hostCode);
+      // console.log('dutch result->', r.data);
+      // setDutchAuctionResult(r.data);
     } else {
       const value = {
         total,
@@ -164,11 +190,12 @@ function DutchAuction() {
         seconds: seconds.toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }),
       };
       setDutchAuctionTimerValue(value);
-      if (!hasDutchAuctionTimerEnded && seconds % 3 === 0 && !nominatedPaintings.includes(paintings[priceDropSequence[valueDrop]].id)) {
+      if (!hasDutchAuctionTimerEnded && seconds % 3 === 0 && !nominatedPaintings.includes(paintings[valueDrop % initialPaintings?.length]?.id)) {
         const newValue = paintings;
-        newValue[priceDropSequence[valueDrop]].originalValue = ((newValue[priceDropSequence[valueDrop]].originalValue * 9) / 10).toFixed(2);
-        setPaintings(newValue);
+        newValue[valueDrop % initialPaintings?.length].originalValue = Math.max(newValue[valueDrop % initialPaintings?.length].originalValue - 2,
+          newValue[valueDrop % initialPaintings?.length].basePrice);
         setAnimateChange(true);
+        setPaintings(newValue);
         setValueDrop(valueDrop + 1);
       } else if (seconds % 3 === 0) {
         setValueDrop(valueDrop + 1);
@@ -177,20 +204,22 @@ function DutchAuction() {
   };
 
   useEffect(() => {
+    console.log('timer ended');
+    const sendReq = async () => {
+      await axios.put(`${API_URL}/buying/updateDutchAuctionResults/${user.hostCode}`);
+    };
     if (hasDutchAuctionTimerEnded) {
-      console.log('timer ended');
-      // redirect to selling instructions
+      sendReq();
     }
   }, [hasDutchAuctionTimerEnded]);
 
   // Hooks and methods
   useEffect(() => {
     // setLoading(true);
-    async function getSellingInfo() {
+    const getSellingInfo = async () => {
       const { data } = await axios.get(`${API_URL}/buying/getDutchAuctionData/${user.hostCode}`);
       const { artifacts } = data.dutchAuctions;
       setDutchAuctionTimerValue(data.dutchAuctionTimerValue);
-      setPriceDropSequence(data.dutchAuctionsOrder);
       if (artifacts) {
         const tempArr = [];
         for (let i = 0; i < artifacts.length; ++i) {
@@ -199,7 +228,7 @@ function DutchAuction() {
         setInitialPaintings(tempArr);
         setPaintings(artifacts);
       }
-    }
+    };
     if (!paintings) {
       getSellingInfo();
     }
@@ -221,9 +250,21 @@ function DutchAuction() {
         setNominatedPaintings((existingValues) => [data.paintingId, ...existingValues]);
       }
     });
-    console.log(nominatedPaintings);
   }, [nominatedPaintings]);
 
+  useEffect(() => {
+    let flag = false;
+    socket.on('renderDutchAuctionsResults', (data) => {
+      console.log('recieved data->', data);
+      setClassifyPoints(data.classifyPoints);
+      // const dutchResult = data.dutchAutionBids;
+      if (!flag) {
+        flag = true;
+        setDutchAuctionResults(data.dutchAutionBids);
+      }
+    });
+  }, []);
+  console.log('classifyPoints->', classifyPoints, dutchAuctionResults);
   const loadCardContent = (index) => (
     <CardContent className={classes.paintOpt}>
       {initialPaintings
@@ -241,7 +282,7 @@ function DutchAuction() {
         M
       </p>
       )}
-      {(index === priceDropSequence[valueDrop - 1] && animateChange) && (initialPaintings[index] !== paintings[index].originalValue)(
+      {((index === valueDrop % initialPaintings?.length) && animateChange) && (initialPaintings[index] !== paintings[index].originalValue) && (
         <Bounce>
           <p style={{
             color: '#000000',
@@ -255,9 +296,9 @@ function DutchAuction() {
             {' '}
             M
           </p>
-        </Bounce>,
+        </Bounce>
       )}
-      {(index !== priceDropSequence[valueDrop - 1] || !animateChange) && (initialPaintings[index] !== paintings[index].originalValue) && (
+      {((index !== valueDrop % initialPaintings?.length) || !animateChange) && (initialPaintings[index] !== paintings[index].originalValue) && (
         <p style={{
           color: '#000000',
           fontWeight: '700',
@@ -293,13 +334,19 @@ function DutchAuction() {
     <>
       <AppBar className={classes.appbar}>
         <Toolbar>
-          <Typography variant="h6" className={classes.timercontent}>
-            Time left :
-            {' '}
-            {dutchAuctionTimerValue && dutchAuctionTimerValue.minutes}
-            :
-            {dutchAuctionTimerValue && dutchAuctionTimerValue.seconds}
-          </Typography>
+          {!hasDutchAuctionTimerEnded ? (
+            <Typography variant="h6" className={classes.timercontent}>
+              Time left :
+              {' '}
+              {dutchAuctionTimerValue && dutchAuctionTimerValue.minutes}
+              :
+              {dutchAuctionTimerValue && dutchAuctionTimerValue.seconds}
+            </Typography>
+          ) : (
+            <Typography variant="h6" className={classes.timercontent}>
+              Next Auction starts in 10 seconds.
+            </Typography>
+          )}
           {user && (
             <div className={classes.playerdiv}>
               <p>
@@ -313,6 +360,9 @@ function DutchAuction() {
           )}
         </Toolbar>
       </AppBar>
+      <div className={classes.leaderboardcontainer}>
+        <Leaderboard classifyPoints={classifyPoints} showAuctionResults={dutchAuctionResults} goToNextAuctions={goToNextAuctions} />
+      </div>
       <div className={classes.parent}>
         <Box className={classes.child1} justifyContent="center" display="flex" flexWrap="wrap">
           {paintings
@@ -335,7 +385,8 @@ function DutchAuction() {
                       backgroundColor: 'white',
                       margin: 'auto',
                       marginTop: '3%',
-                      boxShadow: (index === priceDropSequence[valueDrop - 1]) ? 'rgb(255,215,0,0.9) 0px 0px 7px 9px' : 'none',
+                      boxShadow: ((index === valueDrop % initialPaintings?.length) && !nominatedPaintings.includes(paintings[index].id))
+                        ? 'rgb(255,215,0,0.9) 0px 0px 7px 9px' : 'none',
                     }}
                     className={classes.cardStyle}
                     disabled
@@ -346,19 +397,22 @@ function DutchAuction() {
                       image={arg.imageURL}
                       alt="green iguana"
                     />
-                    <CardActions className={nominatedPaintings.includes(paintings[index].id) ? classes.nominateBtnDone : classes.nominateBtn}>
-                      <Button
-                        size="small"
-                        style={{ color: '#000000', fontWeight: 'bold', width: '100%' }}
-                        className={clsx(classes.expand, {
-                          [classes.expandOpen]: true,
-                        })}
-                        onClick={() => handleSelectPainting(index)}
-                        disabled={nominatedPaintings.includes(paintings[index].id)}
-                      >
-                        BID
-                      </Button>
-                    </CardActions>
+                    { !hasDutchAuctionTimerEnded
+                      && (
+                      <CardActions className={nominatedPaintings.includes(paintings[index].id) ? classes.nominateBtnDone : classes.nominateBtn}>
+                        <Button
+                          size="small"
+                          style={{ color: '#000000', fontWeight: 'bold', width: '100%' }}
+                          className={clsx(classes.expand, {
+                            [classes.expandOpen]: true,
+                          })}
+                          onClick={() => handleSelectPainting(index)}
+                          disabled={nominatedPaintings.includes(paintings[index].id)}
+                        >
+                          BID
+                        </Button>
+                      </CardActions>
+                      )}
                     {!nominatedPaintings.includes(paintings[index].id) && loadCardContent(index)}
                     {nominatedPaintings.includes(paintings[index].id) && loadCardSelection(index)}
                   </Card>
