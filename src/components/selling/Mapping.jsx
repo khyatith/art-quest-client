@@ -30,13 +30,12 @@ function Mapping({ disabledLocations, teamLocations }) {
       setValRet(true);
     }
   }, [valRet]);
-  console.log('->', teamLocations);
   console.log('map ->', mapValues);
   const offset = [
-    // {
-    //   x: '+ 16',
-    //   y: '+ 7',
-    // },
+    {
+      x: '+ 16',
+      y: '+ 7',
+    },
     {
       x: '+ 10',
       y: '- 9',
@@ -114,14 +113,12 @@ function Mapping({ disabledLocations, teamLocations }) {
           ))}
           {
           Array.isArray(mapValues) && teamLocations && teamLocations?.map((items, idx) => {
-            console.log('map of team cities', items);
             const location = mapValues?.filter((item) => (
               item.cityId === items.locationId
             ));
             const x = location[0].longitude.toLocaleString() + offset[idx].x;
             const y = location[0].latitude.toLocaleString() + offset[idx].y;
             // eslint-disable-next-line no-eval
-            console.log('found loc->', location);
             return (
               <Marker
                 // eslint-disable-next-line react/no-array-index-key
