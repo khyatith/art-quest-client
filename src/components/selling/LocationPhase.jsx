@@ -137,8 +137,7 @@ function LocationPhase() {
         .get(`${API_URL}/buying/getSellingResults?roomId=${player.hostCode}`)
         .then((newData) => {
           const {
-            // eslint-disable-next-line no-unused-vars
-            amountSpentByTeam, visits, locationPhaseTimerValue, roundNumber, allTeams, flyTicketsPrice,
+            amountSpentByTeam, visits, roundNumber, allTeams, flyTicketsPrice,
           } = newData.data;
           if (newData.data.disabledLocations && newData.data.disabledLocations.length > 0) {
             setDisabledLocations(newData.data.disabledLocations);
@@ -169,7 +168,6 @@ function LocationPhase() {
             let vis = 0;
             const teamVisits = visits.filter((v) => v.teamName === team);
             vis = teamVisits && teamVisits.length > 0 && teamVisits[0].totalVisitPrice ? parseInt(teamVisits[0].totalVisitPrice, 10) : 0.0;
-            // const artScore = totalArtScoreForTeams[team] || 0;
             const formattedCash = parseFloat(cash / 10).toFixed(2);
             const total = parseFloat(formattedCash) - parseFloat(vis) + 0; // need to replace 0 with classifyPoints
             // eslint-disable-next-line no-nested-ternary
@@ -202,7 +200,6 @@ function LocationPhase() {
           setCurrentLocationId(currentLocationForTeam);
           setResult({ labels, datasets });
           setRows(tv);
-          setLocationPageTimerValue(locationPhaseTimerValue);
           if (roundNumber) {
             setRoundId(roundNumber);
           }
@@ -276,7 +273,6 @@ function LocationPhase() {
 
   useEffect(() => {
     socket.on('goToExpo', () => {
-      console.log('expo');
       history.push(`/sell/${player.playerId}`);
     });
   }, []);
@@ -294,6 +290,20 @@ function LocationPhase() {
     }
   }, [startTimer]);
 
+  useEffect(() => {
+    const getTimer = async () => {
+      await axios
+        .get(`${API_URL}/buying/startAirportTimer?roomId=${player.hostCode}`)
+        .then((newData) => {
+          if (newData?.data?.locationPhaseTimerValue) {
+            setLocationPageTimerValue(newData.data.locationPhaseTimerValue);
+          }
+        }).catch((e) => console.log(e));
+    };
+    if (startTimer) {
+      getTimer();
+    }
+  }, [startTimer]);
   useEffect(() => {
     socket.on('timerStarted', () => {
       if (!startTimer) {
@@ -341,8 +351,7 @@ function LocationPhase() {
       setTeamLastVisits(opArr);
     }
   }, [chosenLocationForTeams]);
-  console.log('location for team', chosenLocationForTeams);
-  console.log('Currentlocation for team', currentLocationId);
+
   if (loading) {
     return (
       <div style={{ marginTop: '12%', marginLeft: '43%' }}>
