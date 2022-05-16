@@ -424,10 +424,6 @@ function LocationPhase() {
         <div className={classes.child2}>
           <Mapping disabledLocations={disabledLocations} teamLocations={teamLastVisits} />
         </div>
-        <div className={classes.levelOfInterest}>
-          <h3>Level of Interest In Art</h3>
-          <LevelOfInterest />
-        </div>
       </div>
     </>
   );
