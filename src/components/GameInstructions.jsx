@@ -63,7 +63,7 @@ const useStyles = makeStyles(() => ({
 function GameInstructions() {
   const classes = useStyles();
   const history = useHistory();
-  const [playersJoinedInfo, setPlayersJoinedInfo] = useState();
+  const [playersJoinedInfo, setPlayersJoinedInfo] = useState('');
   const [version, setVersion] = useState();
 
   const { player } = useContext(userContext);
@@ -93,6 +93,7 @@ function GameInstructions() {
   useEffect(() => {
     if (playersJoinedInfo) {
       const { numberOfPlayers, playersJoined } = playersJoinedInfo;
+      console.log('->', numberOfPlayers, playersJoined);
       if (numberOfPlayers <= playersJoined) {
         setTimeout(() => startGame(), 1000);
       }
