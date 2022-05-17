@@ -128,7 +128,6 @@ function LocationPhase() {
   const [startTimer, setStartTimer] = useState(false);
 
   // Hooks and methods
-  console.log('teams LastVisits', teamLastVisits);
   useEffect(() => {
     const datasets = [];
     if (!currentRoundData) {
@@ -137,7 +136,7 @@ function LocationPhase() {
         .get(`${API_URL}/buying/getSellingResults?roomId=${player.hostCode}`)
         .then((newData) => {
           const {
-            amountSpentByTeam, visits, roundNumber, allTeams, flyTicketsPrice,
+            amountSpentByTeam, visits, roundNumber, allTeams, flyTicketsPrice, classifyPoints,
           } = newData.data;
           if (newData.data.disabledLocations && newData.data.disabledLocations.length > 0) {
             setDisabledLocations(newData.data.disabledLocations);
@@ -151,7 +150,6 @@ function LocationPhase() {
           const tv = [];
           const labels = ['Cash Points', 'Visits', 'Classify Points'];
           const teams = [];
-          console.log('teams->', allTeams);
           const tmpArr = teamLastVisits;
           if (tmpArr?.length === 0) {
             allTeams.map((team) => (
@@ -169,15 +167,16 @@ function LocationPhase() {
             const teamVisits = visits.filter((v) => v.teamName === team);
             vis = teamVisits && teamVisits.length > 0 && teamVisits[0].totalVisitPrice ? parseInt(teamVisits[0].totalVisitPrice, 10) : 0.0;
             const formattedCash = parseFloat(cash / 10).toFixed(2);
-            const total = parseFloat(formattedCash) - parseFloat(vis) + 0; // need to replace 0 with classifyPoints
+            const classifyPoint = +classifyPoints[team] ? +classifyPoints[team] : 0;
+            console.log('classifyPoint-> ', classifyPoint);
+            const total = parseFloat(formattedCash) - parseFloat(vis) + classifyPoint; // need to replace 0 with classifyPoints
             // eslint-disable-next-line no-nested-ternary
-            datasets.push(createData(team, cash, vis, 0)); // need to replace 0 with classifyPoints
-            tv.push(createDataMap(x, team, vis, cash, total, 0, formattedCash)); // need to replace 0 with classifyPoints
+            datasets.push(createData(team, cash, vis, classifyPoint)); // need to replace 0 with classifyPoints
+            tv.push(createDataMap(x, team, vis, cash, total, classifyPoint, formattedCash)); // need to replace 0 with classifyPoints
             teams.push(team);
             x += 1;
           });
           const currentTeamVisits = visits.filter((v) => v.teamName === player.teamName);
-          console.log('teams Locations Data->', visits);
           const currentLocationForTeam = currentTeamVisits.length === 0 ? 1 : currentTeamVisits[0].currentLocation;
           let opArr = teamLastVisits;
           visits.forEach((v) => {
