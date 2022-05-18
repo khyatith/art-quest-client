@@ -232,16 +232,14 @@ const SecretAuction = () => {
       if (!secretAuctionResults) {
         setSecretAuctionResults(data);
       }
+      if (!classifyPoints) {
+        console.log('classifyPoints', classifyPoints);
+        setClassifyPoints(data.classifyPoints);
+      }
     });
     if (secretAuctionResults) {
       setTimeout(goToNextAuctions, 10000);
     }
-  }, []);
-
-  useEffect(() => {
-    socket.on('renderSecretAuctionsResult', (data) => {
-      setClassifyPoints(data.classifyPoints);
-    });
   }, []);
 
   useEffect(() => {
