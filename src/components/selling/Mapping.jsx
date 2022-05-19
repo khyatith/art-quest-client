@@ -1,3 +1,4 @@
+/* eslint-disable no-eval */
 /* eslint-disable react/prop-types */
 /* eslint-disable consistent-return */
 import React, { useEffect, useState } from 'react';
@@ -23,6 +24,7 @@ function Mapping({ disabledLocations, teamLocations }) {
   useEffect(() => {
     async function getMapVal() {
       const { data } = await axios.get(`${API_URL}/buying/getMap`);
+      sessionStorage.setItem('CITIES', JSON.stringify(data));
       setMapValues(data);
     }
     if (!valRet) {
@@ -111,29 +113,31 @@ function Mapping({ disabledLocations, teamLocations }) {
               </text>
             </Marker>
           ))}
-          {
-          Array.isArray(mapValues) && teamLocations && teamLocations?.map((items, idx) => {
-            const location = mapValues?.filter((item) => (
-              item.cityId === items.locationId
-            ));
-            const x = location[0].longitude.toLocaleString() + offset[idx].x;
-            const y = location[0].latitude.toLocaleString() + offset[idx].y;
-            // eslint-disable-next-line no-eval
-            return (
-              <Marker
-                // eslint-disable-next-line react/no-array-index-key
-                key={idx}
-                // eslint-disable-next-line react-perf/jsx-no-new-array-as-prop
-                // eslint-disable-next-line no-eval
-                coordinates={[eval(x),
+          {Array.isArray(mapValues)
+            && teamLocations
+            && teamLocations?.map((items, idx) => {
+              console.log('map of team cities', items);
+              const location = mapValues?.filter((item) => item.cityId === items.locationId);
+              const x = location[0].longitude.toLocaleString() + offset[idx].x;
+              const y = location[0].latitude.toLocaleString() + offset[idx].y;
+              // eslint-disable-next-line no-eval
+              console.log('found loc->', location);
+              return (
+                <Marker
+                  // eslint-disable-next-line react/no-array-index-key
+                  key={idx}
+                  // eslint-disable-next-line react-perf/jsx-no-new-array-as-prop
                   // eslint-disable-next-line no-eval
-                  eval(y)]}
-              >
-                <circle r={15} fill={items.color.toLowerCase()} stroke="#fff" strokeWidth={2} />
-              </Marker>
-            );
-          })
-          }
+                  coordinates={[
+                    eval(x),
+                    // eslint-disable-next-line no-eval
+                    eval(y),
+                  ]}
+                >
+                  <circle r={15} fill={items.color.toLowerCase()} stroke="#fff" strokeWidth={2} />
+                </Marker>
+              );
+            })}
         </ComposableMap>
       </div>
     </>

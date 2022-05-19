@@ -1,5 +1,7 @@
 /* eslint-disable no-unused-vars */
-import React, { useEffect, useState, useContext } from 'react';
+import React, {
+  useEffect, useState, useContext, Fragment,
+} from 'react';
 import axios from 'axios';
 import { makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
@@ -16,6 +18,7 @@ import load from '../../assets/load.webp';
 import { socket } from '../../global/socket';
 import RoundsInfo from '../RoundsInfo';
 import LevelOfInterest from './LevelOfInterest';
+import SelectedDestination from '../SelectedDestination/SelectedDestination';
 
 const useStyles = makeStyles((theme) => ({
   parent: {
@@ -152,12 +155,10 @@ function LocationPhase() {
           const teams = [];
           const tmpArr = teamLastVisits;
           if (tmpArr?.length === 0) {
-            allTeams.map((team) => (
-              tmpArr.push({
-                color: team,
-                locationId: 1,
-              })
-            ));
+            allTeams.map((team) => tmpArr.push({
+              color: team,
+              locationId: 1,
+            }));
           }
           setTeamLastVisits(tmpArr);
           allTeams.forEach((value) => {
@@ -272,7 +273,8 @@ function LocationPhase() {
 
   useEffect(() => {
     socket.on('goToExpo', () => {
-      history.push(`/sell/${player.playerId}`);
+      console.log('expo');
+      //   history.push(`/sell/${player.playerId}`);
     });
   }, []);
 
@@ -362,13 +364,12 @@ function LocationPhase() {
   }
 
   return (
-    <>
+    <div style={{ height: '100vh' }}>
       <AppBar className={classes.appbar}>
         <Toolbar>
           {startTimer ? (
-
             <Typography variant="h6" className={classes.timercontent}>
-              Time left to fly
+              { selectedLocationId ? 'Reaching in' : 'Time left to fly' }
               {' '}
               {locationPageTimerValue && locationPageTimerValue.minutes}
               :
@@ -379,8 +380,7 @@ function LocationPhase() {
               Timer starts when someone select their destination.
             </Typography>
           )}
-          { player
-            && (
+          {player && (
             <div className={classes.playerdiv}>
               <p>
                 {player.playerName}
@@ -391,40 +391,49 @@ function LocationPhase() {
                 {player.playerId}
               </p>
             </div>
-            )}
+          )}
         </Toolbar>
       </AppBar>
-      <RoundsInfo label={`Round ${roundId} of 4`} />
-      <div className={classes.parent}>
-        <div className={classes.resultstable}>
-          <p className={classes.resultsText}>Results</p>
-          <Details rows={rows} />
-        </div>
-        <div className={classes.bargraph}>
-          <BarGraph result={result} />
-        </div>
-        <div className={classes.airport}>
-          <Airport
-            roundNumber={roundId}
-            hasLocationSelected={hasLocationSelected}
-            selectedLocationId={selectedLocationId}
-            previousLocationId={currentLocationId}
-            allLocationDetails={teamsCurrentLocation}
-            locations={allLocationHistory}
-            chosenLocationForTeams={chosenLocationForTeams}
-            ticketPricesForLocations={ticketPricesForLocations}
-            setTicketPricesForLocations={setTicketPricesForLocations}
-            disabledLocations={disabledLocations}
-          />
-        </div>
-      </div>
-      <hr />
-      <div className={classes.parent2}>
-        <div className={classes.child2}>
-          <Mapping disabledLocations={disabledLocations} teamLocations={teamLastVisits} />
-        </div>
-      </div>
-    </>
+      {!selectedLocationId && (
+        <>
+          <RoundsInfo label={`Round ${roundId} of 4`} />
+          <div className={classes.parent}>
+            <div className={classes.resultstable}>
+              <p className={classes.resultsText}>Results</p>
+              <Details rows={rows} />
+            </div>
+            <div className={classes.bargraph}>
+              <BarGraph result={result} />
+            </div>
+            <div className={classes.airport}>
+              <Airport
+                roundNumber={roundId}
+                hasLocationSelected={hasLocationSelected}
+                selectedLocationId={selectedLocationId}
+                previousLocationId={currentLocationId}
+                allLocationDetails={teamsCurrentLocation}
+                locations={allLocationHistory}
+                chosenLocationForTeams={chosenLocationForTeams}
+                ticketPricesForLocations={ticketPricesForLocations}
+                setTicketPricesForLocations={setTicketPricesForLocations}
+                disabledLocations={disabledLocations}
+              />
+            </div>
+          </div>
+          <hr />
+          <div className={classes.parent2}>
+            <div className={classes.child2}>
+              <Mapping disabledLocations={disabledLocations} teamLocations={teamLastVisits} />
+            </div>
+            {/* <div className={classes.levelOfInterest}>
+          <h3>Level of Interest In Art</h3>
+          <LevelOfInterest />
+        </div> */}
+          </div>
+        </>
+      )}
+      {selectedLocationId && <SelectedDestination player={player} chosenLocationForTeams={chosenLocationForTeams} selectedLocationId={selectedLocationId} />}
+    </div>
   );
 }
 
