@@ -364,39 +364,36 @@ function LocationPhase() {
   }
 
   return (
-    <div style={{ height: '100rem' }}>
-      {!selectedLocationId && (
-        <AppBar className={classes.appbar}>
-          <Toolbar>
-            {startTimer ? (
-              <Typography variant="h6" className={classes.timercontent}>
-                Time left to fly
+    <div style={{ height: '100vh' }}>
+      <AppBar className={classes.appbar}>
+        <Toolbar>
+          {startTimer ? (
+            <Typography variant="h6" className={classes.timercontent}>
+              { selectedLocationId ? 'Reaching in' : 'Time left to fly' }
+              {' '}
+              {locationPageTimerValue && locationPageTimerValue.minutes}
+              :
+              {locationPageTimerValue && locationPageTimerValue.seconds}
+            </Typography>
+          ) : (
+            <Typography variant="h6" className={classes.timercontent}>
+              Timer starts when someone select their destination.
+            </Typography>
+          )}
+          {player && (
+            <div className={classes.playerdiv}>
+              <p>
+                {player.playerName}
+                , Team&nbsp;
+                {player.teamName}
+                ,
                 {' '}
-                {locationPageTimerValue && locationPageTimerValue.minutes}
-                :
-                {locationPageTimerValue && locationPageTimerValue.seconds}
-              </Typography>
-            ) : (
-              <Typography variant="h6" className={classes.timercontent}>
-                Timer starts when someone select their destination.
-              </Typography>
-            )}
-            {player && (
-              <div className={classes.playerdiv}>
-                <p>
-                  {player.playerName}
-                  , Team&nbsp;
-                  {player.teamName}
-                  ,
-                  {' '}
-                  {player.playerId}
-                </p>
-              </div>
-            )}
-          </Toolbar>
-        </AppBar>
-      )}
-
+                {player.playerId}
+              </p>
+            </div>
+          )}
+        </Toolbar>
+      </AppBar>
       {!selectedLocationId && (
         <>
           <RoundsInfo label={`Round ${roundId} of 4`} />

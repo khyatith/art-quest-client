@@ -33,7 +33,7 @@ const SelectedDestination = ({ player, chosenLocationForTeams, selectedLocationI
     <div
       style={{
         backgroundSize: 'cover',
-        height: '50%',
+        height: '100%',
         width: '100%',
         backgroundImage: `url(${location.cityPhoto})`,
         placeItems: 'center',
