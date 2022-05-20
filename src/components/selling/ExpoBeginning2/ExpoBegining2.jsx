@@ -1,19 +1,16 @@
 /* eslint-disable max-len */
-/* eslint-disable no-unused-vars */
-/* eslint-disable no-undef */
 import axios from 'axios';
 import React, { useState, useEffect } from 'react';
 import AppBar from '@material-ui/core/AppBar';
 import { makeStyles } from '@material-ui/core/styles';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
-import CardMedia from '@mui/material/CardMedia';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 
 import { API_URL } from '../../../global/constants';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   appbar: {
     backgroundColor: 'brown',
     flexGrow: 1,
@@ -73,9 +70,7 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: '20px',
     height: '700px',
   },
-  // img_overlay_info: {
-  //   background: 'transparent',
-  // },
+
   left_grid: {
     display: 'grid',
     gridTemplateColumns: '1fr 1fr',
@@ -128,10 +123,10 @@ const ExpoBegining2 = () => {
   const [cityData, setCityData] = useState();
   const user = JSON.parse(sessionStorage.getItem('user'));
   const [hasSentRequest, setHasSentRequest] = useState(false);
-  const [otherTeams, setOtherTeams] = useState([]);
+  const [, setOtherTeams] = useState([]);
   // const [expanded, setExpanded] = React.useState(-1);
   // let ticketPrice = null;
-  // const [timerValue, setTimerValue] = useState();
+  const [, setTimerValue] = useState();
   // const [nominatedPaintings, setNominatedPaintings] = useState([]);
   // const [paintingSelected, setPaintingSelected] = useState(-1);
   // const [bidAmtError, setBidAmtError] = useState();
@@ -192,120 +187,6 @@ const ExpoBegining2 = () => {
       }}
       >
         <div className={classes.left_grid}>
-          <Card className={classes['painting-container']}>
-            <div className={classes['painting-img_container']} style={{ backgroundColor: '#eee' }}>
-              <p className={classes['painting-art_movement']}>Pop Art</p>
-            </div>
-            <CardContent sx={{
-              display: 'flex', margin: '0', padding: '2px', justifyContent: 'space-between',
-            }}
-            >
-              <Box sx={{
-                display: 'flex', flexDirection: 'column', fontSize: '.5rem', boxSizing: 'border-box',
-              }}
-              >
-                <CardContent sx={{
-                  display: 'flex', flexDirection: 'column', flex: '1 0 auto', padding: '7px', justifyContent: 'center',
-                }}
-                >
-                  <Typography
-                    component="div"
-                    variant="subtitle1"
-                    style={{
-                      fontWeight: 'bolder', letterSpacing: '0', lineHeight: '1', height: '25px', width: 'fit-content',
-                    }}
-                  >
-                    Name of Painting
-                  </Typography>
-                  <Typography variant="subtitle1" color="text.primary" component="div" style={{ fontSize: '0.6rem' }}>
-                    Andy Warhol
-                  </Typography>
-                  <Typography
-                    variant="subtitle2"
-                    component="div"
-                    style={{
-                      fontSize: '0.5rem', width: '100%', letterSpacing: '0', color: 'red',
-                    }}
-                  >
-                    you paid $2  million
-                  </Typography>
-                </CardContent>
-              </Box>
-              <Box sx={{
-                display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', alignItems: 'center',
-              }}
-              >
-                <CardContent sx={{
-                  display: 'flex', flexDirection: 'column', flex: '1 0 auto', width: '120px', justifyContent: 'center', alignItems: 'center', padding: '7px',
-                }}
-                >
-                  <Typography component="div" variant="subtitle1" className={classes.auction_btn}>
-                    Nominate to auction
-                  </Typography>
-                  <Typography variant="subtitle1" component="div" className={classes.auction_btn}>
-                    sell to market
-                  </Typography>
-                </CardContent>
-              </Box>
-            </CardContent>
-          </Card>
-          <Card className={classes['painting-container']}>
-            <div className={classes['painting-img_container']} style={{ backgroundColor: '#eee' }}>
-              <p className={classes['painting-art_movement']}>Pop Art</p>
-            </div>
-            <CardContent sx={{
-              display: 'flex', margin: '0', padding: '2px', justifyContent: 'space-between',
-            }}
-            >
-              <Box sx={{
-                display: 'flex', flexDirection: 'column', fontSize: '.5rem', boxSizing: 'border-box',
-              }}
-              >
-                <CardContent sx={{
-                  display: 'flex', flexDirection: 'column', flex: '1 0 auto', padding: '7px', justifyContent: 'center',
-                }}
-                >
-                  <Typography
-                    component="div"
-                    variant="subtitle1"
-                    style={{
-                      fontWeight: 'bolder', letterSpacing: '0', lineHeight: '1', height: '25px', width: 'fit-content',
-                    }}
-                  >
-                    Name of Painting
-                  </Typography>
-                  <Typography variant="subtitle1" color="text.primary" component="div" style={{ fontSize: '0.6rem' }}>
-                    Andy Warhol
-                  </Typography>
-                  <Typography
-                    variant="subtitle2"
-                    component="div"
-                    style={{
-                      fontSize: '0.5rem', width: '100%', letterSpacing: '0', color: 'red',
-                    }}
-                  >
-                    you paid $2  million
-                  </Typography>
-                </CardContent>
-              </Box>
-              <Box sx={{
-                display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', alignItems: 'center',
-              }}
-              >
-                <CardContent sx={{
-                  display: 'flex', flexDirection: 'column', flex: '1 0 auto', width: '120px', justifyContent: 'center', alignItems: 'center', padding: '7px',
-                }}
-                >
-                  <Typography component="div" variant="subtitle1" className={classes.auction_btn}>
-                    Nominate to auction
-                  </Typography>
-                  <Typography variant="subtitle1" component="div" className={classes.auction_btn}>
-                    sell to market
-                  </Typography>
-                </CardContent>
-              </Box>
-            </CardContent>
-          </Card>
           {paintings.length > 0 && paintings.map((item) => (
             <Card className={classes['painting-container']}>
               <div className={classes['painting-img_container']} style={{ backgroundImage: `url(${item.imageURL})`, backgroundSize: 'cover' }}>
@@ -327,13 +208,13 @@ const ExpoBegining2 = () => {
                       component="div"
                       variant="subtitle1"
                       style={{
-                        fontWeight: 'bolder', letterSpacing: '0', lineHeight: '1', height: '25px', width: 'fit-content',
+                        fontWeight: 'bolder', letterSpacing: '0', lineHeight: '1', width: 'fit-content',
                       }}
                     >
-                      Name of Painting
+                      {item?.name}
                     </Typography>
                     <Typography variant="subtitle1" color="text.primary" component="div" style={{ fontSize: '0.6rem' }}>
-                      Andy Warhol
+                      {item?.artist}
                     </Typography>
                     <Typography
                       variant="subtitle2"
@@ -344,6 +225,7 @@ const ExpoBegining2 = () => {
                     >
                       you paid $
                       {+item.bidAmount}
+                      {' '}
                       million
                     </Typography>
                   </CardContent>
