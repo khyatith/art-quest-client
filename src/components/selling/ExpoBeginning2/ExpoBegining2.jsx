@@ -47,11 +47,24 @@ const useStyles = makeStyles((theme) => ({
   },
   'painting-container': {
     width: '100%',
-    height: '350px',
+    height: '375px',
   },
   'painting-img_container': {
     width: '100%',
-    // height: '100%',
+    height: '70%',
+    position: 'relative',
+  },
+  'painting-art_movement': {
+    bottom: '2px',
+    left: '5px',
+    fontSize: '2rem',
+    position: 'absolute',
+  },
+  auction_btn: {
+    border: '1px solid gray',
+    padding: '3px',
+    borderRadius: '10px',
+    margin: '10px auto !important',
   },
 }));
 
@@ -115,11 +128,11 @@ const ExpoBegining2 = () => {
         <div className={classes.left_grid}>
           <Card className={classes['painting-container']}>
             <div className={classes['painting-img_container']} style={{ backgroundColor: '#eee' }}>
-              <p>Pop art</p>
+              <p className={classes['painting-art_movement']}>Pop art</p>
             </div>
-            <CardContent sx={{ display: 'flex' }}>
+            <CardContent sx={{ display: 'flex', margin: '0', padding: '0' }}>
               <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                <CardContent sx={{ flex: '1 0 auto' }}>
+                <CardContent sx={{ flex: '1 0 auto', lineHeight: '80%' }}>
                   <Typography component="div" variant="h5">
                     Name of Painting
                   </Typography>
@@ -133,10 +146,10 @@ const ExpoBegining2 = () => {
               </Box>
               <Box sx={{ display: 'flex', flexDirection: 'column' }}>
                 <CardContent sx={{ flex: '1 0 auto' }}>
-                  <Typography component="div" variant="subtitle1" color="text.secondary">
+                  <Typography component="div" variant="subtitle1" color="text.secondary" className={classes.auction_btn}>
                     Nominate to auction
                   </Typography>
-                  <Typography variant="subtitle1" color="text.secondary" component="div">
+                  <Typography variant="subtitle1" color="text.secondary" component="div" className={classes.auction_btn}>
                     sell to market
                   </Typography>
                 </CardContent>
@@ -145,11 +158,11 @@ const ExpoBegining2 = () => {
           </Card>
           <Card className={classes['painting-container']}>
             <div className={classes['painting-img_container']} style={{ backgroundColor: '#eee' }}>
-              <p>Pop art</p>
+              <p className={classes['painting-art_movement']}>Pop art</p>
             </div>
-            <CardContent sx={{ display: 'flex' }}>
+            <CardContent sx={{ display: 'flex', margin: '0', padding: '0' }}>
               <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                <CardContent sx={{ flex: '1 0 auto' }}>
+                <CardContent sx={{ flex: '1 0 auto', lineHeight: '80%' }}>
                   <Typography component="div" variant="h5">
                     Name of Painting
                   </Typography>
@@ -163,10 +176,10 @@ const ExpoBegining2 = () => {
               </Box>
               <Box sx={{ display: 'flex', flexDirection: 'column' }}>
                 <CardContent sx={{ flex: '1 0 auto' }}>
-                  <Typography component="div" variant="subtitle1" color="text.secondary">
+                  <Typography component="div" variant="subtitle1" color="text.secondary" className={classes.auction_btn}>
                     Nominate to auction
                   </Typography>
-                  <Typography variant="subtitle1" color="text.secondary" component="div">
+                  <Typography variant="subtitle1" color="text.secondary" component="div" className={classes.auction_btn}>
                     sell to market
                   </Typography>
                 </CardContent>
