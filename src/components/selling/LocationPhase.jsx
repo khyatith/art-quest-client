@@ -274,7 +274,7 @@ function LocationPhase() {
   useEffect(() => {
     socket.on('goToExpo', () => {
       console.log('expo');
-      //   history.push(`/sell/${player.playerId}`);
+      history.push(`/sell/${player.playerId}`);
     });
   }, []);
 
