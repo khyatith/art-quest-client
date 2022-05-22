@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable max-len */
 import axios from 'axios';
 import React, { useState, useEffect } from 'react';
@@ -9,6 +10,8 @@ import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 
 import { API_URL } from '../../../global/constants';
+import ChartComponent from './PaintingChart';
+import PaintingCards from './PaintingCards';
 
 const useStyles = makeStyles(() => ({
   appbar: {
@@ -117,6 +120,9 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
+const artMovementsName = ['ukiyo-e', 'abstract', 'modernism', 'realism', 'pop-art', 'modern-art'];
+const artMovementColors = ['rgb(255, 99, 132)', 'rgb(54, 162, 235)', 'rgb(255, 205, 86)', 'rgb(250, 154, 85)', 'rgb(69, 91, 255)', 'rgb(69, 255, 212)'];
+
 const ExpoBegining2 = () => {
   const classes = useStyles();
   const [paintings, setPaintings] = useState([]);
@@ -124,6 +130,8 @@ const ExpoBegining2 = () => {
   const user = JSON.parse(sessionStorage.getItem('user'));
   const [hasSentRequest, setHasSentRequest] = useState(false);
   const [, setOtherTeams] = useState([]);
+  const [paintingData, setPaintingData] = useState({});
+  const [ChartData, setChartData] = useState({});
   // const [expanded, setExpanded] = React.useState(-1);
   // let ticketPrice = null;
   const [, setTimerValue] = useState();
@@ -135,12 +143,41 @@ const ExpoBegining2 = () => {
   // const [sellingAuctionBidWinner, setSellingAuctionBidWinner] = useState();
   // const history = useHistory();
 
+  const calculateClassifyPointData = (data) => {
+    // console.log(data);
+    const classifyPointsObj = {};
+    const numberOfEachArtPaintings = [];
+
+    data.artifacts.map((pd) => {
+      classifyPointsObj[pd.artMovement] = { numberOfPaintings: artMovementsName.filter((am) => am === pd.artMovement).length };
+      return null;
+    });
+
+    Object.keys(classifyPointsObj).map((key) => {
+      numberOfEachArtPaintings.push(classifyPointsObj[key].numberOfPaintings);
+      return null;
+    });
+
+    // setNumberOfPaintings(numberOfEachArtPaintings);
+    // setArtMovements(Object.keys(classifyPointsObj));
+    // setClassifyPointsData(classifyPointsObj);
+
+    // console.log(numberOfEachArtPaintings);
+    // console.log(Object.keys(classifyPointsObj));
+
+    setChartData({
+      labels: Object.keys(classifyPointsObj),
+      datasets: [{ data: numberOfEachArtPaintings, backgroundColor: artMovementColors, hoverOffset: 4 }],
+    });
+  };
+
   useEffect(() => {
     // setLoading(true);
     async function getSellingInfo() {
       const apiURL = `buying/getSellingInfo?roomId=${user.hostCode}&locationId=${user.currentLocation}&teamName=${user.teamName}&roundId=${user.roundId}`;
       const { data } = await axios.get(`${API_URL}/${apiURL}`);
-      console.log('data->', data);
+      calculateClassifyPointData(data);
+      setPaintingData(data);
       const {
         artifacts, otherteams, city, sellPaintingTimerValue,
       } = data;
@@ -160,7 +197,7 @@ const ExpoBegining2 = () => {
       getSellingInfo();
     }
   }, [user, cityData, paintings]);
-  console.log('paintings->', paintings);
+  // console.log('paintings->', paintings);
   return (
     <>
       <AppBar className={classes.appbar}>
@@ -171,84 +208,119 @@ const ExpoBegining2 = () => {
           <span className={classes.timer}>
             <svg width="16" height="18" viewBox="0 0 16 18" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M10.5 0.25H5.5V1.91667H10.5V0.25Z" fill="#FFAFAF" />
-              <path d="M13.8583 5.575L15.0417 4.39167C14.6833 3.96667 14.2917 3.56667 13.8667 3.21667L12.6833 4.4C11.3917 3.36667 9.76667 2.75 8 2.75C3.85833 2.75 0.5 6.10833 0.5 10.25C0.5 14.3917 3.85 17.75 8 17.75C12.15 17.75 15.5 14.3917 15.5 10.25C15.5 8.48333 14.8833 6.85833 13.8583 5.575ZM8.83333 11.0833H7.16667V6.08333H8.83333V11.0833Z" fill="#FFAFAF" />
+              <path
+                d="M13.8583 5.575L15.0417 4.39167C14.6833 3.96667 14.2917 3.56667 13.8667 3.21667L12.6833 4.4C11.3917 3.36667 9.76667 2.75 8 2.75C3.85833 2.75 0.5 6.10833 0.5 10.25C0.5 14.3917 3.85 17.75 8 17.75C12.15 17.75 15.5 14.3917 15.5 10.25C15.5 8.48333 14.8833 6.85833 13.8583 5.575ZM8.83333 11.0833H7.16667V6.08333H8.83333V11.0833Z"
+                fill="#FFAFAF"
+              />
             </svg>
             30 secs
           </span>
         </div>
       </AppBar>
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: '1fr 1fr',
-        height: '100vh',
-        width: '90%',
-        margin: '0 auto',
-        gap: '20px',
-      }}
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: '1fr 1fr',
+          height: '100vh',
+          width: '90%',
+          margin: '0 auto',
+          gap: '20px',
+        }}
       >
         <div className={classes.left_grid}>
-          {paintings.length > 0 && paintings.map((item) => (
-            <Card className={classes['painting-container']}>
-              <div className={classes['painting-img_container']} style={{ backgroundImage: `url(${item.imageURL})`, backgroundSize: 'cover' }}>
-                <p className={classes['painting-art_movement']}>{item.artMovement}</p>
-              </div>
-              <CardContent sx={{
-                display: 'flex', margin: '0', padding: '2px', justifyContent: 'space-between',
-              }}
-              >
-                <Box sx={{
-                  display: 'flex', flexDirection: 'column', fontSize: '.5rem', boxSizing: 'border-box',
-                }}
-                >
-                  <CardContent sx={{
-                    display: 'flex', flexDirection: 'column', flex: '1 0 auto', padding: '7px', justifyContent: 'center',
+          {paintings.length > 0
+            && paintings.map((item) => (
+              <Card className={classes['painting-container']}>
+                <div className={classes['painting-img_container']} style={{ backgroundImage: `url(${item.imageURL})`, backgroundSize: 'cover' }}>
+                  <p className={classes['painting-art_movement']}>{item.artMovement}</p>
+                </div>
+                <CardContent
+                  sx={{
+                    display: 'flex',
+                    margin: '0',
+                    padding: '2px',
+                    justifyContent: 'space-between',
                   }}
+                >
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      fontSize: '.5rem',
+                      boxSizing: 'border-box',
+                    }}
                   >
-                    <Typography
-                      component="div"
-                      variant="subtitle1"
-                      style={{
-                        fontWeight: 'bolder', letterSpacing: '0', lineHeight: '1', width: 'fit-content',
+                    <CardContent
+                      sx={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        flex: '1 0 auto',
+                        padding: '7px',
+                        justifyContent: 'center',
                       }}
                     >
-                      {item?.name}
-                    </Typography>
-                    <Typography variant="subtitle1" color="text.primary" component="div" style={{ fontSize: '0.6rem' }}>
-                      {item?.artist}
-                    </Typography>
-                    <Typography
-                      variant="subtitle2"
-                      component="div"
-                      style={{
-                        fontSize: '0.5rem', width: '100%', letterSpacing: '0', color: 'red',
+                      <Typography
+                        component="div"
+                        variant="subtitle1"
+                        style={{
+                          fontWeight: 'bolder',
+                          letterSpacing: '0',
+                          lineHeight: '1',
+                          width: 'fit-content',
+                        }}
+                      >
+                        {item?.name}
+                      </Typography>
+                      <Typography variant="subtitle1" color="text.primary" component="div" style={{ fontSize: '0.6rem' }}>
+                        {item?.artist}
+                      </Typography>
+                      <Typography
+                        variant="subtitle2"
+                        component="div"
+                        style={{
+                          fontSize: '0.5rem',
+                          width: '100%',
+                          letterSpacing: '0',
+                          color: 'red',
+                        }}
+                      >
+                        you paid $
+                        {+item.bidAmount}
+                        {' '}
+                        million
+                      </Typography>
+                    </CardContent>
+                  </Box>
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      justifyContent: 'flex-end',
+                      alignItems: 'center',
+                    }}
+                  >
+                    <CardContent
+                      sx={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        flex: '1 0 auto',
+                        width: '120px',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        padding: '7px',
                       }}
                     >
-                      you paid $
-                      {+item.bidAmount}
-                      {' '}
-                      million
-                    </Typography>
-                  </CardContent>
-                </Box>
-                <Box sx={{
-                  display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', alignItems: 'center',
-                }}
-                >
-                  <CardContent sx={{
-                    display: 'flex', flexDirection: 'column', flex: '1 0 auto', width: '120px', justifyContent: 'center', alignItems: 'center', padding: '7px',
-                  }}
-                  >
-                    <Typography component="div" variant="subtitle1" className={classes.auction_btn}>
-                      Nominate to auction
-                    </Typography>
-                    <Typography variant="subtitle1" component="div" className={classes.auction_btn}>
-                      sell to market
-                    </Typography>
-                  </CardContent>
-                </Box>
-              </CardContent>
-            </Card>
-          ))}
+                      <Typography component="div" variant="subtitle1" className={classes.auction_btn}>
+                        Nominate to auction
+                      </Typography>
+                      <Typography variant="subtitle1" component="div" className={classes.auction_btn}>
+                        sell to market
+                      </Typography>
+                    </CardContent>
+                  </Box>
+                </CardContent>
+              </Card>
+            ))}
         </div>
         <div className="right_grid">
           <div className={classes['team-points']}>
@@ -259,11 +331,12 @@ const ExpoBegining2 = () => {
             <p>Team 4</p>
           </div>
           <div className={classes['classify_points-container']}>
-
-            <p style={{ padding: '20px' }}>ClassifyPoints donut Chart</p>
+            <div style={{ display: 'flex', justifyContent: 'center' }}>{Object.keys(ChartData).length !== 0 && <ChartComponent ChartData={ChartData} />}</div>
+            <div style={{ display: 'flex', justifyContent: 'center', marginTop: '2rem' }}>
+              <PaintingCards paintingData={paintingData.artifacts} />
+            </div>
           </div>
         </div>
-
       </div>
     </>
   );
