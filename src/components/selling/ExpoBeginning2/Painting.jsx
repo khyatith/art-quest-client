@@ -12,7 +12,7 @@ import { validateCurrentBid } from '../../../global/helpers';
 import { API_URL } from '../../../global/constants';
 
 function Painting({
-  item, classes, disableAll, setDisableAll, removeAllExpanded, removeExpand, setRemoveExpand,
+  item, classes, disableAll, setDisableAll, removeAllExpanded, removeExpand, setRemoveExpand, disableBtn, setStartTimer,
 }) {
   const user = JSON.parse(sessionStorage.getItem('user'));
   const [auctionPrice, setAuctionPrice] = React.useState('');
@@ -70,6 +70,7 @@ function Painting({
       setDisableAll(true);
       setBidDone(true);
       removeAllExpanded();
+      setStartTimer(true);
     } catch (e) {
       setError(e);
       setTimeout(() => setError(''), 2000);
@@ -130,7 +131,7 @@ function Painting({
               <svg className={`${expandAuction && classes.enableTick}`} style={{ opacity: '0' }} width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M11.4425 4.685L6.5 9.6275L3.8075 6.9425L2.75 8L6.5 11.75L12.5 5.75L11.4425 4.685ZM8 0.5C3.86 0.5 0.5 3.86 0.5 8C0.5 12.14 3.86 15.5 8 15.5C12.14 15.5 15.5 12.14 15.5 8C15.5 3.86 12.14 0.5 8 0.5ZM8 14C4.685 14 2 11.315 2 8C2 4.685 4.685 2 8 2C11.315 2 14 4.685 14 8C14 11.315 11.315 14 8 14Z" fill="#006132" />
               </svg>
-              <Typography component="button" variant="subtitle1" className={`${classes.auction_btn} ${expandAuction && classes.auction_btn_clickedGreen}`} onClick={() => handleClick('auction')} disabled={disableAll}>
+              <Typography component="button" variant="subtitle1" className={`${classes.auction_btn} ${expandAuction && classes.auction_btn_clickedGreen}`} onClick={() => handleClick('auction')} disabled={disableAll || !disableBtn}>
                 Nominate to auction
               </Typography>
             </div>
@@ -138,7 +139,7 @@ function Painting({
               <svg className={`${expandedMarket && classes.enableTick}`} style={{ opacity: '0' }} width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M11.4425 4.685L6.5 9.6275L3.8075 6.9425L2.75 8L6.5 11.75L12.5 5.75L11.4425 4.685ZM8 0.5C3.86 0.5 0.5 3.86 0.5 8C0.5 12.14 3.86 15.5 8 15.5C12.14 15.5 15.5 12.14 15.5 8C15.5 3.86 12.14 0.5 8 0.5ZM8 14C4.685 14 2 11.315 2 8C2 4.685 4.685 2 8 2C11.315 2 14 4.685 14 8C14 11.315 11.315 14 8 14Z" fill="#001AA4" />
               </svg>
-              <Typography variant="subtitle1" component="button" className={`${classes.auction_btn} ${expandedMarket && classes.auction_btn_clickedBlue}`} onClick={() => handleClick('market')} disabled={disableAll}>
+              <Typography variant="subtitle1" component="button" className={`${classes.auction_btn} ${expandedMarket && classes.auction_btn_clickedBlue}`} onClick={() => handleClick('market')} disabled={disableAll || disableBtn}>
                 sell to market
               </Typography>
             </div>
@@ -154,7 +155,7 @@ function Painting({
             variant="outlined"
             value={auctionPrice}
             error={!!error}
-            helperText={error}
+            // helperText={error}
             onChange={(e) => { console.log(e.target); setAuctionPrice(e.target.value); }}
           />
           <p style={{ fontSize: '.7rem', color: '#CACACA' }}>*Price range between $1 - $999</p>

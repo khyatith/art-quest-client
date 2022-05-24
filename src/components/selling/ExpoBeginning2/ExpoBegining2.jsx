@@ -7,6 +7,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { API_URL } from '../../../global/constants';
 import ChartComponent from './PaintingChart';
 import PaintingCards from './PaintingCards';
+import { socket } from '../../../global/socket';
 import Painting from './Painting';
 
 const useStyles = makeStyles(() => ({
@@ -170,11 +171,13 @@ const ExpoBegining2 = () => {
   const [classifyPointsDetails, setClassifyPointsObj] = useState({});
   const [ChartData, setChartData] = useState({});
   // const [expanded, setExpanded] = React.useState(-1);
+  const [otherTeams, setOtherTeams] = useState([]);
   const [disableAll, setDisableAll] = React.useState(false);
-  // let ticketPrice = null;
   const [timerValue, setTimerValue] = useState('');
   const [removeExpand, setRemoveExpand] = useState(false);
-  // const [paintingSelected, setPaintingSelected] = useState(-1);
+  const [disableBtn, setDisableBtn] = useState(false);
+  const [startTimer, setStartTimer] = useState(false);
+
   // const [bidAmtError, setBidAmtError] = useState();
   // const [calculatedRevenue, setCalculatedRevenue] = useState();
   // const [ticketPriceFromAPI, setTicketPriceFromapi] = useState();
@@ -215,6 +218,66 @@ const ExpoBegining2 = () => {
     setClassifyPointsObj(paintingsObj);
   };
 
+  const getRemainingTime = () => {
+    const total = parseInt(timerValue.total, 10) - 1000;
+    const seconds = Math.floor((parseInt(total, 10) / 1000) % 60);
+    const minutes = Math.floor((parseInt(total, 10) / 1000 / 60) % 60);
+    if (total < 1000) {
+      socket.emit('expoBeginEnded');
+    } else {
+      const value = {
+        total,
+        minutes: minutes.toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }),
+        seconds: seconds.toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }),
+      };
+      setTimerValue(value);
+    }
+  };
+  useEffect(() => {
+    // let interval;
+    // if (timerValue && startTimer) {
+    //   interval = setTimeout(() => setTimerValue((e) => e - 1), 1000);
+    // }
+    // return () => clearInterval(interval);
+    let interval;
+    if (timerValue && startTimer) {
+      interval = setTimeout(() => getRemainingTime(), 1000);
+    }
+    return () => clearInterval(interval);
+  }, [timerValue]);
+
+  useEffect(() => {
+    if (startTimer) {
+      socket.emit('startExpoBeginTimer', {
+        hostCode: user.hostCode,
+      });
+    }
+  }, [startTimer]);
+
+  useEffect(() => {
+    const getTimer = async () => {
+      await axios
+        .get(`${API_URL}/buying/startExpoBeginTimer?roomId=${user.hostCode}`)
+        .then((newData) => {
+          console.log('timerValue->', newData);
+          if (newData?.data?.sellPaintingTimerValue) {
+            setTimerValue(newData.data.sellPaintingTimerValue);
+            // setTimerValue(+newData.data.sellPaintingTimerValue.total / 1000);
+          }
+        }).catch((e) => console.log(e));
+    };
+    if (startTimer) {
+      getTimer();
+    }
+  }, [startTimer]);
+  console.log('timer->', timerValue);
+  useEffect(() => {
+    socket.on('ExpoBeginTimerStarted', () => {
+      if (!startTimer) {
+        setStartTimer(true);
+      }
+    });
+  });// check for componentOnMount
   useEffect(() => {
     // setLoading(true);
     async function getSellingInfo() {
@@ -224,7 +287,7 @@ const ExpoBegining2 = () => {
       createClassifyPointsData(data.artifacts);
       setPaintingData(data);
       const {
-        artifacts, otherteams, city, sellPaintingTimerValue,
+        artifacts, otherteams, city,
       } = data;
       if (artifacts) {
         setPaintings(artifacts);
@@ -235,7 +298,6 @@ const ExpoBegining2 = () => {
       if (city) {
         setCityData(city);
       }
-      setTimerValue(sellPaintingTimerValue.total / 1000);
     }
     if (!hasSentRequest) {
       setHasSentRequest(true);
@@ -244,16 +306,22 @@ const ExpoBegining2 = () => {
   }, [user, cityData, paintings]);
   // console.log('paintings->', paintings);
   console.log('paintings->', paintings, user, disableAll);
+
+  useEffect(() => {
+    if (otherTeams.length > 1) {
+      setDisableBtn(true);
+    }
+  }, [otherTeams]);
   const removeAllExpanded = () => {
     setRemoveExpand(true);
   };
   useEffect(() => {
     let timer;
     if (timerValue) {
-      timer = setTimeout(() => (setTimerValue((e) => (+e - 1))), 1000);
+      timer = setInterval(() => (setTimerValue((e) => (+e - 1))), 1000);
     }
     return () => clearInterval(timer);
-  }, [timerValue]);
+  }, []);
 
   return (
     <>
@@ -270,7 +338,8 @@ const ExpoBegining2 = () => {
                 fill="#FFAFAF"
               />
             </svg>
-            {timerValue}
+            {/* {(+timerValue < 10 && +timerValue > 0) ? `0${timerValue}` : timerValue} */}
+            {timerValue?.seconds}
             {' '}
             secs
           </span>
@@ -288,7 +357,7 @@ const ExpoBegining2 = () => {
       >
         <div className={classes.left_grid}>
           {paintings.length > 0 && paintings.map((item) => (
-            <Painting item={item} key={item.auctionId} classes={classes} disableAll={disableAll} setDisableAll={setDisableAll} removeExpand={removeExpand} setRemoveExpand={setRemoveExpand} removeAllExpanded={removeAllExpanded} />
+            <Painting item={item} key={item.auctionId} classes={classes} disableAll={disableAll} setDisableAll={setDisableAll} disableBtn={disableBtn} removeExpand={removeExpand} setRemoveExpand={setRemoveExpand} removeAllExpanded={removeAllExpanded} setStartTimer={setStartTimer} />
           ))}
         </div>
         <div className="right_grid">
