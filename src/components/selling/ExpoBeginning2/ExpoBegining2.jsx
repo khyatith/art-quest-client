@@ -72,6 +72,7 @@ const useStyles = makeStyles(() => ({
     boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.25)',
     borderRadius: '20px',
     height: '700px',
+    paddingBottom: '2rem',
   },
 
   left_grid: {
@@ -131,6 +132,7 @@ const ExpoBegining2 = () => {
   const [hasSentRequest, setHasSentRequest] = useState(false);
   const [, setOtherTeams] = useState([]);
   const [paintingData, setPaintingData] = useState({});
+  const [classifyPointsDetails, setClassifyPointsObj] = useState({});
   const [ChartData, setChartData] = useState({});
   // const [expanded, setExpanded] = React.useState(-1);
   // let ticketPrice = null;
@@ -144,11 +146,10 @@ const ExpoBegining2 = () => {
   // const history = useHistory();
 
   const calculateClassifyPointData = (data) => {
-    // console.log(data);
     const classifyPointsObj = {};
     const numberOfEachArtPaintings = [];
 
-    data.artifacts.map((pd) => {
+    data.artifacts?.map((pd) => {
       classifyPointsObj[pd.artMovement] = { numberOfPaintings: artMovementsName.filter((am) => am === pd.artMovement).length };
       return null;
     });
@@ -158,17 +159,24 @@ const ExpoBegining2 = () => {
       return null;
     });
 
-    // setNumberOfPaintings(numberOfEachArtPaintings);
-    // setArtMovements(Object.keys(classifyPointsObj));
-    // setClassifyPointsData(classifyPointsObj);
-
-    // console.log(numberOfEachArtPaintings);
-    // console.log(Object.keys(classifyPointsObj));
-
     setChartData({
       labels: Object.keys(classifyPointsObj),
       datasets: [{ data: numberOfEachArtPaintings, backgroundColor: artMovementColors, hoverOffset: 4 }],
     });
+  };
+
+  const createClassifyPointsData = (params) => {
+    const paintingsObj = {};
+    params?.map((pd) => {
+      if (!paintingsObj[pd.artMovement]) {
+        paintingsObj[pd.artMovement] = { ...paintingsObj[pd.artMovement], numberOfPainting: 1, images: [pd.imageURL] };
+      } else {
+        paintingsObj[pd.artMovement].numberOfPainting += 1;
+        paintingsObj[pd.artMovement].images.push(pd.imageURL);
+      }
+      return null;
+    });
+    setClassifyPointsObj(paintingsObj);
   };
 
   useEffect(() => {
@@ -177,6 +185,7 @@ const ExpoBegining2 = () => {
       const apiURL = `buying/getSellingInfo?roomId=${user.hostCode}&locationId=${user.currentLocation}&teamName=${user.teamName}&roundId=${user.roundId}`;
       const { data } = await axios.get(`${API_URL}/${apiURL}`);
       calculateClassifyPointData(data);
+      createClassifyPointsData(data.artifacts);
       setPaintingData(data);
       const {
         artifacts, otherteams, city, sellPaintingTimerValue,
@@ -333,7 +342,7 @@ const ExpoBegining2 = () => {
           <div className={classes['classify_points-container']}>
             <div style={{ display: 'flex', justifyContent: 'center' }}>{Object.keys(ChartData).length !== 0 && <ChartComponent ChartData={ChartData} />}</div>
             <div style={{ display: 'flex', justifyContent: 'center', marginTop: '2rem' }}>
-              <PaintingCards paintingData={paintingData.artifacts} />
+              <PaintingCards paintingData={paintingData.artifacts} paintingsObj={classifyPointsDetails} />
             </div>
           </div>
         </div>
