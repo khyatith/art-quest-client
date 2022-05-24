@@ -157,7 +157,7 @@ const EnglishAuction = () => {
     const seconds = Math.floor((parseInt(total, 10) / 1000) % 60);
     const minutes = Math.floor((parseInt(total, 10) / 1000 / 60) % 60);
     if (total < 1000 && !sendResultEventOnce) {
-      socket.emit('englishAuctionTimerEnded', player.hostCode);
+      socket.emit('englishAuctionTimerEnded', { roomId: player.hostCode, englishAuctionsNumber: location.state.englishAuctionsNumber });
       setSendResultEventOnce(true);
     } else {
       const value = {
@@ -266,7 +266,6 @@ const EnglishAuction = () => {
         ...bidAmtError,
         [auctionId]: null,
       });
-      console.log('currentAuction->', currentAuction[0]);
       const bidInfo = {
         auctionType: currentAuction[0].auctionType,
         auctionId: currentAuction[0].id,
@@ -280,6 +279,7 @@ const EnglishAuction = () => {
         bidAt: +new Date(),
         bidTeam: player.teamName,
         bidColor: player.teamColor,
+        englishAuctionsNumber: location.state.englishAuctionsNumber,
       };
       // console.log('bidding !!');
       if (!isFirstBid) {
@@ -288,7 +288,6 @@ const EnglishAuction = () => {
       socket.emit('addEnglishAuctionBid', bidInfo);
     }
   };
-  console.log('->>>', englishAuctionResults);
   return (
     <div className={classes.root}>
       <AppBar className={classes.appbar} position="static">
