@@ -46,9 +46,9 @@ const PaintingCards = ({ paintingData, paintingsObj }) => {
             />
             <h3 style={{ textAlign: 'center' }}>{artMovement}</h3>
             <div style={{ height: '10rem', overflowY: paintingsObj[artMovement].images.length > 1 ? 'scroll' : 'hidden' }}>
-              {paintingsObj[artMovement].images.map((image) => (
+              {paintingsObj[artMovement].images.map((image, paintingIndex) => (
                 <div style={{ margin: '1rem' }}>
-                  <Badge badgeContent={5} color="secondary">
+                  <Badge badgeContent={paintingIndex !== 0 ? 5 : '0'} color="secondary">
                     <CardMedia style={{ borderRadius: '0.5rem', width: '8rem' }} component="img" height="100" width="100" image={image} alt="image" />
                   </Badge>
                 </div>

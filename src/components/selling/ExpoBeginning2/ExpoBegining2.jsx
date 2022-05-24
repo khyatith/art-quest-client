@@ -169,7 +169,7 @@ const ExpoBegining2 = () => {
     const paintingsObj = {};
     params?.map((pd) => {
       if (!paintingsObj[pd.artMovement]) {
-        paintingsObj[pd.artMovement] = { ...paintingsObj[pd.artMovement], numberOfPainting: 1, images: [pd.imageURL] };
+        paintingsObj[pd.artMovement] = { ...paintingsObj[pd.artMovement], numberOfPainting: 0, images: [pd.imageURL] };
       } else {
         paintingsObj[pd.artMovement].numberOfPainting += 1;
         paintingsObj[pd.artMovement].images.push(pd.imageURL);
