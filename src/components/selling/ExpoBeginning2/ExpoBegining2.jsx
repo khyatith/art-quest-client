@@ -72,7 +72,7 @@ const useStyles = makeStyles(() => ({
     boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.25)',
     borderRadius: '20px',
     height: '700px',
-    paddingBottom: '2rem',
+    paddingBottom: '5rem',
   },
 
   left_grid: {
