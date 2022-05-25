@@ -2,7 +2,6 @@
 /* eslint-disable no-unused-vars */
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { Grid } from '@material-ui/core';
 
 function DestitnationCards({ teamInfo }) {
   console.log('teamInfo->', teamInfo);
