@@ -166,7 +166,6 @@ const ExpoBegining2 = () => {
   const [cityData, setCityData] = useState();
   const user = JSON.parse(sessionStorage.getItem('user'));
   const [hasSentRequest, setHasSentRequest] = useState(false);
-  const [, setOtherTeams] = useState([]);
   const [paintingData, setPaintingData] = useState({});
   const [classifyPointsDetails, setClassifyPointsObj] = useState({});
   const [ChartData, setChartData] = useState({});
