@@ -1,9 +1,15 @@
+/* eslint-disable react/jsx-closing-bracket-location */
+/* eslint-disable react/jsx-one-expression-per-line */
+/* eslint-disable operator-linebreak */
+/* eslint-disable no-lone-blocks */
+/* eslint-disable no-unused-expressions */
 /* eslint-disable no-unused-vars */
 /* eslint-disable max-len */
 import axios from 'axios';
 import React, { useState, useEffect } from 'react';
 import AppBar from '@material-ui/core/AppBar';
 import { makeStyles } from '@material-ui/core/styles';
+import { AccountCircleRounded } from '@material-ui/icons';
 import { API_URL } from '../../../global/constants';
 import ChartComponent from './PaintingChart';
 import PaintingCards from './PaintingCards';
@@ -63,6 +69,8 @@ const useStyles = makeStyles(() => ({
     backgroundColor: '#FAF8F8',
     boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)',
     borderRadius: '0px 0px 20px 20px',
+    marginTop: '2rem',
+    marginBottom: '2rem',
   },
   'classify_points-container': {
     background: '#F8F5F4',
@@ -157,7 +165,6 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-const artMovementsName = ['ukiyo-e', 'abstract', 'modernism', 'realism', 'pop-art', 'modern-art'];
 const artMovementColors = ['rgb(255, 99, 132)', 'rgb(54, 162, 235)', 'rgb(255, 205, 86)', 'rgb(250, 154, 85)', 'rgb(69, 91, 255)', 'rgb(69, 255, 212)'];
 
 const ExpoBegining2 = () => {
@@ -176,6 +183,7 @@ const ExpoBegining2 = () => {
   const [removeExpand, setRemoveExpand] = useState(false);
   const [disableBtn, setDisableBtn] = useState(false);
   const [startTimer, setStartTimer] = useState(false);
+  const [totalPoints, setTotalPoints] = useState({});
 
   // const [bidAmtError, setBidAmtError] = useState();
   // const [calculatedRevenue, setCalculatedRevenue] = useState();
@@ -187,8 +195,14 @@ const ExpoBegining2 = () => {
     const classifyPointsObj = {};
     const numberOfEachArtPaintings = [];
 
+    const artMovementCollection = [];
+    data?.artifacts.map((artifact) => {
+      artMovementCollection.push(artifact.artMovement);
+      return null;
+    });
+
     data.artifacts?.map((pd) => {
-      classifyPointsObj[pd.artMovement] = { numberOfPaintings: artMovementsName.filter((am) => am === pd.artMovement).length };
+      classifyPointsObj[pd.artMovement] = { numberOfPaintings: artMovementCollection.filter((am) => am === pd.artMovement).length };
       return null;
     });
 
@@ -232,6 +246,12 @@ const ExpoBegining2 = () => {
       setTimerValue(value);
     }
   };
+
+  const showTotalPoints = () => {
+    const ponits = JSON.parse(sessionStorage.getItem('TOTAL_POINTS'));
+    setTotalPoints(ponits);
+  };
+
   useEffect(() => {
     // let interval;
     // if (timerValue && startTimer) {
@@ -263,7 +283,8 @@ const ExpoBegining2 = () => {
             setTimerValue(newData.data.sellPaintingTimerValue);
             // setTimerValue(+newData.data.sellPaintingTimerValue.total / 1000);
           }
-        }).catch((e) => console.log(e));
+        })
+        .catch((e) => console.log(e));
     };
     if (startTimer) {
       getTimer();
@@ -276,7 +297,7 @@ const ExpoBegining2 = () => {
         setStartTimer(true);
       }
     });
-  });// check for componentOnMount
+  }); // check for componentOnMount
   useEffect(() => {
     // setLoading(true);
     async function getSellingInfo() {
@@ -285,9 +306,7 @@ const ExpoBegining2 = () => {
       calculateClassifyPointData(data);
       createClassifyPointsData(data.artifacts);
       setPaintingData(data);
-      const {
-        artifacts, otherteams, city,
-      } = data;
+      const { artifacts, otherteams, city } = data;
       if (artifacts) {
         setPaintings(artifacts);
       }
@@ -315,9 +334,10 @@ const ExpoBegining2 = () => {
     setRemoveExpand(true);
   };
   useEffect(() => {
+    showTotalPoints();
     let timer;
     if (timerValue) {
-      timer = setInterval(() => (setTimerValue((e) => (+e - 1))), 1000);
+      timer = setInterval(() => setTimerValue((e) => +e - 1), 1000);
     }
     return () => clearInterval(timer);
   }, []);
@@ -327,8 +347,7 @@ const ExpoBegining2 = () => {
       <AppBar className={classes.appbar}>
         <header className={classes.location}>{cityData?.cityName}</header>
         <div className={classes.auction_timer}>
-          <div style={{ padding: '10px' }}>Auction starts</div>
-          {' '}
+          <div style={{ padding: '10px' }}>Auction starts</div>{' '}
           <span className={classes.timer}>
             <svg width="16" height="18" viewBox="0 0 16 18" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M10.5 0.25H5.5V1.91667H10.5V0.25Z" fill="#FFAFAF" />
@@ -338,9 +357,7 @@ const ExpoBegining2 = () => {
               />
             </svg>
             {/* {(+timerValue < 10 && +timerValue > 0) ? `0${timerValue}` : timerValue} */}
-            {timerValue?.seconds}
-            {' '}
-            secs
+            {timerValue?.seconds} secs
           </span>
         </div>
       </AppBar>
@@ -352,20 +369,39 @@ const ExpoBegining2 = () => {
           width: '90%',
           margin: '0 auto',
           gap: '20px',
-        }}
-      >
+        }}>
         <div className={classes.left_grid}>
-          {paintings.length > 0 && paintings.map((item) => (
-            <Painting item={item} key={item.auctionId} classes={classes} disableAll={disableAll} setDisableAll={setDisableAll} disableBtn={disableBtn} removeExpand={removeExpand} setRemoveExpand={setRemoveExpand} removeAllExpanded={removeAllExpanded} setStartTimer={setStartTimer} />
-          ))}
+          {paintings.length > 0 &&
+            paintings.map((item) => (
+              <Painting
+                item={item}
+                key={item.auctionId}
+                classes={classes}
+                disableAll={disableAll}
+                setDisableAll={setDisableAll}
+                disableBtn={disableBtn}
+                removeExpand={removeExpand}
+                setRemoveExpand={setRemoveExpand}
+                removeAllExpanded={removeAllExpanded}
+                setStartTimer={setStartTimer}
+              />
+            ))}
         </div>
         <div className="right_grid">
           <div className={classes['team-points']}>
-            <p>Total Team Points</p>
-            <p>Team 1</p>
-            <p>Team 2</p>
-            <p>Team 3</p>
-            <p>Team 4</p>
+            <h3>Total Team Points</h3>
+            {Object.keys(totalPoints).map((teamName) => (
+              <span style={{ marginLeft: '1rem' }}>
+                {teamName !== '' && (
+                  <span>
+                    <span>
+                      <AccountCircleRounded style={{ color: teamName?.toLowerCase() }} />
+                      <span style={{ marginLeft: '0.5rem' }}>{totalPoints[teamName]}</span>
+                    </span>
+                  </span>
+                )}
+              </span>
+            ))}
           </div>
           <div className={classes['classify_points-container']}>
             <div style={{ display: 'flex', justifyContent: 'center' }}>{Object.keys(ChartData).length !== 0 && <ChartComponent ChartData={ChartData} />}</div>

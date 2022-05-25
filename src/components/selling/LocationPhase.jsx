@@ -1,3 +1,5 @@
+/* eslint-disable prefer-const */
+/* eslint-disable implicit-arrow-linebreak */
 /* eslint-disable no-unused-vars */
 import React, {
   useEffect, useState, useContext, Fragment,
@@ -154,12 +156,14 @@ function LocationPhase() {
           const teams = [];
           const tmpArr = teamLastVisits;
           if (tmpArr?.length === 0) {
-            allTeams.map((team) => tmpArr.push({
-              color: team,
-              locationId: 1,
-            }));
+            allTeams.map((team) =>
+              tmpArr.push({
+                color: team,
+                locationId: 1,
+              }));
           }
           setTeamLastVisits(tmpArr);
+          let totalPoints = {};
           allTeams.forEach((value) => {
             const team = value;
             const cash = amountSpentByTeam[team] || 0;
@@ -170,12 +174,14 @@ function LocationPhase() {
             const classifyPoint = +classifyPoints[team] ? +classifyPoints[team] : 0;
             console.log('classifyPoint-> ', classifyPoint);
             const total = parseFloat(formattedCash) - parseFloat(vis) + classifyPoint; // need to replace 0 with classifyPoints
+            totalPoints[value] = total;
             // eslint-disable-next-line no-nested-ternary
             datasets.push(createData(team, cash, vis, classifyPoint)); // need to replace 0 with classifyPoints
             tv.push(createDataMap(x, team, vis, cash, total, classifyPoint, formattedCash)); // need to replace 0 with classifyPoints
             teams.push(team);
             x += 1;
           });
+          sessionStorage.setItem('TOTAL_POINTS', JSON.stringify(totalPoints));
           const currentTeamVisits = visits.filter((v) => v.teamName === player.teamName);
           const currentLocationForTeam = currentTeamVisits.length === 0 ? 1 : currentTeamVisits[0].currentLocation;
           let opArr = teamLastVisits;
@@ -303,7 +309,8 @@ function LocationPhase() {
           if (newData?.data?.locationPhaseTimerValue) {
             setLocationPageTimerValue(newData.data.locationPhaseTimerValue);
           }
-        }).catch((e) => console.log(e));
+        })
+        .catch((e) => console.log(e));
     };
     if (startTimer) {
       getTimer();
@@ -373,7 +380,7 @@ function LocationPhase() {
         <Toolbar>
           {startTimer ? (
             <Typography variant="h6" className={classes.timercontent}>
-              { selectedLocationId ? 'Reaching in' : 'Time left to fly' }
+              {selectedLocationId ? 'Reaching in' : 'Time left to fly'}
               {' '}
               {locationPageTimerValue && locationPageTimerValue.minutes}
               :
