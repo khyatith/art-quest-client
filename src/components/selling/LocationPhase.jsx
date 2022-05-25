@@ -17,7 +17,6 @@ import { API_URL, TEAM_COLOR_MAP } from '../../global/constants';
 import load from '../../assets/load.webp';
 import { socket } from '../../global/socket';
 import RoundsInfo from '../RoundsInfo';
-import LevelOfInterest from './LevelOfInterest';
 import SelectedDestination from '../SelectedDestination/SelectedDestination';
 
 const useStyles = makeStyles((theme) => ({
