@@ -7,7 +7,6 @@ import userContext from './global/userContext';
 import leaderboardContext from './global/leaderboardContext';
 import auctionContext from './global/auctionContext';
 import GameInstructions from './components/GameInstructions';
-// import ExpoBegining from './components/selling/ExpoBegining';
 import LocationPhase from './components/selling/LocationPhase';
 import SellingResults from './components/selling/SellingResults';
 import FinalResults from './components/selling/FinalResults';
@@ -16,6 +15,7 @@ import SecretAuction from './components/buying/SecretAuction';
 import SellingGameInstructions from './components/selling/SellingGameInstructions';
 import EndBuyingPhase from './components/EndBuyingPhase';
 import DutchAuction from './components/DutchAuction';
+// import ExpoBegining from './components/selling/ExpoBegining';
 import ExpoBegining2 from './components/selling/ExpoBeginning2/ExpoBegining2';
 
 function App() {

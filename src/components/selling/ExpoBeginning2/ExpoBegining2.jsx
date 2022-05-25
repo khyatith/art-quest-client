@@ -4,14 +4,11 @@ import axios from 'axios';
 import React, { useState, useEffect } from 'react';
 import AppBar from '@material-ui/core/AppBar';
 import { makeStyles } from '@material-ui/core/styles';
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
-import Typography from '@mui/material/Typography';
-import Box from '@mui/material/Box';
-
 import { API_URL } from '../../../global/constants';
 import ChartComponent from './PaintingChart';
 import PaintingCards from './PaintingCards';
+import { socket } from '../../../global/socket';
+import Painting from './Painting';
 
 const useStyles = makeStyles(() => ({
   appbar: {
@@ -86,16 +83,20 @@ const useStyles = makeStyles(() => ({
     boxSizing: 'border-box',
   },
   'painting-container': {
-    width: '90%',
-    height: '375px',
+    display: 'flex',
+    flexDirection: 'column',
+    position: 'relative',
+    // width: '90%',
+    height: '450px',
     background: '#FFFFFF',
     border: ' 1px solid #000000',
     borderRadius: '10px',
     margin: '5px',
+    overflow: 'visible !important',
   },
   'painting-img_container': {
     width: '100%',
-    height: '80%',
+    height: '350px',
     position: 'relative',
   },
   'painting-art_movement': {
@@ -105,11 +106,19 @@ const useStyles = makeStyles(() => ({
     position: 'absolute',
     color: 'white',
     fontWeight: '800',
+    textShadow: '0px 4px 20px #000000',
+  },
+  btn_container: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: '5px',
   },
   auction_btn: {
     border: '1px solid black',
     padding: '1px 4px',
-    borderRadius: '10px',
+    borderRadius: '100px',
     margin: '4px auto !important',
     height: '22px',
     boxSizing: 'border-box',
@@ -118,6 +127,33 @@ const useStyles = makeStyles(() => ({
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
+    cursor: 'pointer',
+    backgroundColor: 'white',
+  },
+  enableTick: {
+    opacity: '1 !important',
+  },
+  auction_btn_clickedGreen: {
+    backgroundColor: '#006132',
+    color: 'white',
+  },
+  auction_btn_clickedBlue: {
+    backgroundColor: '#001AA4',
+    color: 'white',
+  },
+  auction_drop: {
+    background: '#FFFFFF',
+    border: '1px solid #006132',
+    borderRadius: '0px 0px 10px 10px',
+    width: '100%',
+    top: '453px',
+  },
+  error: {
+    fontSize: '0.7rem',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    color: 'red',
   },
 }));
 
@@ -130,15 +166,17 @@ const ExpoBegining2 = () => {
   const [cityData, setCityData] = useState();
   const user = JSON.parse(sessionStorage.getItem('user'));
   const [hasSentRequest, setHasSentRequest] = useState(false);
-  const [, setOtherTeams] = useState([]);
   const [paintingData, setPaintingData] = useState({});
   const [classifyPointsDetails, setClassifyPointsObj] = useState({});
   const [ChartData, setChartData] = useState({});
   // const [expanded, setExpanded] = React.useState(-1);
-  // let ticketPrice = null;
-  const [, setTimerValue] = useState();
-  // const [nominatedPaintings, setNominatedPaintings] = useState([]);
-  // const [paintingSelected, setPaintingSelected] = useState(-1);
+  const [otherTeams, setOtherTeams] = useState([]);
+  const [disableAll, setDisableAll] = React.useState(false);
+  const [timerValue, setTimerValue] = useState('');
+  const [removeExpand, setRemoveExpand] = useState(false);
+  const [disableBtn, setDisableBtn] = useState(false);
+  const [startTimer, setStartTimer] = useState(false);
+
   // const [bidAmtError, setBidAmtError] = useState();
   // const [calculatedRevenue, setCalculatedRevenue] = useState();
   // const [ticketPriceFromAPI, setTicketPriceFromapi] = useState();
@@ -179,6 +217,66 @@ const ExpoBegining2 = () => {
     setClassifyPointsObj(paintingsObj);
   };
 
+  const getRemainingTime = () => {
+    const total = parseInt(timerValue.total, 10) - 1000;
+    const seconds = Math.floor((parseInt(total, 10) / 1000) % 60);
+    const minutes = Math.floor((parseInt(total, 10) / 1000 / 60) % 60);
+    if (total < 1000) {
+      socket.emit('expoBeginEnded');
+    } else {
+      const value = {
+        total,
+        minutes: minutes.toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }),
+        seconds: seconds.toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }),
+      };
+      setTimerValue(value);
+    }
+  };
+  useEffect(() => {
+    // let interval;
+    // if (timerValue && startTimer) {
+    //   interval = setTimeout(() => setTimerValue((e) => e - 1), 1000);
+    // }
+    // return () => clearInterval(interval);
+    let interval;
+    if (timerValue && startTimer) {
+      interval = setTimeout(() => getRemainingTime(), 1000);
+    }
+    return () => clearInterval(interval);
+  }, [timerValue]);
+
+  useEffect(() => {
+    if (startTimer) {
+      socket.emit('startExpoBeginTimer', {
+        hostCode: user.hostCode,
+      });
+    }
+  }, [startTimer]);
+
+  useEffect(() => {
+    const getTimer = async () => {
+      await axios
+        .get(`${API_URL}/buying/startExpoBeginTimer?roomId=${user.hostCode}`)
+        .then((newData) => {
+          console.log('timerValue->', newData);
+          if (newData?.data?.sellPaintingTimerValue) {
+            setTimerValue(newData.data.sellPaintingTimerValue);
+            // setTimerValue(+newData.data.sellPaintingTimerValue.total / 1000);
+          }
+        }).catch((e) => console.log(e));
+    };
+    if (startTimer) {
+      getTimer();
+    }
+  }, [startTimer]);
+  console.log('timer->', timerValue);
+  useEffect(() => {
+    socket.on('ExpoBeginTimerStarted', () => {
+      if (!startTimer) {
+        setStartTimer(true);
+      }
+    });
+  });// check for componentOnMount
   useEffect(() => {
     // setLoading(true);
     async function getSellingInfo() {
@@ -188,7 +286,7 @@ const ExpoBegining2 = () => {
       createClassifyPointsData(data.artifacts);
       setPaintingData(data);
       const {
-        artifacts, otherteams, city, sellPaintingTimerValue,
+        artifacts, otherteams, city,
       } = data;
       if (artifacts) {
         setPaintings(artifacts);
@@ -199,7 +297,6 @@ const ExpoBegining2 = () => {
       if (city) {
         setCityData(city);
       }
-      setTimerValue(sellPaintingTimerValue);
     }
     if (!hasSentRequest) {
       setHasSentRequest(true);
@@ -207,10 +304,28 @@ const ExpoBegining2 = () => {
     }
   }, [user, cityData, paintings]);
   // console.log('paintings->', paintings);
+  console.log('paintings->', paintings, user, disableAll);
+
+  useEffect(() => {
+    if (otherTeams.length > 1) {
+      setDisableBtn(true);
+    }
+  }, [otherTeams]);
+  const removeAllExpanded = () => {
+    setRemoveExpand(true);
+  };
+  useEffect(() => {
+    let timer;
+    if (timerValue) {
+      timer = setInterval(() => (setTimerValue((e) => (+e - 1))), 1000);
+    }
+    return () => clearInterval(timer);
+  }, []);
+
   return (
     <>
       <AppBar className={classes.appbar}>
-        <header className={classes.location}>Paris, France</header>
+        <header className={classes.location}>{cityData?.cityName}</header>
         <div className={classes.auction_timer}>
           <div style={{ padding: '10px' }}>Auction starts</div>
           {' '}
@@ -222,7 +337,10 @@ const ExpoBegining2 = () => {
                 fill="#FFAFAF"
               />
             </svg>
-            30 secs
+            {/* {(+timerValue < 10 && +timerValue > 0) ? `0${timerValue}` : timerValue} */}
+            {timerValue?.seconds}
+            {' '}
+            secs
           </span>
         </div>
       </AppBar>
@@ -237,99 +355,9 @@ const ExpoBegining2 = () => {
         }}
       >
         <div className={classes.left_grid}>
-          {paintings.length > 0
-            && paintings.map((item) => (
-              <Card className={classes['painting-container']}>
-                <div className={classes['painting-img_container']} style={{ backgroundImage: `url(${item.imageURL})`, backgroundSize: 'cover' }}>
-                  <p className={classes['painting-art_movement']}>{item.artMovement}</p>
-                </div>
-                <CardContent
-                  sx={{
-                    display: 'flex',
-                    margin: '0',
-                    padding: '2px',
-                    justifyContent: 'space-between',
-                  }}
-                >
-                  <Box
-                    sx={{
-                      display: 'flex',
-                      flexDirection: 'column',
-                      fontSize: '.5rem',
-                      boxSizing: 'border-box',
-                    }}
-                  >
-                    <CardContent
-                      sx={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        flex: '1 0 auto',
-                        padding: '7px',
-                        justifyContent: 'center',
-                      }}
-                    >
-                      <Typography
-                        component="div"
-                        variant="subtitle1"
-                        style={{
-                          fontWeight: 'bolder',
-                          letterSpacing: '0',
-                          lineHeight: '1',
-                          width: 'fit-content',
-                        }}
-                      >
-                        {item?.name}
-                      </Typography>
-                      <Typography variant="subtitle1" color="text.primary" component="div" style={{ fontSize: '0.6rem' }}>
-                        {item?.artist}
-                      </Typography>
-                      <Typography
-                        variant="subtitle2"
-                        component="div"
-                        style={{
-                          fontSize: '0.5rem',
-                          width: '100%',
-                          letterSpacing: '0',
-                          color: 'red',
-                        }}
-                      >
-                        you paid $
-                        {+item.bidAmount}
-                        {' '}
-                        million
-                      </Typography>
-                    </CardContent>
-                  </Box>
-                  <Box
-                    sx={{
-                      display: 'flex',
-                      flexDirection: 'column',
-                      justifyContent: 'flex-end',
-                      alignItems: 'center',
-                    }}
-                  >
-                    <CardContent
-                      sx={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        flex: '1 0 auto',
-                        width: '120px',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        padding: '7px',
-                      }}
-                    >
-                      <Typography component="div" variant="subtitle1" className={classes.auction_btn}>
-                        Nominate to auction
-                      </Typography>
-                      <Typography variant="subtitle1" component="div" className={classes.auction_btn}>
-                        sell to market
-                      </Typography>
-                    </CardContent>
-                  </Box>
-                </CardContent>
-              </Card>
-            ))}
+          {paintings.length > 0 && paintings.map((item) => (
+            <Painting item={item} key={item.auctionId} classes={classes} disableAll={disableAll} setDisableAll={setDisableAll} disableBtn={disableBtn} removeExpand={removeExpand} setRemoveExpand={setRemoveExpand} removeAllExpanded={removeAllExpanded} setStartTimer={setStartTimer} />
+          ))}
         </div>
         <div className="right_grid">
           <div className={classes['team-points']}>

@@ -17,7 +17,6 @@ import { API_URL, TEAM_COLOR_MAP } from '../../global/constants';
 import load from '../../assets/load.webp';
 import { socket } from '../../global/socket';
 import RoundsInfo from '../RoundsInfo';
-import LevelOfInterest from './LevelOfInterest';
 import SelectedDestination from '../SelectedDestination/SelectedDestination';
 
 const useStyles = makeStyles((theme) => ({
@@ -218,6 +217,7 @@ function LocationPhase() {
         ...user,
         roundId,
         previousLocation: currentLocationId,
+        currentLocation: selectedLocationId,
       };
       setPlayer((prevValues) => ({
         ...prevValues,
@@ -225,7 +225,7 @@ function LocationPhase() {
       }));
       sessionStorage.setItem('user', JSON.stringify(updatedUser));
     }
-  }, [roundId, currentLocationId, setPlayer]);
+  }, [roundId, currentLocationId, setPlayer, selectedLocationId]);
 
   const setLocationSelectedForCurrentRound = (value, locId) => {
     setSelectedLocation(value);
@@ -275,8 +275,12 @@ function LocationPhase() {
     socket.on('goToExpo', () => {
       console.log('expo');
       history.push(`/sell/${player.playerId}`);
+      // history.push({
+      //   pathname: `/sell/${player.playerId}`,
+      //   state: { currentLocationId: selectedLocationId },
+      // });
     });
-  }, []);
+  }, [selectedLocationId]);
 
   // eslint-disable-next-line consistent-return
   useEffect(() => {
