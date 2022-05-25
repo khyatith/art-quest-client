@@ -4,6 +4,7 @@
 /* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from 'react';
 import { Card, CardMedia, CardContent } from '@mui/material';
+import DestitnationCards from './DestitnationCards';
 
 const SelectedDestination = ({ player, chosenLocationForTeams, selectedLocationId }) => {
   const [location, setLocation] = useState({});
@@ -20,15 +21,21 @@ const SelectedDestination = ({ player, chosenLocationForTeams, selectedLocationI
     const otherTeams = {};
     Object.keys(chosenLocationForTeams).map((teamName) => {
       if (teamName !== player.teamName) {
-        otherTeams[teamName] = {
-          team: teamName,
+        let tmp = [];
+        if (otherTeams[chosenLocationForTeams[teamName].locationId]?.team) {
+          tmp = [...otherTeams[chosenLocationForTeams[teamName].locationId]?.team];
+        }
+        console.log('tmp->', tmp);
+        otherTeams[chosenLocationForTeams[teamName].locationId] = {
           locationId: chosenLocationForTeams[teamName].locationId,
+          team: [...tmp,
+            teamName],
         };
       }
     });
     setOtherTeamDeatils(otherTeams);
-  }, []);
-
+  }, [chosenLocationForTeams]);
+  console.log('otherTeams->', otherTeamDetails, chosenLocationForTeams);
   return (
     <div
       style={{
@@ -40,26 +47,43 @@ const SelectedDestination = ({ player, chosenLocationForTeams, selectedLocationI
         display: 'grid',
         backgroundRepeat: 'no-repeat',
         position: 'relative',
+        gridTemplateRows: '3fr 2fr',
       }}
     >
       <div style={{ color: 'white' }}>
         <h2>Welcome to the City of</h2>
         <h2 style={{ textAlign: 'center' }}>{location.cityName}</h2>
       </div>
-      <div
-        style={{
-          color: 'red',
-          position: 'absolute',
-          marginTop: '5rem',
-        }}
+      <div style={{
+        width: '100%',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        flexDirection: 'column',
+      }}
       >
-        {Object.keys(otherTeamDetails).map((otd) => (
-          <Card style={{ marginTop: '2rem' }}>
-            <CardContent style={{}}>
-              <p>{JSON.stringify(otherTeamDetails[otd])}</p>
-            </CardContent>
-          </Card>
-        ))}
+        <h2 style={{ color: 'white' }}> Others teams headed to:</h2>
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'row',
+            width: '80%',
+            justifyContent: 'center',
+            alignItems: 'center',
+            overflowX: 'hidden',
+            gap: '10px',
+          }}
+        >
+          {Object.keys(otherTeamDetails).map((otd) => (
+          // <Card style={{ marginTop: '2rem' }}>
+          //   <CardContent style={{}}>
+          //     <p>{JSON.stringify()}</p>
+          //   </CardContent>
+          // </Card>
+            <DestitnationCards teamInfo={otherTeamDetails[otd]} />
+
+          ))}
+        </div>
       </div>
     </div>
   );
