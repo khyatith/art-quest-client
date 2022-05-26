@@ -76,8 +76,7 @@ const useStyles = makeStyles(() => ({
     background: '#F8F5F4',
     boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.25)',
     borderRadius: '20px',
-    height: '700px',
-    paddingBottom: '5rem',
+    paddingBottom: '2rem',
   },
 
   left_grid: {
@@ -393,12 +392,10 @@ const ExpoBegining2 = () => {
             {Object.keys(totalPoints).map((teamName) => (
               <span style={{ marginLeft: '1rem' }}>
                 {teamName !== '' && (
-                  <span>
-                    <span>
-                      <AccountCircleRounded style={{ color: teamName?.toLowerCase() }} />
-                      <span style={{ marginLeft: '0.5rem' }}>{totalPoints[teamName]}</span>
-                    </span>
-                  </span>
+                  <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap' }}>
+                    <AccountCircleRounded style={{ color: teamName?.toLowerCase() }} />
+                    <span style={{ marginLeft: '0.5em' }}>{totalPoints[teamName]}</span>
+                  </div>
                 )}
               </span>
             ))}
