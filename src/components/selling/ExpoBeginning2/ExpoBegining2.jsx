@@ -137,6 +137,9 @@ const useStyles = makeStyles(() => ({
     alignItems: 'center',
     cursor: 'pointer',
     backgroundColor: 'white',
+    '&:disabled': {
+      border: 'gray 1px solid',
+    },
   },
   enableTick: {
     opacity: '1 !important',
