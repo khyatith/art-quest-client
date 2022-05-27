@@ -1,15 +1,6 @@
-/* eslint-disable operator-linebreak */
-/* eslint-disable object-curly-newline */
-/* eslint-disable react/jsx-closing-bracket-location */
-/* eslint-disable react/jsx-one-expression-per-line */
-/* eslint-disable react/jsx-closing-tag-location */
-/* eslint-disable react-hooks/exhaustive-deps */
-/* eslint-disable indent */
-/* eslint-disable no-tabs */
-/* eslint-disable no-unused-vars */
-/* eslint-disable semi */
-/* eslint-disable react/jsx-wrap-multilines */
-import React, { useState, useEffect, useRef, createRef } from 'react';
+import React, {
+  useState, useEffect, useRef, createRef,
+} from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { Typography, TextField } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
@@ -124,11 +115,11 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const SecretAuction = () => {
+const SecondPricedSealedBidAuction = () => {
   const classes = useStyles();
   const location = useLocation();
-  const [secretAuctionTimer, setSecretAuctionTimer] = useState();
-  const [secretAuctionResults, setSecretAuctionResults] = useState();
+  const [secondPriceAuctionTimer, setSecondPriceAuctionTimer] = useState();
+  const [secondPriceAuctionResults, setSecondPriceAuctionResults] = useState();
   const [classifyPoints, setClassifyPoints] = useState({});
   const [isFetched, setIsFetched] = useState(false);
   const [bidAmtError, setBidAmtError] = useState();
@@ -136,9 +127,9 @@ const SecretAuction = () => {
   const player = JSON.parse(sessionStorage.getItem('user'));
   const [isFirstBid, setIsFirstBid] = useState(false);
   const allAuctionsObj = JSON.parse(sessionStorage.getItem('allAuction'));
-  const secretAuctions = location.state.secretAuctionsNumber === 2 ? allAuctionsObj.secretAuctions1 : allAuctionsObj.secretAuctions2;
+  const secondPriceAuctions = allAuctionsObj.secondPricedSealedBidAuctions1;
   const bidInputRef = useRef(
-    secretAuctions.artifacts.reduce((acc, a) => {
+    secondPriceAuctions.artifacts.reduce((acc, a) => {
       /* eslint-disable  no-param-reassign */
       acc = {
         ...acc,
@@ -149,7 +140,7 @@ const SecretAuction = () => {
   );
 
   const liveStyles = useRef(
-    secretAuctions.artifacts.reduce((acc, a) => {
+    secondPriceAuctions.artifacts.reduce((acc, a) => {
       /* eslint-disable  no-param-reassign */
       acc = {
         ...acc,
@@ -160,14 +151,14 @@ const SecretAuction = () => {
   );
 
   const getRemainingTime = () => {
-    const total = parseInt(secretAuctionTimer.total, 10) - 1000;
+    const total = parseInt(secondPriceAuctionTimer.total, 10) - 1000;
     const seconds = Math.floor((parseInt(total, 10) / 1000) % 60);
     const minutes = Math.floor((parseInt(total, 10) / 1000 / 60) % 60);
     if (total < 1000) {
       if (!isFetched) {
         if (Object.keys(classifyPoints).length === 0) {
           setIsFetched(true);
-          socket.emit('secretAuctionTimerEnded', player.hostCode);
+          socket.emit('secondPriceAuctionTimerEnded', player.hostCode);
         }
       }
     } else {
@@ -176,15 +167,15 @@ const SecretAuction = () => {
         minutes: minutes.toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }),
         seconds: seconds.toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }),
       };
-      setSecretAuctionTimer(value);
+      setSecondPriceAuctionTimer(value);
     }
   };
 
   const goToNextAuctions = () => {
-    if (location.state.secretAuctionsNumber === 1) {
+    if (location.state.secondPricedSealedBidAuctions === 1) {
       history.push({
         pathname: `/englishAuction/${player.hostCode}`,
-        state: { englishAuctionsNumber: 2 },
+        state: { englishAuctionsNumber: 3 },
       });
     } else {
       history.push(`/buying/results/${player.hostCode}`);
@@ -193,15 +184,12 @@ const SecretAuction = () => {
 
   useEffect(() => {
     async function fetchTimerValue() {
-      const { data } = await axios.get(`${API_URL}/buying/secretauctionTimer/${player.hostCode}/${location.state.secretAuctionsNumber}`);
-      setSecretAuctionTimer(data.secretAuctionTimer);
+      const { data } = await axios.get(`${API_URL}/buying/secondPricedTimer/${player.hostCode}/${location.state.secondPricedSealedBidAuctions}`);
+      setSecondPriceAuctionTimer(data.secondPriceAuctionTimer);
     }
     if (isFirstBid) {
       fetchTimerValue();
     }
-    // if (!secretAuctionTimer) {
-    //   setTimeout(() => fetchTimerValue(), 10000);
-    // }
   }, [player.hostCode, isFirstBid]);
 
   useEffect(() => {
@@ -211,7 +199,7 @@ const SecretAuction = () => {
   }, [isFirstBid, player.hostCode]);
   // eslint-disable-next-line consistent-return
   useEffect(() => {
-    if (secretAuctionTimer) {
+    if (secondPriceAuctionTimer) {
       const interval = setInterval(() => getRemainingTime(), 1000);
       return () => clearInterval(interval);
     }
@@ -225,25 +213,27 @@ const SecretAuction = () => {
     });
   });
   useEffect(() => {
-    socket.on('renderSecretAuctionsResult', (data) => {
+    socket.on('renderSecondPriceAuctionsResult', (data) => {
+      console.log('data', data);
       // eslint-disable-next-line indent
       // eslint-disable-next-line indent
       // eslint-disable-next-line spaced-comment
-      if (!secretAuctionResults && data && data.result) {
-        setSecretAuctionResults(data.result);
+      if (!secondPriceAuctionResults && data && data.result) {
+        setSecondPriceAuctionResults(data.result);
       }
       if (!classifyPoints) {
         console.log('classifyPoints', classifyPoints);
         setClassifyPoints(data.classifyPoints);
       }
     });
-    if (secretAuctionResults) {
+    if (secondPriceAuctionResults) {
       setTimeout(goToNextAuctions, 10000);
     }
   }, []);
 
   useEffect(() => {
-    socket.on('setLiveStyles', (data) => {
+    socket.on('setSecondPricedLiveStyles', (data) => {
+      console.log('data', data);
       const { teamName, auctionId, bidAmount } = data;
       const currentLiveStateForAuction = liveStyles.current[auctionId].current;
       if (!currentLiveStateForAuction) {
@@ -261,7 +251,7 @@ const SecretAuction = () => {
 
   const setBidAmt = (auctionId) => {
     const bidInput = bidInputRef.current[auctionId].current.value;
-    const currentAuction = secretAuctions.artifacts.filter((auction) => parseInt(auction.id, 10) === parseInt(auctionId, 10));
+    const currentAuction = secondPriceAuctions.artifacts.filter((auction) => parseInt(auction.id, 10) === parseInt(auctionId, 10));
     const isValidCurrentBid = validateCurrentBid(bidInput);
     if (!isValidCurrentBid) {
       setBidAmtError({
@@ -291,7 +281,7 @@ const SecretAuction = () => {
     if (!isFirstBid) {
       setIsFirstBid(true);
     }
-    socket.emit('addSecretAuctionBid', bidInfo);
+    socket.emit('addSecondPriceAuctionBid', bidInfo);
   };
 
   return (
@@ -302,106 +292,131 @@ const SecretAuction = () => {
             ART QUEST
           </Typography>
           <Typography className={classes.timercontent} variant="h5" noWrap>
-            {!secretAuctionTimer && 'Auctions starts when someone start Bidding.'}
-            {secretAuctionTimer && !secretAuctionResults && (
+            {!secondPriceAuctionTimer && 'Auctions starts when someone start Bidding.'}
+            {secondPriceAuctionTimer && !secondPriceAuctionResults && (
               <>
-                Time left in Auction: {secretAuctionTimer && secretAuctionTimer.minutes}:{secretAuctionTimer && secretAuctionTimer.seconds}
+                Time left in Auction:
+                {secondPriceAuctionTimer && secondPriceAuctionTimer.minutes}
+                :
+                {secondPriceAuctionTimer && secondPriceAuctionTimer.seconds}
               </>
             )}
-            {secretAuctionResults && Object.keys(secretAuctionResults).length > 0 && 'Starting next auction in 10 seconds...'}
+            {secondPriceAuctionResults && Object.keys(secondPriceAuctionResults).length > 0 && 'Starting next auction in 10 seconds...'}
           </Typography>
           <Typography variant="h6" className={classes.playercontent}>
-            {player.playerName}, Team {player.teamName}
+            {player.playerName}
+            ,
+            Team
+            {player.teamName}
           </Typography>
         </Toolbar>
       </AppBar>
       <div className={classes.leaderboardcontainer}>
-        <Leaderboard classifyPoints={classifyPoints} showAuctionResults={secretAuctionResults} goToNextAuctions={goToNextAuctions} />
+        <Leaderboard classifyPoints={classifyPoints} showAuctionResults={secondPriceAuctionResults} goToNextAuctions={goToNextAuctions} />
       </div>
-      {secretAuctions &&
-        secretAuctions.artifacts.map((auction) => {
-          const liveStylesForCurrentAuction = liveStyles && liveStyles.current[`${auction.id}`].current;
-          const winner = secretAuctionResults && secretAuctionResults[`${auction.id}`] && secretAuctionResults[`${auction.id}`].bidTeam;
-          return (
-            <Card
-              key={auction.id}
-              className={classes.cardroot}
-              style={{ border: winner && `4px solid ${TEAM_COLOR_MAP[winner]}` }}>
-              <CardHeader title={auction.name} subheader={`${auction.artist}, ${auction.country}, ${auction.dateCreated}`} />
-              <CardMedia className={classes.media} component="img" image={`${auction.imageURL}`} title={auction.name} />
-              <Typography variant="h6" style={{ marginTop: '0.5rem' }}>Art Movement: {auction.artMovementName}</Typography>
-              <CardActions className={classes.cardactionsstyle}>
-                {!secretAuctionResults && (
-                  <div className={classes.textcontainer}>
-                    <TextField
-                      inputRef={bidInputRef.current[auction.id]}
-                      error={bidAmtError && !!bidAmtError[auction.id]}
-                      helperText={bidAmtError && bidAmtError[auction.id]}
-                      className={classes.textfieldstyle}
-                      size="small"
-                      name="bidAmount"
-                      placeholder="Enter your bid"
-                      variant="outlined"
-                      disabled={liveStylesForCurrentAuction && Object.keys(liveStylesForCurrentAuction).includes(player.teamName)}
-                      InputProps={{
-                        startAdornment: <InputAdornment position="start">$</InputAdornment>,
-                        endAdornment: <InputAdornment position="end">M</InputAdornment>,
-                      }}
-                    />
-                    <Button
-                      variant="contained"
-                      color="secondary"
-                      disabled={liveStylesForCurrentAuction && Object.keys(liveStylesForCurrentAuction).includes(player.teamName)}
-                      onClick={() => setBidAmt(auction.id)}>
-                      Bid
-                    </Button>
-                  </div>
-                )}
-                <div className={classes.bottomcontainer}>
-                  <div className={classes.lastbidcontainer}>
-                    {liveStylesForCurrentAuction &&
-                      Object.entries(liveStylesForCurrentAuction).map(([key, value]) => {
-                        const bidAmt = winner && value;
-                        return (
-                          <>
-                            <div
-                              style={{
-                                borderRadius: '50%',
-                                backgroundColor: TEAM_COLOR_MAP[key],
-                                width: '20px',
-                                height: '20px',
-                                margin: '0 15px',
-                                display: 'inline-block',
-                                textAlign: 'center',
-                              }}>
-                              {bidAmt && <h5>${bidAmt}M</h5>}
-                            </div>
-                          </>
-                        );
-                      })}
-                    {winner && (
+      {secondPriceAuctions
+      && secondPriceAuctions.artifacts.map((auction) => {
+        const liveStylesForCurrentAuction = liveStyles && liveStyles.current[`${auction.id}`].current;
+        const winner = secondPriceAuctionResults && secondPriceAuctionResults[`${auction.id}`] && secondPriceAuctionResults[`${auction.id}`].bidTeam;
+        return (
+          <Card
+            key={auction.id}
+            className={classes.cardroot}
+            style={{ border: winner && `4px solid ${TEAM_COLOR_MAP[winner]}` }}
+          >
+            <CardHeader title={auction.name} subheader={`${auction.artist}, ${auction.country}, ${auction.dateCreated}`} />
+            <CardMedia className={classes.media} component="img" image={`${auction.imageURL}`} title={auction.name} />
+            <Typography variant="h6" style={{ marginTop: '0.5rem' }}>
+              Art Movement:
+              {auction.artMovementName}
+            </Typography>
+            <CardActions className={classes.cardactionsstyle}>
+              {!secondPriceAuctionResults && (
+                <div className={classes.textcontainer}>
+                  <TextField
+                    inputRef={bidInputRef.current[auction.id]}
+                    error={bidAmtError && !!bidAmtError[auction.id]}
+                    helperText={bidAmtError && bidAmtError[auction.id]}
+                    className={classes.textfieldstyle}
+                    size="small"
+                    name="bidAmount"
+                    placeholder="Enter your bid"
+                    variant="outlined"
+                    disabled={liveStylesForCurrentAuction && Object.keys(liveStylesForCurrentAuction).includes(player.teamName)}
+                    InputProps={{
+                      startAdornment: <InputAdornment position="start">$</InputAdornment>,
+                      endAdornment: <InputAdornment position="end">M</InputAdornment>,
+                    }}
+                  />
+                  <Button
+                    variant="contained"
+                    color="secondary"
+                    disabled={liveStylesForCurrentAuction && Object.keys(liveStylesForCurrentAuction).includes(player.teamName)}
+                    onClick={() => setBidAmt(auction.id)}
+                  >
+                    Bid
+                  </Button>
+                </div>
+              )}
+              <div className={classes.bottomcontainer}>
+                <div className={classes.lastbidcontainer}>
+                  {liveStylesForCurrentAuction
+                  && Object.entries(liveStylesForCurrentAuction).map(([key, value]) => {
+                    const bidAmt = winner && value;
+                    return (
                       <>
                         <div
                           style={{
-                            backgroundColor: `${TEAM_COLOR_MAP[winner]}`,
-                            height: '70px',
-                            lineHeight: '40px',
-                            marginTop: '-10px',
-                          }}>
-                          <h4>
-                            Won by Team {winner} for ${secretAuctionResults[`${auction.id}`].bidAmount}M
-                          </h4>
+                            borderRadius: '50%',
+                            backgroundColor: TEAM_COLOR_MAP[key],
+                            width: '20px',
+                            height: '20px',
+                            margin: '0 15px',
+                            display: 'inline-block',
+                            textAlign: 'center',
+                          }}
+                        >
+                          {bidAmt
+                          && (
+                          <h5>
+                            $
+                            {bidAmt}
+                            M
+                          </h5>
+                          )}
                         </div>
                       </>
-                    )}
-                  </div>
+                    );
+                  })}
+                  {winner && (
+                    <>
+                      <div
+                        style={{
+                          backgroundColor: `${TEAM_COLOR_MAP[winner]}`,
+                          height: '70px',
+                          lineHeight: '40px',
+                          marginTop: '-10px',
+                        }}
+                      >
+                        <h4>
+                          Won by Team
+                          {winner}
+                          for
+                          $
+                          {secondPriceAuctionResults[`${auction.id}`].bidAmount}
+                          M
+                        </h4>
+                      </div>
+                    </>
+                  )}
                 </div>
-              </CardActions>
-            </Card>
-          );
-        })}
+              </div>
+            </CardActions>
+          </Card>
+        );
+      })}
     </div>
   );
 };
 
-export default SecretAuction;
+export default SecondPricedSealedBidAuction;

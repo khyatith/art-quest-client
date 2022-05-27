@@ -12,7 +12,6 @@ import axios from 'axios';
 import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
 import CardMedia from '@material-ui/core/CardMedia';
-// import CardContent from '@material-ui/core/CardContent';
 import CardActions from '@material-ui/core/CardActions';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -175,10 +174,10 @@ const EnglishAuction = () => {
         pathname: `/secretAuctions/${player.hostCode}`,
         state: { secretAuctionsNumber: 1 },
       });
-    } else if (location.state.englishAuctionsNumber === 5) { // 2
+    } else if (location.state.englishAuctionsNumber === 2) { // 2
       history.push({
-        pathname: `/englishAuction/${player.hostCode}`,
-        state: { englishAuctionsNumber: 3 },
+        pathname: `/secondPricedSealedBidAuctions/${player.hostCode}`,
+        state: { secondPricedSealedBidAuctions: 1 },
       });
       // history.push({
       //   pathname: `/dutchAuction/${player.hostCode}`,
