@@ -6,7 +6,7 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable max-len */
 import axios from 'axios';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Fragment } from 'react';
 import AppBar from '@material-ui/core/AppBar';
 import { makeStyles } from '@material-ui/core/styles';
 import { AccountCircleRounded } from '@material-ui/icons';
@@ -15,6 +15,7 @@ import ChartComponent from './PaintingChart';
 import PaintingCards from './PaintingCards';
 import { socket } from '../../../global/socket';
 import Painting from './Painting';
+import ConfirmationScreen from '../../ConfirmationScreen/ConfirmationScreen';
 
 const useStyles = makeStyles(() => ({
   appbar: {
@@ -183,6 +184,7 @@ const ExpoBegining2 = () => {
   const [disableBtn, setDisableBtn] = useState(false);
   const [startTimer, setStartTimer] = useState(false);
   const [totalPoints, setTotalPoints] = useState({});
+  const [showConfirmationScreen, setShowConfirmationScreen] = useState(false);
 
   // const [bidAmtError, setBidAmtError] = useState();
   // const [calculatedRevenue, setCalculatedRevenue] = useState();
@@ -341,6 +343,16 @@ const ExpoBegining2 = () => {
     return () => clearInterval(timer);
   }, []);
 
+  useEffect(() => {
+    socket.on('auctionConfirmation', (params) => {
+      if (params.teamName) {
+        if (user.teamName === params.teamName) {
+          setShowConfirmationScreen(true);
+        }
+      }
+    });
+  }, []);
+
   return (
     <>
       <AppBar className={classes.appbar}>
@@ -360,54 +372,61 @@ const ExpoBegining2 = () => {
           </span>
         </div>
       </AppBar>
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: '1fr 1fr',
-          height: '100vh',
-          width: '90%',
-          margin: '0 auto',
-          gap: '20px',
-        }}>
-        <div className={classes.left_grid}>
-          {paintings.length > 0 &&
-            paintings.map((item) => (
-              <Painting
-                item={item}
-                key={item.auctionId}
-                classes={classes}
-                disableAll={disableAll}
-                setDisableAll={setDisableAll}
-                disableBtn={disableBtn}
-                removeExpand={removeExpand}
-                setRemoveExpand={setRemoveExpand}
-                removeAllExpanded={removeAllExpanded}
-                setStartTimer={setStartTimer}
-              />
-            ))}
-        </div>
-        <div className="right_grid">
-          <div className={classes['team-points']}>
-            <h3>Total Team Points</h3>
-            {Object.keys(totalPoints).map((teamName) => (
-              <span style={{ marginLeft: '1rem' }}>
-                {teamName !== '' && (
-                  <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap' }}>
-                    <AccountCircleRounded style={{ color: teamName?.toLowerCase() }} />
-                    <span style={{ marginLeft: '0.5em' }}>{totalPoints[teamName]}</span>
-                  </div>
-                )}
-              </span>
-            ))}
-          </div>
-          <div className={classes['classify_points-container']}>
-            <div style={{ display: 'flex', justifyContent: 'center' }}>{Object.keys(ChartData).length !== 0 && <ChartComponent ChartData={ChartData} />}</div>
-            <div style={{ display: 'flex', justifyContent: 'center', marginTop: '2rem' }}>
-              <PaintingCards paintingData={paintingData.artifacts} paintingsObj={classifyPointsDetails} />
+      {!showConfirmationScreen && (
+        <>
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: '1fr 1fr',
+              height: '100vh',
+              width: '90%',
+              margin: '0 auto',
+              gap: '20px',
+            }}>
+            <div className={classes.left_grid}>
+              {paintings.length > 0 &&
+                paintings.map((item) => (
+                  <Painting
+                    item={item}
+                    key={item.auctionId}
+                    classes={classes}
+                    disableAll={disableAll}
+                    setDisableAll={setDisableAll}
+                    disableBtn={disableBtn}
+                    removeExpand={removeExpand}
+                    setRemoveExpand={setRemoveExpand}
+                    removeAllExpanded={removeAllExpanded}
+                    setStartTimer={setStartTimer}
+                  />
+                ))}
+            </div>
+            <div className="right_grid">
+              <div className={classes['team-points']}>
+                <h3>Total Team Points</h3>
+                {Object.keys(totalPoints).map((teamName) => (
+                  <span style={{ marginLeft: '1rem' }}>
+                    {teamName !== '' && (
+                      <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap' }}>
+                        <AccountCircleRounded style={{ color: teamName?.toLowerCase() }} />
+                        <span style={{ marginLeft: '0.5em' }}>{totalPoints[teamName]}</span>
+                      </div>
+                    )}
+                  </span>
+                ))}
+              </div>
+              <div className={classes['classify_points-container']}>
+                <div style={{ display: 'flex', justifyContent: 'center' }}>
+                  {Object.keys(ChartData).length !== 0 && <ChartComponent ChartData={ChartData} />}
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'center', marginTop: '2rem' }}>
+                  <PaintingCards paintingData={paintingData.artifacts} paintingsObj={classifyPointsDetails} />
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-      </div>
+        </>
+      )}
+      {showConfirmationScreen && <ConfirmationScreen cityData={cityData} />}
     </>
   );
 };
