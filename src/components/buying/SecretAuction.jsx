@@ -224,6 +224,7 @@ const SecretAuction = () => {
       }
     });
   });
+
   useEffect(() => {
     socket.on('renderSecretAuctionsResult', (data) => {
       // eslint-disable-next-line indent
