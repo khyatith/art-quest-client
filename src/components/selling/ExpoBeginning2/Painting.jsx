@@ -15,7 +15,9 @@ import { validateCurrentBid } from '../../../global/helpers';
 import { API_URL } from '../../../global/constants';
 import { socket } from '../../../global/socket';
 
-function Painting({ item, classes, disableAll, setDisableAll, removeAllExpanded, removeExpand, setRemoveExpand, disableBtn, setStartTimer }) {
+function Painting({
+  item, classes, disableAll, setDisableAll, removeAllExpanded, removeExpand, setRemoveExpand, disableBtn, setStartTimer, cityData, otherTeams,
+}) {
   const user = JSON.parse(sessionStorage.getItem('user'));
   const [auctionPrice, setAuctionPrice] = React.useState('');
   const [error, setError] = React.useState('');
@@ -44,40 +46,58 @@ function Painting({ item, classes, disableAll, setDisableAll, removeAllExpanded,
       setRemoveExpand(false);
     }
   }, [removeExpand]);
-  const setAuctionPriceHandler = async () => {
+  const setAuctionPriceHandler = async (type) => {
     try {
       const isValidCurrentBid = validateCurrentBid(auctionPrice);
-
-      console.log(isValidCurrentBid, auctionPrice);
       if (!isValidCurrentBid) {
         setError('Please enter a valid Auction Amount');
         setTimeout(() => setError(''), 2000);
         return;
       }
-      const auction = {
-        paintingId: item.auctionId,
-        imageURL: item.imageURL,
-        artMovement: item?.artMovement,
-        artMovementId: item?.artMovementId,
-        artist: item?.artist,
-        name: item?.name,
-        bidAmount: auctionPrice,
-        bidAt: +new Date(),
-      };
-      const payload = {
-        roomId: user.hostCode,
-        roundId: user.roundId,
-        locationId: user.currentLocation,
-        teamColor: user.teamName,
-        auction,
-      };
-      await axios.post(`${API_URL}/buying/nominateForAuction`, { ...payload });
-      socket.emit('auctionConfirmation', { ...payload });
-
-      setDisableAll(true);
-      setBidDone(true);
-      removeAllExpanded();
-      setStartTimer(true);
+      if (type === 'auction') {
+        const auction = {
+          paintingId: item.auctionId,
+          imageURL: item.imageURL,
+          artMovement: item?.artMovement,
+          artMovementId: item?.artMovementId,
+          artist: item?.artist,
+          name: item?.name,
+          bidAmount: auctionPrice,
+          bidAt: +new Date(),
+        };
+        const payload = {
+          roomId: user.hostCode, roundId: user.roundId, locationId: user.currentLocation, teamColor: user.teamName, auction,
+        };
+        await axios.post(`${API_URL}/buying/nominateForAuction`, { ...payload });
+        socket.emit('auctionConfirmation', { ...payload });
+        setDisableAll(true);
+        setBidDone(true);
+        removeAllExpanded();
+        setStartTimer(true);
+      }
+      if (type === 'market') {
+        console.log('market');
+        console.log(item);
+        const { interestInArt, demand, transportCost } = cityData;
+        const paintingId = item.auctionId;
+        socket.emit('paintingNominated', {
+          paintingId,
+          roomCode: user.hostCode,
+          interestInArt,
+          population: demand,
+          cityId: user.currentLocation,
+          teamName: user.teamName,
+          artifactId: paintingId,
+          ticketPrice: auctionPrice,
+          roundId: user.roundId,
+          allTeamsInCity: otherTeams.length,
+          transportCost,
+        });
+        setDisableAll(true);
+        setBidDone(true);
+        removeAllExpanded();
+        setStartTimer(true);
+      }
     } catch (e) {
       setError(e);
       setTimeout(() => setError(''), 2000);
@@ -205,18 +225,16 @@ function Painting({ item, classes, disableAll, setDisableAll, removeAllExpanded,
       </CardContent>
       <Collapse in={(expandAuction || expandedMarket) && !bidDone} timeout="auto" sx={{ position: 'absolute', zIndex: '5' }} className={classes.auction_drop}>
         <CardContent>
+          {expandedMarket && <p style={{ fontSize: '.9rem', fontWeight: 'bold', textAlign: 'center' }}>{`Enter the ticket Price to enter the ${cityData.cityName} museum`}</p>}
           <TextField
             className={classes.form}
             name="auctionAmount"
-            label="Auction Amount"
+            label={expandAuction ? 'Auction Amount' : 'Ticket Price'}
             variant="outlined"
             value={auctionPrice}
             error={!!error}
-            // helperText={error}
-            onChange={(e) => {
-              console.log(e.target);
-              setAuctionPrice(e.target.value);
-            }}
+            helperText={error && error}
+            onChange={(e) => { setAuctionPrice(e.target.value); }}
           />
           <p style={{ fontSize: '.7rem', color: '#CACACA' }}>*Price range between $1 - $999</p>
         </CardContent>
@@ -234,8 +252,9 @@ function Painting({ item, classes, disableAll, setDisableAll, removeAllExpanded,
             height: '32px',
             width: '80%',
           }}
-          onClick={setAuctionPriceHandler}>
-          Set Auction Price
+          onClick={() => { setAuctionPriceHandler(expandAuction ? 'auction' : 'market'); }}
+        >
+          {expandAuction ? 'Auction Price' : 'Set Ticket Price'}
         </Button>
       </Collapse>
     </Card>
