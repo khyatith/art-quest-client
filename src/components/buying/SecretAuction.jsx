@@ -136,7 +136,7 @@ const SecretAuction = () => {
   const player = JSON.parse(sessionStorage.getItem('user'));
   const [isFirstBid, setIsFirstBid] = useState(false);
   const allAuctionsObj = JSON.parse(sessionStorage.getItem('allAuction'));
-  const secretAuctions = location.state.secretAuctionsNumber === 2 ? allAuctionsObj.secretAuctions1 : allAuctionsObj.secretAuctions2;
+  const secretAuctions = location.state.secretAuctionsNumber === 1 ? allAuctionsObj.secretAuctions1 : allAuctionsObj.secretAuctions2;
   const bidInputRef = useRef(
     secretAuctions.artifacts.reduce((acc, a) => {
       /* eslint-disable  no-param-reassign */

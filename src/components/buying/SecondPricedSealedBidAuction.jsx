@@ -155,11 +155,9 @@ const SecondPricedSealedBidAuction = () => {
     const seconds = Math.floor((parseInt(total, 10) / 1000) % 60);
     const minutes = Math.floor((parseInt(total, 10) / 1000 / 60) % 60);
     if (total < 1000) {
-      if (!isFetched) {
-        if (Object.keys(classifyPoints).length === 0) {
-          setIsFetched(true);
-          socket.emit('secondPriceAuctionTimerEnded', player.hostCode);
-        }
+      if (!isFetched && Object.keys(classifyPoints).length === 0) {
+        setIsFetched(true);
+        socket.emit('secondPriceAuctionTimerEnded', player.hostCode);
       }
     } else {
       const value = {
@@ -181,6 +179,22 @@ const SecondPricedSealedBidAuction = () => {
       history.push(`/buying/results/${player.hostCode}`);
     }
   };
+
+  useEffect(() => {
+    socket.on('renderSecondPriceAuctionsResult', (data) => {
+      console.log('data in render second price auction result', data);
+      if (!secondPriceAuctionResults && data && data.result) {
+        setSecondPriceAuctionResults(data.result);
+      }
+      if (!classifyPoints) {
+        console.log('classifyPoints', classifyPoints);
+        setClassifyPoints(data.classifyPoints);
+      }
+    });
+    if (secondPriceAuctionResults) {
+      setTimeout(goToNextAuctions, 10000);
+    }
+  }, []);
 
   useEffect(() => {
     async function fetchTimerValue() {
@@ -212,28 +226,9 @@ const SecondPricedSealedBidAuction = () => {
       }
     });
   });
-  useEffect(() => {
-    socket.on('renderSecondPriceAuctionsResult', (data) => {
-      console.log('data', data);
-      // eslint-disable-next-line indent
-      // eslint-disable-next-line indent
-      // eslint-disable-next-line spaced-comment
-      if (!secondPriceAuctionResults && data && data.result) {
-        setSecondPriceAuctionResults(data.result);
-      }
-      if (!classifyPoints) {
-        console.log('classifyPoints', classifyPoints);
-        setClassifyPoints(data.classifyPoints);
-      }
-    });
-    if (secondPriceAuctionResults) {
-      setTimeout(goToNextAuctions, 10000);
-    }
-  }, []);
 
   useEffect(() => {
     socket.on('setSecondPricedLiveStyles', (data) => {
-      console.log('data', data);
       const { teamName, auctionId, bidAmount } = data;
       const currentLiveStateForAuction = liveStyles.current[auctionId].current;
       if (!currentLiveStateForAuction) {
