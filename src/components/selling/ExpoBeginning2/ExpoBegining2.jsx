@@ -400,6 +400,8 @@ const ExpoBegining2 = () => {
                     setRemoveExpand={setRemoveExpand}
                     removeAllExpanded={removeAllExpanded}
                     setStartTimer={setStartTimer}
+                    cityData={cityData}
+                    otherTeams={otherTeams}
                   />
                 ))}
             </div>
