@@ -12,7 +12,6 @@ import axios from 'axios';
 import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
 import CardMedia from '@material-ui/core/CardMedia';
-// import CardContent from '@material-ui/core/CardContent';
 import CardActions from '@material-ui/core/CardActions';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -132,9 +131,12 @@ const EnglishAuction = () => {
   const history = useHistory();
   const player = JSON.parse(sessionStorage.getItem('user'));
   const allAuctionsObj = JSON.parse(sessionStorage.getItem('allAuction'));
-  // const auctions = location.state.englishAuctionsNumber === 1 ? allAuctionsObj.englishAuctions1 : allAuctionsObj.englishAuctions2;
   // eslint-disable-next-line no-unused-vars
-  const [auctions, setAuctions] = useState(location.state.englishAuctionsNumber === 1 ? allAuctionsObj.englishAuctions1 : allAuctionsObj.englishAuctions2);
+  const [auctions, setAuctions] = useState(
+    // eslint-disable-next-line no-nested-ternary
+    location.state.englishAuctionsNumber === 1 ? allAuctionsObj.englishAuctions1
+      : (location.state.englishAuctionsNumber === 2 ? allAuctionsObj.englishAuctions2 : allAuctionsObj.englishAuctions3),
+  );
   const bidInputRef = useRef(auctions.artifacts.reduce((acc, a) => {
     /* eslint-disable  no-param-reassign */
     acc = {
@@ -175,15 +177,11 @@ const EnglishAuction = () => {
         pathname: `/secretAuctions/${player.hostCode}`,
         state: { secretAuctionsNumber: 1 },
       });
-    } else if (location.state.englishAuctionsNumber === 5) { // 2
+    } else if (location.state.englishAuctionsNumber === 2) { // 2
       history.push({
-        pathname: `/englishAuction/${player.hostCode}`,
-        state: { englishAuctionsNumber: 3 },
+        pathname: `/secondPricedSealedBidAuctions/${player.hostCode}`,
+        state: { secondPricedSealedBidAuctions: 1 },
       });
-      // history.push({
-      //   pathname: `/dutchAuction/${player.hostCode}`,
-      //   state: { dutchAuctionsNumber: 1 },
-      // });
     } else {
       history.push(`/buying/results/${player.hostCode}`);
     }

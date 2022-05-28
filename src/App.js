@@ -11,6 +11,7 @@ import LocationPhase from './components/selling/LocationPhase';
 import SellingResults from './components/selling/SellingResults';
 import FinalResults from './components/selling/FinalResults';
 import EnglishAuction from './components/buying/EnglishAuction';
+import SecondPricedSealedBidAuction from './components/buying/SecondPricedSealedBidAuction';
 import SecretAuction from './components/buying/SecretAuction';
 import SellingGameInstructions from './components/selling/SellingGameInstructions';
 import EndBuyingPhase from './components/EndBuyingPhase';
@@ -46,6 +47,7 @@ function App() {
                 <Game />
               </Route>
               <Route path="/englishAuction/:code" component={EnglishAuction} />
+              <Route path="/secondPricedSealedBidAuctions/:code" component={SecondPricedSealedBidAuction} />
               <Route path="/secretAuctions/:code" component={SecretAuction} />
               <Route path="/dutchAuction/:code" component={DutchAuction} />
               {/* <Route path="/sell/:code" exact component={ExpoBegining} /> */}
