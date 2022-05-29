@@ -77,7 +77,12 @@ const useStyles = makeStyles(() => ({
     background: '#F8F5F4',
     boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.25)',
     borderRadius: '20px',
-    paddingBottom: '2rem',
+    // paddingBottom: '2rem',
+    height: '800px',
+    paddingBottom: '5rem',
+    width: '100%',
+    display: 'flex',
+    flexDirection: 'column',
   },
 
   left_grid: {
@@ -85,8 +90,19 @@ const useStyles = makeStyles(() => ({
     gridTemplateColumns: '1fr 1fr',
     gap: '10px',
     marginTop: '20px',
-    height: '750px',
+    height: '930px',
+
     overflowY: 'scroll',
+    // overflowX: 'hidden',
+    boxSizing: 'border-box',
+  },
+  right_grid: {
+    display: 'flex',
+    gap: '10px',
+    width: '100%',
+    marginTop: '20px',
+    height: '750px',
+    // overflowY: 'scroll',
     // overflowX: 'hidden',
     boxSizing: 'border-box',
   },
@@ -188,6 +204,8 @@ const ExpoBegining2 = () => {
   const [startTimer, setStartTimer] = useState(false);
   const [totalPoints, setTotalPoints] = useState({});
   const [showConfirmationScreen, setShowConfirmationScreen] = useState(false);
+  const [sellToMarket, setSellToMarket] = useState(false);
+  const [nominatedPainting, setNominatedPainting] = useState(false);
 
   // const [bidAmtError, setBidAmtError] = useState();
   // const [calculatedRevenue, setCalculatedRevenue] = useState();
@@ -282,10 +300,8 @@ const ExpoBegining2 = () => {
       await axios
         .get(`${API_URL}/buying/startExpoBeginTimer?roomId=${user.hostCode}`)
         .then((newData) => {
-          console.log('timerValue->', newData);
           if (newData?.data?.sellPaintingTimerValue) {
             setTimerValue(newData.data.sellPaintingTimerValue);
-            // setTimerValue(+newData.data.sellPaintingTimerValue.total / 1000);
           }
         })
         .catch((e) => console.log(e));
@@ -294,7 +310,6 @@ const ExpoBegining2 = () => {
       getTimer();
     }
   }, [startTimer]);
-  console.log('timer->', timerValue);
   useEffect(() => {
     socket.on('ExpoBeginTimerStarted', () => {
       if (!startTimer) {
@@ -326,8 +341,6 @@ const ExpoBegining2 = () => {
       getSellingInfo();
     }
   }, [user, cityData, paintings]);
-  // console.log('paintings->', paintings);
-  console.log('paintings->', paintings, user, disableAll);
 
   useEffect(() => {
     if (otherTeams.length > 1) {
@@ -345,11 +358,23 @@ const ExpoBegining2 = () => {
     }
     return () => clearInterval(timer);
   }, []);
-
+  console.log('disableBtn->', disableBtn);
   useEffect(() => {
     socket.on('auctionConfirmation', (params) => {
       if (params.teamName) {
         if (user.teamName === params.teamName) {
+          setShowConfirmationScreen(true);
+        }
+      }
+    });
+  }, []);
+  useEffect(() => {
+    socket.on('sellToMarketConfirmation', (params) => {
+      if (params.teamName) {
+        if (user.teamName === params.teamName) {
+          console.log('params->', params);
+          setSellToMarket(true);
+          setNominatedPainting(params);
           setShowConfirmationScreen(true);
         }
       }
@@ -370,7 +395,6 @@ const ExpoBegining2 = () => {
                 fill="#FFAFAF"
               />
             </svg>
-            {/* {(+timerValue < 10 && +timerValue > 0) ? `0${timerValue}` : timerValue} */}
             {timerValue?.seconds} secs
           </span>
         </div>
@@ -388,10 +412,11 @@ const ExpoBegining2 = () => {
             }}>
             <div className={classes.left_grid}>
               {paintings.length > 0 &&
-                paintings.map((item) => (
+                paintings.map((item, idx) => (
                   <Painting
                     item={item}
-                    key={item.auctionId}
+                    // eslint-disable-next-line react/no-array-index-key
+                    key={idx}
                     classes={classes}
                     disableAll={disableAll}
                     setDisableAll={setDisableAll}
@@ -431,7 +456,7 @@ const ExpoBegining2 = () => {
           </div>
         </>
       )}
-      {showConfirmationScreen && <ConfirmationScreen cityData={cityData} />}
+      {showConfirmationScreen && <ConfirmationScreen cityData={cityData} sellToMarket={sellToMarket} nominatedPainting={nominatedPainting} classes={classes} />}
     </>
   );
 };

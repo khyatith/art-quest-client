@@ -7,16 +7,16 @@ import { Card, Typography, CardMedia, Badge, Paper } from '@material-ui/core';
 
 const artMovementColors = ['rgb(255, 99, 132)', 'rgb(54, 162, 235)', 'rgb(255, 205, 86)', 'rgb(250, 154, 85)', 'rgb(69, 91, 255)', 'rgb(69, 255, 212)'];
 const PaintingCards = ({ paintingData, paintingsObj }) => (
-  <div style={{ width: '100%' }}>
+  <div style={{ width: '100%', overflowX: 'scroll', maxWidth: '35rem' }}>
     <div
       style={{
         display: 'flex',
-        justifyContent: 'space-evenly',
+        // justifyContent: 'space-evenly',
         // eslint-disable-next-line react/jsx-closing-bracket-location
       }}
     />
     <h2 style={{ textAlign: 'center' }}>My artwork collection</h2>
-    <div style={{ display: 'flex', textAlign: 'center', justifyContent: 'space-around' }}>
+    <div style={{ display: 'flex', textAlign: 'center', gap: '20px', margin: '5px' }}>
       {Object.keys(paintingsObj).map((artMovement, index) => (
         <Paper elevation={2} style={{ borderRadius: '0.5rem' }}>
           <div
