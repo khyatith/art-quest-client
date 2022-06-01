@@ -6,9 +6,9 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable max-len */
 import axios from 'axios';
-import React, { useState, useEffect, Fragment } from 'react';
-import AppBar from '@material-ui/core/AppBar';
+import React, { useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
+import { useHistory } from 'react-router';
 import { AccountCircleRounded } from '@material-ui/icons';
 import { API_URL } from '../../../global/constants';
 import ChartComponent from './PaintingChart';
@@ -16,52 +16,9 @@ import PaintingCards from './PaintingCards';
 import { socket } from '../../../global/socket';
 import Painting from './Painting';
 import ConfirmationScreen from '../../ConfirmationScreen/ConfirmationScreen';
+import LocationHeader from '../LocationHeader/LocationHeader';
 
 const useStyles = makeStyles(() => ({
-  appbar: {
-    backgroundColor: 'brown',
-    flexGrow: 1,
-    position: 'relative',
-    display: 'grid',
-    gridTemplateColumns: '8fr 2fr',
-    height: '69px',
-  },
-  location: {
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    fontFamily: 'Poppins',
-    fontStyle: 'normal',
-    fontWeight: '600',
-    fontSize: '1.4rem',
-    lineHeight: '108%',
-    /* or 32px */
-    letterSpacing: '-0.055em',
-    color: '#F9F9F9',
-  },
-  auction_timer: {
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    fontStyle: 'normal',
-    fontWeight: '500',
-    fontSize: '16px',
-    lineHeight: '108%',
-    /* or 17px */
-
-    letterSpacing: '-0.055em',
-
-    color: '#F9F9F9',
-  },
-  timer: {
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    background: '#FFFFFF',
-    borderRadius: '100px',
-    color: '#E20000',
-    padding: '10px',
-  },
   'team-points': {
     display: 'flex',
     flexDirection: 'row',
@@ -195,7 +152,6 @@ const ExpoBegining2 = () => {
   const [paintingData, setPaintingData] = useState({});
   const [classifyPointsDetails, setClassifyPointsObj] = useState({});
   const [ChartData, setChartData] = useState({});
-  // const [expanded, setExpanded] = React.useState(-1);
   const [otherTeams, setOtherTeams] = useState([]);
   const [disableAll, setDisableAll] = React.useState(false);
   const [timerValue, setTimerValue] = useState('');
@@ -206,12 +162,12 @@ const ExpoBegining2 = () => {
   const [showConfirmationScreen, setShowConfirmationScreen] = useState(false);
   const [sellToMarket, setSellToMarket] = useState(false);
   const [nominatedPainting, setNominatedPainting] = useState(false);
+  const history = useHistory();
 
   // const [bidAmtError, setBidAmtError] = useState();
   // const [calculatedRevenue, setCalculatedRevenue] = useState();
   // const [ticketPriceFromAPI, setTicketPriceFromapi] = useState();
   // const [sellingAuctionBidWinner, setSellingAuctionBidWinner] = useState();
-  // const history = useHistory();
 
   const calculateClassifyPointData = (data) => {
     const classifyPointsObj = {};
@@ -258,7 +214,7 @@ const ExpoBegining2 = () => {
     const seconds = Math.floor((parseInt(total, 10) / 1000) % 60);
     const minutes = Math.floor((parseInt(total, 10) / 1000 / 60) % 60);
     if (total < 1000) {
-      socket.emit('expoBeginEnded');
+      socket.emit('expoBeginEnded', { hostCode: user.hostCode });
     } else {
       const value = {
         total,
@@ -275,11 +231,6 @@ const ExpoBegining2 = () => {
   };
 
   useEffect(() => {
-    // let interval;
-    // if (timerValue && startTimer) {
-    //   interval = setTimeout(() => setTimerValue((e) => e - 1), 1000);
-    // }
-    // return () => clearInterval(interval);
     let interval;
     if (timerValue && startTimer) {
       interval = setTimeout(() => getRemainingTime(), 1000);
@@ -358,7 +309,6 @@ const ExpoBegining2 = () => {
     }
     return () => clearInterval(timer);
   }, []);
-  console.log('disableBtn->', disableBtn);
   useEffect(() => {
     socket.on('auctionConfirmation', (params) => {
       if (params.teamName) {
@@ -380,25 +330,18 @@ const ExpoBegining2 = () => {
       }
     });
   }, []);
-
+  React.useEffect(() => {
+    socket.on('ExpoBeginTimerEnded', () => {
+      console.log('routing to next page');
+      history.push({
+        pathname: `/sell/auction/${user.playerId}`,
+        state: { cityData },
+      });
+    });
+  }, [cityData]);
   return (
     <>
-      <AppBar className={classes.appbar}>
-        <header className={classes.location}>{cityData?.cityName}</header>
-        <div className={classes.auction_timer}>
-          <div style={{ padding: '10px' }}>Auction starts</div>{' '}
-          <span className={classes.timer}>
-            <svg width="16" height="18" viewBox="0 0 16 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M10.5 0.25H5.5V1.91667H10.5V0.25Z" fill="#FFAFAF" />
-              <path
-                d="M13.8583 5.575L15.0417 4.39167C14.6833 3.96667 14.2917 3.56667 13.8667 3.21667L12.6833 4.4C11.3917 3.36667 9.76667 2.75 8 2.75C3.85833 2.75 0.5 6.10833 0.5 10.25C0.5 14.3917 3.85 17.75 8 17.75C12.15 17.75 15.5 14.3917 15.5 10.25C15.5 8.48333 14.8833 6.85833 13.8583 5.575ZM8.83333 11.0833H7.16667V6.08333H8.83333V11.0833Z"
-                fill="#FFAFAF"
-              />
-            </svg>
-            {timerValue?.seconds} secs
-          </span>
-        </div>
-      </AppBar>
+      <LocationHeader timerValue={timerValue} cityData={cityData} />
       {!showConfirmationScreen && (
         <>
           <div
@@ -456,7 +399,7 @@ const ExpoBegining2 = () => {
           </div>
         </>
       )}
-      {showConfirmationScreen && <ConfirmationScreen cityData={cityData} sellToMarket={sellToMarket} nominatedPainting={nominatedPainting} classes={classes} />}
+      {showConfirmationScreen && <ConfirmationScreen cityData={cityData} sellToMarket={sellToMarket} nominatedPainting={nominatedPainting} classes={classes} user={user} />}
     </>
   );
 };
