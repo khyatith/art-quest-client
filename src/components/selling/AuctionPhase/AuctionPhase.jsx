@@ -280,10 +280,9 @@ function AuctionPhase() {
   }, []);
 
   const setBidAmt = (auctionId) => {
-    console.log('=>', bidInputRef, auctionId);
     const bidInput = bidInputRef.current[auctionId].current.value;
     const currentAuction = auctions.filter((auction) => parseInt(auction.id, 10) === parseInt(auctionId, 10));
-    console.log(previousBidDetails);
+    console.log('previousBids->', previousBidDetails);
     const isValidCurrentBid = validateCurrentBid(bidInput);
     if (!isValidCurrentBid) {
       setBidAmtError({
@@ -324,15 +323,28 @@ function AuctionPhase() {
         bidAt: +new Date(),
         bidTeam: player.teamName,
         bidColor: player.teamColor,
-        englishAuctionsNumber: location.state.englishAuctionsNumber,
+        nominatedAuctionNumber: location?.state?.nominatedAuctionNumber,
       };
       // console.log('bidding !!');
       //   if (!isFirstBid) {
       //     setIsFirstBid(true);
       //   }
-      // socket.emit('addEnglishAuctionBid', bidInfo);
+      socket.emit('nominatedAuctionBids', bidInfo);
     }
   };
+  useEffect(() => {
+    socket.on('setNominatedAuction', (previousBid) => {
+      console.log('setNominatedAuction->', previousBid);
+      // setAuctionTimerEnded(false);
+      if (previousBid) {
+        previousBidDetails.current[`${previousBid.auctionId}`] = {
+          bidAmount: previousBid.bidAmount,
+          bidTeam: previousBid.bidTeam,
+          bidColor: previousBid.bidColor,
+        };
+      }
+    });
+  }, [previousBidDetails]);
   const getRemainingTime = () => {
     const total = parseInt(timerValue.total, 10) - 1000;
     const seconds = Math.floor((parseInt(total, 10) / 1000) % 60);

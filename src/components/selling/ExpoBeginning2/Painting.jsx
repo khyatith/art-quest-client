@@ -236,7 +236,7 @@ function Painting({
           <TextField
             className={classes.form}
             name="auctionAmount"
-            label={expandAuction ? 'Auction Amount' : 'Ticket Price'}
+            label={(expandAuction && 'Auction Amount') || (expandedMarket && 'Ticket Price')}
             variant="outlined"
             value={auctionPrice}
             error={!!error}
@@ -261,7 +261,8 @@ function Painting({
           }}
           onClick={() => { setAuctionPriceHandler(expandAuction ? 'auction' : 'market'); }}
         >
-          {expandAuction ? 'Auction Price' : 'Set Ticket Price'}
+          {expandAuction && 'Auction Price' }
+          {expandedMarket && 'Set Ticket Price' }
         </Button>
       </Collapse>
     </Card>
