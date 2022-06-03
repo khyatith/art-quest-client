@@ -222,10 +222,12 @@ function AuctionPhase() {
   const classes = useStyles();
   const player = JSON.parse(sessionStorage.getItem('user'));
   const [auctions, setAuctions] = useState([]);
-  const [timerValue] = useState('');
+  const [timerValue, setTimerValue] = useState('');
   const [englishAuctionTimer, setEnglishAuctionTimer] = useState();
   const [englishAuctionResults, setEnglishAuctionResults] = useState();
   const [bidAmtError, setBidAmtError] = useState();
+  const [startTimer, setStartTimer] = useState(false);
+
   const bidInputRef = useCallback((function () {
     const val = auctions.reduce((acc, a) => {
     /* eslint-disable  no-param-reassign */
@@ -256,12 +258,12 @@ function AuctionPhase() {
 
   useEffect(() => {
     const getAuctionItems = async () => {
+      const tmp = [];
       try {
         const apiURL = `buying/getNominatedForAuctionItems?roomId=${player.hostCode}&locationId=${player.currentLocation}&roundId=${player.roundId}`;
         const { data } = await axios.get(`${API_URL}/${apiURL}`);
         const parsedAuction = data.auctions;
         const teams = Object.keys(parsedAuction);
-        const tmp = [];
         teams.forEach((t) => {
           parsedAuction[t].forEach((item) => {
             const tmpItem = { ...item, nominatedBy: t, id: item.paintingId };
@@ -272,6 +274,7 @@ function AuctionPhase() {
       } catch (e) {
         console.log(e);
       }
+      return tmp;
     };
     getAuctionItems().then((res) => console.log(res)).catch((e) => console.log(e));
   }, []);
@@ -302,6 +305,12 @@ function AuctionPhase() {
         ...bidAmtError,
         [auctionId]: null,
       });
+      if (!startTimer) {
+        socket.emit('startNominatedAuctionTimer', {
+          hostCode: player.hostCode,
+        });
+        setStartTimer(true);
+      }
       const bidInfo = {
         auctionType: currentAuction[0].auctionType,
         auctionId: currentAuction[0].id,
@@ -324,6 +333,58 @@ function AuctionPhase() {
       // socket.emit('addEnglishAuctionBid', bidInfo);
     }
   };
+  const getRemainingTime = () => {
+    const total = parseInt(timerValue.total, 10) - 1000;
+    const seconds = Math.floor((parseInt(total, 10) / 1000) % 60);
+    const minutes = Math.floor((parseInt(total, 10) / 1000 / 60) % 60);
+    if (total < 1000) {
+      // socket.emit('nominatedAuctionEnded', { hostCode: player.hostCode });
+    } else {
+      const value = {
+        total,
+        minutes: minutes.toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }),
+        seconds: seconds.toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }),
+      };
+      setTimerValue(value);
+    }
+  };
+  useEffect(() => {
+    let interval;
+    if (timerValue && startTimer) {
+      interval = setTimeout(() => getRemainingTime(), 1000);
+    }
+    return () => clearInterval(interval);
+  }, [timerValue]);
+  // useEffect(() => {
+  //   if (startTimer) {
+  //     socket.emit('startNominatedAuctionTimer', {
+  //       hostCode: player.hostCode,
+  //     });
+  //   }
+  // }, [startTimer]);
+  useEffect(() => {
+    const getTimer = async () => {
+      await axios
+        .get(`${API_URL}/buying/startNominatedAuction?roomId=${player.hostCode}`)
+        .then((newData) => {
+          if (newData?.data?.nominatedAuctionTimerValue) {
+            setTimerValue(newData.data.nominatedAuctionTimerValue);
+          }
+        })
+        .catch((e) => console.log(e));
+    };
+    if (startTimer) {
+      getTimer();
+    }
+  }, [startTimer]);
+  useEffect(() => {
+    socket.on('nominatedAuctionStarted', () => {
+      console.log('starting Timer for nominatedAuction');
+      if (!startTimer) {
+        setStartTimer(true);
+      }
+    });
+  }, []);
 
   return (
     <>
@@ -347,10 +408,12 @@ function AuctionPhase() {
               <Typography
                 variant="h6"
                 style={{
-                  display: 'flex', marginTop: '0.5rem', justifyContent: 'center', color: 'white', background: `${auction?.nominatedBy.toLowerCase()}`,
+                  display: 'flex', marginTop: '0.5rem', justifyContent: 'center', color: 'black', background: `${TEAM_COLOR_MAP[auction?.nominatedBy]}`, textShadow: 'white 0px 0px 10px',
                 }}
               >
-                {`Nominated By ${auction?.nominatedBy} Team`}
+                <span style={{ textShadow: 'white 0px 0px 10px' }}>
+                  {`Nominated By ${auction?.nominatedBy} Team`}
+                </span>
               </Typography>
               <CardHeader
                 title={auction.name}
