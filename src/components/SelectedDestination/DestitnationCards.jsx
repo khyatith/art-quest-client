@@ -3,8 +3,7 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 
-function DestitnationCards({ teamInfo }) {
-  console.log('teamInfo->', teamInfo);
+function DestinationCards({ teamInfo }) {
   const useStyles = makeStyles(() => ({
     destination_container: {
       height: '140px',
@@ -72,4 +71,4 @@ function DestitnationCards({ teamInfo }) {
   );
 }
 
-export default DestitnationCards;
+export default DestinationCards;

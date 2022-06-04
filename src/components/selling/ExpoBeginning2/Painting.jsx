@@ -78,21 +78,28 @@ function Painting({
       if (type === 'market') {
         console.log('market');
         console.log(item);
-        const { interestInArt, demand, transportCost } = cityData;
         const paintingId = item.auctionId;
-        socket.emit('paintingNominated', {
+        const payload = {
+          // ...item,
           paintingId,
+          imageURL: item?.imageURL,
+          artMovement: item?.artMovement,
+          artist: item?.artist,
+          name: item?.name,
           roomCode: user.hostCode,
-          interestInArt,
-          population: demand,
           cityId: user.currentLocation,
           teamName: user.teamName,
           artifactId: paintingId,
           ticketPrice: auctionPrice,
           roundId: user.roundId,
-          allTeamsInCity: otherTeams.length,
-          transportCost,
+          allTeamsInCity: otherTeams?.length,
+
+        };
+        socket.emit('paintingNominated', {
+          ...payload,
         });
+        socket.emit('sellToMarketConfirmation', { ...payload });
+
         setDisableAll(true);
         setBidDone(true);
         removeAllExpanded();

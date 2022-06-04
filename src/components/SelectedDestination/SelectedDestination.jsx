@@ -3,8 +3,7 @@
 /* eslint-disable quotes */
 /* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from 'react';
-import { Card, CardMedia, CardContent } from '@mui/material';
-import DestitnationCards from './DestitnationCards';
+import DestinationCards from './DestitnationCards';
 
 const SelectedDestination = ({ player, chosenLocationForTeams, selectedLocationId }) => {
   const [location, setLocation] = useState({});
@@ -80,7 +79,7 @@ const SelectedDestination = ({ player, chosenLocationForTeams, selectedLocationI
           //     <p>{JSON.stringify()}</p>
           //   </CardContent>
           // </Card>
-            <DestitnationCards teamInfo={otherTeamDetails[otd]} />
+            <DestinationCards teamInfo={otherTeamDetails[otd]} />
 
           ))}
         </div>
