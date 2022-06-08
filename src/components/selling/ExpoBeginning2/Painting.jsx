@@ -62,6 +62,8 @@ function Painting({
           artMovementId: item?.artMovementId,
           artist: item?.artist,
           name: item?.name,
+          country: item?.country,
+          dateCreated: item?.dateCreated,
           bidAmount: auctionPrice,
           bidAt: +new Date(),
         };
@@ -76,8 +78,6 @@ function Painting({
         setStartTimer(true);
       }
       if (type === 'market') {
-        console.log('market');
-        console.log(item);
         const paintingId = item.auctionId;
         const payload = {
           // ...item,

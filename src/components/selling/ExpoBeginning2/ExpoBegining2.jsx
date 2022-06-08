@@ -322,7 +322,6 @@ const ExpoBegining2 = () => {
     socket.on('sellToMarketConfirmation', (params) => {
       if (params.teamName) {
         if (user.teamName === params.teamName) {
-          console.log('params->', params);
           setSellToMarket(true);
           setNominatedPainting(params);
           setShowConfirmationScreen(true);

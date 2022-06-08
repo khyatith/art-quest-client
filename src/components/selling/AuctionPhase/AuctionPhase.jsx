@@ -9,7 +9,7 @@ import React, {
   useCallback,
 } from 'react';
 import axios from 'axios';
-import { useLocation } from 'react-router';
+import { useHistory, useLocation } from 'react-router';
 import { makeStyles } from '@material-ui/core/styles';
 import { Typography, TextField } from '@material-ui/core';
 import InputAdornment from '@material-ui/core/InputAdornment';
@@ -128,105 +128,18 @@ const useStyles = makeStyles((theme) => ({
     width: '90%',
   },
 }));
-// const auctions = [
-//   {
-//     id: 1,
-//     paintingId: 2,
-//     imageURL: 'https://firebasestorage.googleapis.com/v0/b/auctions-f601d.appspot.com/o/art-movements%2Fabstract%2Fbild-no-635.webp?alt=media&token=ae360b2a-73db-4d36-9642-a6b11527d2a7',
-//     artMovement: 'abstract',
-//     artMovementId: '3',
-//     artist: 'Gerhard Richter',
-//     name: 'Bild No. 635',
-//     bidAmount: '2',
-//     bidAt: 1653411772775,
-//   },
-//   {
-//     id: 2,
-//     paintingId: 1,
-//     imageURL: 'https://firebasestorage.googleapis.com/v0/b/auctions-f601d.appspot.com/o/art-movements%2Fukiyo-e%2F32nd-station-of-takaido.jpeg?alt=media&token=2b6310a2-ab4d-458c-9e4b-c58fdd7c8a09',
-//     artMovement: 'ukiyo-e',
-//     artMovementId: '4',
-//     artist: 'Utagawa Hiroshige',
-//     name: '53 stations of Tokaido',
-//     bidAmount: '12',
-//     bidAt: 1653388906587,
-//   },
-//   {
-//     id: 3,
-//     paintingId: 2,
-//     imageURL: 'https://firebasestorage.googleapis.com/v0/b/auctions-f601d.appspot.com/o/art-movements%2Fabstract%2Fbild-no-635.webp?alt=media&token=ae360b2a-73db-4d36-9642-a6b11527d2a7',
-//     artMovement: 'abstract',
-//     artMovementId: '3',
-//     artist: 'Gerhard Richter',
-//     name: 'Bild No. 635',
-//     bidAmount: '2',
-//     bidAt: 1653411772775,
-//   },
-//   {
-//     id: 4,
-//     paintingId: 1,
-//     imageURL: 'https://firebasestorage.googleapis.com/v0/b/auctions-f601d.appspot.com/o/art-movements%2Fukiyo-e%2F32nd-station-of-takaido.jpeg?alt=media&token=2b6310a2-ab4d-458c-9e4b-c58fdd7c8a09',
-//     artMovement: 'ukiyo-e',
-//     artMovementId: '4',
-//     artist: 'Utagawa Hiroshige',
-//     name: '53 stations of Tokaido',
-//     bidAmount: '12',
-//     bidAt: 1653388906587,
-//   },
-//   {
-//     id: 5,
-//     paintingId: 2,
-//     imageURL: 'https://firebasestorage.googleapis.com/v0/b/auctions-f601d.appspot.com/o/art-movements%2Fabstract%2Fbild-no-635.webp?alt=media&token=ae360b2a-73db-4d36-9642-a6b11527d2a7',
-//     artMovement: 'abstract',
-//     artMovementId: '3',
-//     artist: 'Gerhard Richter',
-//     name: 'Bild No. 635',
-//     bidAmount: '2',
-//     bidAt: 1653411772775,
-//   },
-//   {
-//     id: 6,
-//     paintingId: 1,
-//     imageURL: 'https://firebasestorage.googleapis.com/v0/b/auctions-f601d.appspot.com/o/art-movements%2Fukiyo-e%2F32nd-station-of-takaido.jpeg?alt=media&token=2b6310a2-ab4d-458c-9e4b-c58fdd7c8a09',
-//     artMovement: 'ukiyo-e',
-//     artMovementId: '4',
-//     artist: 'Utagawa Hiroshige',
-//     name: '53 stations of Tokaido',
-//     bidAmount: '12',
-//     bidAt: 1653388906587,
-//   },
-//   {
-//     id: 7,
-//     paintingId: 2,
-//     imageURL: 'https://firebasestorage.googleapis.com/v0/b/auctions-f601d.appspot.com/o/art-movements%2Fabstract%2Fbild-no-635.webp?alt=media&token=ae360b2a-73db-4d36-9642-a6b11527d2a7',
-//     artMovement: 'abstract',
-//     artMovementId: '3',
-//     artist: 'Gerhard Richter',
-//     name: 'Bild No. 635',
-//     bidAmount: '2',
-//     bidAt: 1653411772775,
-//   },
-//   {
-//     id: 8,
-//     paintingId: 1,
-//     imageURL: 'https://firebasestorage.googleapis.com/v0/b/auctions-f601d.appspot.com/o/art-movements%2Fukiyo-e%2F32nd-station-of-takaido.jpeg?alt=media&token=2b6310a2-ab4d-458c-9e4b-c58fdd7c8a09',
-//     artMovement: 'ukiyo-e',
-//     artMovementId: '4',
-//     artist: 'Utagawa Hiroshige',
-//     name: '53 stations of Tokaido',
-//     bidAmount: '12',
-//     bidAt: 1653388906587,
-//   },
-// ];
+
 function AuctionPhase() {
   const classes = useStyles();
   const player = JSON.parse(sessionStorage.getItem('user'));
   const [auctions, setAuctions] = useState([]);
   const [timerValue, setTimerValue] = useState('');
   const [englishAuctionTimer, setEnglishAuctionTimer] = useState();
-  const [englishAuctionResults, setEnglishAuctionResults] = useState();
+  const [nominatedAuctionResult, setNominatedAuctionResult] = useState();
   const [bidAmtError, setBidAmtError] = useState();
   const [startTimer, setStartTimer] = useState(false);
+  const [sendResultEventOnce, setSendResultEventOnce] = useState(false);
+  const [updateLBOnce, setUpdateLBOnce] = useState(false);
 
   const bidInputRef = useCallback((function () {
     const val = auctions.reduce((acc, a) => {
@@ -253,7 +166,7 @@ function AuctionPhase() {
     return { current: val };
   }()), [auctions]);
 
-  //   const history = useHistory();
+  const history = useHistory();
   const location = useLocation();
 
   useEffect(() => {
@@ -276,13 +189,12 @@ function AuctionPhase() {
       }
       return tmp;
     };
-    getAuctionItems().then((res) => console.log(res)).catch((e) => console.log(e));
+    getAuctionItems().catch((e) => console.log(e));
   }, []);
 
   const setBidAmt = (auctionId) => {
     const bidInput = bidInputRef.current[auctionId].current.value;
     const currentAuction = auctions.filter((auction) => parseInt(auction.id, 10) === parseInt(auctionId, 10));
-    console.log('previousBids->', previousBidDetails);
     const isValidCurrentBid = validateCurrentBid(bidInput);
     if (!isValidCurrentBid) {
       setBidAmtError({
@@ -292,7 +204,6 @@ function AuctionPhase() {
       return;
     }
     const prevBidAmt = previousBidDetails.current[auctionId] && previousBidDetails.current[auctionId].bidAmount;
-    console.log(previousBidDetails, previousBidDetails[auctionId], prevBidAmt, auctionId);
     const desiredBid = prevBidAmt && parseInt(prevBidAmt, 10) + 2;
     if (parseInt(bidInput, 10) < parseInt(desiredBid, 10)) {
       setBidAmtError({
@@ -314,7 +225,7 @@ function AuctionPhase() {
         auctionType: currentAuction[0].auctionType,
         auctionId: currentAuction[0].id,
         imageURL: currentAuction[0].imageURL,
-        artMovement: currentAuction[0]?.artMovementName,
+        artMovement: currentAuction[0]?.artMovement,
         artMovementId: currentAuction[0]?.artMovementId,
         artist: currentAuction[0]?.artist,
         name: currentAuction[0]?.name,
@@ -323,19 +234,48 @@ function AuctionPhase() {
         bidAt: +new Date(),
         bidTeam: player.teamName,
         bidColor: player.teamColor,
-        nominatedAuctionNumber: location?.state?.nominatedAuctionNumber,
+        nominatedAuctionNumber: player.roundId,
+        nominatedBy: currentAuction[0].nominatedBy,
       };
-      // console.log('bidding !!');
-      //   if (!isFirstBid) {
-      //     setIsFirstBid(true);
-      //   }
       socket.emit('nominatedAuctionBids', bidInfo);
     }
   };
   useEffect(() => {
+    socket.on('renderNominatedAuctionResult', (data) => {
+      // setClassifyPoints(data.classifyPoints.classify);
+      if (!nominatedAuctionResult) {
+        setNominatedAuctionResult(data.nominatedAuctionBids);
+        const updateLeaderBoard = async () => {
+          await axios
+            .get(`${API_URL}/buying/updateLeaderBoardAfterNominationAuction?roomId=${player.hostCode}`)
+            .then((res) => {
+            })
+            .catch((e) => console.log(e));
+        };
+        if (!updateLBOnce) {
+          setUpdateLBOnce(true);
+          updateLeaderBoard().then(async () => {
+            setTimeout(() => {
+              socket.emit('sellingResultsTimerEnded', { player });
+            }, 5000);
+            await axios.post(`${API_URL}/buying/updateRoundId`, { roomId: player.hostCode, roundId: player.roundId });
+          }).catch((e) => console.log(e));
+        }
+      }
+    });
+  }, []);
+
+  useEffect(() => {
+    socket.on('startNextRound', () => {
+      if (player.roundId < 4) {
+        history.push(`/sell/location/${player.playerId}`);
+      } else {
+        history.push(`/sell/finalresult/${player.playerId}`);
+      }
+    });
+  }, []);
+  useEffect(() => {
     socket.on('setNominatedAuction', (previousBid) => {
-      console.log('setNominatedAuction->', previousBid);
-      // setAuctionTimerEnded(false);
       if (previousBid) {
         previousBidDetails.current[`${previousBid.auctionId}`] = {
           bidAmount: previousBid.bidAmount,
@@ -345,12 +285,13 @@ function AuctionPhase() {
       }
     });
   }, [previousBidDetails]);
-  const getRemainingTime = () => {
+  const getRemainingTime = async () => {
     const total = parseInt(timerValue.total, 10) - 1000;
     const seconds = Math.floor((parseInt(total, 10) / 1000) % 60);
     const minutes = Math.floor((parseInt(total, 10) / 1000 / 60) % 60);
-    if (total < 1000) {
-      // socket.emit('nominatedAuctionEnded', { hostCode: player.hostCode });
+    if (total < 1000 && !sendResultEventOnce) {
+      socket.emit('nominatedAuctionTimerEnded', { roomId: player.hostCode, nominatedAuctionNumber: player.roundId });
+      setSendResultEventOnce(true);
     } else {
       const value = {
         total,
@@ -367,13 +308,6 @@ function AuctionPhase() {
     }
     return () => clearInterval(interval);
   }, [timerValue]);
-  // useEffect(() => {
-  //   if (startTimer) {
-  //     socket.emit('startNominatedAuctionTimer', {
-  //       hostCode: player.hostCode,
-  //     });
-  //   }
-  // }, [startTimer]);
   useEffect(() => {
     const getTimer = async () => {
       await axios
@@ -391,7 +325,6 @@ function AuctionPhase() {
   }, [startTimer]);
   useEffect(() => {
     socket.on('nominatedAuctionStarted', () => {
-      console.log('starting Timer for nominatedAuction');
       if (!startTimer) {
         setStartTimer(true);
       }
@@ -400,7 +333,7 @@ function AuctionPhase() {
 
   return (
     <>
-      <LocationHeader timerValue={timerValue} cityData={location.state.cityData} />
+      <LocationHeader timerValue={timerValue} cityData={location.state.cityData} timerEnded={updateLBOnce} />
       <div style={{
         width: '90%', margin: '20px',
       }}
@@ -442,7 +375,7 @@ function AuctionPhase() {
                 {' '}
                 {auction.artMovement}
               </Typography>
-              { !englishAuctionResults && (
+              { !nominatedAuctionResult && (
                 <CardActions className={classes.cardactionsstyle}>
                   <div className={classes.textcontainer}>
                     <TextField
@@ -454,7 +387,7 @@ function AuctionPhase() {
                       name="bidAmount"
                       placeholder="Enter your bid"
                       variant="outlined"
-                      disabled={(previousBid && (previousBid?.bidTeam === player.teamName)) || englishAuctionResults}
+                      disabled={(previousBid && (previousBid?.bidTeam === player.teamName)) || nominatedAuctionResult}
                       InputProps={{
                         startAdornment: <InputAdornment position="start">$</InputAdornment>,
                         endAdornment: <InputAdornment position="end">M</InputAdornment>,
@@ -508,22 +441,22 @@ function AuctionPhase() {
                   </div>
                 </CardActions>
               )}
-              {englishAuctionResults && englishAuctionResults[auction.id] && (
+              {nominatedAuctionResult && nominatedAuctionResult[auction.id] && (
                 <div className={classes.bottomcontainer}>
-                  <div className={classes.lastbidcontainer} style={{ backgroundColor: `${englishAuctionResults[auction.id].bidColor}` }}>
+                  <div className={classes.lastbidcontainer} style={{ backgroundColor: `${nominatedAuctionResult[auction.id].bidColor}` }}>
                     <p className={classes.lastbidby}>
                       Won by
                       {' '}
-                      {`Team ${englishAuctionResults[auction.id]?.bidTeam}`}
+                      {`Team ${nominatedAuctionResult[auction.id]?.bidTeam}`}
                       {' '}
                       for
                       {' '}
-                      {`$${parseInt(englishAuctionResults[auction.id].bidAmount, 10)}M`}
+                      {`$${parseInt(nominatedAuctionResult[auction.id].bidAmount, 10)}M`}
                     </p>
                   </div>
                 </div>
               )}
-              {englishAuctionResults && !englishAuctionResults[auction.id] && (
+              {nominatedAuctionResult && !nominatedAuctionResult[auction.id] && (
                 <div className={classes.bottomcontainer}>
                   <div className={classes.lastbidcontainer}>
                     <p className={classes.lastbidby}>

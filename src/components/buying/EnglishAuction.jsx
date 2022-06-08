@@ -272,6 +272,8 @@ const EnglishAuction = () => {
         artMovementId: currentAuction[0]?.artMovementId,
         artist: currentAuction[0]?.artist,
         name: currentAuction[0]?.name,
+        country: currentAuction[0]?.country,
+        dateCreated: currentAuction[0]?.dateCreated,
         player,
         bidAmount: bidInput,
         bidAt: +new Date(),
