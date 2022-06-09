@@ -53,7 +53,7 @@ function LocationHeader({ cityData, timerValue, timerEnded }) {
   const classes = useStyles();
   return (
     <AppBar className={classes.appbar}>
-      {timerEnded ? (<header>Next next round in 15sec</header>)
+      {timerEnded ? (<header className={classes.location}>Next round starts in 15sec</header>)
         : (
           <>
             <header className={classes.location}>{cityData?.cityName}</header>
