@@ -33,7 +33,7 @@ const StyledTableCell = withStyles((theme) => ({
   },
 }))(TableCell);
 
-export default function Leaderboard({ showAuctionResults, goToNextAuctions }) {
+export default function Leaderboard({ showAuctionResults, goToNextAuctions, maxWidth }) {
   const classes = useStyles();
   const { allTeams } = JSON.parse(sessionStorage.getItem('allAuction'));
   const player = JSON.parse(sessionStorage.getItem('user'));
@@ -64,7 +64,7 @@ export default function Leaderboard({ showAuctionResults, goToNextAuctions }) {
     const classifyPoints = leaderboardData?.classifyPoints?.classify;
     // if (!leaderboard) return <></>;
     return (
-      <TableContainer className={classes.paper} component={Paper}>
+      <TableContainer className={classes.paper} component={Paper} style={{ margin: `${maxWidth && ('0 auto')}` }}>
         <Table className={classes.table} aria-label="customized table">
           <TableHead>
             <TableRow>

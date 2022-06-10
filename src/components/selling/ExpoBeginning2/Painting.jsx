@@ -62,6 +62,8 @@ function Painting({
           artMovementId: item?.artMovementId,
           artist: item?.artist,
           name: item?.name,
+          country: item?.country,
+          dateCreated: item?.dateCreated,
           bidAmount: auctionPrice,
           bidAt: +new Date(),
         };
@@ -76,8 +78,6 @@ function Painting({
         setStartTimer(true);
       }
       if (type === 'market') {
-        console.log('market');
-        console.log(item);
         const paintingId = item.auctionId;
         const payload = {
           // ...item,
@@ -236,7 +236,7 @@ function Painting({
           <TextField
             className={classes.form}
             name="auctionAmount"
-            label={expandAuction ? 'Auction Amount' : 'Ticket Price'}
+            label={(expandAuction && 'Auction Amount') || (expandedMarket && 'Ticket Price')}
             variant="outlined"
             value={auctionPrice}
             error={!!error}
@@ -261,7 +261,8 @@ function Painting({
           }}
           onClick={() => { setAuctionPriceHandler(expandAuction ? 'auction' : 'market'); }}
         >
-          {expandAuction ? 'Auction Price' : 'Set Ticket Price'}
+          {expandAuction && 'Auction Price' }
+          {expandedMarket && 'Set Ticket Price' }
         </Button>
       </Collapse>
     </Card>
