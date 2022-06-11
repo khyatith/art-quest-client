@@ -79,6 +79,8 @@ function Painting({
       }
       if (type === 'market') {
         const paintingId = item.auctionId;
+        const { interestInArt, demand, transportCost } = cityData;
+
         const payload = {
           // ...item,
           paintingId,
@@ -93,7 +95,9 @@ function Painting({
           ticketPrice: auctionPrice,
           roundId: user.roundId,
           allTeamsInCity: otherTeams?.length,
-
+          interestInArt,
+          population: demand,
+          transportCost,
         };
         socket.emit('paintingNominated', {
           ...payload,

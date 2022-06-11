@@ -161,7 +161,7 @@ const ExpoBegining2 = () => {
   const [totalPoints, setTotalPoints] = useState({});
   const [showConfirmationScreen, setShowConfirmationScreen] = useState(false);
   const [sellToMarket, setSellToMarket] = useState(false);
-  const [nominatedPainting, setNominatedPainting] = useState(false);
+  const [sellToMarketPainting, setSellToMarketPainting] = useState({});
   const history = useHistory();
 
   // const [bidAmtError, setBidAmtError] = useState();
@@ -323,21 +323,21 @@ const ExpoBegining2 = () => {
       if (params.teamName) {
         if (user.teamName === params.teamName) {
           setSellToMarket(true);
-          setNominatedPainting(params);
+          setSellToMarketPainting(params);
           setShowConfirmationScreen(true);
         }
       }
     });
   }, []);
-  React.useEffect(() => {
+  useEffect(() => {
     socket.on('ExpoBeginTimerEnded', () => {
       console.log('routing to next page');
       history.push({
         pathname: `/sell/auction/${user.playerId}`,
-        state: { cityData },
+        state: { cityData, sellToMarketPainting },
       });
     });
-  }, [cityData]);
+  }, [sellToMarketPainting]);
   return (
     <>
       <LocationHeader timerValue={timerValue} cityData={cityData} />
@@ -398,7 +398,7 @@ const ExpoBegining2 = () => {
           </div>
         </>
       )}
-      {showConfirmationScreen && <ConfirmationScreen cityData={cityData} sellToMarket={sellToMarket} nominatedPainting={nominatedPainting} classes={classes} user={user} />}
+      {showConfirmationScreen && <ConfirmationScreen cityData={cityData} sellToMarket={sellToMarket} sellToMarketPainting={sellToMarketPainting} classes={classes} user={user} />}
     </>
   );
 };
