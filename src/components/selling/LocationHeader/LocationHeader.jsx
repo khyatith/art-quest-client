@@ -2,6 +2,7 @@
 import React from 'react';
 import AppBar from '@material-ui/core/AppBar';
 import { makeStyles } from '@material-ui/core/styles';
+import { isNaN, parseInt } from 'lodash';
 
 const useStyles = makeStyles(() => ({
   appbar: {
@@ -51,6 +52,7 @@ const useStyles = makeStyles(() => ({
 }));
 function LocationHeader({ cityData, timerValue, timerEnded }) {
   const classes = useStyles();
+  console.log(isNaN(timerValue?.total));
   return (
     <AppBar className={classes.appbar}>
       {timerEnded ? (<header className={classes.location}>Next round starts in 15sec</header>)
@@ -68,7 +70,7 @@ function LocationHeader({ cityData, timerValue, timerEnded }) {
                     fill="#FFAFAF"
                   />
                 </svg>
-                {timerValue?.seconds}
+                {!isNaN(parseInt(timerValue?.total)) ? parseInt(timerValue?.total) / 1000 : ''}
                 {' '}
                 secs
               </span>
