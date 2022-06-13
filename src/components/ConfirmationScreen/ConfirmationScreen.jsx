@@ -7,7 +7,7 @@ import NominatedPainting from './NominatedPainting';
 // import { socket } from '../../global/socket';
 
 const ConfirmationScreen = ({
-  cityData, sellToMarket, nominatedPainting, user, classes,
+  cityData, sellToMarket, sellToMarketPainting, user, classes,
 }) =>
   // const history = useHistory();
   // eslint-disable-next-line implicit-arrow-linebreak
@@ -36,7 +36,7 @@ const ConfirmationScreen = ({
             <h3 style={{ color: 'white' }}>Your nominated Painting: </h3>
             <div />
           </div>
-          <NominatedPainting classes={classes} paintingData={nominatedPainting} />
+          <NominatedPainting classes={classes} paintingData={sellToMarketPainting} />
         </div>
       ) : (
         <div style={{ display: 'flex', justifyContent: 'center' }}>

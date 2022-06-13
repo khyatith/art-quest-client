@@ -23,6 +23,7 @@ import LocationHeader from '../LocationHeader/LocationHeader';
 import { validateCurrentBid } from '../../../global/helpers';
 import { TEAM_COLOR_MAP, API_URL } from '../../../global/constants';
 import { socket } from '../../../global/socket';
+import SellToMarketPhase from './SellToMarketPhase';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -127,6 +128,46 @@ const useStyles = makeStyles((theme) => ({
     margin: '5px auto',
     width: '90%',
   },
+  'sell_to_market-container': {
+    display: 'flex',
+    flexDirection: 'column',
+    width: '580px',
+    margin: '10px auto',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  'painting-container': {
+    display: 'flex',
+    flexDirection: 'column',
+    position: 'relative',
+    // width: '90%',
+    height: '450px',
+    background: '#FFFFFF',
+    border: ' 1px solid #000000',
+    borderRadius: '10px',
+    margin: '5px',
+    overflow: 'visible !important',
+  },
+  'painting-img_container': {
+    width: '100%',
+    height: '350px',
+    position: 'relative',
+  },
+  'painting-art_movement': {
+    bottom: '-15px',
+    left: '5px',
+    fontSize: '2rem',
+    position: 'absolute',
+    color: 'white',
+    fontWeight: '800',
+    textShadow: '0px 4px 20px #000000',
+  },
+  'live_update-container': {
+    display: 'flex',
+    border: 'red solid 2px',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
 }));
 
 function AuctionPhase() {
@@ -137,10 +178,14 @@ function AuctionPhase() {
   const [englishAuctionTimer, setEnglishAuctionTimer] = useState();
   const [nominatedAuctionResult, setNominatedAuctionResult] = useState();
   const [bidAmtError, setBidAmtError] = useState();
-  const [startTimer, setStartTimer] = useState(false);
+  const [startTimer, setStartTimer] = useState(true);
   const [sendResultEventOnce, setSendResultEventOnce] = useState(false);
   const [updateLBOnce, setUpdateLBOnce] = useState(false);
-
+  const history = useHistory();
+  const location = useLocation();
+  const [sellToMarketPainting, setSellToMarketPainting] = useState({});
+  const [showMarketPainting, setShowMarketPainting] = useState(false);
+  const [cityData, setCityData] = useState(false);
   const bidInputRef = useCallback((function () {
     const val = auctions.reduce((acc, a) => {
     /* eslint-disable  no-param-reassign */
@@ -165,9 +210,6 @@ function AuctionPhase() {
     }, {});
     return { current: val };
   }()), [auctions]);
-
-  const history = useHistory();
-  const location = useLocation();
 
   useEffect(() => {
     const getAuctionItems = async () => {
@@ -330,10 +372,20 @@ function AuctionPhase() {
       }
     });
   }, []);
+  useEffect(() => {
+    if (location.state?.sellToMarketPainting) {
+      setSellToMarketPainting(location.state?.sellToMarketPainting);
+    }
+    if (location.state?.cityData) {
+      setCityData(location.state?.cityData);
+    }
+  }, [location.state?.sellToMarketPainting, location.state?.cityData]);
+
+  console.log('selltoMarket->', sellToMarketPainting);
 
   return (
     <>
-      <LocationHeader timerValue={timerValue} cityData={location.state.cityData} timerEnded={updateLBOnce} />
+      <LocationHeader timerValue={timerValue} cityData={cityData} timerEnded={updateLBOnce} />
       <div style={{
         width: '90%', margin: '20px',
       }}
@@ -469,6 +521,8 @@ function AuctionPhase() {
           );
         })}
       </div>
+      {sellToMarketPainting && Object.keys(sellToMarketPainting).length > 0
+          && <SellToMarketPhase sellToMarketPainting={sellToMarketPainting} player={player} timerValue={timerValue} classes={classes} setShowMarketPainting={setShowMarketPainting} />}
     </>
   );
 }
