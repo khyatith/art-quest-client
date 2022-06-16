@@ -337,7 +337,7 @@ const ExpoBegining2 = () => {
         state: { cityData, sellToMarketPainting, showOtherTeamsUpdates: !disableBtn },
       });
     });
-  }, [sellToMarketPainting, cityData]);
+  }, [sellToMarketPainting, cityData, disableBtn]);
   return (
     <>
       <LocationHeader timerValue={timerValue} cityData={cityData} />

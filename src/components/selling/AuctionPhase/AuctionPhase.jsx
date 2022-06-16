@@ -359,9 +359,9 @@ function AuctionPhase() {
     const total = parseInt(timerValue.total, 10) - 1000;
     const seconds = Math.floor((parseInt(total, 10) / 1000) % 60);
     const minutes = Math.floor((parseInt(total, 10) / 1000 / 60) % 60);
-    if (total < 1000 && sendResultEventOnce) {
-      // socket.emit('nominatedAuctionTimerEnded', { roomId: player.hostCode, nominatedAuctionNumber: player.roundId });
-      // setSendResultEventOnce(true);
+    if (total < 1000 && !sendResultEventOnce) {
+      socket.emit('nominatedAuctionTimerEnded', { roomId: player.hostCode, nominatedAuctionNumber: player.roundId });
+      setSendResultEventOnce(true);
     } else {
       const value = {
         total,
@@ -410,9 +410,9 @@ function AuctionPhase() {
     if (location.state?.showOtherTeamsUpdates) {
       setShowOtherTeamsUpdates(location.state?.showOtherTeamsUpdates);
     }
-  }, [location.state?.sellToMarketPainting, location.state?.cityData]);
+  }, [location.state?.sellToMarketPainting, location.state?.cityData, location.state?.showOtherTeamsUpdates]);
 
-  console.log('selltoMarket->', location.state);
+  console.log('selltoMarket->', location.state, showOtherTeamsUpdates);
 
   return (
     <>
@@ -553,8 +553,7 @@ function AuctionPhase() {
         })}
       </div>
       {/* {((sellToMarketPainting && Object.keys(sellToMarketPainting).length > 0) || (auctions.length === 0)) */}
-      {showOtherTeamsUpdates
-          && <SellToMarketPhase sellToMarketPainting={sellToMarketPainting} player={player} timerValue={timerValue} classes={classes} setShowMarketPainting={setShowMarketPainting} />}
+      {location.state?.showOtherTeamsUpdates && <SellToMarketPhase sellToMarketPainting={sellToMarketPainting} player={player} timerValue={timerValue} classes={classes} setShowMarketPainting={setShowMarketPainting} />}
     </>
   );
 }
