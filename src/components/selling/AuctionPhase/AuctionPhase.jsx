@@ -128,6 +128,10 @@ const useStyles = makeStyles((theme) => ({
     margin: '5px auto',
     width: '90%',
   },
+  sell_to_market_outer_container: {
+    display: 'grid',
+    gridTemplateColumns: '3fr 2fr',
+  },
   'sell_to_market-container': {
     display: 'flex',
     flexDirection: 'column',
@@ -164,9 +168,32 @@ const useStyles = makeStyles((theme) => ({
   },
   'live_update-container': {
     display: 'flex',
-    border: 'red solid 2px',
+    border: 'white solid 2px',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    width: '100%',
+    height: '700px',
+    flexDirection: 'column',
+    boxSizing: 'border-box',
+    overflowY: 'scroll',
+    boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.25)',
+    background: '#F8F5F4',
+    borderRadius: '20px',
+  },
+  mssg_container: {
+    display: 'grid',
+    width: '100%',
+    margin: '5px auto',
     justifyContent: 'center',
     alignItems: 'center',
+    gridTemplateColumns: '4fr 6fr',
+    '& > p': {
+      fontSize: '1.2rem',
+    },
+  },
+  painting_img: {
+    width: '20rem',
+    height: '15rem',
   },
 }));
 
@@ -186,6 +213,7 @@ function AuctionPhase() {
   const [sellToMarketPainting, setSellToMarketPainting] = useState({});
   const [showMarketPainting, setShowMarketPainting] = useState(false);
   const [cityData, setCityData] = useState(false);
+  const [showOtherTeamsUpdates, setShowOtherTeamsUpdates] = useState(false);
   const bidInputRef = useCallback((function () {
     const val = auctions.reduce((acc, a) => {
     /* eslint-disable  no-param-reassign */
@@ -379,9 +407,12 @@ function AuctionPhase() {
     if (location.state?.cityData) {
       setCityData(location.state?.cityData);
     }
-  }, [location.state?.sellToMarketPainting, location.state?.cityData]);
+    if (location.state?.showOtherTeamsUpdates) {
+      setShowOtherTeamsUpdates(location.state?.showOtherTeamsUpdates);
+    }
+  }, [location.state?.sellToMarketPainting, location.state?.cityData, location.state?.showOtherTeamsUpdates]);
 
-  console.log('selltoMarket->', sellToMarketPainting);
+  console.log('selltoMarket->', location.state, showOtherTeamsUpdates);
 
   return (
     <>
@@ -521,8 +552,8 @@ function AuctionPhase() {
           );
         })}
       </div>
-      {sellToMarketPainting && Object.keys(sellToMarketPainting).length > 0
-          && <SellToMarketPhase sellToMarketPainting={sellToMarketPainting} player={player} timerValue={timerValue} classes={classes} setShowMarketPainting={setShowMarketPainting} />}
+      {/* {((sellToMarketPainting && Object.keys(sellToMarketPainting).length > 0) || (auctions.length === 0)) */}
+      {location.state?.showOtherTeamsUpdates && <SellToMarketPhase sellToMarketPainting={sellToMarketPainting} player={player} timerValue={timerValue} classes={classes} setShowMarketPainting={setShowMarketPainting} />}
     </>
   );
 }

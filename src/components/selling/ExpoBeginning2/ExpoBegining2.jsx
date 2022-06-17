@@ -334,10 +334,10 @@ const ExpoBegining2 = () => {
       console.log('routing to next page');
       history.push({
         pathname: `/sell/auction/${user.playerId}`,
-        state: { cityData, sellToMarketPainting },
+        state: { cityData, sellToMarketPainting, showOtherTeamsUpdates: !disableBtn },
       });
     });
-  }, [sellToMarketPainting]);
+  }, [sellToMarketPainting, cityData, disableBtn]);
   return (
     <>
       <LocationHeader timerValue={timerValue} cityData={cityData} />

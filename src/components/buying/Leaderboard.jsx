@@ -39,7 +39,6 @@ export default function Leaderboard({ showAuctionResults, goToNextAuctions, maxW
   const player = JSON.parse(sessionStorage.getItem('user'));
   const existingLeaderboard = sessionStorage.getItem('results') ? JSON.parse(sessionStorage.getItem('results')) : {};
   const [leaderboardData, setLeaderboardData] = useState(existingLeaderboard);
-  console.log('leaderBoardData->', leaderboardData);
   useEffect(() => {
     async function fetchLeaderboard() {
       console.log('fetching leaderboard');
