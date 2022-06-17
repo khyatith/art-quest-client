@@ -55,13 +55,11 @@ export default function Leaderboard({ showAuctionResults, goToNextAuctions, maxW
   }, [showAuctionResults]);
 
   const renderLeaderboard = () => {
-    const {
-      totalAmountByTeam, totalPaintingsWonByTeams,
-    } = leaderboardData || {};
+    const { totalAmountByTeam, totalPaintingsWonByTeams } = leaderboardData || {};
     const classifyPoints = leaderboardData?.classifyPoints?.classify;
     // if (!leaderboard) return <></>;
     return (
-      <TableContainer className={classes.paper} component={Paper} style={{ margin: `${maxWidth && ('0 auto')}` }}>
+      <TableContainer className={classes.paper} component={Paper} style={{ margin: `${maxWidth && '0 auto'}` }}>
         <Table className={classes.table} aria-label="customized table">
           <TableHead>
             <TableRow>
@@ -72,36 +70,29 @@ export default function Leaderboard({ showAuctionResults, goToNextAuctions, maxW
             </TableRow>
           </TableHead>
           <TableBody>
-            {allTeams && allTeams.map((entry) => {
-              const teamName = entry;
-              return (
-                <TableRow key={teamName} style={{ backgroundColor: `${TEAM_COLOR_MAP[teamName]}` }}>
-                  <StyledTableCell align="right">
-                    {teamName}
-                  </StyledTableCell>
-                  <StyledTableCell align="right">
-                    {totalPaintingsWonByTeams && totalPaintingsWonByTeams[`${teamName}`] ? totalPaintingsWonByTeams[`${teamName}`] : 0}
-                  </StyledTableCell>
-                  <StyledTableCell align="right">
-                    {classifyPoints && classifyPoints[teamName] ? classifyPoints[teamName] : 0}
-                  </StyledTableCell>
-                  <StyledTableCell component="th" scope="row" align="right">
-                    $
-                    {totalAmountByTeam && totalAmountByTeam[`${teamName}`] ? parseFloat(totalAmountByTeam[`${teamName}`]) : 0}
-                    M
-                  </StyledTableCell>
-                </TableRow>
-              );
-            })}
+            {allTeams
+              && allTeams.map((entry) => {
+                const teamName = entry;
+                return (
+                  <TableRow key={teamName} style={{ backgroundColor: `${TEAM_COLOR_MAP[teamName]}` }}>
+                    <StyledTableCell align="right">{teamName}</StyledTableCell>
+                    <StyledTableCell align="right">
+                      {totalPaintingsWonByTeams && totalPaintingsWonByTeams[`${teamName}`] ? totalPaintingsWonByTeams[`${teamName}`] : 0}
+                    </StyledTableCell>
+                    <StyledTableCell align="right">{classifyPoints && classifyPoints[teamName] ? classifyPoints[teamName] : 0}</StyledTableCell>
+                    <StyledTableCell component="th" scope="row" align="right">
+                      $
+                      {totalAmountByTeam && totalAmountByTeam[`${teamName}`] ? parseFloat(totalAmountByTeam[`${teamName}`]) : 0}
+                      M
+                    </StyledTableCell>
+                  </TableRow>
+                );
+              })}
           </TableBody>
         </Table>
       </TableContainer>
     );
   };
 
-  return (
-    <div>
-      {renderLeaderboard()}
-    </div>
-  );
+  return <div>{renderLeaderboard()}</div>;
 }

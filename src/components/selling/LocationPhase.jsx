@@ -1,3 +1,5 @@
+/* eslint-disable no-tabs */
+/* eslint-disable no-mixed-spaces-and-tabs */
 /* eslint-disable prefer-const */
 /* eslint-disable implicit-arrow-linebreak */
 /* eslint-disable no-unused-vars */
@@ -277,6 +279,18 @@ function LocationPhase() {
     }
   };
 
+  const getEndGameFlag = async () => {
+    const response = await axios({
+      url: `${API_URL}/buying/hasGameEnded`,
+	  method: 'POST',
+	  headers: {
+        'content-type': 'application/json',
+	  },
+	  data: JSON.stringify({ roomId: player.hostCode }),
+    });
+    console.log(response);
+  };
+
   useEffect(() => {
     socket.on('goToExpo', () => {
       console.log('expo');
@@ -296,6 +310,7 @@ function LocationPhase() {
       socket.emit('startTimer', { player });
     }
   }, [startTimer]);
+  useEffect(() => {}, []);
 
   useEffect(() => {
     const getTimer = async () => {
