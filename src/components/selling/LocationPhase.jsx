@@ -313,6 +313,7 @@ function LocationPhase() {
       socket.emit('startTimer', { player });
     }
   }, [startTimer]);
+  useEffect(() => {}, []);
 
   useEffect(() => {
     getEndGameFlag();
