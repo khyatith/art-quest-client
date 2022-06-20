@@ -68,6 +68,7 @@ function EndBuyingPhase() {
   const [totalDebtByTeam, setTotalDebtByTeam] = useState({});
   const [totalPaintingsWonByTeam, setTotalPaintingsWonByTeam] = useState({});
   const [allTeams, setAllTeams] = useState([]);
+  const [classifyPoints, setClassifyPoints] = useState([]);
   // const { setPlayer } = useContext(userContext);
   // const { setLeaderboardData } = useContext(leaderboardContext);
   // const [sortedTeamsByPaintingsWon, setSortedTeamsByPaintingsWon] = useState({});
@@ -86,9 +87,9 @@ function EndBuyingPhase() {
     if (data && data.allTeams) {
       setAllTeams(data.allTeams);
     }
-    // if (data && data.teamsByRank) {
-    //   setTeamsByRank(data.teamsByRank);
-    // }
+    if (data && data.classifyPoints) {
+      setClassifyPoints(data.classifyPoints);
+    }
     if (data && data.totalPaintingsWonByTeam) {
       setTotalPaintingsWonByTeam(data.totalPaintingsWonByTeam);
     }
@@ -101,7 +102,7 @@ function EndBuyingPhase() {
   };
 
   useEffect(() => {
-    if (!allTeams) {
+    if (allTeams.length === 0) {
       getWinner();
     }
   }, [allTeams]);
@@ -109,9 +110,9 @@ function EndBuyingPhase() {
   const renderLeaderboardData = () => {
     const tableData = allTeams.map((key) => ({
       key,
-      debt: totalDebtByTeam[key],
-      totalPaintings: totalPaintingsWonByTeam[key],
-      // efficiency: teamEfficiency[key],
+      debt: totalDebtByTeam[key] ? totalDebtByTeam[key] : 0,
+      totalPaintings: totalPaintingsWonByTeam[key] ? totalPaintingsWonByTeam[key] : 0,
+      classifyPoint: classifyPoints[key] ? classifyPoints[key] : 0,
     }));
     return (
       <>
@@ -134,9 +135,7 @@ function EndBuyingPhase() {
                     {row.key}
                   </StyledTableCell>
                   <StyledTableCell align="right">{row.totalPaintings}</StyledTableCell>
-                  <StyledTableCell align="right">{0}</StyledTableCell>
-                  {// need to replace 0 with classifyPoints
-                      }
+                  <StyledTableCell align="right">{row.classifyPoint}</StyledTableCell>
                   <StyledTableCell align="right">{formatNumberToCurrency(parseFloat(row.debt))}</StyledTableCell>
                   {/* <StyledTableCell align="right">{formatNumberToCurrency(parseFloat(row.efficiency))}</StyledTableCell> */}
                 </TableRow>
@@ -184,7 +183,7 @@ function EndBuyingPhase() {
   useEffect(() => {
     setTimeout(() => {
       history.push(`/sell/instructions/${player.playerId}`);
-    }, 15000);
+    }, 10000);
   });
 
   return (
