@@ -10,7 +10,7 @@ import React, { useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { useHistory } from 'react-router';
 import { AccountCircleRounded } from '@material-ui/icons';
-import { API_URL } from '../../../global/constants';
+import { API_URL, TEAM_COLOR_MAP } from '../../../global/constants';
 import ChartComponent from './PaintingChart';
 import PaintingCards from './PaintingCards';
 import { socket } from '../../../global/socket';
@@ -379,7 +379,7 @@ const ExpoBegining2 = () => {
                   <span style={{ marginLeft: '1rem' }}>
                     {teamName !== '' && (
                       <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap' }}>
-                        <AccountCircleRounded style={{ color: teamName?.toLowerCase() }} />
+                        <AccountCircleRounded style={{ color: teamName ? TEAM_COLOR_MAP[teamName] : '' }} />
                         <span style={{ marginLeft: '0.5em' }}>{totalPoints[teamName]}</span>
                       </div>
                     )}
