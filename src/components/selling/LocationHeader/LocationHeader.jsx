@@ -7,7 +7,6 @@ import { Typography } from '@material-ui/core';
 
 const useStyles = makeStyles(() => ({
   appbar: {
-    // backgroundColor: '#76e246',
     flexGrow: 1,
     position: 'fixed',
     display: 'grid',
@@ -93,7 +92,7 @@ function LocationHeader({
               </>
             ) : (<span> Next round starts in 15sec</span>) }
           </div>
-          <div className={classes.auction_timer} style={{ padding: '10px' }}>{`You are in ${cityData?.cityName}`}</div>
+          <div className={classes.auction_timer} style={{ padding: '10px' }}>{`You are in ${cityData?.cityName ? cityData?.cityName : ''}`}</div>
         </div>
         <Typography variant="h6" className={classes.playercontent}>
           {user.playerName}
