@@ -41,9 +41,7 @@ export default function Leaderboard({ showAuctionResults, goToNextAuctions, maxW
   const [leaderboardData, setLeaderboardData] = useState(existingLeaderboard);
   useEffect(() => {
     async function fetchLeaderboard() {
-      console.log('fetching leaderboard');
       const { data } = await axios.get(`${API_URL}/buying/getResults/${player.hostCode}`);
-      console.log('fetch Leaderboard res->', data);
       setLeaderboardData((prevValues) => ({
         ...prevValues,
         ...data,
@@ -55,7 +53,7 @@ export default function Leaderboard({ showAuctionResults, goToNextAuctions, maxW
       setTimeout(goToNextAuctions, 5000);
     }
   }, [showAuctionResults]);
-  console.log('showAuctionResults->', showAuctionResults);
+
   const renderLeaderboard = () => {
     const {
       totalAmountByTeam, totalPaintingsWonByTeams,

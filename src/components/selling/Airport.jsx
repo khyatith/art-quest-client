@@ -1,3 +1,6 @@
+/* eslint-disable max-len */
+/* eslint-disable no-tabs */
+/* eslint-disable no-mixed-spaces-and-tabs */
 import React, {
   useEffect, useState, useContext, useCallback, useRef,
 } from 'react';
@@ -93,9 +96,7 @@ const Airport = ({
   // };
 
   const setVisitLocation = () => {
-    const flyTicketPrice = ticketPricesForLocations && ticketPricesForLocations[selectedRadio]
-      ? ticketPricesForLocations[selectedRadio]
-      : ticketInputRef.current.value;
+    const flyTicketPrice = ticketPricesForLocations && ticketPricesForLocations[selectedRadio] ? ticketPricesForLocations[selectedRadio] : ticketInputRef.current.value;
     console.log('flyTicketPrice', flyTicketPrice);
     const isValidTicketPrice = validateCurrentBid(flyTicketPrice);
     if (!isValidTicketPrice) {
@@ -138,9 +139,10 @@ const Airport = ({
     async function getMapVal() {
       const { data } = await axios.get(`${API_URL}/buying/getMap`);
       if (disabledLocations && disabledLocations.includes(parseInt(previousLocationId, 10))) {
-        const selectedRadioOption = Object.entries(data).map((items) => items[1].allowedToVisit)
+        const selectedRadioOption = Object.entries(data)
+          .map((items) => items[1].allowedToVisit)
           .find((av) => parseInt(av, 10) !== parseInt(previousLocationId, 10));
-        setSelectedRadio(selectedRadioOption);
+        setSelectedRadio(selectedRadioOption[0]);
       }
       setMapValues(data);
     }
@@ -165,13 +167,11 @@ const Airport = ({
 
   const updateSelectedLocation = (e) => {
     setSelectedRadio(parseInt(e.target.value, 10));
-    axios
-      .get(`${API_URL}/buying/getFlyTicketPriceForLocation?roomId=${player.hostCode}`)
-      .then((result) => {
-        if (result && result.data && result.data.ticketPriceByLocation) {
-          setTicketPricesForLocations(result.data.ticketPriceByLocation);
-        }
-      });
+    axios.get(`${API_URL}/buying/getFlyTicketPriceForLocation?roomId=${player.hostCode}`).then((result) => {
+      if (result && result.data && result.data.ticketPriceByLocation) {
+        setTicketPricesForLocations(result.data.ticketPriceByLocation);
+      }
+    });
   };
 
   const getLocationNameById = (prevLocId) => {
@@ -217,11 +217,10 @@ const Airport = ({
                         </div>
                       );
                     })}
-                    { ticketPricesForLocations && Object.keys(ticketPricesForLocations).length > 0
-                    && (
+                    {ticketPricesForLocations && Object.keys(ticketPricesForLocations).length > 0 && (
                       <h4>
                         {`Current price in ${getLocationNameById(selectedRadio)} is
-                        $${(ticketPricesForLocations[selectedRadio] ? ticketPricesForLocations[selectedRadio] : 0)}`}
+                        $${ticketPricesForLocations[selectedRadio] ? ticketPricesForLocations[selectedRadio] : 0}`}
                       </h4>
                     )}
                     <TextField
@@ -251,9 +250,7 @@ const Airport = ({
                 {player.currentLocationName && player.currentLocationName}
               </p>
               <p>
-                You paid:
-                {' '}
-                $
+                You paid: $
                 {ticketPricesForLocations[player.currentLocation]}
               </p>
             </>
