@@ -3,6 +3,7 @@
 /* eslint-disable object-curly-newline */
 import React, { Fragment } from 'react';
 import { Table, TableBody, TableRow, TableHead, TableContainer, Paper, TableCell } from '@material-ui/core';
+import { TEAM_COLOR_MAP } from '../../global/constants';
 
 const TeamCircle = ({ teamName }) => (
   <>
@@ -11,7 +12,7 @@ const TeamCircle = ({ teamName }) => (
         borderRadius: '50%',
         height: '1.5rem',
         width: '1.5rem',
-        backgroundColor: teamName.toLowerCase(),
+        backgroundColor: TEAM_COLOR_MAP[teamName],
       }}
     />
   </>
