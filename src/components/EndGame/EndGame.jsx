@@ -19,8 +19,8 @@ const artMovementColors = ['rgb(255, 99, 132)', 'rgb(54, 162, 235)', 'rgb(255, 2
 
 const EndGame = () => {
   const location = useLocation();
-  // const player = useSessionStorage('user')[0];
-  const loggedInTeam = 'Blue';
+  const player = useSessionStorage('user')[0];
+  const loggedInTeam = player?.teamName;
   const [leaderboardData, setLeaderboardData] = useState([]);
   const [ChartData, setChartData] = useState([]);
   const [ownedPaintings, setOwnedPaintings] = useState([]);
