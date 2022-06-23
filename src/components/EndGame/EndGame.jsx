@@ -1,14 +1,8 @@
-/* eslint-disable object-curly-newline */
-/* eslint-disable array-callback-return */
-/* eslint-disable react/jsx-closing-bracket-location */
-/* eslint-disable no-unused-vars */
-/* eslint-disable no-mixed-spaces-and-tabs */
-/* eslint-disable no-tabs */
 import { Paper } from '@material-ui/core';
 import axios from 'axios';
-import React, { Fragment, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import { API_URL, TEAM_COLOR_MAP } from '../../global/constants';
+import { API_URL } from '../../global/constants';
 import Header from '../Header';
 import ClassifyChart from './ClassifyChart';
 import LeaderboardTable from './LeaderboardTable';
