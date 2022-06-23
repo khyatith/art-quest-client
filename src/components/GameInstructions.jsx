@@ -93,7 +93,7 @@ function GameInstructions() {
       const { numberOfPlayers, playersJoined } = playersJoinedInfo;
       console.log('->', numberOfPlayers, playersJoined);
       if (numberOfPlayers <= playersJoined) {
-        setTimeout(() => startGame(), 1000);
+        setTimeout(() => startGame(), 30000);
       }
     }
   }, [playersJoinedInfo]);
@@ -104,17 +104,20 @@ function GameInstructions() {
         <div className={classes.container}>
           <Header />
           <p className={classes.title}>Art Quest Phase-1</p>
-          {/* <List className={classes.listcontainer} dense>
-            <ListItem className={classes.listitem}>
-              <ListItemIcon>
-                <StarIcon style={{ color: '#76e246' }} />
-              </ListItemIcon>
-              <ListItemText className={classes.listtext} primary="Create your FAVORITE art collection" />
-            </ListItem>
-          </List> */}
-          {/* <p className={classes.p}>Let the bidding wars begin!</p> */}
+          <p>Welcome to ART-QUEST by KOGNITI</p>
+          <p>In some time you will be taken to a painting exhibition.</p>
+          <p>Your team's challenge for today is to create your favorite art collection</p>
+          <h4>How will you do it?</h4>
+          <p>
+            By taking part in
+            <h4>AUCTIONS</h4>
+            and
+            <h4>BIDDING</h4>
+            on your favorite paintings.
+          </p>
+          <h3>Have fun and Good luck!</h3>
           {playersJoinedInfo && playersJoinedInfo.playersJoined !== playersJoinedInfo.numberOfPlayers ? (
-            <div style={{ border: '5px solid #76e246' }}>
+            <div style={{ marginTop: '20px', border: '5px solid #76e246' }}>
               <h3>
                 Player
                 {' '}
