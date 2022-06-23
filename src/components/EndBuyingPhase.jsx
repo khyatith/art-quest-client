@@ -8,10 +8,13 @@ import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
+import { Typography } from '@material-ui/core';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
-import { useHistory } from 'react-router';
-import Header from './Header';
+import AppBar from '@material-ui/core/AppBar';
+import Toolbar from '@material-ui/core/Toolbar';
+// import MuiAlert from '@material-ui/lab/Alert';
+// import { useHistory } from 'react-router';
 import { API_URL, TEAM_COLOR_MAP } from '../global/constants';
 import { formatNumberToCurrency } from '../global/helpers';
 import useSessionStorage from '../hooks/useSessionStorage';
@@ -47,6 +50,25 @@ const useStyles = makeStyles((theme) => ({
     color: '#051207',
     fontWeight: '700',
   },
+  appbar: {
+    height: 80,
+    paddingBottom: '50px',
+  },
+  title: {
+    [theme.breakpoints.up('sm')]: {
+      display: 'block',
+    },
+    marginRight: theme.spacing(2),
+  },
+  playercontent: {
+    [theme.breakpoints.up('sm')]: {
+      display: 'block',
+    },
+    fontSize: '22px',
+    position: 'absolute',
+    right: '0',
+    marginRight: '10px',
+  },
 }));
 
 const StyledTableCell = withStyles((theme) => ({
@@ -62,19 +84,13 @@ const StyledTableCell = withStyles((theme) => ({
 
 function EndBuyingPhase() {
   const classes = useStyles();
-  const history = useHistory();
+  // const history = useHistory();
   const [artforTeams, setArtForTeams] = useState();
   // const [teamEfficiency, setTeamEfficiency] = useState({});
   const [totalDebtByTeam, setTotalDebtByTeam] = useState({});
   const [totalPaintingsWonByTeam, setTotalPaintingsWonByTeam] = useState({});
   const [allTeams, setAllTeams] = useState([]);
   const [classifyPoints, setClassifyPoints] = useState([]);
-  // const { setPlayer } = useContext(userContext);
-  // const { setLeaderboardData } = useContext(leaderboardContext);
-  // const [sortedTeamsByPaintingsWon, setSortedTeamsByPaintingsWon] = useState({});
-  // const [showWinner, setShowWinner] = useState(false);
-  // const { setPlayer } = useContext(userContext);
-  // const { setLeaderboardData } = useContext(leaderboardContext);
   const player = useSessionStorage('user')[0];
 
   const getWinner = async () => {
@@ -116,30 +132,38 @@ function EndBuyingPhase() {
     }));
     return (
       <>
-        <h2 style={{ textAlign: 'center' }}>All teams</h2>
+        <h2 style={{ textAlign: 'center' }}>Results</h2>
         <TableContainer className={classes.paper} component={Paper}>
           <Table className={classes.table} aria-label="customized table">
             <TableHead>
               <TableRow>
                 <StyledTableCell>Team</StyledTableCell>
                 <StyledTableCell align="right">Total paintings</StyledTableCell>
-                <StyledTableCell align="right">Classify Points</StyledTableCell>
                 <StyledTableCell align="right">Debt</StyledTableCell>
+                <StyledTableCell align="right">Cash Points</StyledTableCell>
+                <StyledTableCell align="right">Classify</StyledTableCell>
+                <StyledTableCell align="right">Total</StyledTableCell>
                 {/* <StyledTableCell align="right">Efficiency</StyledTableCell> */}
               </TableRow>
             </TableHead>
             <TableBody>
-              {tableData.map((row) => (
-                <TableRow key={row.key} style={{ backgroundColor: `${TEAM_COLOR_MAP[row.key]}` }}>
-                  <StyledTableCell component="th" scope="row">
-                    {row.key}
-                  </StyledTableCell>
-                  <StyledTableCell align="right">{row.totalPaintings}</StyledTableCell>
-                  <StyledTableCell align="right">{row.classifyPoint}</StyledTableCell>
-                  <StyledTableCell align="right">{formatNumberToCurrency(parseFloat(row.debt))}</StyledTableCell>
-                  {/* <StyledTableCell align="right">{formatNumberToCurrency(parseFloat(row.efficiency))}</StyledTableCell> */}
-                </TableRow>
-              ))}
+              {tableData.map((row) => {
+                const formattedDebt = parseFloat((row.debt) / 10).toFixed(2);
+                const totalPoints = parseFloat(formattedDebt) + parseFloat(row.classifyPoint);
+                return (
+                  <TableRow key={row.key} style={{ backgroundColor: `${TEAM_COLOR_MAP[row.key]}` }}>
+                    <StyledTableCell component="th" scope="row">
+                      {row.key}
+                    </StyledTableCell>
+                    <StyledTableCell align="right">{row.totalPaintings}</StyledTableCell>
+                    <StyledTableCell align="right">{formatNumberToCurrency(parseFloat(row.debt))}</StyledTableCell>
+                    <StyledTableCell align="right">{formattedDebt}</StyledTableCell>
+                    <StyledTableCell align="right">{row.classifyPoint}</StyledTableCell>
+                    <StyledTableCell align="right">{totalPoints}</StyledTableCell>
+                    {/* <StyledTableCell align="right">{formatNumberToCurrency(parseFloat(row.efficiency))}</StyledTableCell> */}
+                  </TableRow>
+                );
+              })}
             </TableBody>
           </Table>
         </TableContainer>
@@ -147,58 +171,34 @@ function EndBuyingPhase() {
     );
   };
 
-  // const resetApplication = () => {
-  //   history.push('/');
-  //   setPlayer({
-  //     playerName: '',
-  //     teamName: '',
-  //     playerId: '',
-  //     hostCode: '',
-  //     teamColor: '',
-  //     currentLocation: '',
-  //   });
-  //   setLeaderboardData({ leaderboardData: {} });
-  //   sessionStorage.clear();
-  // };
-
-  // const showTeamWinner = () => {
-  //   const { teamName } = player;
-  //   if (teamName === gameWinner) {
-  //     return <h2 style={{ backgroundColor: '#000000', padding: '20px', color: '#76e246' }}>Congratulations! You are the winner!</h2>;
-  //   }
-  //   return (
-  //     <h2 style={{ backgroundColor: '#000000', padding: '20px', color: '#76e246' }}>
-  //       The winner is Team&nbsp;
-  //       {gameWinner}
-  //     </h2>
-  //   );
-  // };
-
   // useEffect(() => {
   //   setTimeout(() => {
-  //     setShowWinner(true);
-  //   }, 5000);
+  //     history.push(`/sell/instructions/${player.playerId}`);
+  //   }, 10000);
   // });
 
-  useEffect(() => {
-    setTimeout(() => {
-      history.push(`/sell/instructions/${player.playerId}`);
-    }, 10000);
-  });
+  // function Alert(props) {
+  //   return <MuiAlert elevation={6} variant="filled" {...props} />;
+  // }
 
   return (
     <>
-      <Header />
-      <div style={{
-        textAlign: 'center',
-        marginTop: '40px',
-        backgroundColor: '#000000',
-        padding: '20px',
-        color: '#76e246',
-      }}
-      >
-        <h3>Starting Phase 2 in 15 seconds ...</h3>
-      </div>
+      <AppBar className={classes.appbar} position="static">
+        <Toolbar className={classes.toolbar}>
+          <Typography variant="h6" className={classes.title}>
+            ART QUEST
+          </Typography>
+          <Typography variant="h6" className={classes.playercontent}>
+            {player.playerName}
+            ,
+            {' '}
+            Team
+            {' '}
+            {player.teamName}
+          </Typography>
+        </Toolbar>
+      </AppBar>
+      {/* <Alert severity="error">Starting Phase 2 in 15 seconds ...</Alert> */}
       {/* {allTeams && totalPaintingsWonByTeam && totalArtScore && renderLeaderboardData()} */}
       {allTeams && totalPaintingsWonByTeam && renderLeaderboardData()}
       {/* <div style={{ margin: '40px auto', textAlign: 'center' }}>

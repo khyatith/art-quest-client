@@ -17,16 +17,14 @@ const useStyles = makeStyles(() => ({
   container: {
     width: '100%',
     height: '100%',
-    backgroundColor: '#000000',
     position: 'absolute',
-    color: '#ffffff',
+    color: '#000000',
     textAlign: 'center',
-    padding: '20px',
   },
   title: {
     fontSize: '36px',
     fontWeight: '700',
-    color: '#76e246',
+    color: '#000000',
     marginTop: '50px',
   },
   listcontainer: {

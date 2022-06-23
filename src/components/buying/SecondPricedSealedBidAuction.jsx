@@ -287,7 +287,6 @@ const SecondPricedSealedBidAuction = () => {
             ART QUEST
           </Typography>
           <Typography className={classes.timercontent} variant="h5" noWrap>
-            {!secondPriceAuctionTimer && 'Auctions starts when someone start Bidding.'}
             {secondPriceAuctionTimer && !secondPriceAuctionResults && (
               <>
                 Time left in Auction:

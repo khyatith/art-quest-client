@@ -397,14 +397,10 @@ function LocationPhase() {
     <div style={{ height: '100vh' }}>
       <AppBar className={classes.appbar}>
         <Toolbar>
-          {startTimer ? (
+          {startTimer && (
             <Typography variant="h6" className={classes.timercontent}>
               {selectedLocationId ? 'Reaching in' : 'Time left to fly'} {locationPageTimerValue && locationPageTimerValue.minutes}:
               {locationPageTimerValue && locationPageTimerValue.seconds}
-            </Typography>
-          ) : (
-            <Typography variant="h6" className={classes.timercontent}>
-              Timer starts when someone select their destination.
             </Typography>
           )}
           {player && (

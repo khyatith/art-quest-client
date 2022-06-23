@@ -305,7 +305,6 @@ const SecretAuction = () => {
             ART QUEST
           </Typography>
           <Typography className={classes.timercontent} variant="h5" noWrap>
-            {!secretAuctionTimer && 'Auctions starts when someone start Bidding.'}
             {secretAuctionTimer && !secretAuctionResults && (
               <>
                 Time left in Auction: {secretAuctionTimer && secretAuctionTimer.minutes}:{secretAuctionTimer && secretAuctionTimer.seconds}

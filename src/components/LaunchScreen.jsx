@@ -17,24 +17,19 @@ import GameInstructions from './GameInstructions';
 import { TEAM_COLOR_MAP, API_URL } from '../global/constants';
 
 const useStyles = makeStyles((theme) => ({
-  grow: {
-    flexGrow: 1,
-  },
   title: {
-    display: 'none',
-    margin: '0 auto',
-    fontWeight: '700',
-    color: '#76e246',
     [theme.breakpoints.up('sm')]: {
       display: 'block',
     },
+    margin: '0 auto',
   },
   playerdiv: {
     fontWeight: 700,
     color: '#76e246', // green color
   },
   appbar: {
-    background: '#051207', // black color
+    height: 130,
+    marginBottom: '50px',
   },
   root: {
     width: 300,
@@ -46,10 +41,8 @@ const useStyles = makeStyles((theme) => ({
     width: 245,
   },
   btnform: {
-    backgroundColor: '#051207',
     margin: '0 0 20px 0px',
     width: 245,
-    color: '#76e246',
     fontWeight: 700,
   },
 }));
@@ -129,15 +122,13 @@ function LaunchScreen() {
     <>
       {!loadInstructions && (
         <>
-          <div className={classes.grow}>
-            <AppBar className={classes.appbar} position="static">
-              <Toolbar>
-                <Typography variant="h6" className={classes.title}>
-                  ART QUEST
-                </Typography>
-              </Toolbar>
-            </AppBar>
-          </div>
+          <AppBar className={classes.appbar} position="static">
+            <Toolbar>
+              <Typography variant="h5" className={classes.title}>
+                ART QUEST
+              </Typography>
+            </Toolbar>
+          </AppBar>
           <div style={{ textAlign: 'center', marginTop: '8rem' }}>
             {joinError && <h3 style={{ color: '#FF0000' }}>{joinError}</h3>}
             <div>
@@ -162,7 +153,7 @@ function LaunchScreen() {
               <TextField className={classes.form} name="hostCode" label="Game Code" variant="outlined" onChange={handleChange} />
             </div>
 
-            <Button className={classes.btnform} variant="contained" onClick={handleJoin}>
+            <Button className={classes.btnform} color="secondary" variant="contained" onClick={handleJoin}>
               Join Game
             </Button>
 
@@ -171,7 +162,7 @@ function LaunchScreen() {
               <br />
             </div>
 
-            <Button className={classes.btnform} variant="contained" onClick={handleCreate}>
+            <Button className={classes.btnform} color="primary" variant="contained" onClick={handleCreate}>
               Create Game
             </Button>
           </div>

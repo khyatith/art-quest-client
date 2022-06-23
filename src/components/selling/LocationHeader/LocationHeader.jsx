@@ -82,9 +82,8 @@ function LocationHeader({
             {!timerEnded ? (
               <>
                 <div style={{ padding: '5px' }}>
-                  {!timerValue && 'Timer starts when someone starts auction.'}
                   {timerValue && (
-                    `Auction starts in:
+                    `Next phase starts in:
                   ${timerValue && timerValue.minutes} : ${timerValue && timerValue.seconds}
                   seconds`
                   )}

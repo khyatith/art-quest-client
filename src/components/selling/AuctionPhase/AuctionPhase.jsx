@@ -412,8 +412,6 @@ function AuctionPhase() {
     }
   }, [location.state?.sellToMarketPainting, location.state?.cityData, location.state?.showOtherTeamsUpdates]);
 
-  console.log('selltoMarket->', location.state, showOtherTeamsUpdates);
-
   return (
     <>
       <LocationHeader timerValue={timerValue} cityData={cityData} timerEnded={updateLBOnce} user={player} />

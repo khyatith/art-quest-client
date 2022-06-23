@@ -9,12 +9,14 @@ import { useHistory, useLocation } from 'react-router-dom';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
+import AppBar from '@material-ui/core/AppBar';
+import Toolbar from '@material-ui/core/Toolbar';
+import Typography from '@material-ui/core/Typography';
 import GameInstructions from './GameInstructions';
 import { socket } from '../global/socket';
 import userContext from '../global/userContext';
-import Header from './Header';
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
   root: {
     width: 500,
     padding: 100,
@@ -25,11 +27,19 @@ const useStyles = makeStyles(() => ({
     width: 400,
   },
   btnform: {
-    backgroundColor: '#051207',
     margin: '0 0 20px 0px',
     width: 400,
-    color: '#76e246',
     fontWeight: 700,
+  },
+  title: {
+    [theme.breakpoints.up('sm')]: {
+      display: 'block',
+    },
+    margin: '0 auto',
+  },
+  appbar: {
+    height: 130,
+    marginBottom: '50px',
   },
 }));
 
@@ -78,7 +88,13 @@ function StagingScreen() {
 
   return (
     <>
-      <Header />
+      <AppBar className={classes.appbar} position="static">
+        <Toolbar>
+          <Typography variant="h5" className={classes.title}>
+            ART QUEST
+          </Typography>
+        </Toolbar>
+      </AppBar>
       <div className={classes.root}>
         <div>
           <h1 className={classes.form}>Your game code is: {location.pathname.substring(9, 29)}</h1>
@@ -101,7 +117,7 @@ function StagingScreen() {
               <MenuItem value={2}>version 2</MenuItem>
               <MenuItem value={3}>version 3</MenuItem>
             </Select>
-            <Button className={classes.btnform} variant="contained" onClick={setTeams}>
+            <Button className={classes.btnform} color="primary" variant="contained" onClick={setTeams}>
               Set Details
             </Button>
           </>

@@ -291,12 +291,11 @@ const EnglishAuction = () => {
   return (
     <div className={classes.root}>
       <AppBar className={classes.appbar} position="static">
-        <Toolbar className={classes.toolbar}>
+        <Toolbar>
           <Typography variant="h6" className={classes.title}>
             ART QUEST
           </Typography>
           <Typography className={classes.timercontent} variant="h5" noWrap>
-            {!englishAuctionTimer && 'Timer starts when someone starts Bidding.'}
             {englishAuctionTimer && !englishAuctionResults && (
               <>
                 Time left in Auction:
