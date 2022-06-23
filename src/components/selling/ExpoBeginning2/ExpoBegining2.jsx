@@ -340,7 +340,7 @@ const ExpoBegining2 = () => {
   }, [sellToMarketPainting, cityData, disableBtn]);
   return (
     <>
-      <LocationHeader timerValue={timerValue} cityData={cityData} />
+      <LocationHeader timerValue={timerValue} cityData={cityData} user={user} />
       {!showConfirmationScreen && (
         <>
           <div
@@ -351,6 +351,8 @@ const ExpoBegining2 = () => {
               width: '90%',
               margin: '0 auto',
               gap: '20px',
+              paddingTop: '70px',
+              // marginTop: '66px',
             }}>
             <div className={classes.left_grid}>
               {paintings.length > 0 &&

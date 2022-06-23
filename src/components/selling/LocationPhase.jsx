@@ -7,7 +7,7 @@
 /* eslint-disable prefer-const */
 /* eslint-disable implicit-arrow-linebreak */
 /* eslint-disable no-unused-vars */
-import React, { useEffect, useState, useContext, Fragment } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import axios from 'axios';
 import { makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
@@ -62,7 +62,6 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: '700',
   },
   appbar: {
-    backgroundColor: '#76e246',
     flexGrow: 1,
     position: 'fixed',
   },
@@ -73,12 +72,12 @@ const useStyles = makeStyles((theme) => ({
     [theme.breakpoints.up('sm')]: {
       display: 'block',
     },
-    color: '#051207',
+    // color: '#051207',
     fontSize: '22px',
   },
   playerdiv: {
     fontWeight: 700,
-    color: '#051207', // green color
+    // color: '#051207', // green color
   },
   levelOfInterest: {
     flex: '0 1 50%',

@@ -2,29 +2,38 @@
 import React from 'react';
 import AppBar from '@material-ui/core/AppBar';
 import { makeStyles } from '@material-ui/core/styles';
-import { isNaN, parseInt } from 'lodash';
+import { isNaN } from 'lodash';
+import { Typography } from '@material-ui/core';
 
 const useStyles = makeStyles(() => ({
   appbar: {
-    backgroundColor: 'brown',
     flexGrow: 1,
-    position: 'relative',
+    position: 'fixed',
     display: 'grid',
-    gridTemplateColumns: '8fr 2fr',
-    height: '69px',
+    gridTemplateColumns: '1fr 1fr 1fr',
+    height: 130,
   },
-  location: {
+  title: {
     display: 'flex',
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     alignItems: 'center',
-    fontFamily: 'Poppins',
+    fontFamily: 'Roboto, Helvetica, Arial, sans-serif',
     fontStyle: 'normal',
     fontWeight: '600',
-    fontSize: '1.4rem',
+    fontSize: '1.2rem',
     lineHeight: '108%',
+    marginLeft: '10px',
     /* or 32px */
     letterSpacing: '-0.055em',
     color: '#F9F9F9',
+    // color: '#051207',
+
+  },
+  timer_container: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'column',
   },
   auction_timer: {
     display: 'flex',
@@ -32,13 +41,10 @@ const useStyles = makeStyles(() => ({
     alignItems: 'center',
     fontStyle: 'normal',
     fontWeight: '500',
-    fontSize: '16px',
+    fontSize: '20px',
     lineHeight: '108%',
     /* or 17px */
-
     letterSpacing: '-0.055em',
-
-    color: '#F9F9F9',
   },
   timer: {
     display: 'flex',
@@ -46,38 +52,57 @@ const useStyles = makeStyles(() => ({
     alignItems: 'center',
     background: '#FFFFFF',
     borderRadius: '100px',
-    color: '#E20000',
+    // color: '#E20000',
+    color: '#051207',
     padding: '10px',
   },
+  playercontent: {
+    display: 'flex',
+    fontSize: '20px',
+    position: 'relative',
+    marginRight: '10px',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    fontWeight: 700,
+  },
 }));
-function LocationHeader({ cityData, timerValue, timerEnded }) {
+function LocationHeader({
+  cityData, timerValue, timerEnded, user,
+}) {
   const classes = useStyles();
   console.log(isNaN(timerValue?.total));
   return (
     <AppBar className={classes.appbar}>
-      {timerEnded ? (<header className={classes.location}>Next round starts in 15sec</header>)
-        : (
-          <>
-            <header className={classes.location}>{cityData?.cityName}</header>
-            <div className={classes.auction_timer}>
-              <div style={{ padding: '10px' }}>Auction starts</div>
-              {' '}
-              <span className={classes.timer}>
-                <svg width="16" height="18" viewBox="0 0 16 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M10.5 0.25H5.5V1.91667H10.5V0.25Z" fill="#FFAFAF" />
-                  <path
-                    d="M13.8583 5.575L15.0417 4.39167C14.6833 3.96667 14.2917 3.56667 13.8667 3.21667L12.6833 4.4C11.3917 3.36667 9.76667 2.75 8 2.75C3.85833 2.75 0.5 6.10833 0.5 10.25C0.5 14.3917 3.85 17.75 8 17.75C12.15 17.75 15.5 14.3917 15.5 10.25C15.5 8.48333 14.8833 6.85833 13.8583 5.575ZM8.83333 11.0833H7.16667V6.08333H8.83333V11.0833Z"
-                    fill="#FFAFAF"
-                  />
-                </svg>
-                {!isNaN(parseInt(timerValue?.total)) ? parseInt(timerValue?.total) / 1000 : ''}
-                {' '}
-                secs
-              </span>
-            </div>
-
-          </>
-        )}
+      <>
+        <Typography variant="h6" className={classes.title}>
+          ART QUEST
+        </Typography>
+        <div className={classes.timer_container}>
+          <div className={classes.auction_timer}>
+            {!timerEnded ? (
+              <>
+                <div style={{ padding: '5px' }}>
+                  {!timerValue && 'Timer starts when someone starts auction.'}
+                  {timerValue && (
+                    `Auction starts in:
+                  ${timerValue && timerValue.minutes} : ${timerValue && timerValue.seconds}
+                  seconds`
+                  )}
+                </div>
+              </>
+            ) : (<span> Next round starts in 15sec</span>) }
+          </div>
+          <div className={classes.auction_timer} style={{ padding: '10px' }}>{`You are in ${cityData?.cityName ? cityData?.cityName : ''}`}</div>
+        </div>
+        <Typography variant="h6" className={classes.playercontent}>
+          {user.playerName}
+          ,
+          {' '}
+          Team
+          {' '}
+          {user.teamName}
+        </Typography>
+      </>
     </AppBar>
   );
 }
