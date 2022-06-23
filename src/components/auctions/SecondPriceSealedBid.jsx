@@ -23,7 +23,7 @@ import RoundsInfo from '../RoundsInfo';
 import TeamInfo from '../TeamInfo';
 // import leaderboardContext from '../../global/leaderboardContext';
 import BonusAuctionBanner from '../visualizations/BonusAuctionBanner';
-import { API_URL, SECOND_PRICED_SEALED_BID_TEXT } from '../../global/constants';
+import { API_URL, SECOND_PRICED_SEALED_BID_TEXT, TEAM_COLOR_MAP } from '../../global/constants';
 import auctionContext from '../../global/auctionContext';
 // import BuyingGroupedBarChart from '../visualizations/BuyingGroupedBarChart';
 import { validateCurrentBid } from '../../global/helpers';
@@ -213,7 +213,7 @@ function SecondPriceSealedBid({
       )}
       <div style={{ display: 'flex', marginBottom: '20px' }}>
         {auctionObj && <RoundsInfo label={`Round ${auctionObj.id} of ${totalNumberOfPaintings}`} />}
-        {player && <TeamInfo label={`You are playing in Team ${player.teamName}`} labelColor={`${player.teamColor}`} />}
+        {player && <TeamInfo label={`You are playing in Team ${player.teamName}`} labelColor={`${TEAM_COLOR_MAP[player.teamColor]}`} />}
       </div>
       <Grid className={classes.maingrid} container spacing={3}>
         {auctionObj && (

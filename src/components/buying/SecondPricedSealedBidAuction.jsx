@@ -271,7 +271,7 @@ const SecondPricedSealedBidAuction = () => {
       bidAmount: bidInput,
       bidAt: +new Date(),
       bidTeam: player.teamName,
-      bidColor: player.teamColor,
+      bidColor: TEAM_COLOR_MAP[player.teamName],
     };
     if (!isFirstBid) {
       setIsFirstBid(true);
