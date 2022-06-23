@@ -3,7 +3,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
-import useSessionStorage from '../hooks/useSessionStorage';
+// import useSessionStorage from '../hooks/useSessionStorage';
 
 const useStyles = makeStyles((theme) => ({
   grow: {
@@ -29,7 +29,7 @@ const useStyles = makeStyles((theme) => ({
 
 function Header() {
   const classes = useStyles();
-  const player = useSessionStorage('user')[0];
+  //   const player = useSessionStorage('user')[0];
   return (
     <div className={classes.grow}>
       <AppBar className={classes.appbar} position="static">
@@ -37,19 +37,19 @@ function Header() {
           <Typography variant="h6" className={classes.title}>
             ART QUEST
           </Typography>
-          { player
+          {/* { player
             && (
             <div className={classes.playerdiv}>
               <p>
-                {player.playerName}
+                {player?.playerName}
                 , Team&nbsp;
-                {player.teamName}
+                {player?.teamName}
                 ,
                 {' '}
-                {player.playerId}
+                {player?.playerId}
               </p>
             </div>
-            )}
+            )} */}
         </Toolbar>
       </AppBar>
     </div>

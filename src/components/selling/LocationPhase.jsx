@@ -1,9 +1,13 @@
+/* eslint-disable react/jsx-one-expression-per-line */
+/* eslint-disable function-paren-newline */
+/* eslint-disable object-curly-newline */
+/* eslint-disable no-empty */
+/* eslint-disable no-tabs */
+/* eslint-disable no-mixed-spaces-and-tabs */
 /* eslint-disable prefer-const */
 /* eslint-disable implicit-arrow-linebreak */
 /* eslint-disable no-unused-vars */
-import React, {
-  useEffect, useState, useContext, Fragment,
-} from 'react';
+import React, { useEffect, useState, useContext, Fragment } from 'react';
 import axios from 'axios';
 import { makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
@@ -139,9 +143,7 @@ function LocationPhase() {
       axios
         .get(`${API_URL}/buying/getSellingResults?roomId=${player.hostCode}`)
         .then((newData) => {
-          const {
-            amountSpentByTeam, visits, roundNumber, allTeams, flyTicketsPrice, classifyPoints,
-          } = newData.data;
+          const { amountSpentByTeam, visits, roundNumber, allTeams, flyTicketsPrice, classifyPoints } = newData.data;
           if (newData.data.disabledLocations && newData.data.disabledLocations.length > 0) {
             setDisabledLocations(newData.data.disabledLocations);
           }
@@ -160,7 +162,8 @@ function LocationPhase() {
               tmpArr.push({
                 color: team,
                 locationId: 1,
-              }));
+              }),
+            );
           }
           setTeamLastVisits(tmpArr);
           let totalPoints = {};
@@ -277,6 +280,20 @@ function LocationPhase() {
     }
   };
 
+  const getEndGameFlag = async () => {
+    const response = await axios({
+      url: `${API_URL}/buying/hasGameEnded`,
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+      },
+      data: JSON.stringify({ roomId: player.hostCode }),
+    });
+    if (response.data.message === 'GAME_ENDED') {
+      history.push(`/end-game/${player.hostCode}`);
+    }
+  };
+
   useEffect(() => {
     socket.on('goToExpo', () => {
       console.log('expo');
@@ -296,6 +313,14 @@ function LocationPhase() {
       socket.emit('startTimer', { player });
     }
   }, [startTimer]);
+
+  useEffect(() => {
+    getEndGameFlag();
+  }, []);
+
+  useEffect(() => {
+    getEndGameFlag();
+  }, []);
 
   useEffect(() => {
     const getTimer = async () => {
@@ -364,8 +389,7 @@ function LocationPhase() {
     return (
       <div style={{ marginTop: '12%', marginLeft: '43%' }}>
         {' '}
-        <img src={load} alt="loading..." />
-        {' '}
+        <img src={load} alt="loading..." />{' '}
       </div>
     );
   }
@@ -376,10 +400,7 @@ function LocationPhase() {
         <Toolbar>
           {startTimer ? (
             <Typography variant="h6" className={classes.timercontent}>
-              {selectedLocationId ? 'Reaching in' : 'Time left to fly'}
-              {' '}
-              {locationPageTimerValue && locationPageTimerValue.minutes}
-              :
+              {selectedLocationId ? 'Reaching in' : 'Time left to fly'} {locationPageTimerValue && locationPageTimerValue.minutes}:
               {locationPageTimerValue && locationPageTimerValue.seconds}
             </Typography>
           ) : (
@@ -390,12 +411,8 @@ function LocationPhase() {
           {player && (
             <div className={classes.playerdiv}>
               <p>
-                {player.playerName}
-                , Team&nbsp;
-                {player.teamName}
-                ,
-                {' '}
-                {player.playerId}
+                {player.playerName}, Team&nbsp;
+                {player.teamName}, {player.playerId}
               </p>
             </div>
           )}

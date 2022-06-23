@@ -20,6 +20,7 @@ import DutchAuction from './components/DutchAuction';
 import ExpoBegining2 from './components/selling/ExpoBeginning2/ExpoBegining2';
 import ConfirmationScreen from './components/ConfirmationScreen/ConfirmationScreen';
 import AuctionPhase from './components/selling/AuctionPhase/AuctionPhase';
+import EndGame from './components/EndGame/EndGame';
 
 function App() {
   const [player, setPlayer] = useState({
@@ -62,6 +63,7 @@ function App() {
                 <FinalResults />
               </Route>
               <Route path="/confirmation-page" component={ConfirmationScreen} />
+              <Route path="/end-game/:roomCode" component={EndGame} />
             </Switch>
           </auctionContext.Provider>
         </leaderboardContext.Provider>
