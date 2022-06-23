@@ -418,7 +418,7 @@ function AuctionPhase() {
     <>
       <LocationHeader timerValue={timerValue} cityData={cityData} timerEnded={updateLBOnce} user={player} />
       <div style={{
-        width: '90%', margin: '20px', paddingTop: '66px',
+        width: '90%', margin: '20px', paddingTop: '70px',
       }}
       >
         <Leaderboard showAuctionResults={false} goToNextAuctions={false} maxWidth={true} />

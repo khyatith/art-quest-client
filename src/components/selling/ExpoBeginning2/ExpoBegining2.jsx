@@ -351,7 +351,7 @@ const ExpoBegining2 = () => {
               width: '90%',
               margin: '0 auto',
               gap: '20px',
-              paddingTop: '66px',
+              paddingTop: '70px',
               // marginTop: '66px',
             }}>
             <div className={classes.left_grid}>

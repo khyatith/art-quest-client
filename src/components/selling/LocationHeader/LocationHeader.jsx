@@ -11,7 +11,7 @@ const useStyles = makeStyles(() => ({
     position: 'fixed',
     display: 'grid',
     gridTemplateColumns: '1fr 1fr 1fr',
-    height: '72px',
+    height: 130,
   },
   title: {
     display: 'flex',
