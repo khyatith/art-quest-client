@@ -10,6 +10,7 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
+import MuiAlert from '@material-ui/lab/Alert';
 import { useHistory } from 'react-router';
 import Header from './Header';
 import { API_URL, TEAM_COLOR_MAP } from '../global/constants';
@@ -147,58 +148,20 @@ function EndBuyingPhase() {
     );
   };
 
-  // const resetApplication = () => {
-  //   history.push('/');
-  //   setPlayer({
-  //     playerName: '',
-  //     teamName: '',
-  //     playerId: '',
-  //     hostCode: '',
-  //     teamColor: '',
-  //     currentLocation: '',
-  //   });
-  //   setLeaderboardData({ leaderboardData: {} });
-  //   sessionStorage.clear();
-  // };
-
-  // const showTeamWinner = () => {
-  //   const { teamName } = player;
-  //   if (teamName === gameWinner) {
-  //     return <h2 style={{ backgroundColor: '#000000', padding: '20px', color: '#76e246' }}>Congratulations! You are the winner!</h2>;
-  //   }
-  //   return (
-  //     <h2 style={{ backgroundColor: '#000000', padding: '20px', color: '#76e246' }}>
-  //       The winner is Team&nbsp;
-  //       {gameWinner}
-  //     </h2>
-  //   );
-  // };
-
-  // useEffect(() => {
-  //   setTimeout(() => {
-  //     setShowWinner(true);
-  //   }, 5000);
-  // });
-
   useEffect(() => {
     setTimeout(() => {
       history.push(`/sell/instructions/${player.playerId}`);
     }, 10000);
   });
 
+  function Alert(props) {
+    return <MuiAlert elevation={6} variant="filled" {...props} />;
+  }
+
   return (
     <>
       <Header />
-      <div style={{
-        textAlign: 'center',
-        marginTop: '40px',
-        backgroundColor: '#000000',
-        padding: '20px',
-        color: '#76e246',
-      }}
-      >
-        <h3>Starting Phase 2 in 15 seconds ...</h3>
-      </div>
+      <Alert severity="error">Starting Phase 2 in 15 seconds ...</Alert>
       {/* {allTeams && totalPaintingsWonByTeam && totalArtScore && renderLeaderboardData()} */}
       {allTeams && totalPaintingsWonByTeam && renderLeaderboardData()}
       {/* <div style={{ margin: '40px auto', textAlign: 'center' }}>

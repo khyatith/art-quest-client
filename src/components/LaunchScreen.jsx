@@ -17,24 +17,19 @@ import GameInstructions from './GameInstructions';
 import { TEAM_COLOR_MAP, API_URL } from '../global/constants';
 
 const useStyles = makeStyles((theme) => ({
-  grow: {
-    flexGrow: 1,
-  },
   title: {
-    display: 'none',
-    margin: '0 auto',
-    fontWeight: '700',
-    color: '#76e246',
     [theme.breakpoints.up('sm')]: {
       display: 'block',
     },
+    margin: '0 auto',
   },
   playerdiv: {
     fontWeight: 700,
     color: '#76e246', // green color
   },
   appbar: {
-    background: '#051207', // black color
+    height: 130,
+    marginBottom: '50px',
   },
   root: {
     width: 300,
@@ -129,15 +124,13 @@ function LaunchScreen() {
     <>
       {!loadInstructions && (
         <>
-          <div className={classes.grow}>
-            <AppBar className={classes.appbar} position="static">
-              <Toolbar>
-                <Typography variant="h6" className={classes.title}>
-                  ART QUEST
-                </Typography>
-              </Toolbar>
-            </AppBar>
-          </div>
+          <AppBar className={classes.appbar} position="static">
+            <Toolbar>
+              <Typography variant="h5" className={classes.title}>
+                ART QUEST
+              </Typography>
+            </Toolbar>
+          </AppBar>
           <div style={{ textAlign: 'center', marginTop: '8rem' }}>
             {joinError && <h3 style={{ color: '#FF0000' }}>{joinError}</h3>}
             <div>
