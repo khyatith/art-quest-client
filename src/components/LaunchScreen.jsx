@@ -41,10 +41,8 @@ const useStyles = makeStyles((theme) => ({
     width: 245,
   },
   btnform: {
-    backgroundColor: '#051207',
     margin: '0 0 20px 0px',
     width: 245,
-    color: '#76e246',
     fontWeight: 700,
   },
 }));
@@ -155,7 +153,7 @@ function LaunchScreen() {
               <TextField className={classes.form} name="hostCode" label="Game Code" variant="outlined" onChange={handleChange} />
             </div>
 
-            <Button className={classes.btnform} variant="contained" onClick={handleJoin}>
+            <Button className={classes.btnform} color="secondary" variant="contained" onClick={handleJoin}>
               Join Game
             </Button>
 
@@ -164,7 +162,7 @@ function LaunchScreen() {
               <br />
             </div>
 
-            <Button className={classes.btnform} variant="contained" onClick={handleCreate}>
+            <Button className={classes.btnform} color="primary" variant="contained" onClick={handleCreate}>
               Create Game
             </Button>
           </div>

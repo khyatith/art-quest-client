@@ -27,10 +27,8 @@ const useStyles = makeStyles((theme) => ({
     width: 400,
   },
   btnform: {
-    backgroundColor: '#051207',
     margin: '0 0 20px 0px',
     width: 400,
-    color: '#76e246',
     fontWeight: 700,
   },
   title: {
@@ -119,7 +117,7 @@ function StagingScreen() {
               <MenuItem value={2}>version 2</MenuItem>
               <MenuItem value={3}>version 3</MenuItem>
             </Select>
-            <Button className={classes.btnform} variant="contained" onClick={setTeams}>
+            <Button className={classes.btnform} color="primary" variant="contained" onClick={setTeams}>
               Set Details
             </Button>
           </>
