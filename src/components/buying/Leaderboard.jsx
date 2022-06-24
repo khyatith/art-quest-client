@@ -1,3 +1,6 @@
+/* eslint-disable react/jsx-closing-bracket-location */
+/* eslint-disable operator-linebreak */
+/* eslint-disable react/jsx-one-expression-per-line */
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
@@ -9,6 +12,7 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import { API_URL, TEAM_COLOR_MAP } from '../../global/constants';
+import PaintingsShowcase from './PaintingsShowcase';
 
 const useStyles = makeStyles(() => ({
   paper: {
@@ -18,6 +22,7 @@ const useStyles = makeStyles(() => ({
     maxWidth: '570px',
     borderCollapse: 'separate',
     borderSpacing: '2px',
+    height: '6rem',
   },
 }));
 
@@ -55,42 +60,51 @@ export default function Leaderboard({ showAuctionResults, goToNextAuctions, maxW
   }, [showAuctionResults]);
 
   const renderLeaderboard = () => {
-    const { totalAmountByTeam, totalPaintingsWonByTeams } = leaderboardData || {};
+    const user = JSON.parse(sessionStorage.getItem('user'));
+    const { totalAmountByTeam, totalPaintingsWonByTeams, leaderboard } = leaderboardData || {};
     const classifyPoints = leaderboardData?.classifyPoints?.classify;
     // if (!leaderboard) return <></>;
     return (
-      <TableContainer className={classes.paper} component={Paper} style={{ margin: `${maxWidth && '0 auto'}` }}>
-        <Table className={classes.table} aria-label="customized table">
-          <TableHead>
-            <TableRow>
-              <StyledTableCell align="right">Team</StyledTableCell>
-              <StyledTableCell align="right">Total Paintings</StyledTableCell>
-              <StyledTableCell align="right">Classify Points</StyledTableCell>
-              <StyledTableCell align="right">Debt</StyledTableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {allTeams
-              && allTeams.map((entry) => {
-                const teamName = entry;
-                return (
-                  <TableRow key={teamName} style={{ backgroundColor: `${TEAM_COLOR_MAP[teamName]}` }}>
-                    <StyledTableCell align="right">{teamName}</StyledTableCell>
-                    <StyledTableCell align="right">
-                      {totalPaintingsWonByTeams && totalPaintingsWonByTeams[`${teamName}`] ? totalPaintingsWonByTeams[`${teamName}`] : 0}
-                    </StyledTableCell>
-                    <StyledTableCell align="right">{classifyPoints && classifyPoints[teamName] ? classifyPoints[teamName] : 0}</StyledTableCell>
-                    <StyledTableCell component="th" scope="row" align="right">
-                      $
-                      {totalAmountByTeam && totalAmountByTeam[`${teamName}`] ? parseFloat(totalAmountByTeam[`${teamName}`]) : 0}
-                      M
-                    </StyledTableCell>
-                  </TableRow>
-                );
-              })}
-          </TableBody>
-        </Table>
-      </TableContainer>
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-evenly',
+          alignContent: 'flex-start',
+        }}>
+        <div>
+          <TableContainer className={classes.paper} component={Paper} style={{ margin: `${maxWidth && '0 auto'}` }}>
+            <Table className={classes.table} aria-label="customized table">
+              <TableHead>
+                <TableRow>
+                  <StyledTableCell align="right">Team</StyledTableCell>
+                  <StyledTableCell align="right">Total Paintings</StyledTableCell>
+                  <StyledTableCell align="right">Classify Points</StyledTableCell>
+                  <StyledTableCell align="right">Debt</StyledTableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {allTeams &&
+                  allTeams.map((entry) => {
+                    const teamName = entry;
+                    return (
+                      <TableRow key={teamName} style={{ backgroundColor: `${TEAM_COLOR_MAP[teamName]}` }}>
+                        <StyledTableCell align="right">{teamName}</StyledTableCell>
+                        <StyledTableCell align="right">
+                          {totalPaintingsWonByTeams && totalPaintingsWonByTeams[`${teamName}`] ? totalPaintingsWonByTeams[`${teamName}`] : 0}
+                        </StyledTableCell>
+                        <StyledTableCell align="right">{classifyPoints && classifyPoints[teamName] ? classifyPoints[teamName] : 0}</StyledTableCell>
+                        <StyledTableCell component="th" scope="row" align="right">
+                          ${totalAmountByTeam && totalAmountByTeam[`${teamName}`] ? parseFloat(totalAmountByTeam[`${teamName}`]) : 0}M
+                        </StyledTableCell>
+                      </TableRow>
+                    );
+                  })}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </div>
+        <div>{leaderboard && <PaintingsShowcase leaderboard={leaderboard[user.teamName]} />}</div>
+      </div>
     );
   };
 

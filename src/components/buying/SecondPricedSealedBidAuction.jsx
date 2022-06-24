@@ -111,7 +111,7 @@ const useStyles = makeStyles((theme) => ({
   },
   leaderboardcontainer: {
     paddingTop: '100px',
-    paddingLeft: '500px',
+    paddingLeft: '',
   },
 }));
 
