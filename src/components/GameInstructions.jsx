@@ -61,21 +61,23 @@ const useStyles = makeStyles(() => ({
 function GameInstructions() {
   const classes = useStyles();
   const history = useHistory();
-  const [playersJoinedInfo, setPlayersJoinedInfo] = useState('');
+  const [playersJoinedInfo, setPlayersJoinedInfo] = useState();
   const [version, setVersion] = useState();
 
   const { player } = useContext(userContext);
 
   const startGame = () => {
+    console.log('inside start game');
     socket.emit('startGame', JSON.stringify(player));
     history.push(`/game/${player.playerId}`);
   };
 
   useEffect(() => {
     socket.on('numberOfPlayersJoined', (data) => {
+      console.log('number of players joined', data);
       setPlayersJoinedInfo(data);
     });
-  }, [playersJoinedInfo]);
+  }, []);
 
   useEffect(() => {
     async function fetchVersion() {
@@ -132,7 +134,7 @@ function GameInstructions() {
             </div>
           ) : (
             <div style={{ border: '5px solid #76e246' }}>
-              <h3>All players Joined. Starting game ...</h3>
+              <h3>All players Joined. Starting game in 30 seconds ...</h3>
             </div>
           )}
         </div>
