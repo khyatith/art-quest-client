@@ -66,6 +66,13 @@ function GameInstructions() {
 
   const { player } = useContext(userContext);
 
+  // useEffect(() => {
+  //   if (!playersJoinedInfo) {
+  //     console.log('inside emit players joined info');
+  //     socket.emit('getPlayersJoinedInfo', { roomCode: player.hostCode });
+  //   }
+  // }, []);
+
   const startGame = () => {
     console.log('inside start game');
     socket.emit('startGame', JSON.stringify(player));
@@ -94,7 +101,7 @@ function GameInstructions() {
     if (playersJoinedInfo) {
       const { numberOfPlayers, playersJoined } = playersJoinedInfo;
       console.log('->', numberOfPlayers, playersJoined);
-      if (numberOfPlayers <= playersJoined) {
+      if (numberOfPlayers === playersJoined) {
         setTimeout(() => startGame(), 30000);
       }
     }
@@ -118,7 +125,7 @@ function GameInstructions() {
             on your favorite paintings.
           </p>
           <h3>Have fun and Good luck!</h3>
-          {playersJoinedInfo && playersJoinedInfo.playersJoined !== playersJoinedInfo.numberOfPlayers ? (
+          {playersJoinedInfo && playersJoinedInfo.playersJoined !== playersJoinedInfo.numberOfPlayers && (
             <div style={{ marginTop: '20px', border: '5px solid #76e246' }}>
               <h3>
                 Player
@@ -132,9 +139,15 @@ function GameInstructions() {
                 joined. Waiting for others to join...
               </h3>
             </div>
-          ) : (
+          )}
+          {playersJoinedInfo && playersJoinedInfo.playersJoined === playersJoinedInfo.numberOfPlayers && (
             <div style={{ border: '5px solid #76e246' }}>
               <h3>All players Joined. Starting game in 30 seconds ...</h3>
+            </div>
+          )}
+          {!playersJoinedInfo && (
+            <div style={{ border: '5px solid #76e246' }}>
+              <h3>Waiting for players to join</h3>
             </div>
           )}
         </div>

@@ -114,7 +114,6 @@ function LaunchScreen() {
       }
       socket.emit('joinRoom', JSON.stringify(player));
       setLoadInstructions(true);
-      socket.emit('getPlayersJoinedInfo', { roomCode: player.hostCode });
     }
   };
 
