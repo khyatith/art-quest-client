@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable react/jsx-closing-bracket-location */
 /* eslint-disable no-unused-vars */
-import { Typography } from '@material-ui/core';
+import { Typography, Paper } from '@material-ui/core';
 import React from 'react';
 
 const Painting = ({ imageurl, bidAmount, artMovement }) => (
@@ -19,11 +19,10 @@ const Painting = ({ imageurl, bidAmount, artMovement }) => (
 
 const PaintingsShowcase = ({ leaderboard }) => (
   <div>
-    <div
+    <Paper
+      elevation={4}
       style={{
         height: '6rem',
-        border: 'solid 1px black',
-        borderRadius: '0.5rem',
         width: '25rem',
         overflowY: 'scroll',
       }}>
@@ -43,7 +42,7 @@ const PaintingsShowcase = ({ leaderboard }) => (
           </span>
         ))}
       </div>
-    </div>
+    </Paper>
   </div>
 );
 
