@@ -234,7 +234,7 @@ const EnglishAuction = () => {
 
   useEffect(() => {
     socket.on('renderEnglishAuctionsResults', (data) => {
-      console.log('english auction number', englishAuctionsNumber);
+      console.log('english auction number', location.state.englishAuctionsNumber);
       console.log('data in render english auction results', data);
       setClassifyPoints(data.classifyPoints.classify);
       if (!englishAuctionResults) {
