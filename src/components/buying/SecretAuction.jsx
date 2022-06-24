@@ -391,7 +391,12 @@ const SecretAuction = () => {
                             marginTop: '-10px',
                           }}>
                           <h4>
-                            Won by Team {winner} for ${secretAuctionResults[`${auction.id}`].bidAmount}M
+                            Won by Team
+                            {' '}
+                            {winner}
+                            for
+                            {' '}
+                            ${secretAuctionResults[`${auction.id}`].bidAmount}M
                           </h4>
                         </div>
                       </>

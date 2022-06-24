@@ -50,7 +50,6 @@ function StagingScreen() {
   const { player } = useContext(userContext);
   const [isAdmin, setAdmin] = useState(false);
   const [loadInstructions, setLoadInstructions] = useState(false);
-  const [playersJoinedInfo, setPlayersJoinedInfo] = useState();
   const [noOfPlayers, setNumberOfPlayers] = useState(0);
   const [versionValue, setVersion] = React.useState(1);
 
@@ -79,12 +78,6 @@ function StagingScreen() {
   const setTeams = () => {
     socket.emit('setTeams', { numberOfPlayers: noOfPlayers, roomCode: player.hostCode, version: versionValue });
   };
-
-  useEffect(() => {
-    socket.on('numberOfPlayersJoined', (data) => {
-      setPlayersJoinedInfo(data);
-    });
-  });
 
   return (
     <>
@@ -124,7 +117,7 @@ function StagingScreen() {
         )}
       </div>
       {
-        loadInstructions && <GameInstructions playersJoinedInfo={playersJoinedInfo} />
+        loadInstructions && <GameInstructions />
       }
     </>
   );

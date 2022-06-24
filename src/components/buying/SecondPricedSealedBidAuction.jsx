@@ -394,8 +394,11 @@ const SecondPricedSealedBidAuction = () => {
                       >
                         <h4>
                           Won by Team
+                          {' '}
                           {winner}
+                          {' '}
                           for
+                          {' '}
                           $
                           {secondPriceAuctionResults[`${auction.id}`].bidAmount}
                           M
