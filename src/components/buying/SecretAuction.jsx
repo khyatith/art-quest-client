@@ -239,7 +239,7 @@ const SecretAuction = () => {
       }
     });
     if (secretAuctionResults) {
-      setTimeout(goToNextAuctions, 10000);
+      setTimeout(goToNextAuctions, 20000);
     }
   }, []);
 
@@ -310,7 +310,7 @@ const SecretAuction = () => {
                 Time left in Auction: {secretAuctionTimer && secretAuctionTimer.minutes}:{secretAuctionTimer && secretAuctionTimer.seconds}
               </>
             )}
-            {secretAuctionResults && Object.keys(secretAuctionResults).length > 0 && 'Starting next auction in 10 seconds...'}
+            {secretAuctionResults && Object.keys(secretAuctionResults).length > 0 && 'Starting next auction in 20 seconds...'}
           </Typography>
           <Typography variant="h6" className={classes.playercontent}>
             {player.playerName}, Team {player.teamName}

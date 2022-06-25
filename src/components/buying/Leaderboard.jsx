@@ -50,7 +50,7 @@ export default function Leaderboard({ showAuctionResults, goToNextAuctions, maxW
     }
     if (showAuctionResults) {
       fetchLeaderboard(player);
-      setTimeout(goToNextAuctions, 5000);
+      setTimeout(goToNextAuctions, 20000);
     }
   }, [showAuctionResults]);
 

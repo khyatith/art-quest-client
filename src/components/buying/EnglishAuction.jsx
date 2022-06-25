@@ -307,7 +307,7 @@ const EnglishAuction = () => {
                 {englishAuctionTimer && englishAuctionTimer.seconds}
               </>
             )}
-            {englishAuctionResults && Object.keys(englishAuctionResults).length > 0 && 'Starting next auction in 10 seconds...'}
+            {englishAuctionResults && Object.keys(englishAuctionResults).length > 0 && 'Starting next auction in 20 seconds...'}
           </Typography>
           <Typography variant="h6" className={classes.playercontent}>
             {player.playerName}

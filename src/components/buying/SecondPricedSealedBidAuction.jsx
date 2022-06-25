@@ -192,7 +192,7 @@ const SecondPricedSealedBidAuction = () => {
       }
     });
     if (secondPriceAuctionResults) {
-      setTimeout(goToNextAuctions, 10000);
+      setTimeout(goToNextAuctions, 20000);
     }
   }, []);
 
@@ -295,7 +295,7 @@ const SecondPricedSealedBidAuction = () => {
                 {secondPriceAuctionTimer && secondPriceAuctionTimer.seconds}
               </>
             )}
-            {secondPriceAuctionResults && Object.keys(secondPriceAuctionResults).length > 0 && 'Starting next auction in 10 seconds...'}
+            {secondPriceAuctionResults && Object.keys(secondPriceAuctionResults).length > 0 && 'Starting next auction in 20 seconds...'}
           </Typography>
           <Typography variant="h6" className={classes.playercontent}>
             {player.playerName}
