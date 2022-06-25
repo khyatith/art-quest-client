@@ -174,12 +174,12 @@ const ExpoBegining2 = () => {
     const numberOfEachArtPaintings = [];
 
     const artMovementCollection = [];
-    data?.artifacts.map((artifact) => {
+    data?.artifacts?.map((artifact) => {
       artMovementCollection.push(artifact.artMovement);
       return null;
     });
 
-    data.artifacts?.map((pd) => {
+    data?.artifacts?.map((pd) => {
       classifyPointsObj[pd.artMovement] = { numberOfPaintings: artMovementCollection.filter((am) => am === pd.artMovement).length };
       return null;
     });
@@ -351,7 +351,7 @@ const ExpoBegining2 = () => {
               width: '90%',
               margin: '0 auto',
               gap: '20px',
-              paddingTop: '70px',
+              paddingTop: '120px',
               // marginTop: '66px',
             }}>
             <div className={classes.left_grid}>

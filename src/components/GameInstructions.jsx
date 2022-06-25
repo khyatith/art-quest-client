@@ -101,8 +101,8 @@ function GameInstructions() {
     if (playersJoinedInfo) {
       const { numberOfPlayers, playersJoined } = playersJoinedInfo;
       console.log('->', numberOfPlayers, playersJoined);
-      if (numberOfPlayers === playersJoined) {
-        setTimeout(() => startGame(), 30000);
+      if (numberOfPlayers <= playersJoined) { // === //:changed
+        setTimeout(() => startGame(), 1000); // 30000
       }
     }
   }, [playersJoinedInfo]);
