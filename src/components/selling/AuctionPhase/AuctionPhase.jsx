@@ -310,28 +310,39 @@ function AuctionPhase() {
       socket.emit('nominatedAuctionBids', bidInfo);
     }
   };
+
+  useEffect(() => {
+    if (sendResultEventOnce) {
+      const updateLeaderBoard = async () => {
+        await axios
+          .get(`${API_URL}/buying/updateLeaderBoardAfterNominationAuction?roomId=${player.hostCode}`)
+          .then((res) => {
+          })
+          .catch((e) => console.log(e));
+      };
+
+      if (!updateLBOnce) {
+        setUpdateLBOnce(true);
+        updateLeaderBoard().then(async () => {
+          setTimeout(() => {
+            socket.emit('sellingResultsTimerEnded', { player });
+          }, 5000);
+          await axios.post(`${API_URL}/buying/updateRoundId`, { roomId: player.hostCode, roundId: player.roundId });
+        }).catch((e) => console.log(e));
+      }
+    }
+  }, [sendResultEventOnce]);
+
   useEffect(() => {
     socket.on('renderNominatedAuctionResult', (data) => {
       // setClassifyPoints(data.classifyPoints.classify);
       if (!nominatedAuctionResult) {
         setNominatedAuctionResult(data.nominatedAuctionBids);
-        const updateLeaderBoard = async () => {
-          await axios
-            .get(`${API_URL}/buying/updateLeaderBoardAfterNominationAuction?roomId=${player.hostCode}`)
-            .then((res) => {
-            })
-            .catch((e) => console.log(e));
-        };
-        if (!updateLBOnce) {
-          setUpdateLBOnce(true);
-          updateLeaderBoard().then(async () => {
-            setTimeout(() => {
-              socket.emit('sellingResultsTimerEnded', { player });
-            }, 5000);
-            await axios.post(`${API_URL}/buying/updateRoundId`, { roomId: player.hostCode, roundId: player.roundId });
-          }).catch((e) => console.log(e));
-        }
       }
+    });
+
+    return (() => {
+      socket.off('renderNominatedAuctionResult');
     });
   }, []);
 
