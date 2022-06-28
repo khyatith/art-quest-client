@@ -9,10 +9,10 @@
 /* eslint-disable no-unused-vars */
 import React, { useEffect, useState, useContext } from 'react';
 import axios from 'axios';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, styled } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
-import { Typography, Snackbar } from '@material-ui/core';
+import { Typography, Snackbar, Button } from '@material-ui/core';
 import { useHistory } from 'react-router-dom';
 import userContext from '../../global/userContext';
 import Airport from './Airport';
@@ -24,6 +24,18 @@ import load from '../../assets/load.webp';
 import { socket } from '../../global/socket';
 import RoundsInfo from '../RoundsInfo';
 import SelectedDestination from '../SelectedDestination/SelectedDestination';
+
+const CustomizedSnackbar = styled(Snackbar)({
+  '& .MuiSnackbarContent-root': {
+    backgroundColor: '#ff5050',
+    width: '10rem',
+    height: '3rem',
+    color: 'white',
+    fontSize: '1.5rem',
+    display: 'flex',
+    justifyContent: 'center',
+  },
+});
 
 const useStyles = makeStyles((theme) => ({
   parent: {
@@ -133,7 +145,6 @@ function LocationPhase() {
   const [ticketPricesForLocations, setTicketPricesForLocations] = useState();
   const [teamLastVisits, setTeamLastVisits] = useState([]);
   const [startTimer, setStartTimer] = useState(false);
-  const [fetchedFinalResults, setFetchedFinalResults] = useState(false);
   const [openSnackBar, setOpenSnackBar] = useState(false);
 
   const setLocationData = (newData) => {
@@ -432,13 +443,13 @@ function LocationPhase() {
           )}
         </Toolbar>
       </AppBar>
-      {openSnackBar
-      && (
-        <Snackbar
+      {openSnackBar && (
+        <CustomizedSnackbar
           anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
           open={openSnackBar}
           message="Game has ended"
           key="top center"
+          sx={{ width: '100%' }}
         />
       )}
       {!selectedLocationId && (
