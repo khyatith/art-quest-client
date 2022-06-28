@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { useHistory } from 'react-router-dom';
@@ -125,8 +126,6 @@ function SellingResults({ location }) {
     socket.on('startNextRound', () => {
       if (user.roundId < 4) {
         history.push(`/sell/location/${user.playerId}`);
-      } else {
-        history.push(`/sell/finalresult/${user.playerId}`);
       }
     });
   }, []);

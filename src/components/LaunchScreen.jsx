@@ -13,8 +13,9 @@ import Toolbar from '@material-ui/core/Toolbar';
 import { MenuItem } from '@material-ui/core';
 import { socket } from '../global/socket';
 import userContext from '../global/userContext';
-import GameInstructions from './GameInstructions';
+// import GameInstructions from './GameInstructions';
 import { TEAM_COLOR_MAP, API_URL } from '../global/constants';
+import LocationPhase from './selling/LocationPhase';
 
 const useStyles = makeStyles((theme) => ({
   title: {
@@ -167,7 +168,7 @@ function LaunchScreen() {
           </div>
         </>
       )}
-      {loadInstructions && <GameInstructions />}
+      {loadInstructions && <LocationPhase />}
     </>
   );
 }

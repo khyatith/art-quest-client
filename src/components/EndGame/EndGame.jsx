@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable object-curly-newline */
 import { Paper } from '@material-ui/core';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
@@ -46,6 +48,7 @@ const EndGame = () => {
   const [ChartData, setChartData] = useState([]);
   const [ownedPaintings, setOwnedPaintings] = useState([]);
   const [winningTeam, setWinningTeam] = useState('');
+  const [fetchedFinalResults, setFetchedFinalResults] = useState(false);
 
   const handleFetchFinalResult = async () => {
     const roomCode = location.pathname.split('/')[2];
@@ -54,15 +57,7 @@ const EndGame = () => {
       method: 'GET',
     });
 
-    const {
-      leaderboard,
-      classifyPoints,
-      amountSpentByTeams,
-      totalObj,
-      visitsPrice,
-      allClassifyPoints,
-      winner,
-    } = response.data;
+    const { leaderboard, classifyPoints, amountSpentByTeams, totalObj, visitsPrice, allClassifyPoints, winner } = response.data;
 
     setWinningTeam(winner);
     const leaderboardTableObj = {};
@@ -97,7 +92,10 @@ const EndGame = () => {
   };
 
   useEffect(() => {
-    handleFetchFinalResult();
+    if (!fetchedFinalResults) {
+      setFetchedFinalResults(true);
+      handleFetchFinalResult();
+    }
   }, []);
 
   return (

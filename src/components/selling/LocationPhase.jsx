@@ -1,3 +1,4 @@
+/* eslint-disable no-useless-concat */
 /* eslint-disable react/jsx-one-expression-per-line */
 /* eslint-disable function-paren-newline */
 /* eslint-disable object-curly-newline */
@@ -12,7 +13,7 @@ import axios from 'axios';
 import { makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
-import { Typography } from '@material-ui/core';
+import { Typography, Snackbar } from '@material-ui/core';
 import { useHistory } from 'react-router-dom';
 import userContext from '../../global/userContext';
 import Airport from './Airport';
@@ -133,6 +134,8 @@ function LocationPhase() {
   const [ticketPricesForLocations, setTicketPricesForLocations] = useState();
   const [teamLastVisits, setTeamLastVisits] = useState([]);
   const [startTimer, setStartTimer] = useState(false);
+  const [fetchedFinalResults, setFetchedFinalResults] = useState(false);
+  const [openSnackBar, setOpenSnackBar] = useState(false);
 
   const setLocationData = (newData) => {
     const datasets = [];
@@ -211,9 +214,11 @@ function LocationPhase() {
   useEffect(() => {
     const setLocationPhaseData = async () => {
       const newData = await axios.get(`${API_URL}/buying/getSellingResults?roomId=${player.hostCode}`);
+      console.log('game ended flag', newData.data);
       if (newData.data.message === 'GAME_ENDED') {
         setLoading(false);
-        history.push(`/end-game/${player.hostCode}`);
+        setOpenSnackBar(true);
+        // setFetchedFinalResults(true);
       } else {
         setLocationData(newData);
       }
@@ -327,7 +332,7 @@ function LocationPhase() {
         setStartTimer(true);
       }
     });
-  });
+  }, []);
   useEffect(() => {
     socket.on('locationUpdatedForTeam', (data) => {
       const chosenLocation = {
@@ -348,7 +353,7 @@ function LocationPhase() {
         setStartTimer(true);
       }
     });
-  });
+  }, []);
 
   useEffect(() => {
     let opArr = teamLastVisits;
@@ -368,6 +373,14 @@ function LocationPhase() {
       setTeamLastVisits(opArr);
     }
   }, [chosenLocationForTeams]);
+
+  useEffect(() => {
+    if (openSnackBar) {
+      setTimeout(() => {
+        history.push(`/end-game/${player.hostCode}`);
+      }, 5000);
+    }
+  }, []);
 
   if (loading) {
     return (
@@ -434,6 +447,10 @@ function LocationPhase() {
           <LevelOfInterest />
         </div> */}
           </div>
+
+          {openSnackBar && (
+            <Snackbar anchorOrigin={{ vertical: 'top', horizontal: 'center' }} open={openSnackBar} message="Game has ended" key={'top' + 'center'} />
+          )}
         </>
       )}
       {selectedLocationId && <SelectedDestination player={player} chosenLocationForTeams={chosenLocationForTeams} selectedLocationId={selectedLocationId} />}

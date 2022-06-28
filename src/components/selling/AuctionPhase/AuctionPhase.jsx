@@ -350,8 +350,6 @@ function AuctionPhase() {
     socket.on('startNextRound', () => {
       if (player.roundId < 4) {
         history.push(`/sell/location/${player.playerId}`);
-      } else {
-        history.push(`/sell/finalresult/${player.playerId}`);
       }
     });
   }, []);

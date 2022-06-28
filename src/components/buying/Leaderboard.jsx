@@ -35,7 +35,8 @@ const StyledTableCell = withStyles((theme) => ({
 
 export default function Leaderboard({ showAuctionResults, goToNextAuctions, maxWidth }) {
   const classes = useStyles();
-  const { allTeams } = JSON.parse(sessionStorage.getItem('allAuction'));
+  const allTeams = ['Blue', 'Red'];
+  // const { allTeams } = JSON.parse(sessionStorage.getItem('allAuction'));
   const player = JSON.parse(sessionStorage.getItem('user'));
   const existingLeaderboard = sessionStorage.getItem('results') ? JSON.parse(sessionStorage.getItem('results')) : {};
   const [leaderboardData, setLeaderboardData] = useState(existingLeaderboard);
