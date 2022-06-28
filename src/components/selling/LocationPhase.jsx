@@ -12,7 +12,7 @@ import axios from 'axios';
 import { makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
-import { Typography } from '@material-ui/core';
+import { Typography, Snackbar } from '@material-ui/core';
 import { useHistory } from 'react-router-dom';
 import userContext from '../../global/userContext';
 import Airport from './Airport';
@@ -133,90 +133,109 @@ function LocationPhase() {
   const [ticketPricesForLocations, setTicketPricesForLocations] = useState();
   const [teamLastVisits, setTeamLastVisits] = useState([]);
   const [startTimer, setStartTimer] = useState(false);
+  const [fetchedFinalResults, setFetchedFinalResults] = useState(false);
+  const [openSnackBar, setOpenSnackBar] = useState(false);
+
+  const setLocationData = (newData) => {
+    const datasets = [];
+    const { amountSpentByTeam, visits, roundNumber, allTeams, flyTicketsPrice, classifyPoints } = newData.data;
+    if (newData.data.disabledLocations && newData.data.disabledLocations.length > 0) {
+      setDisabledLocations(newData.data.disabledLocations);
+    }
+    if (flyTicketsPrice) {
+      console.log('flyTicketPrice>>>>>', flyTicketsPrice);
+      setTicketPricesForLocations(flyTicketsPrice.ticketPriceByLocation);
+    }
+    setTeamsCurrentLocation(visits);
+    let x = 1;
+    const tv = [];
+    const labels = ['Cash Points', 'Visits', 'Classify Points'];
+    const teams = [];
+    const tmpArr = teamLastVisits;
+    if (tmpArr?.length === 0) {
+      allTeams.map((team) =>
+        tmpArr.push({
+          color: team,
+          locationId: 1,
+        }),
+      );
+    }
+    setTeamLastVisits(tmpArr);
+    let totalPoints = {};
+    allTeams.forEach((value) => {
+      const team = value;
+      const cash = amountSpentByTeam[team] || 0;
+      let vis = 0;
+      const teamVisits = visits.filter((v) => v.teamName === team);
+      vis = teamVisits && teamVisits.length > 0 && teamVisits[0].totalVisitPrice ? parseInt(teamVisits[0].totalVisitPrice, 10) : 0.0;
+      const formattedCash = parseFloat(cash / 10).toFixed(2);
+      const classifyPoint = +classifyPoints[team] ? +classifyPoints[team] : 0;
+      console.log('classifyPoint-> ', classifyPoint);
+      const total = parseFloat(formattedCash) - parseFloat(vis) + classifyPoint; // need to replace 0 with classifyPoints
+      totalPoints[value] = total;
+      // eslint-disable-next-line no-nested-ternary
+      datasets.push(createData(team, cash, vis, classifyPoint)); // need to replace 0 with classifyPoints
+      tv.push(createDataMap(x, team, vis, cash, total, classifyPoint, formattedCash)); // need to replace 0 with classifyPoints
+      teams.push(team);
+      x += 1;
+    });
+    sessionStorage.setItem('TOTAL_POINTS', JSON.stringify(totalPoints));
+    const currentTeamVisits = visits.filter((v) => v.teamName === player.teamName);
+    const currentLocationForTeam = currentTeamVisits.length === 0 ? 1 : currentTeamVisits[0].currentLocation;
+    let opArr = teamLastVisits;
+    visits.forEach((v) => {
+      const array2 = opArr.map((a) => {
+        const returnValue = { ...a };
+        if (a.color === v.teamName) {
+          returnValue.locationId = +v.currentLocation ? +v.currentLocation : 1;
+        }
+        return returnValue;
+      });
+      opArr = array2;
+    });
+    setTeamLastVisits(opArr);
+    const locationHistory = currentTeamVisits.length === 0 ? [] : currentTeamVisits[0].allVisitLocations;
+    setAllLocationHistory(locationHistory);
+    tv.sort((a, b) => b.total - a.total);
+    for (let i = 0; i < tv.length; ++i) {
+      tv[i].id = i + 1;
+    }
+    setCurrentLocationId(currentLocationForTeam);
+    setResult({ labels, datasets });
+    setRows(tv);
+    if (roundNumber) {
+      setRoundId(roundNumber);
+    }
+    setLoading(false);
+  };
 
   // Hooks and methods
   useEffect(() => {
-    const datasets = [];
+    const setLocationPhaseData = async () => {
+      const newData = await axios.get(`${API_URL}/buying/getSellingResults?roomId=${player.hostCode}`);
+      console.log('game ended flag', newData.data);
+      if (newData.data.message === 'GAME_ENDED') {
+        setLoading(false);
+        setOpenSnackBar(true);
+        // setFetchedFinalResults(true);
+      } else {
+        setLocationData(newData);
+      }
+    };
     if (!currentRoundData) {
       setLoading(true);
-      axios
-        .get(`${API_URL}/buying/getSellingResults?roomId=${player.hostCode}`)
-        .then((newData) => {
-          const { amountSpentByTeam, visits, roundNumber, allTeams, flyTicketsPrice, classifyPoints } = newData.data;
-          if (newData.data.disabledLocations && newData.data.disabledLocations.length > 0) {
-            setDisabledLocations(newData.data.disabledLocations);
-          }
-          if (flyTicketsPrice) {
-            console.log('flyTicketPrice>>>>>', flyTicketsPrice);
-            setTicketPricesForLocations(flyTicketsPrice.ticketPriceByLocation);
-          }
-          setTeamsCurrentLocation(visits);
-          let x = 1;
-          const tv = [];
-          const labels = ['Cash Points', 'Visits', 'Classify Points'];
-          const teams = [];
-          const tmpArr = teamLastVisits;
-          if (tmpArr?.length === 0) {
-            allTeams.map((team) =>
-              tmpArr.push({
-                color: team,
-                locationId: 1,
-              }),
-            );
-          }
-          setTeamLastVisits(tmpArr);
-          let totalPoints = {};
-          allTeams.forEach((value) => {
-            const team = value;
-            const cash = amountSpentByTeam[team] || 0;
-            let vis = 0;
-            const teamVisits = visits.filter((v) => v.teamName === team);
-            vis = teamVisits && teamVisits.length > 0 && teamVisits[0].totalVisitPrice ? parseInt(teamVisits[0].totalVisitPrice, 10) : 0.0;
-            const formattedCash = parseFloat(cash / 10).toFixed(2);
-            const classifyPoint = +classifyPoints[team] ? +classifyPoints[team] : 0;
-            console.log('classifyPoint-> ', classifyPoint);
-            const total = parseFloat(formattedCash) - parseFloat(vis) + classifyPoint; // need to replace 0 with classifyPoints
-            totalPoints[value] = total;
-            // eslint-disable-next-line no-nested-ternary
-            datasets.push(createData(team, cash, vis, classifyPoint)); // need to replace 0 with classifyPoints
-            tv.push(createDataMap(x, team, vis, cash, total, classifyPoint, formattedCash)); // need to replace 0 with classifyPoints
-            teams.push(team);
-            x += 1;
-          });
-          sessionStorage.setItem('TOTAL_POINTS', JSON.stringify(totalPoints));
-          const currentTeamVisits = visits.filter((v) => v.teamName === player.teamName);
-          const currentLocationForTeam = currentTeamVisits.length === 0 ? 1 : currentTeamVisits[0].currentLocation;
-          let opArr = teamLastVisits;
-          visits.forEach((v) => {
-            const array2 = opArr.map((a) => {
-              const returnValue = { ...a };
-              if (a.color === v.teamName) {
-                returnValue.locationId = +v.currentLocation ? +v.currentLocation : 1;
-              }
-              return returnValue;
-            });
-            opArr = array2;
-          });
-          setTeamLastVisits(opArr);
-          const locationHistory = currentTeamVisits.length === 0 ? [] : currentTeamVisits[0].allVisitLocations;
-          setAllLocationHistory(locationHistory);
-          tv.sort((a, b) => b.total - a.total);
-          for (let i = 0; i < tv.length; ++i) {
-            tv[i].id = i + 1;
-          }
-          setCurrentLocationId(currentLocationForTeam);
-          setResult({ labels, datasets });
-          setRows(tv);
-          if (roundNumber) {
-            setRoundId(roundNumber);
-          }
-        })
-        .finally(() => {
-          setLoading(false);
-          setCurrentRoundData(true);
-        });
+      setCurrentRoundData(true);
+      setLocationPhaseData();
     }
-  }, [player]);
+  }, []);
+
+  useEffect(() => {
+    if (openSnackBar) {
+      setTimeout(() => {
+        history.push(`/end-game/${player.hostCode}`);
+      }, 5000);
+    }
+  }, [openSnackBar]);
 
   useEffect(() => {
     if (roundId || currentLocationId) {
@@ -279,19 +298,19 @@ function LocationPhase() {
     }
   };
 
-  const getEndGameFlag = async () => {
-    const response = await axios({
-      url: `${API_URL}/buying/hasGameEnded`,
-      method: 'POST',
-      headers: {
-        'content-type': 'application/json',
-      },
-      data: JSON.stringify({ roomId: player.hostCode }),
-    });
-    if (response.data.message === 'GAME_ENDED') {
-      history.push(`/end-game/${player.hostCode}`);
-    }
-  };
+  // const getEndGameFlag = async () => {
+  //   const response = await axios({
+  //     url: `${API_URL}/buying/hasGameEnded`,
+  //     method: 'POST',
+  //     headers: {
+  //       'content-type': 'application/json',
+  //     },
+  //     data: JSON.stringify({ roomId: player.hostCode }),
+  //   });
+  //   if (response.data.message === 'GAME_ENDED') {
+  //     history.push(`/end-game/${player.hostCode}`);
+  //   }
+  // };
 
   useEffect(() => {
     socket.on('goToExpo', () => {
@@ -313,13 +332,13 @@ function LocationPhase() {
     }
   }, [startTimer]);
 
-  useEffect(() => {
-    getEndGameFlag();
-  }, []);
+  // useEffect(() => {
+  //   getEndGameFlag();
+  // }, []);
 
-  useEffect(() => {
-    getEndGameFlag();
-  }, []);
+  // useEffect(() => {
+  //   getEndGameFlag();
+  // }, []);
 
   useEffect(() => {
     const getTimer = async () => {
@@ -413,6 +432,15 @@ function LocationPhase() {
           )}
         </Toolbar>
       </AppBar>
+      {openSnackBar
+      && (
+        <Snackbar
+          anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+          open={openSnackBar}
+          message="Game has ended"
+          key="top center"
+        />
+      )}
       {!selectedLocationId && (
         <>
           <RoundsInfo label={`Round ${roundId} of 4`} />
