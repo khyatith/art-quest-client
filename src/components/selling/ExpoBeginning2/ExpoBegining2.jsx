@@ -337,6 +337,9 @@ const ExpoBegining2 = () => {
         state: { cityData, sellToMarketPainting, showOtherTeamsUpdates: !disableBtn },
       });
     });
+    return () => {
+      socket.off('ExpoBeginTimerEnded');// added this
+    };
   }, [sellToMarketPainting, cityData, disableBtn]);
   return (
     <>

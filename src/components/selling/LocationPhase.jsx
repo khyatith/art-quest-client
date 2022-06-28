@@ -80,7 +80,7 @@ const useStyles = makeStyles((theme) => ({
   timercontent: {
     display: 'none',
     margin: '0 auto',
-    fontWeight: '700',
+    // fontWeight: '700',
     [theme.breakpoints.up('sm')]: {
       display: 'block',
     },
@@ -88,7 +88,7 @@ const useStyles = makeStyles((theme) => ({
     fontSize: '22px',
   },
   playerdiv: {
-    fontWeight: 700,
+    // fontWeight: 700,
     // color: '#051207', // green color
   },
   levelOfInterest: {
@@ -270,6 +270,17 @@ function LocationPhase() {
     setSelectedLocId(locId);
   };
 
+  const getRandomLocation = async (currLoc) => {
+    const { data } = await axios.get(`${API_URL}/buying/getMap`);
+    if (disabledLocations && disabledLocations.includes(parseInt(currentLocationId, 10))) {
+      const selectedRadioOption = Object.entries(data)
+        .map((items) => items[1].allowedToVisit)
+        .find((av) => parseInt(av, 10) !== parseInt(currentLocationId, 10));
+      // eslint-disable-next-line prefer-destructuring
+      return selectedRadioOption[0];
+    }
+    return currLoc;
+  };
   const getRemainingTime = () => {
     const total = parseInt(locationPageTimerValue.total, 10) - 1000;
     const seconds = Math.floor((parseInt(total, 10) / 1000) % 60);
@@ -279,19 +290,22 @@ function LocationPhase() {
       // console.log('currentLocationId', currentLocationId);
       if (!selectedLocationId) {
         console.log('inside !selected location id');
-        socket.emit('putCurrentLocation', {
-          roomId: player.hostCode,
-          locationId: currentLocationId,
-          teamName: player.teamName,
-          roundId,
-          flyTicketPrice: 100,
-        });
+        // getRandomLocation(currentLocationId).then((randomLocation) => {
+        //   console.log('randomLocation1->', randomLocation);
+        //   setSelectedLocId(randomLocation);
+        //   socket.emit('putCurrentLocation', {
+        //     roomId: player.hostCode,
+        //     locationId: randomLocation,
+        //     teamName: player.teamName,
+        //     roundId,
+        //     flyTicketPrice: 100,
+        //   });
         setTimeout(() => {
           setSelectedLocation(false);
           socket.emit('locationPhaseTimerEnded', { player });
-        }, 5000);
-      }
-      if (selectedLocationId) {
+        }, 0);
+        // });
+      } else {
         socket.emit('locationPhaseTimerEnded', { player });
         setSelectedLocation(false);
       }
@@ -325,10 +339,47 @@ function LocationPhase() {
 
   useEffect(() => {
     socket.on('goToExpo', () => {
-      console.log('expo');
-      history.push(`/sell/${player.playerId}`);
+      console.log('expo', selectedLocationId, currentLocationId);
+      if (!selectedLocationId) {
+        console.log('inside !selected location id 2');
+        // let randomLocation = currentLocationId;
+        getRandomLocation(currentLocationId).then((randomLocation) => {
+          console.log('randomLocation2->', randomLocation);
+          setSelectedLocId(randomLocation);
+          socket.emit('putCurrentLocation', {
+            roomId: player.hostCode,
+            locationId: randomLocation,
+            teamName: player.teamName,
+            roundId,
+            flyTicketPrice: 100,
+          });
+          const user = JSON.parse(sessionStorage.getItem('user'));
+          if (currentLocationId) {
+            const updatedUser = {
+              ...user,
+              roundId,
+              previousLocation: currentLocationId,
+              currentLocation: randomLocation,
+            };
+            //   console.log('->', user, updatedUser);
+            //   // setPlayer((prevValues) => ({
+            //   //   ...prevValues,
+            //   //   ...updatedUser,
+            //   // }));
+            sessionStorage.setItem('user', JSON.stringify(updatedUser));
+          }
+          setTimeout(() => {
+            history.push(`/sell/${player.playerId}`);
+          }, 5000);
+        });
+      } else {
+        history.push(`/sell/${player.playerId}`);
+      }
     });
-  }, []);
+    return () => {
+      socket.off('goToExpo');
+    };
+  }, [selectedLocationId, currentLocationId]);
 
   // eslint-disable-next-line consistent-return
   useEffect(() => {
@@ -375,6 +426,7 @@ function LocationPhase() {
   });
   useEffect(() => {
     socket.on('locationUpdatedForTeam', (data) => {
+      console.log('**location Chosen**');
       const chosenLocation = {
         ...chosenLocationForTeams,
         [data.teamName]: data,
@@ -393,6 +445,7 @@ function LocationPhase() {
         setStartTimer(true);
       }
     });
+    return () => socket.off('locationUpdatedForTeam');
   });
 
   useEffect(() => {
