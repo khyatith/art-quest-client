@@ -370,7 +370,7 @@ function LocationPhase() {
           }
           setTimeout(() => {
             history.push(`/sell/${player.playerId}`);
-          }, 5000);
+          }, 0);
         });
       } else {
         history.push(`/sell/${player.playerId}`);
