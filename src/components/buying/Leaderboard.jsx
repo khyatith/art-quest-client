@@ -12,7 +12,6 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import { API_URL, TEAM_COLOR_MAP } from '../../global/constants';
-import PaintingsShowcase from './PaintingsShowcase';
 
 const useStyles = makeStyles(() => ({
   paper: {
@@ -40,7 +39,8 @@ const StyledTableCell = withStyles((theme) => ({
 
 export default function Leaderboard({ showAuctionResults, goToNextAuctions, maxWidth }) {
   const classes = useStyles();
-  const { allTeams } = JSON.parse(sessionStorage.getItem('allAuction'));
+  // const { allTeams } = JSON.parse(sessionStorage.getItem('allAuction'));
+  const allTeams = ['Blue', 'Red', 'Yellow'];
   const player = JSON.parse(sessionStorage.getItem('user'));
   const existingLeaderboard = sessionStorage.getItem('results') ? JSON.parse(sessionStorage.getItem('results')) : {};
   const [leaderboardData, setLeaderboardData] = useState(existingLeaderboard);
@@ -61,8 +61,8 @@ export default function Leaderboard({ showAuctionResults, goToNextAuctions, maxW
   }, [showAuctionResults]);
 
   const renderLeaderboard = () => {
-    const user = JSON.parse(sessionStorage.getItem('user'));
-    const { totalAmountByTeam, totalPaintingsWonByTeams, leaderboard } = leaderboardData || {};
+    // const user = JSON.parse(sessionStorage.getItem('user'));
+    const { totalAmountByTeam, totalPaintingsWonByTeams } = leaderboardData || {};
     const classifyPoints = leaderboardData?.classifyPoints?.classify;
     // if (!leaderboard) return <></>;
     return (
