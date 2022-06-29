@@ -1,7 +1,6 @@
-/* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
 /* eslint-disable object-curly-newline */
-import React, { Fragment } from 'react';
+import React from 'react';
 import { Table, TableBody, TableRow, TableHead, TableContainer, Paper, TableCell } from '@material-ui/core';
 import { TEAM_COLOR_MAP } from '../../global/constants';
 
@@ -30,6 +29,9 @@ const LeaderboardTable = ({ leaderboard }) => (
               Cash
             </TableCell>
             <TableCell align="right" style={{ fontWeight: '700' }}>
+              Cash points
+            </TableCell>
+            <TableCell align="right" style={{ fontWeight: '700' }}>
               Visits
             </TableCell>
             <TableCell align="right" style={{ fontWeight: '700' }}>
@@ -50,6 +52,7 @@ const LeaderboardTable = ({ leaderboard }) => (
                 <TeamCircle teamName={teamName} />
               </TableCell>
               <TableCell align="right">{leaderboard[teamName].cash}</TableCell>
+              <TableCell align="right">{leaderboard[teamName].cashPoints}</TableCell>
               <TableCell align="right">{leaderboard[teamName].visits}</TableCell>
               <TableCell align="right">{leaderboard[teamName].allClassifyPoints}</TableCell>
               <TableCell align="right">{leaderboard[teamName].total}</TableCell>
