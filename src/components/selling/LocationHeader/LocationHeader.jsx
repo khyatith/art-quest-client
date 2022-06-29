@@ -19,8 +19,8 @@ const useStyles = makeStyles(() => ({
     alignItems: 'center',
     fontFamily: 'Roboto, Helvetica, Arial, sans-serif',
     fontStyle: 'normal',
-    fontWeight: '600',
-    fontSize: '1.2rem',
+    // fontWeight: '600',
+    fontSize: '1.25rem',
     lineHeight: '108%',
     marginLeft: '10px',
     /* or 32px */
@@ -40,7 +40,7 @@ const useStyles = makeStyles(() => ({
     justifyContent: 'center',
     alignItems: 'center',
     fontStyle: 'normal',
-    fontWeight: '500',
+    // fontWeight: '500',
     fontSize: '20px',
     lineHeight: '108%',
     /* or 17px */
@@ -58,12 +58,12 @@ const useStyles = makeStyles(() => ({
   },
   playercontent: {
     display: 'flex',
-    fontSize: '20px',
+    fontSize: '1.25rem',
     position: 'relative',
     marginRight: '10px',
     justifyContent: 'flex-end',
     alignItems: 'center',
-    fontWeight: 700,
+    // fontWeight: 700,
   },
 }));
 function LocationHeader({

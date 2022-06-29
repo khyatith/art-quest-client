@@ -14,7 +14,7 @@ import Paper from '@material-ui/core/Paper';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 // import MuiAlert from '@material-ui/lab/Alert';
-// import { useHistory } from 'react-router';
+import { useHistory } from 'react-router';
 import { API_URL, TEAM_COLOR_MAP } from '../global/constants';
 import { formatNumberToCurrency } from '../global/helpers';
 import useSessionStorage from '../hooks/useSessionStorage';
@@ -84,7 +84,7 @@ const StyledTableCell = withStyles((theme) => ({
 
 function EndBuyingPhase() {
   const classes = useStyles();
-  // const history = useHistory();
+  const history = useHistory();
   const [artforTeams, setArtForTeams] = useState();
   // const [teamEfficiency, setTeamEfficiency] = useState({});
   const [totalDebtByTeam, setTotalDebtByTeam] = useState({});
@@ -149,7 +149,7 @@ function EndBuyingPhase() {
             <TableBody>
               {tableData.map((row) => {
                 const formattedDebt = parseFloat((row.debt) / 10).toFixed(2);
-                const totalPoints = parseFloat(formattedDebt) + parseFloat(row.classifyPoint);
+                const totalPoints = (parseFloat(formattedDebt) + parseFloat(row.classifyPoint)).toFixed(2);
                 return (
                   <TableRow key={row.key} style={{ backgroundColor: `${TEAM_COLOR_MAP[row.key]}` }}>
                     <StyledTableCell component="th" scope="row">
@@ -171,11 +171,11 @@ function EndBuyingPhase() {
     );
   };
 
-  // useEffect(() => {
-  //   setTimeout(() => {
-  //     history.push(`/sell/instructions/${player.playerId}`);
-  //   }, 10000);
-  // });
+  useEffect(() => {
+    setTimeout(() => {
+      history.push(`/sell/instructions/${player.playerId}`);
+    }, 10000);
+  });
 
   // function Alert(props) {
   //   return <MuiAlert elevation={6} variant="filled" {...props} />;

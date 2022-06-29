@@ -9,14 +9,14 @@ const SelectedDestination = ({ player, chosenLocationForTeams, selectedLocationI
   const [location, setLocation] = useState({});
   const [otherTeamDetails, setOtherTeamDeatils] = useState({});
 
-  const hanldeGetLocation = () => {
+  const handleGetLocation = () => {
     const cities = JSON.parse(sessionStorage.getItem('CITIES'));
     const foundCity = cities.find((loc) => loc.cityId === selectedLocationId);
     setLocation(foundCity);
   };
 
   useEffect(() => {
-    hanldeGetLocation();
+    handleGetLocation();
     const otherTeams = {};
     Object.keys(chosenLocationForTeams).map((teamName) => {
       if (teamName !== player.teamName) {
