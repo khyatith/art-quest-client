@@ -202,7 +202,6 @@ function AuctionPhase() {
   const player = JSON.parse(sessionStorage.getItem('user'));
   const [auctions, setAuctions] = useState([]);
   const [timerValue, setTimerValue] = useState('');
-  const [englishAuctionTimer, setEnglishAuctionTimer] = useState();
   const [nominatedAuctionResult, setNominatedAuctionResult] = useState();
   const [bidAmtError, setBidAmtError] = useState();
   const [startTimer, setStartTimer] = useState(true);
@@ -214,6 +213,7 @@ function AuctionPhase() {
   const [showMarketPainting, setShowMarketPainting] = useState(false);
   const [cityData, setCityData] = useState(false);
   const [showOtherTeamsUpdates, setShowOtherTeamsUpdates] = useState(false);
+
   const bidInputRef = useCallback((function () {
     const val = auctions.reduce((acc, a) => {
     /* eslint-disable  no-param-reassign */
@@ -310,40 +310,47 @@ function AuctionPhase() {
       socket.emit('nominatedAuctionBids', bidInfo);
     }
   };
+
+  useEffect(() => {
+    if (sendResultEventOnce) {
+      const updateLeaderBoard = async () => {
+        await axios
+          .get(`${API_URL}/buying/updateLeaderBoardAfterNominationAuction?roomId=${player.hostCode}`)
+          .then((res) => {
+          })
+          .catch((e) => console.log(e));
+      };
+
+      if (!updateLBOnce) {
+        setUpdateLBOnce(true);
+        updateLeaderBoard().then(async () => {
+          setTimeout(() => {
+            socket.emit('sellingResultsTimerEnded', { player });
+          }, 5000);
+          await axios.post(`${API_URL}/buying/updateRoundId`, { roomId: player.hostCode, roundId: player.roundId });
+        }).catch((e) => console.log(e));
+      }
+    }
+  }, [sendResultEventOnce]);
+
   useEffect(() => {
     socket.on('renderNominatedAuctionResult', (data) => {
       // setClassifyPoints(data.classifyPoints.classify);
       if (!nominatedAuctionResult) {
         setNominatedAuctionResult(data.nominatedAuctionBids);
-        const updateLeaderBoard = async () => {
-          await axios
-            .get(`${API_URL}/buying/updateLeaderBoardAfterNominationAuction?roomId=${player.hostCode}`)
-            .then((res) => {
-            })
-            .catch((e) => console.log(e));
-        };
-        if (!updateLBOnce) {
-          setUpdateLBOnce(true);
-          updateLeaderBoard().then(async () => {
-            setTimeout(() => {
-              socket.emit('sellingResultsTimerEnded', { player });
-            }, 5000);
-            await axios.post(`${API_URL}/buying/updateRoundId`, { roomId: player.hostCode, roundId: player.roundId });
-          }).catch((e) => console.log(e));
-        }
       }
     });
+    // return (() => {
+    //   socket.off('renderNominatedAuctionResult');
+    // });
   }, []);
 
   useEffect(() => {
     socket.on('startNextRound', () => {
-      if (player.roundId < 4) {
-        history.push(`/sell/location/${player.playerId}`);
-      } else {
-        history.push(`/sell/finalresult/${player.playerId}`);
-      }
+      history.push(`/sell/location/${player.playerId}`);
     });
   }, []);
+
   useEffect(() => {
     socket.on('setNominatedAuction', (previousBid) => {
       if (previousBid) {
@@ -355,6 +362,7 @@ function AuctionPhase() {
       }
     });
   }, [previousBidDetails]);
+
   const getRemainingTime = async () => {
     const total = parseInt(timerValue.total, 10) - 1000;
     const seconds = Math.floor((parseInt(total, 10) / 1000) % 60);
@@ -371,6 +379,7 @@ function AuctionPhase() {
       setTimerValue(value);
     }
   };
+
   useEffect(() => {
     let interval;
     if (timerValue && startTimer) {
@@ -378,6 +387,7 @@ function AuctionPhase() {
     }
     return () => clearInterval(interval);
   }, [timerValue]);
+
   useEffect(() => {
     const getTimer = async () => {
       await axios
@@ -393,6 +403,7 @@ function AuctionPhase() {
       getTimer();
     }
   }, [startTimer]);
+
   useEffect(() => {
     socket.on('nominatedAuctionStarted', () => {
       if (!startTimer) {
@@ -400,6 +411,7 @@ function AuctionPhase() {
       }
     });
   }, []);
+
   useEffect(() => {
     if (location.state?.sellToMarketPainting) {
       setSellToMarketPainting(location.state?.sellToMarketPainting);
@@ -428,7 +440,7 @@ function AuctionPhase() {
           return (
             <Card
               key={auction.id}
-              className={(!englishAuctionTimer && false) ? classes.disabledcardroot : classes.cardroot}
+              className={!timerValue ? classes.disabledcardroot : classes.cardroot}
               style={{ border: previousBid?.bidTeam && `4px solid ${TEAM_COLOR_MAP[previousBid?.bidTeam]}`, textAlign: 'center' }}
             >
               <Typography
@@ -478,7 +490,7 @@ function AuctionPhase() {
                       variant="contained"
                       color="secondary"
                       onClick={() => setBidAmt(auction.id)}
-                      disabled={(!englishAuctionTimer && false) || (
+                      disabled={!timerValue || (
                         previousBid
                     && (previousBid?.bidTeam === player.teamName))}
                     >

@@ -75,6 +75,7 @@ const EndGame = () => {
         leaderboardTableObj[teamName] = {
           classifyPoints: classifyPoints[teamName],
           cash: amountSpentByTeams[teamName],
+          cashPoints: parseInt(amountSpentByTeams[teamName], 10) / 10,
           visits: visitsPrice[teamName],
           total: totalObj[teamName],
           allClassifyPoints: allClassifyPoints.classify[teamName],
