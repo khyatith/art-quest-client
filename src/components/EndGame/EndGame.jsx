@@ -1,3 +1,6 @@
+/* eslint-disable array-callback-return */
+/* eslint-disable no-unused-vars */
+/* eslint-disable object-curly-newline */
 import { Paper } from '@material-ui/core';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
@@ -54,20 +57,13 @@ const EndGame = () => {
       method: 'GET',
     });
 
-    const {
-      leaderboard,
-      classifyPoints,
-      amountSpentByTeams,
-      totalObj,
-      visitsPrice,
-      allClassifyPoints,
-      winner,
-    } = response.data;
+    const { leaderboard, classifyPoints, amountSpentByTeams, totalObj, visitsPrice, allClassifyPoints, winner } = response.data;
 
     setWinningTeam(winner);
-    const leaderboardTableObj = {};
+    let leaderboardTableObj = {};
     let tempChartData = {};
     const tempPaintings = [];
+    const temp = [];
 
     const leaderboardKeys = Object.keys(leaderboard);
     if (leaderboardKeys.length > 0) {
@@ -79,7 +75,9 @@ const EndGame = () => {
           visits: visitsPrice[teamName],
           total: totalObj[teamName],
           allClassifyPoints: allClassifyPoints.classify[teamName],
+          team: teamName,
         };
+        temp.push(leaderboardTableObj[teamName]);
 
         tempChartData = {
           labels: Object.keys(classifyPoints),
@@ -89,6 +87,11 @@ const EndGame = () => {
         if (teamName === loggedInTeam) {
           tempPaintings.push(leaderboard[teamName]?.map((ob) => ob.imageURL));
         }
+      });
+      temp.sort((a, b) => (a.total > b.total ? -1 : 1));
+      leaderboardTableObj = {};
+      temp.map((t) => {
+        leaderboardTableObj[t.team] = t;
       });
     }
 
