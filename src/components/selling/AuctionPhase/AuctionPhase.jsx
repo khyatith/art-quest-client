@@ -24,6 +24,7 @@ import { validateCurrentBid } from '../../../global/helpers';
 import { TEAM_COLOR_MAP, API_URL } from '../../../global/constants';
 import { socket } from '../../../global/socket';
 import SellToMarketPhase from './SellToMarketPhase';
+import Details from '../Details';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -200,6 +201,7 @@ const useStyles = makeStyles((theme) => ({
 function AuctionPhase() {
   const classes = useStyles();
   const player = JSON.parse(sessionStorage.getItem('user'));
+  const rows = JSON.parse(sessionStorage.getItem('sellingPhaseTotalPoints'));
   const [auctions, setAuctions] = useState([]);
   const [timerValue, setTimerValue] = useState('');
   const [nominatedAuctionResult, setNominatedAuctionResult] = useState();
@@ -428,10 +430,11 @@ function AuctionPhase() {
     <>
       <LocationHeader timerValue={timerValue} cityData={cityData} timerEnded={updateLBOnce} user={player} />
       <div style={{
-        width: '90%', margin: '20px', paddingTop: '120px',
+        width: '70%', margin: '20px auto', paddingTop: '120px',
       }}
       >
-        <Leaderboard showAuctionResults={false} goToNextAuctions={false} maxWidth={true} />
+        {/* <Leaderboard showAuctionResults={false} goToNextAuctions={false} maxWidth={true} /> */}
+        <Details rows={rows} />
       </div>
       <div className={classes.auction_paintings}>
         {auctions.length > 0 && auctions.map((auction) => {

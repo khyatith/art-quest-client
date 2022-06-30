@@ -214,6 +214,9 @@ function LocationPhase() {
     setCurrentLocationId(currentLocationForTeam);
     setResult({ labels, datasets });
     setRows(tv);
+    console.log('tv->', tv);
+    sessionStorage.setItem('sellingPhaseTotalPoints', JSON.stringify(tv));
+
     if (roundNumber) {
       setRoundId(roundNumber);
     }
@@ -370,10 +373,12 @@ function LocationPhase() {
           }
           setTimeout(() => {
             history.push(`/sell/${player.playerId}`);
-          }, 0);
+          }, 3000);
         });
       } else {
-        history.push(`/sell/${player.playerId}`);
+        setTimeout(() => {
+          history.push(`/sell/${player.playerId}`);
+        }, 5000);
       }
     });
     return () => {
@@ -423,6 +428,7 @@ function LocationPhase() {
         setStartTimer(true);
       }
     });
+    return () => socket.off('timerStarted');// added this
   });
   useEffect(() => {
     socket.on('locationUpdatedForTeam', (data) => {
