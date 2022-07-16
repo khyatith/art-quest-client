@@ -289,7 +289,7 @@ const ExpoBegining2 = () => {
     }
     if (!hasSentRequest) {
       setHasSentRequest(true);
-      getSellingInfo();
+      setTimeout(getSellingInfo(), 1000);
     }
   }, [user, cityData, paintings]);
 

@@ -26,7 +26,7 @@ const ConfirmationScreen = ({
         // gridTemplateRows: '1fr 1fr',
       }}>
       {sellToMarket ? (
-        <div style={{ }}>
+        <div style={{ paddingTop: '10%' }}>
           <div style={{
             display: 'flex', justifyContent: 'center', flexDirection: 'column', alignItems: 'center',
           }}>
