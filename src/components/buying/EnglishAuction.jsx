@@ -22,6 +22,7 @@ import { socket } from '../../global/socket';
 import { API_URL, TEAM_COLOR_MAP } from '../../global/constants';
 import { validateCurrentBid } from '../../global/helpers';
 import Leaderboard from './Leaderboard';
+import PaintingsShowcase from './PaintingsShowcase';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -115,7 +116,8 @@ const useStyles = makeStyles((theme) => ({
   },
   leaderboardcontainer: {
     paddingTop: '100px',
-    paddingLeft: '',
+    display: 'flex',
+    paddingLeft: '80px',
   },
 }));
 
@@ -130,6 +132,8 @@ const EnglishAuction = () => {
   const [isFirstBid, setIsFirstBid] = useState(false);
   const history = useHistory();
   const player = JSON.parse(sessionStorage.getItem('user'));
+  const existingResults = sessionStorage.getItem('results');
+  const existingLeaderboard = existingResults ? JSON.parse(existingResults) : null;
   const allAuctionsObj = JSON.parse(sessionStorage.getItem('allAuction'));
   // eslint-disable-next-line no-unused-vars
   const [auctions, setAuctions] = useState(
@@ -195,9 +199,6 @@ const EnglishAuction = () => {
     if (isFirstBid) {
       fetchTimerValue();
     }
-    // if (!englishAuctionTimer) {
-    //   setTimeout(() => fetchTimerValue(), 5000);
-    // }
   }, [player.hostCode, isFirstBid]);
 
   useEffect(() => {
@@ -234,8 +235,6 @@ const EnglishAuction = () => {
 
   useEffect(() => {
     socket.on('renderEnglishAuctionsResults', (data) => {
-      console.log('english auction number', location.state.englishAuctionsNumber);
-      console.log('data in render english auction results', data);
       setClassifyPoints(data.classifyPoints.classify);
       if (!englishAuctionResults) {
         setEnglishAuctionResults(data.englishAutionBids);
@@ -321,6 +320,7 @@ const EnglishAuction = () => {
       </AppBar>
       <div className={classes.leaderboardcontainer}>
         <Leaderboard classifyPoints={classifyPoints} showAuctionResults={englishAuctionResults} goToNextAuctions={goToNextAuctions} />
+        { existingLeaderboard && <PaintingsShowcase leaderboard={existingLeaderboard} /> }
       </div>
       {auctions && auctions.artifacts.map((auction) => {
         const previousBid = previousBidDetails.current[auction.id];

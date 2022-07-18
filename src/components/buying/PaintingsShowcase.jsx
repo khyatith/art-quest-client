@@ -18,7 +18,7 @@ const Painting = ({ imageurl, bidAmount, artMovement }) => (
 );
 
 const PaintingsShowcase = ({ leaderboard }) => (
-  <div>
+  <div style={{ flex: 1 }}>
     <Paper
       elevation={4}
       style={{

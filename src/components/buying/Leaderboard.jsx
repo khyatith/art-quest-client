@@ -41,7 +41,8 @@ export default function Leaderboard({ showAuctionResults, goToNextAuctions, maxW
   const classes = useStyles();
   const { allTeams } = JSON.parse(sessionStorage.getItem('allAuction'));
   const player = JSON.parse(sessionStorage.getItem('user'));
-  const existingLeaderboard = sessionStorage.getItem('results') ? JSON.parse(sessionStorage.getItem('results')) : {};
+  const resultsInStorage = sessionStorage.getItem('results');
+  const existingLeaderboard = resultsInStorage ? JSON.parse(resultsInStorage) : {};
   const [leaderboardData, setLeaderboardData] = useState(existingLeaderboard);
 
   useEffect(() => {
@@ -111,5 +112,5 @@ export default function Leaderboard({ showAuctionResults, goToNextAuctions, maxW
     );
   };
 
-  return <div>{renderLeaderboard()}</div>;
+  return <div style={{ flex: 1 }}>{renderLeaderboard()}</div>;
 }

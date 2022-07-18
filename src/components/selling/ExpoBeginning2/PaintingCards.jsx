@@ -2,11 +2,11 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable no-unused-vars */
 /* eslint-disable operator-assignment */
-import React, { Fragment, useEffect } from 'react';
-import { Card, Typography, CardMedia, Badge, Paper } from '@material-ui/core';
+import React from 'react';
+import { CardMedia, Badge, Paper } from '@material-ui/core';
 
 const artMovementColors = ['rgb(255, 99, 132)', 'rgb(54, 162, 235)', 'rgb(255, 205, 86)', 'rgb(250, 154, 85)', 'rgb(69, 91, 255)', 'rgb(69, 255, 212)'];
-const PaintingCards = ({ paintingData, paintingsObj }) => (
+const PaintingCards = ({ paintingsObj }) => (
   <div style={{ width: '100%', overflowX: 'scroll', maxWidth: '35rem' }}>
     <div
       style={{
