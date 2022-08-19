@@ -99,7 +99,7 @@ function Mapping({ disabledLocations, teamLocations }) {
           {Object.entries(mapValues).map((items) => (
             <Marker id={items[1].cityName} key={items[1].cityId} coordinates={[items[1].longitude, items[1].latitude]}>
               <circle
-                r={items[1].transportCost / 100000 + 35}
+                r={items[1].demand + 35}
                 fill={disabledLocations && disabledLocations.includes(items[1].cityId) ? '#cccccc' : '#000000'}
                 margin="45px"
                 style={{ margin: '45px' }}
@@ -108,7 +108,7 @@ function Mapping({ disabledLocations, teamLocations }) {
                 {items[1].cityName}
               </text>
               <text y="15" textAnchor="middle" fill="#FFF" fontSize="12px" fontWeight="700">
-                {`$${items[1].transportCost.toLocaleString()}`}
+                {`${items[1].demand.toLocaleString()}M`}
               </text>
             </Marker>
           ))}

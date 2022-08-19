@@ -18,7 +18,6 @@ function SellToMarketPhase({
     if (sellToMarketPainting?.ticketPrice) {
       setShowMarketPainting(true);
       getEarnings().then((revenue) => {
-        console.log('reve->', revenue[player.teamName], player);
         const rev = revenue[player.teamName]?.toFixed(2);
         if (timerValue?.total <= 5000) {
           setCalculatedRevenue(rev);
@@ -29,9 +28,8 @@ function SellToMarketPhase({
     }
   }, [sellToMarketPainting]);
 
-  const { transportCost, ticketPrice } = sellToMarketPainting;
-  const formattedTransportCost = parseInt(transportCost, 10) / 1000000;
-  const realRevenue = parseFloat(calculatedRevenue) - parseFloat(formattedTransportCost);
+  const { ticketPrice } = sellToMarketPainting;
+  const realRevenue = parseFloat(calculatedRevenue).toFixed(2);
   const mssgArray = useCallback([], []);
   useEffect(() => {
     socket.on('setNominatedAuction', (previousBid) => {
@@ -54,7 +52,6 @@ function SellToMarketPhase({
       }
     });
   }, [mssgArray]);
-  console.log('message 2->', mssgArray);
   return (
     <div className={classes.sell_to_market_outer_container}>
       <div className={classes['sell_to_market-container']}>
@@ -75,22 +72,10 @@ function SellToMarketPhase({
                     {''}
                     per person
                   </h3>
-                  <h3>
-                    Calculated earnings:
-                    $
-                    {calculatedRevenue}
-                    M
-                  </h3>
-                  <h3>
-                    Transportation cost:
-                    $
-                    {formattedTransportCost}
-                    M
-                  </h3>
                   <h3 style={{ color: 'green' }}>
                     Total earnings:
                     $
-                    {realRevenue.toFixed(2)}
+                    {parseFloat(realRevenue).toFixed(2)}
                     M
                   </h3>
                 </div>

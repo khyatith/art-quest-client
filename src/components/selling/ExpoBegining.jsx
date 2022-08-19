@@ -389,7 +389,7 @@ function ExpoBeginning() {
               <h3 style={{ color: 'green' }}>
                 Total earnings:
                 $
-                {realRevenue.toFixed(2)}
+                {parseFloat(realRevenue).toFixed(2)}
                 M
               </h3>
             </div>

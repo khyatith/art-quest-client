@@ -5,7 +5,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
@@ -45,7 +45,6 @@ const useStyles = makeStyles((theme) => ({
 
 function StagingScreen() {
   const classes = useStyles();
-  const history = useHistory();
   const location = useLocation();
   const { player } = useContext(userContext);
   const [isAdmin, setAdmin] = useState(false);
@@ -60,10 +59,6 @@ function StagingScreen() {
       setAdmin(false);
     }
   }, [player]);
-
-  const handleClick = () => {
-    setLoadInstructions(true);
-  };
 
   const handleTeams = (event) => {
     const { value } = event.target;

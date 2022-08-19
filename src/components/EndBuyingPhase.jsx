@@ -13,7 +13,7 @@ import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
-// import MuiAlert from '@material-ui/lab/Alert';
+import MuiAlert from '@material-ui/lab/Alert';
 import { useHistory } from 'react-router';
 import { API_URL, TEAM_COLOR_MAP } from '../global/constants';
 import { formatNumberToCurrency } from '../global/helpers';
@@ -174,12 +174,12 @@ function EndBuyingPhase() {
   useEffect(() => {
     setTimeout(() => {
       history.push(`/sell/instructions/${player.playerId}`);
-    }, 10000);
+    }, 15000);
   });
 
-  // function Alert(props) {
-  //   return <MuiAlert elevation={6} variant="filled" {...props} />;
-  // }
+  function Alert(props) {
+    return <MuiAlert elevation={6} variant="filled" {...props} />;
+  }
 
   return (
     <>
@@ -198,7 +198,7 @@ function EndBuyingPhase() {
           </Typography>
         </Toolbar>
       </AppBar>
-      {/* <Alert severity="error">Starting Phase 2 in 15 seconds ...</Alert> */}
+      <Alert severity="warning">Starting Phase 2 in 15 seconds ...</Alert>
       {/* {allTeams && totalPaintingsWonByTeam && totalArtScore && renderLeaderboardData()} */}
       {allTeams && totalPaintingsWonByTeam && renderLeaderboardData()}
       {/* <div style={{ margin: '40px auto', textAlign: 'center' }}>

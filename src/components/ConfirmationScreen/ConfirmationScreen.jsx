@@ -31,7 +31,7 @@ const ConfirmationScreen = ({
             display: 'flex', justifyContent: 'center', flexDirection: 'column', alignItems: 'center',
           }}>
             <h2 style={{ color: 'white', textShadow: '0px 4px 20px #000000' }}>The museum in
-              {' '}{cityData.cityName} is calculating your revenue.
+              {' '}{cityData.cityName} is calculating your earnings.
             </h2>
             <h3 style={{ color: 'white' }}>Your nominated Painting: </h3>
             <div />

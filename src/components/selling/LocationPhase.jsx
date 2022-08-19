@@ -214,7 +214,6 @@ function LocationPhase() {
     setCurrentLocationId(currentLocationForTeam);
     setResult({ labels, datasets });
     setRows(tv);
-    console.log('tv->', tv);
     sessionStorage.setItem('sellingPhaseTotalPoints', JSON.stringify(tv));
 
     if (roundNumber) {
@@ -227,7 +226,6 @@ function LocationPhase() {
   useEffect(() => {
     const setLocationPhaseData = async () => {
       const newData = await axios.get(`${API_URL}/buying/getSellingResults?roomId=${player.hostCode}`);
-      console.log('game ended flag', newData.data);
       if (newData.data.message === 'GAME_ENDED') {
         setLoading(false);
         setOpenSnackBar(true);
@@ -342,12 +340,9 @@ function LocationPhase() {
 
   useEffect(() => {
     socket.on('goToExpo', () => {
-      console.log('expo', selectedLocationId, currentLocationId);
       if (!selectedLocationId) {
-        console.log('inside !selected location id 2');
         // let randomLocation = currentLocationId;
         getRandomLocation(currentLocationId).then((randomLocation) => {
-          console.log('randomLocation2->', randomLocation);
           setSelectedLocId(randomLocation);
           socket.emit('putCurrentLocation', {
             roomId: player.hostCode,
@@ -432,7 +427,6 @@ function LocationPhase() {
   });
   useEffect(() => {
     socket.on('locationUpdatedForTeam', (data) => {
-      console.log('**location Chosen**');
       const chosenLocation = {
         ...chosenLocationForTeams,
         [data.teamName]: data,

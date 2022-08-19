@@ -11,6 +11,7 @@ import Box from '@mui/material/Box';
 import Collapse from '@mui/material/Collapse';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
+import InputAdornment from '@material-ui/core/InputAdornment';
 import { validateCurrentBid } from '../../../global/helpers';
 import { API_URL } from '../../../global/constants';
 import { socket } from '../../../global/socket';
@@ -159,7 +160,7 @@ function Painting({
               variant="subtitle2"
               component="div"
               style={{
-                fontSize: '0.5rem',
+                fontSize: '1.5rem',
                 width: '100%',
                 letterSpacing: '0',
                 color: 'red',
@@ -246,6 +247,10 @@ function Painting({
             error={!!error}
             helperText={error && error}
             onChange={(e) => { setAuctionPrice(e.target.value); }}
+            InputProps={{
+              startAdornment: <InputAdornment position="start">$</InputAdornment>,
+              endAdornment: <InputAdornment position="end">M</InputAdornment>,
+            }}
           />
           <p style={{ fontSize: '.7rem', color: '#CACACA' }}>*Price range between $1 - $999</p>
         </CardContent>
@@ -265,7 +270,7 @@ function Painting({
           }}
           onClick={() => { setAuctionPriceHandler(expandAuction ? 'auction' : 'market'); }}
         >
-          {expandAuction && 'Auction Price' }
+          {expandAuction && 'Set price for painting' }
           {expandedMarket && 'Set Ticket Price' }
         </Button>
       </Collapse>
