@@ -1,5 +1,5 @@
 import { BrowserRouter, Switch, Route } from 'react-router-dom';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import LaunchScreen from './components/LaunchScreen';
 import StagingScreen from './components/StagingScreen';
 import Game from './components/Game';
@@ -28,6 +28,7 @@ function App() {
     teamName: '',
     playerId: '',
     hostCode: '',
+    version: '',
   });
   const [leaderboardData, setLeaderboardData] = useState({
     leaderboard: {},
@@ -36,6 +37,14 @@ function App() {
   const [currentAuctionData, setCurrentAuctionData] = useState({
     currentAuctionObj: {},
   });
+
+  useEffect(() => {
+    const gamer = JSON.parse(sessionStorage.getItem('user'));
+    if (gamer) {
+      setPlayer(gamer);
+    }
+  }, []);
+
   return (
     <BrowserRouter>
       <userContext.Provider value={{ player, setPlayer }}>

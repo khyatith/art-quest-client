@@ -13,7 +13,7 @@ import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
-import MuiAlert from '@material-ui/lab/Alert';
+// import MuiAlert from '@material-ui/lab/Alert';
 import { useHistory } from 'react-router';
 import { API_URL, TEAM_COLOR_MAP } from '../global/constants';
 import { formatNumberToCurrency } from '../global/helpers';
@@ -148,7 +148,7 @@ function EndBuyingPhase() {
             </TableHead>
             <TableBody>
               {tableData.map((row) => {
-                const formattedDebt = parseFloat((row.debt) / 10).toFixed(2);
+                const formattedDebt = parseFloat(row.debt / 10).toFixed(2);
                 const totalPoints = (parseFloat(formattedDebt) + parseFloat(row.classifyPoint)).toFixed(2);
                 return (
                   <TableRow key={row.key} style={{ backgroundColor: `${TEAM_COLOR_MAP[row.key]}` }}>
@@ -172,14 +172,18 @@ function EndBuyingPhase() {
   };
 
   useEffect(() => {
-    setTimeout(() => {
-      history.push(`/sell/instructions/${player.playerId}`);
-    }, 15000);
+    if (player?.version !== 1) {
+      setTimeout(() => {
+        history.push(`/sell/instructions/${player.playerId}`);
+      }, 15000);
+    } else {
+      console.log('not moving to buying phase');
+    }
   });
 
-  function Alert(props) {
-    return <MuiAlert elevation={6} variant="filled" {...props} />;
-  }
+  // function Alert(props) {
+  //   return <MuiAlert elevation={6} variant="filled" {...props} />;
+  // }
 
   return (
     <>
@@ -190,15 +194,13 @@ function EndBuyingPhase() {
           </Typography>
           <Typography variant="h6" className={classes.playercontent}>
             {player.playerName}
-            ,
-            {' '}
-            Team
-            {' '}
+            , Team
             {player.teamName}
           </Typography>
         </Toolbar>
       </AppBar>
-      <Alert severity="warning">Starting Phase 2 in 15 seconds ...</Alert>
+      {/* Not moving to phase 2 */}
+      {/* <Alert severity="warning">Starting Phase 2 in 15 seconds ...</Alert> */}
       {/* {allTeams && totalPaintingsWonByTeam && totalArtScore && renderLeaderboardData()} */}
       {allTeams && totalPaintingsWonByTeam && renderLeaderboardData()}
       {/* <div style={{ margin: '40px auto', textAlign: 'center' }}>
@@ -212,12 +214,11 @@ function EndBuyingPhase() {
         <h3>Your art collection</h3>
         <div className={classes.root}>
           <ImageList rowHeight={300} className={classes.imageList}>
-            {artforTeams
-              && artforTeams.map((item) => (
-                <ImageListItem key={item.auctionId}>
-                  <img key={item.auctionId} src={item.imageURL} alt={item.name} />
-                </ImageListItem>
-              ))}
+            {artforTeams && artforTeams.map((item) => (
+              <ImageListItem key={item.auctionId}>
+                <img key={item.auctionId} src={item.imageURL} alt={item.name} />
+              </ImageListItem>
+            ))}
           </ImageList>
         </div>
       </div>
