@@ -56,6 +56,11 @@ function LaunchScreen() {
   const { player, setPlayer } = useContext(userContext);
 
   const handleCreate = () => {
+    const existingUser = JSON.parse(sessionStorage.getItem('user'));
+    if (existingUser?.playerId === '') {
+      console.log('playerId is empty. Open in new tab and enter name before continuing');
+      return;
+    }
     sessionStorage.setItem('user', JSON.stringify(player));
     socket.emit('createRoom', JSON.stringify(player));
     history.push(`/staging/${player.playerId}`);
@@ -68,6 +73,8 @@ function LaunchScreen() {
   }, []);
 
   const getUID = async () => {
+    console.log('getUID called');
+
     const { data } = await axios.get(`${API_URL}/buying/getUID/`);
     return data;
   };

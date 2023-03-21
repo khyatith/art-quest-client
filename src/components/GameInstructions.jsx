@@ -64,7 +64,7 @@ function GameInstructions() {
   const [playersJoinedInfo, setPlayersJoinedInfo] = useState();
   const [version, setVersion] = useState();
 
-  const { player } = useContext(userContext);
+  const { player, setPlayer } = useContext(userContext);
 
   // useEffect(() => {
   //   if (!playersJoinedInfo) {
@@ -91,6 +91,9 @@ function GameInstructions() {
       const sesStr = JSON.parse(sessionStorage.getItem('user'));
       const { data } = await axios.get(`${API_URL}/buying/getVersionID/${sesStr.hostCode}`);
       setVersion(data.version);
+      const gamer = { ...player, version: data.version };
+      sessionStorage.setItem('user', JSON.stringify(gamer));
+      setPlayer(gamer);
     }
     if (!version) {
       fetchVersion();
@@ -101,7 +104,8 @@ function GameInstructions() {
     if (playersJoinedInfo) {
       const { numberOfPlayers, playersJoined } = playersJoinedInfo;
       console.log('->', numberOfPlayers, playersJoined);
-      if (numberOfPlayers <= playersJoined) { // === //:changed
+      if (numberOfPlayers <= playersJoined) {
+        // === //:changed
         console.log('starting game in 15sec');
         setTimeout(() => startGame(), 15000); // 30000
       }
@@ -130,13 +134,9 @@ function GameInstructions() {
             <div style={{ marginTop: '20px', border: '5px solid #76e246' }}>
               <h3>
                 Player
-                {' '}
                 {playersJoinedInfo.playersJoined}
-                {' '}
                 of
-                {' '}
                 {playersJoinedInfo.numberOfPlayers}
-                {' '}
                 joined. Waiting for others to join...
               </h3>
             </div>
