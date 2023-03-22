@@ -44,7 +44,7 @@ const StyledTableCell = withStyles((theme) => ({
   },
 }))(TableCell);
 
-export default function NewLeaderboard({ hasAuctionTimerEnded }) {
+export default function AuctionsLeaderBoard({ hasAuctionTimerEnded }) {
   const classes = useStyles();
   const { player } = useContext(userContext);
   const { leaderboardData, setLeaderboardData } = useContext(leaderboardContext);
@@ -112,10 +112,10 @@ export default function NewLeaderboard({ hasAuctionTimerEnded }) {
   );
 }
 
-NewLeaderboard.defaultProps = {
+AuctionsLeaderBoard.defaultProps = {
   hasAuctionTimerEnded: false,
 };
 
-NewLeaderboard.propTypes = {
+AuctionsLeaderBoard.propTypes = {
   hasAuctionTimerEnded: PropTypes.bool,
 };

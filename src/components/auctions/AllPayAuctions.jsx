@@ -17,7 +17,7 @@ import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import axios from 'axios';
 import { socket } from '../../global/socket';
-import NewLeaderboard from '../NewLeaderboard';
+import AuctionsLeaderBoard from '../AuctionsLeaderBoard';
 import RoundsInfo from '../RoundsInfo';
 import TeamInfo from '../TeamInfo';
 import leaderboardContext from '../../global/leaderboardContext';
@@ -252,7 +252,7 @@ function AllPayAuctions({ totalNumberOfPaintings, getNextAuctionObj }) {
             <BonusAuctionBanner text={ALL_PAY_AUCTIONS_TEXT} />
           </Grid>
           <Grid item xs={7}>
-            <NewLeaderboard hasAuctionTimerEnded={hasAuctionTimerEnded} />
+            <AuctionsLeaderBoard hasAuctionTimerEnded={hasAuctionTimerEnded} />
           </Grid>
           <Grid item xs={12}>
             { leaderboardData && leaderboardData.totalAmountByTeam

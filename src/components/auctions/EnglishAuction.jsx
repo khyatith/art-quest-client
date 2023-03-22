@@ -18,7 +18,7 @@ import Grid from '@material-ui/core/Grid';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import { API_URL } from '../../global/constants';
 import { socket } from '../../global/socket';
-import NewLeaderboard from '../NewLeaderboard';
+import AuctionsLeaderBoard from '../AuctionsLeaderboard';
 import RoundsInfo from '../RoundsInfo';
 import TeamInfo from '../TeamInfo';
 // import leaderboardContext from '../../global/leaderboardContext';
@@ -349,7 +349,7 @@ function EnglishAuction({
         )}
         <Grid item xs={12} sm container spacing={4}>
           <Grid item xs={10}>
-            <NewLeaderboard hasAuctionTimerEnded={hasAuctionTimerEnded} />
+            <AuctionsLeaderBoard hasAuctionTimerEnded={hasAuctionTimerEnded} />
           </Grid>
           <Grid item xs={12}>
             <h3>You can choose to enter the maximum amount you want to pay for this art piece</h3>

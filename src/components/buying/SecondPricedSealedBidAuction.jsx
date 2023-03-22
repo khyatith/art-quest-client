@@ -1,5 +1,5 @@
 import React, {
-  useState, useEffect, useRef, createRef,
+  useState, useEffect, useRef, createRef, useContext,
 } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { Typography, TextField } from '@material-ui/core';
@@ -18,6 +18,7 @@ import { socket } from '../../global/socket';
 import { API_URL, TEAM_COLOR_MAP } from '../../global/constants';
 import { validateCurrentBid } from '../../global/helpers';
 import Leaderboard from './Leaderboard';
+import buyingLeaderboardContext from '../../global/buyingLeaderboardContext';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -125,6 +126,8 @@ const SecondPricedSealedBidAuction = () => {
   const [bidAmtError, setBidAmtError] = useState();
   const history = useHistory();
   const player = JSON.parse(sessionStorage.getItem('user'));
+  const { buyingLeaderboardData } = useContext(buyingLeaderboardContext);
+  const { totalAmountByTeam } = buyingLeaderboardData;
   const [isFirstBid, setIsFirstBid] = useState(false);
   const allAuctionsObj = JSON.parse(sessionStorage.getItem('allAuction'));
   const secondPriceAuctions = allAuctionsObj.secondPricedSealedBidAuctions1;
@@ -252,6 +255,14 @@ const SecondPricedSealedBidAuction = () => {
       setBidAmtError({
         ...bidAmtError,
         [auctionId]: 'Your bid should be a valid number',
+      });
+      return;
+    }
+    const currentBudget = totalAmountByTeam ? totalAmountByTeam[player.teamName] : 100;
+    if (bidInput > currentBudget) {
+      setBidAmtError({
+        ...bidAmtError,
+        [auctionId]: 'Your bid should be less than or equal to total cash',
       });
       return;
     }

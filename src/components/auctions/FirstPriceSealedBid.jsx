@@ -18,7 +18,7 @@ import Toolbar from '@material-ui/core/Toolbar';
 import axios from 'axios';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import { socket } from '../../global/socket';
-import NewLeaderboard from '../NewLeaderboard';
+import AuctionsLeaderBoard from '../AuctionsLeaderBoard';
 import RoundsInfo from '../RoundsInfo';
 import TeamInfo from '../TeamInfo';
 // import leaderboardContext from '../../global/leaderboardContext';
@@ -262,7 +262,7 @@ function FirstPriceSealedBid({
             <BonusAuctionBanner text={FIRST_PRICED_SEALED_BID_TEXT} />
           </Grid>
           <Grid item xs={7}>
-            <NewLeaderboard hasAuctionTimerEnded={hasAuctionTimerEnded} />
+            <AuctionsLeaderBoard hasAuctionTimerEnded={hasAuctionTimerEnded} />
           </Grid>
           {/* <Grid item xs={12}>
             { leaderboardData && leaderboardData.totalAmountByTeam

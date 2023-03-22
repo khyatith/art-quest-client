@@ -1,7 +1,7 @@
 /* eslint-disable react/jsx-closing-bracket-location */
 /* eslint-disable operator-linebreak */
 /* eslint-disable react/jsx-one-expression-per-line */
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useContext } from 'react';
 import axios from 'axios';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
@@ -11,7 +11,8 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
-import { API_URL, TEAM_COLOR_MAP } from '../../global/constants';
+import { API_URL, STARTING_BUDGET, TEAM_COLOR_MAP } from '../../global/constants';
+import buyingLeaderboardContext from '../../global/buyingLeaderboardContext';
 
 const useStyles = makeStyles(() => ({
   paper: {
@@ -41,17 +42,16 @@ export default function Leaderboard({ showAuctionResults, goToNextAuctions, maxW
   const classes = useStyles();
   const { allTeams } = JSON.parse(sessionStorage.getItem('allAuction'));
   const player = JSON.parse(sessionStorage.getItem('user'));
-  const existingLeaderboard = sessionStorage.getItem('results') ? JSON.parse(sessionStorage.getItem('results')) : {};
-  const [leaderboardData, setLeaderboardData] = useState(existingLeaderboard);
+  const { buyingLeaderboardData, setBuyingLeaderboardData } = useContext(buyingLeaderboardContext);
 
   useEffect(() => {
     async function fetchLeaderboard() {
       const { data } = await axios.get(`${API_URL}/buying/getResults/${player.hostCode}`);
-      setLeaderboardData((prevValues) => ({
+      setBuyingLeaderboardData((prevValues) => ({
         ...prevValues,
         ...data,
       }));
-      sessionStorage.setItem('results', JSON.stringify(data));
+      sessionStorage.setItem('results', JSON.stringify({ ...buyingLeaderboardData, ...data }));
     }
     if (showAuctionResults) {
       fetchLeaderboard(player);
@@ -61,8 +61,8 @@ export default function Leaderboard({ showAuctionResults, goToNextAuctions, maxW
 
   const renderLeaderboard = () => {
     // const user = JSON.parse(sessionStorage.getItem('user'));
-    const { totalAmountByTeam, totalPaintingsWonByTeams } = leaderboardData || {};
-    const classifyPoints = leaderboardData?.classifyPoints?.classify;
+    const { totalAmountByTeam, totalPaintingsWonByTeams } = buyingLeaderboardData || {};
+    const classifyPoints = buyingLeaderboardData?.classifyPoints?.classify;
     // if (!leaderboard) return <></>;
     return (
       <TableContainer className={classes.paper} component={Paper} style={{ margin: `${maxWidth && '0 auto'}` }}>
@@ -83,7 +83,8 @@ export default function Leaderboard({ showAuctionResults, goToNextAuctions, maxW
               && allTeams.map((entry) => {
                 const teamName = entry;
                 const visits = 0;
-                const cash = totalAmountByTeam && totalAmountByTeam[`${teamName}`] ? parseFloat(totalAmountByTeam[`${teamName}`]) : 0;
+                // starting budget(cash) = 100;
+                const cash = totalAmountByTeam ? parseFloat(totalAmountByTeam[`${teamName}`]) : STARTING_BUDGET;
                 const cashPoints = cash !== 0 ? parseFloat(cash / 10).toFixed(2) : 0;
                 const classify = classifyPoints && classifyPoints[teamName] ? classifyPoints[teamName] : 0;
                 const total = cashPoints - visits + classify;
