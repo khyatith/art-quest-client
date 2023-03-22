@@ -3,10 +3,42 @@ export const formatNumberToCurrency = (value) => new Intl.NumberFormat('en-US', 
   currency: 'usd',
 }).format(value);
 
-export const validateCurrentBid = (value) => {
-  if (!value || value <= 0) return false;
+export const validateCurrentBid = (value, availableBudget, teamName, previousBidDetails) => {
+  if (!value || value <= 0) return 'Your bid should be a valid number';
   const regex = /^[0-9]+$/;
-  if (!value.match(regex)) return false;
-  if (value > 999) return false;
-  return true;
+  if (!value.match(regex)) return 'Your bid should be a valid number';
+  if (value > 999) return 'Your bid should be a valid number';
+  if (parseInt(value, 10) > parseInt(availableBudget, 10)) {
+    return 'Your bid should be less than or equal to total cash';
+  }
+  const bids = Object.values(previousBidDetails);
+  /* eslint-disable no-restricted-syntax */
+  let sum = 0;
+  for (const bid of bids) {
+    if (bid && bid.bidTeam === teamName) {
+      sum += parseInt(bid.bidAmount, 10);
+    }
+  }
+  if (value > availableBudget - sum) return 'Your bid should be less than or equal to total cash';
+  return null;
+};
+
+export const validateCurrentSecretBid = (value, availableBudget, teamName, previousBidDetails) => {
+  if (!value || value <= 0) return 'Your bid should be a valid number';
+  const regex = /^[0-9]+$/;
+  if (!value.match(regex)) return 'Your bid should be a valid number';
+  if (value > 999) return 'Your bid should be a valid number';
+  if (parseInt(value, 10) > parseInt(availableBudget, 10)) {
+    return 'Your bid should be less than or equal to total cash';
+  }
+  const bids = Object.values(previousBidDetails);
+  /* eslint-disable no-restricted-syntax */
+  let sum = 0;
+  for (const bid of bids) {
+    if (bid.current && `${teamName}` in bid.current) {
+      sum += parseInt(bid.current[teamName], 10);
+    }
+  }
+  if (value > availableBudget - sum) return 'Your bid should be less than or equal to total cash';
+  return null;
 };

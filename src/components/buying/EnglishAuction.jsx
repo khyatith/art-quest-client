@@ -250,19 +250,13 @@ const EnglishAuction = () => {
   const setBidAmt = (auctionId) => {
     const bidInput = bidInputRef.current[auctionId].current.value;
     const currentAuction = auctions.artifacts.filter((auction) => parseInt(auction.id, 10) === parseInt(auctionId, 10));
-    const isValidCurrentBid = validateCurrentBid(bidInput);
-    if (!isValidCurrentBid) {
+    /* eslint-disable no-nested-ternary */
+    const currentBudget = totalAmountByTeam ? totalAmountByTeam[player.teamName] ? totalAmountByTeam[player.teamName] : 100 : 100;
+    const bidInputError = validateCurrentBid(bidInput, currentBudget, player.teamName, previousBidDetails.current);
+    if (bidInputError) {
       setBidAmtError({
         ...bidAmtError,
-        [auctionId]: 'Your bid should be a valid number',
-      });
-      return;
-    }
-    const currentBudget = totalAmountByTeam ? totalAmountByTeam[player.teamName] : 100;
-    if (bidInput > currentBudget) {
-      setBidAmtError({
-        ...bidAmtError,
-        [auctionId]: 'Your bid should be less than or equal to total cash',
+        [auctionId]: bidInputError,
       });
       return;
     }

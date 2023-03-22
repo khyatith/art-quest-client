@@ -84,7 +84,9 @@ export default function Leaderboard({ showAuctionResults, goToNextAuctions, maxW
                 const teamName = entry;
                 const visits = 0;
                 // starting budget(cash) = 100;
-                const cash = totalAmountByTeam ? parseFloat(totalAmountByTeam[`${teamName}`]) : STARTING_BUDGET;
+                /* eslint-disable no-nested-ternary */
+                const cash =
+                !totalAmountByTeam ? STARTING_BUDGET : totalAmountByTeam[`${teamName}`] ? parseFloat(totalAmountByTeam[`${teamName}`]) : STARTING_BUDGET;
                 const cashPoints = cash !== 0 ? parseFloat(cash / 10).toFixed(2) : 0;
                 const classify = classifyPoints && classifyPoints[teamName] ? classifyPoints[teamName] : 0;
                 const total = cashPoints - visits + classify;

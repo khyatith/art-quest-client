@@ -25,7 +25,7 @@ import { useLocation } from 'react-router-dom';
 import { useHistory } from 'react-router';
 import { socket } from '../../global/socket';
 import { API_URL, TEAM_COLOR_MAP } from '../../global/constants';
-import { validateCurrentBid } from '../../global/helpers';
+import { validateCurrentSecretBid } from '../../global/helpers';
 import Leaderboard from './Leaderboard';
 import buyingLeaderboardContext from '../../global/buyingLeaderboardContext';
 
@@ -266,19 +266,13 @@ const SecretAuction = () => {
   const setBidAmt = (auctionId) => {
     const bidInput = bidInputRef.current[auctionId].current.value;
     const currentAuction = secretAuctions.artifacts.filter((auction) => parseInt(auction.id, 10) === parseInt(auctionId, 10));
-    const isValidCurrentBid = validateCurrentBid(bidInput);
-    if (!isValidCurrentBid) {
+    /* eslint-disable no-nested-ternary */
+    const currentBudget = totalAmountByTeam ? totalAmountByTeam[player.teamName] ? totalAmountByTeam[player.teamName] : 100 : 100;
+    const bidInputError = validateCurrentSecretBid(bidInput, currentBudget, player.teamName, liveStyles.current);
+    if (bidInputError) {
       setBidAmtError({
         ...bidAmtError,
-        [auctionId]: 'Your bid should be a valid number',
-      });
-      return;
-    }
-    const currentBudget = totalAmountByTeam ? totalAmountByTeam[player.teamName] : 100;
-    if (bidInput > currentBudget) {
-      setBidAmtError({
-        ...bidAmtError,
-        [auctionId]: 'Your bid should be less than or equal to total cash',
+        [auctionId]: bidInputError,
       });
       return;
     }
