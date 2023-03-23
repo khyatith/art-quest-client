@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /* eslint-disable react/jsx-wrap-multilines */
 import React, {
   useState,
@@ -24,6 +25,8 @@ import { API_URL, TEAM_COLOR_MAP } from '../../global/constants';
 import { validateCurrentBid } from '../../global/helpers';
 import Leaderboard from './Leaderboard';
 import buyingLeaderboardContext from '../../global/buyingLeaderboardContext';
+import BudgetHeader from '../BudgetHeader';
+import ResultAccordion from '../ResultAccordion';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -118,6 +121,7 @@ const useStyles = makeStyles((theme) => ({
   leaderboardcontainer: {
     paddingTop: '100px',
     paddingLeft: '',
+    display: 'flex',
   },
 }));
 
@@ -327,6 +331,8 @@ const EnglishAuction = () => {
       </AppBar>
       <div className={classes.leaderboardcontainer}>
         <Leaderboard classifyPoints={classifyPoints} showAuctionResults={englishAuctionResults} goToNextAuctions={goToNextAuctions} />
+        <div><BudgetHeader /></div>
+        <ResultAccordion />
       </div>
       {auctions && auctions.artifacts.map((auction) => {
         const previousBid = previousBidDetails.current[auction.id];
