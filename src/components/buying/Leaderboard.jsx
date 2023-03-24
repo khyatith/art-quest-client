@@ -73,7 +73,7 @@ export default function Leaderboard({ showAuctionResults, goToNextAuctions, maxW
               <StyledTableCell align="right">Total Paintings</StyledTableCell>
               <StyledTableCell align="right">Cash</StyledTableCell>
               <StyledTableCell align="right">Cash points</StyledTableCell>
-              <StyledTableCell align="right">Visits</StyledTableCell>
+              {/* <StyledTableCell align="right">Visits</StyledTableCell> */}
               <StyledTableCell align="right">Classify Points</StyledTableCell>
               <StyledTableCell align="right">Total</StyledTableCell>
             </TableRow>
@@ -82,19 +82,19 @@ export default function Leaderboard({ showAuctionResults, goToNextAuctions, maxW
             {allTeams
               && allTeams.map((entry) => {
                 const teamName = entry;
-                const visits = 0;
                 // starting budget(cash) = 100;
                 /* eslint-disable no-nested-ternary */
                 const cash =
                 !totalAmountByTeam ? STARTING_BUDGET : totalAmountByTeam[`${teamName}`] ? parseFloat(totalAmountByTeam[`${teamName}`]) : STARTING_BUDGET;
                 const cashPoints = cash !== 0 ? parseFloat(cash / 10).toFixed(2) : 0;
                 const classify = classifyPoints && classifyPoints[teamName] ? classifyPoints[teamName] : 0;
-                const total = cashPoints - visits + classify;
+                const totalPaintingsWon = totalPaintingsWonByTeams && totalPaintingsWonByTeams[`${teamName}`] ? totalPaintingsWonByTeams[`${teamName}`] : 0;
+                const total = (0.4 * cash + 0.3 * totalPaintingsWon + 0.3 * classify);
                 return (
                   <TableRow key={teamName} style={{ backgroundColor: `${TEAM_COLOR_MAP[teamName]}` }}>
                     <StyledTableCell align="right">{teamName}</StyledTableCell>
                     <StyledTableCell align="right">
-                      {totalPaintingsWonByTeams && totalPaintingsWonByTeams[`${teamName}`] ? totalPaintingsWonByTeams[`${teamName}`] : 0}
+                      {totalPaintingsWon}
                     </StyledTableCell>
                     <StyledTableCell component="th" scope="row" align="right">
                       $
@@ -102,7 +102,7 @@ export default function Leaderboard({ showAuctionResults, goToNextAuctions, maxW
                       M
                     </StyledTableCell>
                     <StyledTableCell align="right">{cashPoints}</StyledTableCell>
-                    <StyledTableCell align="right">0</StyledTableCell>
+                    {/* <StyledTableCell align="right">0</StyledTableCell> */}
                     <StyledTableCell align="right">{classify}</StyledTableCell>
                     <StyledTableCell align="right">{total}</StyledTableCell>
                   </TableRow>
