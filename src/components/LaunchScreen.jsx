@@ -8,29 +8,18 @@ import Select from '@material-ui/core/Select';
 import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
 import { useHistory } from 'react-router';
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
 import { MenuItem } from '@material-ui/core';
 import { socket } from '../global/socket';
 import userContext from '../global/userContext';
 import GameInstructions from './GameInstructions';
 // import LocationPhase from './selling/LocationPhase';
 import { TEAM_COLOR_MAP, API_URL } from '../global/constants';
+import Header from './Header';
 
-const useStyles = makeStyles((theme) => ({
-  title: {
-    [theme.breakpoints.up('sm')]: {
-      display: 'block',
-    },
-    margin: '0 auto',
-  },
+const useStyles = makeStyles(() => ({
   playerdiv: {
     fontWeight: 700,
     color: '#76e246', // green color
-  },
-  appbar: {
-    height: 130,
-    marginBottom: '50px',
   },
   root: {
     width: 300,
@@ -129,13 +118,7 @@ function LaunchScreen() {
     <>
       {!loadInstructions && (
         <>
-          <AppBar className={classes.appbar} position="static">
-            <Toolbar>
-              <Typography variant="h5" className={classes.title}>
-                ART QUEST
-              </Typography>
-            </Toolbar>
-          </AppBar>
+          <Header />
           <div style={{ textAlign: 'center', marginTop: '8rem' }}>
             {joinError && <h3 style={{ color: '#FF0000' }}>{joinError}</h3>}
             <div>

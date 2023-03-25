@@ -15,8 +15,6 @@ import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
 import CardMedia from '@material-ui/core/CardMedia';
 import CardActions from '@material-ui/core/CardActions';
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import { useHistory } from 'react-router';
 import { useLocation } from 'react-router-dom';
@@ -25,8 +23,8 @@ import { API_URL, TEAM_COLOR_MAP } from '../../global/constants';
 import { validateCurrentBid } from '../../global/helpers';
 import Leaderboard from './Leaderboard';
 import buyingLeaderboardContext from '../../global/buyingLeaderboardContext';
-import BudgetHeader from '../BudgetHeader';
 import ResultAccordion from '../ResultAccordion';
+import Header from '../Header';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -119,8 +117,8 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: '700',
   },
   leaderboardcontainer: {
-    paddingTop: '100px',
-    paddingLeft: '',
+    paddingTop: '0px',
+    paddingLeft: '30px',
     display: 'flex',
   },
 }));
@@ -302,36 +300,9 @@ const EnglishAuction = () => {
   };
   return (
     <div className={classes.root}>
-      <AppBar className={classes.appbar} position="static">
-        <Toolbar>
-          <Typography variant="h6" className={classes.title}>
-            ART QUEST
-          </Typography>
-          <Typography className={classes.timercontent} variant="h5" noWrap>
-            {englishAuctionTimer && !englishAuctionResults && (
-              <>
-                Time left in Auction:
-                {' '}
-                {englishAuctionTimer && englishAuctionTimer.minutes}
-                :
-                {englishAuctionTimer && englishAuctionTimer.seconds}
-              </>
-            )}
-            {englishAuctionResults && Object.keys(englishAuctionResults).length > 0 && 'Starting next auction in 20 seconds...'}
-          </Typography>
-          <Typography variant="h6" className={classes.playercontent}>
-            {player.playerName}
-            ,
-            {' '}
-            Team
-            {' '}
-            {player.teamName}
-          </Typography>
-        </Toolbar>
-      </AppBar>
+      <Header player={player} auctionTimer={englishAuctionTimer} auctionResults={englishAuctionResults} />
       <div className={classes.leaderboardcontainer}>
         <Leaderboard classifyPoints={classifyPoints} showAuctionResults={englishAuctionResults} goToNextAuctions={goToNextAuctions} />
-        <div><BudgetHeader /></div>
         <ResultAccordion />
       </div>
       {auctions && auctions.artifacts.map((auction) => {

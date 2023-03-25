@@ -10,13 +10,11 @@ import IconButton from '@material-ui/core/IconButton';
 import FavoriteBorder from '@material-ui/icons/FavoriteBorder';
 import FavoriteIcon from '@material-ui/icons/Favorite';
 import Grid from '@material-ui/core/Grid';
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
 import MoreDetailsModal from './MoreDetailsModal';
 import load from '../../assets/load.webp';
 import { API_URL, TEAM_COLOR_MAP } from '../../global/constants';
 import { socket } from '../../global/socket';
+import Header from '../Header';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -24,23 +22,6 @@ const useStyles = makeStyles((theme) => ({
   },
   paper: {
     padding: theme,
-  },
-  appbar: {
-    height: 130,
-    marginBottom: '50px',
-  },
-  timercontent: {
-    [theme.breakpoints.up('sm')]: {
-      display: 'block',
-    },
-    flexGrow: 1,
-    textAlign: 'center',
-  },
-  title: {
-    [theme.breakpoints.up('sm')]: {
-      display: 'block',
-    },
-    marginRight: theme.spacing(2),
   },
   headerText: {
     marginLeft: '35%',
@@ -56,15 +37,6 @@ const useStyles = makeStyles((theme) => ({
   imagelistitem: {
     '&:hover': { transform: 'scale3d(1.05, 1.05, 1)' },
     cursor: 'pointer',
-  },
-  playercontent: {
-    [theme.breakpoints.up('sm')]: {
-      display: 'block',
-    },
-    fontSize: '22px',
-    position: 'absolute',
-    right: '0',
-    marginRight: '10px',
   },
   imagelistitembar: {
     height: '80px',
@@ -227,28 +199,7 @@ const LandingPage = () => {
 
   return (
     <div className={classes.root}>
-      <AppBar className={classes.appbar} position="static">
-        <Toolbar className={classes.toolbar}>
-          <Typography variant="h6" className={classes.title}>
-            ART QUEST
-          </Typography>
-          <Typography className={classes.timercontent} variant="h5" noWrap>
-            Auctions start in:
-            {' '}
-            {landingPageTimerValue && landingPageTimerValue.minutes}
-            :
-            {landingPageTimerValue && landingPageTimerValue.seconds}
-          </Typography>
-          <Typography variant="h6" className={classes.playercontent}>
-            {player.playerName}
-            ,
-            {' '}
-            Team
-            {' '}
-            {player.teamName}
-          </Typography>
-        </Toolbar>
-      </AppBar>
+      <Header player={player} landingPageTimerValue={landingPageTimerValue} />
       <Grid container item xs={12} spacing={3}>
         { renderArtifacts() }
       </Grid>

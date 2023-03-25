@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Accordion from '@material-ui/core/Accordion';
 import AccordionSummary from '@material-ui/core/AccordionSummary';
@@ -6,14 +6,13 @@ import AccordionDetails from '@material-ui/core/AccordionDetails';
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { Button, Container, Divider } from '@material-ui/core';
+import buyingLeaderboardContext from '../global/buyingLeaderboardContext';
 
-const a = 'https://firebasestorage.googleapis.com/v0/b/auctions-f601d.appspot.com/';
-const b = 'o/art-movements%2Fabstract%2Fbild-no-635.webp?alt=media&token=ae360b2a-73db-4d36-9642-a6b11527d2a7';
 const useStyles = makeStyles((theme) => ({
   root: {
     width: '30%',
     position: 'absolute',
-    right: '0',
+    right: '20px',
     backgroundColor: 'white',
     zIndex: '10',
   },
@@ -60,6 +59,14 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function ResultAccordion() {
+  const { buyingLeaderboardData } = useContext(buyingLeaderboardContext);
+  console.log(buyingLeaderboardData);
+  const player = JSON.parse(sessionStorage.getItem('user'));
+  let paintingsArray = [];
+  if (buyingLeaderboardData.leaderboard && buyingLeaderboardData.leaderboard[player.teamName]) {
+    paintingsArray = buyingLeaderboardData.leaderboard[player.teamName];
+  }
+  console.log(paintingsArray);
   const classes = useStyles();
 
   function handleSell() {}
@@ -76,66 +83,28 @@ export default function ResultAccordion() {
           <Typography className={classes.heading}>Team Blue Results</Typography>
         </AccordionSummary>
         <AccordionDetails className={classes.paintingsContainer}>
-          <Container className={classes.paintingContainer}>
-            <div className={classes.painting}>
-              <img className={classes.img} src={a + b} alt="painting" />
-              <p>Art type</p>
-            </div>
-            <div className={classes.paintingDetails}>
-              <p className={classes.info}>paid $10 M</p>
-              <p>+5 classify points</p>
-            </div>
-            <Button onClick={() => handleSell()} className={classes.sellButton} variant="contained" color="primary">Sell</Button>
-          </Container>
-          <Divider />
-          <Container className={classes.paintingContainer}>
-            <div className={classes.painting}>
-              <img className={classes.img} src={a + b} alt="painting" />
-              <p>Art type</p>
-            </div>
-            <div className={classes.paintingDetails}>
-              <p className={classes.info}>paid $10 M</p>
-              <p>+5 classify points</p>
-            </div>
-            <Button onClick={() => handleSell()} className={classes.sellButton} variant="contained" color="primary">Sell</Button>
-          </Container>
-          <Divider />
-          <Container className={classes.paintingContainer}>
-            <div className={classes.painting}>
-              <img className={classes.img} src={a + b} alt="painting" />
-              <p>Art type</p>
-            </div>
-            <div className={classes.paintingDetails}>
-              <p className={classes.info}>paid $10 M</p>
-              <p>+5 classify points</p>
-            </div>
-            <Button onClick={() => handleSell()} className={classes.sellButton} variant="contained" color="primary">Sell</Button>
-          </Container>
-          <Divider />
-          <Container className={classes.paintingContainer}>
-            <div className={classes.painting}>
-              <img className={classes.img} src={a + b} alt="painting" />
-              <p>Art type</p>
-            </div>
-            <div className={classes.paintingDetails}>
-              <p className={classes.info}>paid $10 M</p>
-              <p>+5 classify points</p>
-            </div>
-            <Button onClick={() => handleSell()} className={classes.sellButton} variant="contained" color="primary">Sell</Button>
-          </Container>
-          <Divider />
-          <Container className={classes.paintingContainer}>
-            <div className={classes.painting}>
-              <img className={classes.img} src={a + b} alt="painting" />
-              <p>Art type</p>
-            </div>
-            <div className={classes.paintingDetails}>
-              <p className={classes.info}>paid $10 M</p>
-              <p>+5 classify points</p>
-            </div>
-            <Button onClick={() => handleSell()} className={classes.sellButton} variant="contained" color="primary">Sell</Button>
-          </Container>
-          <Divider />
+          {paintingsArray.map((painting) => (
+            <>
+              <Container className={classes.paintingContainer}>
+                <div className={classes.painting}>
+                  <img className={classes.img} src={painting.imageURL} alt="painting" />
+                  <p>{painting.artMovement}</p>
+                </div>
+                <div className={classes.paintingDetails}>
+                  <p className={classes.info}>
+                    paid $
+                    {painting.bidAmount}
+                    {' '}
+                    M
+                  </p>
+                  <p>+5 classify points</p>
+                </div>
+                <Button onClick={() => handleSell()} className={classes.sellButton} variant="contained" color="primary">Sell</Button>
+              </Container>
+              <Divider />
+            </>
+
+          ))}
         </AccordionDetails>
       </Accordion>
     </div>

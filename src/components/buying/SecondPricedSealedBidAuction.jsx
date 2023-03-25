@@ -9,8 +9,6 @@ import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
 import CardMedia from '@material-ui/core/CardMedia';
 import CardActions from '@material-ui/core/CardActions';
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import { useLocation } from 'react-router-dom';
 import { useHistory } from 'react-router';
@@ -19,6 +17,8 @@ import { API_URL, TEAM_COLOR_MAP } from '../../global/constants';
 import { validateCurrentSecretBid } from '../../global/helpers';
 import Leaderboard from './Leaderboard';
 import buyingLeaderboardContext from '../../global/buyingLeaderboardContext';
+import ResultAccordion from '../ResultAccordion';
+import Header from '../Header';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -111,8 +111,9 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: '700',
   },
   leaderboardcontainer: {
-    paddingTop: '100px',
-    paddingLeft: '',
+    paddingTop: '0px',
+    paddingLeft: '30px',
+    display: 'flex',
   },
 }));
 
@@ -286,32 +287,10 @@ const SecondPricedSealedBidAuction = () => {
 
   return (
     <div className={classes.root}>
-      <AppBar className={classes.appbar} position="static">
-        <Toolbar className={classes.toolbar}>
-          <Typography variant="h6" className={classes.title}>
-            ART QUEST
-          </Typography>
-          <Typography className={classes.timercontent} variant="h5" noWrap>
-            {secondPriceAuctionTimer && !secondPriceAuctionResults && (
-              <>
-                Time left in Auction:
-                {secondPriceAuctionTimer && secondPriceAuctionTimer.minutes}
-                :
-                {secondPriceAuctionTimer && secondPriceAuctionTimer.seconds}
-              </>
-            )}
-            {secondPriceAuctionResults && Object.keys(secondPriceAuctionResults).length > 0 && 'Starting next auction in 20 seconds...'}
-          </Typography>
-          <Typography variant="h6" className={classes.playercontent}>
-            {player.playerName}
-            ,
-            Team
-            {player.teamName}
-          </Typography>
-        </Toolbar>
-      </AppBar>
+      <Header player={player} auctionTimer={secondPriceAuctionTimer} auctionResults={secondPriceAuctionResults} />
       <div className={classes.leaderboardcontainer}>
         <Leaderboard classifyPoints={classifyPoints} showAuctionResults={secondPriceAuctionResults} goToNextAuctions={goToNextAuctions} />
+        <ResultAccordion />
       </div>
       {secondPriceAuctions
       && secondPriceAuctions.artifacts.map((auction) => {

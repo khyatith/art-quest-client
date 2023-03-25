@@ -8,16 +8,14 @@ import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
-import { Typography } from '@material-ui/core';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
 // import MuiAlert from '@material-ui/lab/Alert';
 import { useHistory } from 'react-router';
 import { API_URL, TEAM_COLOR_MAP } from '../global/constants';
 import { formatNumberToCurrency } from '../global/helpers';
 import useSessionStorage from '../hooks/useSessionStorage';
+import Header from './Header';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -49,25 +47,6 @@ const useStyles = makeStyles((theme) => ({
     width: 400,
     color: '#051207',
     fontWeight: '700',
-  },
-  appbar: {
-    height: 80,
-    paddingBottom: '50px',
-  },
-  title: {
-    [theme.breakpoints.up('sm')]: {
-      display: 'block',
-    },
-    marginRight: theme.spacing(2),
-  },
-  playercontent: {
-    [theme.breakpoints.up('sm')]: {
-      display: 'block',
-    },
-    fontSize: '22px',
-    position: 'absolute',
-    right: '0',
-    marginRight: '10px',
   },
 }));
 
@@ -187,18 +166,7 @@ function EndBuyingPhase() {
 
   return (
     <>
-      <AppBar className={classes.appbar} position="static">
-        <Toolbar className={classes.toolbar}>
-          <Typography variant="h6" className={classes.title}>
-            ART QUEST
-          </Typography>
-          <Typography variant="h6" className={classes.playercontent}>
-            {player.playerName}
-            , Team
-            {player.teamName}
-          </Typography>
-        </Toolbar>
-      </AppBar>
+      <Header player={player} />
       {/* Not moving to phase 2 */}
       {/* <Alert severity="warning">Starting Phase 2 in 15 seconds ...</Alert> */}
       {/* {allTeams && totalPaintingsWonByTeam && totalArtScore && renderLeaderboardData()} */}

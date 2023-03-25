@@ -15,8 +15,9 @@ import Typography from '@material-ui/core/Typography';
 import GameInstructions from './GameInstructions';
 import { socket } from '../global/socket';
 import userContext from '../global/userContext';
+import Header from './Header';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   root: {
     width: 500,
     padding: 100,
@@ -30,16 +31,6 @@ const useStyles = makeStyles((theme) => ({
     margin: '0 0 20px 0px',
     width: 400,
     fontWeight: 700,
-  },
-  title: {
-    [theme.breakpoints.up('sm')]: {
-      display: 'block',
-    },
-    margin: '0 auto',
-  },
-  appbar: {
-    height: 130,
-    marginBottom: '50px',
   },
 }));
 
@@ -76,13 +67,7 @@ function StagingScreen() {
 
   return (
     <>
-      <AppBar className={classes.appbar} position="static">
-        <Toolbar>
-          <Typography variant="h5" className={classes.title}>
-            ART QUEST
-          </Typography>
-        </Toolbar>
-      </AppBar>
+      <Header />
       <div className={classes.root}>
         <div>
           <h1 className={classes.form}>Your game code is: {location.pathname.substring(9, 29)}</h1>

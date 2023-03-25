@@ -28,6 +28,8 @@ import { API_URL, TEAM_COLOR_MAP } from '../../global/constants';
 import { validateCurrentSecretBid } from '../../global/helpers';
 import Leaderboard from './Leaderboard';
 import buyingLeaderboardContext from '../../global/buyingLeaderboardContext';
+import ResultAccordion from '../ResultAccordion';
+import Header from '../Header';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -120,8 +122,9 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: '700',
   },
   leaderboardcontainer: {
-    paddingTop: '100px',
-    paddingLeft: '',
+    paddingTop: '0px',
+    paddingLeft: '30px',
+    display: 'flex',
   },
 }));
 
@@ -304,26 +307,10 @@ const SecretAuction = () => {
 
   return (
     <div className={classes.root}>
-      <AppBar className={classes.appbar} position="static">
-        <Toolbar className={classes.toolbar}>
-          <Typography variant="h6" className={classes.title}>
-            ART QUEST
-          </Typography>
-          <Typography className={classes.timercontent} variant="h5" noWrap>
-            {secretAuctionTimer && !secretAuctionResults && (
-              <>
-                Time left in Auction: {secretAuctionTimer && secretAuctionTimer.minutes}:{secretAuctionTimer && secretAuctionTimer.seconds}
-              </>
-            )}
-            {secretAuctionResults && Object.keys(secretAuctionResults).length > 0 && 'Starting next auction in 20 seconds...'}
-          </Typography>
-          <Typography variant="h6" className={classes.playercontent}>
-            {player.playerName}, Team {player.teamName}
-          </Typography>
-        </Toolbar>
-      </AppBar>
+      <Header player={player} auctionTimer={secretAuctionTimer} auctionResults={secretAuctionResults} />
       <div className={classes.leaderboardcontainer}>
         <Leaderboard classifyPoints={classifyPoints} showAuctionResults={secretAuctionResults} goToNextAuctions={goToNextAuctions} />
+        <ResultAccordion />
       </div>
       {secretAuctions &&
         secretAuctions.artifacts.map((auction) => {
