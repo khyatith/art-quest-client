@@ -84,8 +84,10 @@ export default function Leaderboard({ showAuctionResults, goToNextAuctions, maxW
                 const teamName = entry;
                 // starting budget(cash) = 100;
                 /* eslint-disable no-nested-ternary */
-                const cash =
-                !totalAmountByTeam ? STARTING_BUDGET : totalAmountByTeam[`${teamName}`] ? parseFloat(totalAmountByTeam[`${teamName}`]) : STARTING_BUDGET;
+                let cash = STARTING_BUDGET;
+                if (totalAmountByTeam && totalAmountByTeam[player.teamName] >= 0) {
+                  cash = totalAmountByTeam[player.teamName];
+                }
                 const cashPoints = cash !== 0 ? parseFloat(cash / 10).toFixed(2) : 0;
                 const classify = classifyPoints && classifyPoints[teamName] ? classifyPoints[teamName] : 0;
                 const totalPaintingsWon = totalPaintingsWonByTeams && totalPaintingsWonByTeams[`${teamName}`] ? totalPaintingsWonByTeams[`${teamName}`] : 0;

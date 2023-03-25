@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 import React, {
   useState, useEffect, useRef, createRef, useContext,
 } from 'react';
@@ -14,7 +15,7 @@ import { useLocation } from 'react-router-dom';
 import { useHistory } from 'react-router';
 import { socket } from '../../global/socket';
 import { API_URL, TEAM_COLOR_MAP } from '../../global/constants';
-import { validateCurrentSecretBid } from '../../global/helpers';
+import { getTempBudget, validateCurrentBid } from '../../global/helpers';
 import Leaderboard from './Leaderboard';
 import buyingLeaderboardContext from '../../global/buyingLeaderboardContext';
 import ResultAccordion from '../ResultAccordion';
@@ -123,6 +124,7 @@ const SecondPricedSealedBidAuction = () => {
   const [secondPriceAuctionTimer, setSecondPriceAuctionTimer] = useState();
   const [secondPriceAuctionResults, setSecondPriceAuctionResults] = useState();
   const [classifyPoints, setClassifyPoints] = useState({});
+  const [tempBudget, setTempBudget] = useState();
   const [isFetched, setIsFetched] = useState(false);
   const [bidAmtError, setBidAmtError] = useState();
   const history = useHistory();
@@ -248,12 +250,18 @@ const SecondPricedSealedBidAuction = () => {
     });
   }, []);
 
+  useEffect(() => {
+    let currentBudget = 100;
+    if (totalAmountByTeam && totalAmountByTeam[player.teamName] >= 0) {
+      currentBudget = totalAmountByTeam[player.teamName];
+    }
+    setTempBudget(getTempBudget(currentBudget, player.teamName, liveStyles.current));
+  }, []);
+
   const setBidAmt = (auctionId) => {
     const bidInput = bidInputRef.current[auctionId].current.value;
     const currentAuction = secondPriceAuctions.artifacts.filter((auction) => parseInt(auction.id, 10) === parseInt(auctionId, 10));
-    /* eslint-disable no-nested-ternary */
-    const currentBudget = totalAmountByTeam ? totalAmountByTeam[player.teamName] ? totalAmountByTeam[player.teamName] : 100 : 100;
-    const bidInputError = validateCurrentSecretBid(bidInput, currentBudget, player.teamName, liveStyles.current);
+    const bidInputError = validateCurrentBid(bidInput, tempBudget);
     if (bidInputError) {
       setBidAmtError({
         ...bidAmtError,
@@ -261,6 +269,7 @@ const SecondPricedSealedBidAuction = () => {
       });
       return;
     }
+    setTempBudget(tempBudget - bidInput);
     setBidAmtError({
       ...bidAmtError,
       [auctionId]: null,
@@ -287,7 +296,7 @@ const SecondPricedSealedBidAuction = () => {
 
   return (
     <div className={classes.root}>
-      <Header player={player} auctionTimer={secondPriceAuctionTimer} auctionResults={secondPriceAuctionResults} />
+      <Header player={player} auctionTimer={secondPriceAuctionTimer} auctionResults={secondPriceAuctionResults} tempBudget={tempBudget} />
       <div className={classes.leaderboardcontainer}>
         <Leaderboard classifyPoints={classifyPoints} showAuctionResults={secondPriceAuctionResults} goToNextAuctions={goToNextAuctions} />
         <ResultAccordion />

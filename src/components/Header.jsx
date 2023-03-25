@@ -3,6 +3,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
+import { TEAM_COLOR_MAP } from '../global/constants';
 // import useSessionStorage from '../hooks/useSessionStorage';
 
 const useStyles = makeStyles((theme) => ({
@@ -30,7 +31,13 @@ const useStyles = makeStyles((theme) => ({
     fontSize: '22px',
     position: 'absolute',
     right: '0',
+    top: '4px',
     marginRight: '10px',
+    padding: '10px',
+  },
+  tempBudget: {
+    backgroundColor: '#87CEEB',
+    padding: '10px',
   },
 }));
 
@@ -39,6 +46,7 @@ function Header({
   landingPageTimerValue,
   auctionTimer,
   auctionResults,
+  tempBudget,
 }) {
   const classes = useStyles();
   //   const player = useSessionStorage('user')[0];
@@ -72,14 +80,23 @@ function Header({
         </Typography>
         )}
         {player && (
-        <Typography variant="h6" className={classes.playercontent}>
-          {player.playerName}
-          ,
-          {' '}
-          Team
-          {' '}
-          {player.teamName}
-        </Typography>
+        <div className={classes.playercontent}>
+          <Typography variant="h6">
+            {player.playerName}
+            ,
+            {' '}
+            Team
+            {' '}
+            {player.teamName}
+          </Typography>
+          <Typography className={classes.tempBudget} style={{ backgroundColor: TEAM_COLOR_MAP[player.teamName] }}>
+            {' '}
+            Available Budget: $
+            {tempBudget}
+            {' '}
+            M
+          </Typography>
+        </div>
         )}
       </Toolbar>
     </AppBar>

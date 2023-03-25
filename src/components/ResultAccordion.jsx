@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 import React, { useContext } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Accordion from '@material-ui/core/Accordion';
@@ -7,6 +8,7 @@ import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { Button, Container, Divider } from '@material-ui/core';
 import buyingLeaderboardContext from '../global/buyingLeaderboardContext';
+import { TEAM_COLOR_MAP } from '../global/constants';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -17,7 +19,6 @@ const useStyles = makeStyles((theme) => ({
     zIndex: '10',
   },
   headingContainer: {
-    backgroundColor: '#87CEEB',
   },
   heading: {
     fontSize: theme.typography.pxToRem(15),
@@ -59,15 +60,24 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function ResultAccordion() {
+  const classes = useStyles();
   const { buyingLeaderboardData } = useContext(buyingLeaderboardContext);
-  console.log(buyingLeaderboardData);
   const player = JSON.parse(sessionStorage.getItem('user'));
   let paintingsArray = [];
   if (buyingLeaderboardData.leaderboard && buyingLeaderboardData.leaderboard[player.teamName]) {
     paintingsArray = buyingLeaderboardData.leaderboard[player.teamName];
   }
-  console.log(paintingsArray);
-  const classes = useStyles();
+
+  const hashmap = {};
+  paintingsArray = paintingsArray.map((painting) => {
+    if (painting.artMovement in hashmap) {
+      painting.classifyPoint = 5;
+    } else {
+      painting.classifyPoint = 0;
+      hashmap[painting.artMovement] = true;
+    }
+    return painting;
+  });
 
   function handleSell() {}
 
@@ -79,8 +89,15 @@ export default function ResultAccordion() {
           aria-controls="panel1a-content"
           id="panel1a-header"
           className={classes.headingContainer}
+          style={{ backgroundColor: TEAM_COLOR_MAP[player.teamName] }}
         >
-          <Typography className={classes.heading}>Team Blue Results</Typography>
+          <Typography className={classes.heading}>
+            Team
+            {' '}
+            {player.teamName}
+            {' '}
+            Results
+          </Typography>
         </AccordionSummary>
         <AccordionDetails className={classes.paintingsContainer}>
           {paintingsArray.map((painting) => (
@@ -97,7 +114,7 @@ export default function ResultAccordion() {
                     {' '}
                     M
                   </p>
-                  <p>+5 classify points</p>
+                  {painting.classifyPoint > 0 && <p>+5 classify points</p>}
                 </div>
                 <Button onClick={() => handleSell()} className={classes.sellButton} variant="contained" color="primary">Sell</Button>
               </Container>

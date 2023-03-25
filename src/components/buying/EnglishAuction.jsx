@@ -1,5 +1,6 @@
 /* eslint-disable no-console */
 /* eslint-disable react/jsx-wrap-multilines */
+/* eslint-disable no-nested-ternary */
 import React, {
   useState,
   useEffect,
@@ -20,7 +21,7 @@ import { useHistory } from 'react-router';
 import { useLocation } from 'react-router-dom';
 import { socket } from '../../global/socket';
 import { API_URL, TEAM_COLOR_MAP } from '../../global/constants';
-import { validateCurrentBid } from '../../global/helpers';
+import { getTempBudget, validateCurrentBid } from '../../global/helpers';
 import Leaderboard from './Leaderboard';
 import buyingLeaderboardContext from '../../global/buyingLeaderboardContext';
 import ResultAccordion from '../ResultAccordion';
@@ -130,6 +131,7 @@ const EnglishAuction = () => {
   const [englishAuctionResults, setEnglishAuctionResults] = useState();
   const [classifyPoints, setClassifyPoints] = useState({});
   const [bidAmtError, setBidAmtError] = useState();
+  const [tempBudget, setTempBudget] = useState(0);
   const [sendResultEventOnce, setSendResultEventOnce] = useState(false);
   const [isFirstBid, setIsFirstBid] = useState(false);
   const history = useHistory();
@@ -249,12 +251,18 @@ const EnglishAuction = () => {
     });
   }, []);
 
+  useEffect(() => {
+    let currentBudget = 100;
+    if (totalAmountByTeam && totalAmountByTeam[player.teamName] >= 0) {
+      currentBudget = totalAmountByTeam[player.teamName];
+    }
+    setTempBudget(getTempBudget(currentBudget, player.teamName, previousBidDetails.current));
+  }, []);
+
   const setBidAmt = (auctionId) => {
     const bidInput = bidInputRef.current[auctionId].current.value;
     const currentAuction = auctions.artifacts.filter((auction) => parseInt(auction.id, 10) === parseInt(auctionId, 10));
-    /* eslint-disable no-nested-ternary */
-    const currentBudget = totalAmountByTeam ? totalAmountByTeam[player.teamName] ? totalAmountByTeam[player.teamName] : 100 : 100;
-    const bidInputError = validateCurrentBid(bidInput, currentBudget, player.teamName, previousBidDetails.current);
+    const bidInputError = validateCurrentBid(bidInput, tempBudget);
     if (bidInputError) {
       setBidAmtError({
         ...bidAmtError,
@@ -270,6 +278,7 @@ const EnglishAuction = () => {
         [auctionId]: `Your bid should be more than ${desiredBid}`,
       });
     } else {
+      setTempBudget(tempBudget - bidInput);
       setBidAmtError({
         ...bidAmtError,
         [auctionId]: null,
@@ -300,7 +309,7 @@ const EnglishAuction = () => {
   };
   return (
     <div className={classes.root}>
-      <Header player={player} auctionTimer={englishAuctionTimer} auctionResults={englishAuctionResults} />
+      <Header player={player} auctionTimer={englishAuctionTimer} auctionResults={englishAuctionResults} tempBudget={tempBudget} />
       <div className={classes.leaderboardcontainer}>
         <Leaderboard classifyPoints={classifyPoints} showAuctionResults={englishAuctionResults} goToNextAuctions={goToNextAuctions} />
         <ResultAccordion />
