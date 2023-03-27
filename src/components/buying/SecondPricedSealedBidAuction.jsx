@@ -15,7 +15,7 @@ import { useLocation } from 'react-router-dom';
 import { useHistory } from 'react-router';
 import { socket } from '../../global/socket';
 import { API_URL, TEAM_COLOR_MAP } from '../../global/constants';
-import { getTempBudget, validateCurrentBid } from '../../global/helpers';
+import { getTempBudgetForSecretAuctions, validateCurrentBid } from '../../global/helpers';
 import Leaderboard from './Leaderboard';
 import buyingLeaderboardContext from '../../global/buyingLeaderboardContext';
 import ResultAccordion from '../ResultAccordion';
@@ -247,6 +247,11 @@ const SecondPricedSealedBidAuction = () => {
           [teamName]: bidAmount,
         };
       }
+      let currentBudget = 100;
+      if (totalAmountByTeam && totalAmountByTeam[player.teamName] >= 0) {
+        currentBudget = totalAmountByTeam[player.teamName];
+      }
+      setTempBudget(getTempBudgetForSecretAuctions(currentBudget, player.teamName, liveStyles.current));
     });
   }, []);
 
@@ -255,7 +260,7 @@ const SecondPricedSealedBidAuction = () => {
     if (totalAmountByTeam && totalAmountByTeam[player.teamName] >= 0) {
       currentBudget = totalAmountByTeam[player.teamName];
     }
-    setTempBudget(getTempBudget(currentBudget, player.teamName, liveStyles.current));
+    setTempBudget(getTempBudgetForSecretAuctions(currentBudget, player.teamName, liveStyles.current));
   }, []);
 
   const setBidAmt = (auctionId) => {
@@ -269,7 +274,6 @@ const SecondPricedSealedBidAuction = () => {
       });
       return;
     }
-    setTempBudget(tempBudget - bidInput);
     setBidAmtError({
       ...bidAmtError,
       [auctionId]: null,

@@ -59,39 +59,38 @@ export default function Leaderboard({ showAuctionResults, goToNextAuctions, maxW
     }
   }, [showAuctionResults]);
 
-  const renderLeaderboard = () => {
-    // const user = JSON.parse(sessionStorage.getItem('user'));
-    const { totalAmountByTeam, totalPaintingsWonByTeams } = buyingLeaderboardData || {};
-    const classifyPoints = buyingLeaderboardData?.classifyPoints?.classify;
-    // if (!leaderboard) return <></>;
-    return (
-      <TableContainer className={classes.paper} component={Paper} style={{ margin: `${maxWidth && '0 auto'}` }}>
-        <Table className={classes.table} aria-label="customized table">
-          <TableHead>
-            <TableRow>
-              <StyledTableCell align="right">Team</StyledTableCell>
-              <StyledTableCell align="right">Total Paintings</StyledTableCell>
-              <StyledTableCell align="right">Cash</StyledTableCell>
-              <StyledTableCell align="right">Cash points</StyledTableCell>
-              {/* <StyledTableCell align="right">Visits</StyledTableCell> */}
-              <StyledTableCell align="right">Classify Points</StyledTableCell>
-              <StyledTableCell align="right">Total</StyledTableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {allTeams
+  // const user = JSON.parse(sessionStorage.getItem('user'));
+  const { totalAmountByTeam, totalPaintingsWonByTeams } = buyingLeaderboardData || {};
+  const classifyPoints = buyingLeaderboardData?.classifyPoints?.classify;
+  // if (!leaderboard) return <></>;
+  return (
+    <TableContainer className={classes.paper} component={Paper} style={{ margin: `${maxWidth && '0 auto'}` }}>
+      <Table className={classes.table} aria-label="customized table">
+        <TableHead>
+          <TableRow>
+            <StyledTableCell align="right">Team</StyledTableCell>
+            <StyledTableCell align="right">Total Paintings</StyledTableCell>
+            <StyledTableCell align="right">Cash</StyledTableCell>
+            <StyledTableCell align="right">Cash points</StyledTableCell>
+            {/* <StyledTableCell align="right">Visits</StyledTableCell> */}
+            <StyledTableCell align="right">Classify Points</StyledTableCell>
+            <StyledTableCell align="right">Total</StyledTableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {allTeams
               && allTeams.map((entry) => {
                 const teamName = entry;
                 // starting budget(cash) = 100;
                 /* eslint-disable no-nested-ternary */
                 let cash = STARTING_BUDGET;
-                if (totalAmountByTeam && totalAmountByTeam[player.teamName] >= 0) {
-                  cash = totalAmountByTeam[player.teamName];
+                if (totalAmountByTeam && totalAmountByTeam[teamName] >= 0) {
+                  cash = totalAmountByTeam[teamName];
                 }
                 const cashPoints = cash !== 0 ? parseFloat(cash / 10).toFixed(2) : 0;
                 const classify = classifyPoints && classifyPoints[teamName] ? classifyPoints[teamName] : 0;
                 const totalPaintingsWon = totalPaintingsWonByTeams && totalPaintingsWonByTeams[`${teamName}`] ? totalPaintingsWonByTeams[`${teamName}`] : 0;
-                const total = (0.4 * cash + 0.3 * totalPaintingsWon + 0.3 * classify);
+                const total = (0.4 * cash + 0.3 * totalPaintingsWon + 0.3 * classify).toFixed(2);
                 return (
                   <TableRow key={teamName} style={{ backgroundColor: `${TEAM_COLOR_MAP[teamName]}` }}>
                     <StyledTableCell align="right">{teamName}</StyledTableCell>
@@ -110,11 +109,8 @@ export default function Leaderboard({ showAuctionResults, goToNextAuctions, maxW
                   </TableRow>
                 );
               })}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    );
-  };
-
-  return <div>{renderLeaderboard()}</div>;
+        </TableBody>
+      </Table>
+    </TableContainer>
+  );
 }

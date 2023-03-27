@@ -236,6 +236,11 @@ const EnglishAuction = () => {
           bidTeam: previousBid.bidTeam,
           bidColor: previousBid.bidColor,
         };
+        let currentBudget = 100;
+        if (totalAmountByTeam && totalAmountByTeam[player.teamName] >= 0) {
+          currentBudget = totalAmountByTeam[player.teamName];
+        }
+        setTempBudget(getTempBudget(currentBudget, player.teamName, previousBidDetails.current));
       }
     });
   }, [previousBidDetails]);
@@ -278,7 +283,6 @@ const EnglishAuction = () => {
         [auctionId]: `Your bid should be more than ${desiredBid}`,
       });
     } else {
-      setTempBudget(tempBudget - bidInput);
       setBidAmtError({
         ...bidAmtError,
         [auctionId]: null,

@@ -5,11 +5,25 @@ export const formatNumberToCurrency = (value) => new Intl.NumberFormat('en-US', 
 
 export const getTempBudget = (availableBudget, teamName, previousBids) => {
   const bids = Object.values(previousBids);
+  console.log('getTempBudget bids', bids);
   /* eslint-disable no-restricted-syntax */
   let sum = 0;
   for (const bid of bids) {
     if (bid && bid.bidTeam === teamName) {
       sum += parseInt(bid.bidAmount, 10);
+    }
+  }
+  return availableBudget - sum;
+};
+
+export const getTempBudgetForSecretAuctions = (availableBudget, teamName, previousBids) => {
+  const bids = Object.values(previousBids);
+  console.log('getTempBudget bids', bids);
+  /* eslint-disable no-restricted-syntax */
+  let sum = 0;
+  for (const bid of bids) {
+    if (bid.current && teamName in bid.current) {
+      sum += parseInt(bid.current[teamName], 10);
     }
   }
   return availableBudget - sum;

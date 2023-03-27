@@ -199,7 +199,7 @@ const LandingPage = () => {
 
   return (
     <div className={classes.root}>
-      <Header player={player} landingPageTimerValue={landingPageTimerValue} />
+      <Header player={player} landingPageTimerValue={landingPageTimerValue} tempBudget={100} />
       <Grid container item xs={12} spacing={3}>
         { renderArtifacts() }
       </Grid>

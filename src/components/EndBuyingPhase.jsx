@@ -166,7 +166,7 @@ function EndBuyingPhase() {
 
   return (
     <>
-      <Header player={player} />
+      <Header player={player} tempBudget={totalDebtByTeam[player.teamName]} />
       {/* Not moving to phase 2 */}
       {/* <Alert severity="warning">Starting Phase 2 in 15 seconds ...</Alert> */}
       {/* {allTeams && totalPaintingsWonByTeam && totalArtScore && renderLeaderboardData()} */}
