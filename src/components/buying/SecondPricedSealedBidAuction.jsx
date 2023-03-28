@@ -1,5 +1,6 @@
+/* eslint-disable no-nested-ternary */
 import React, {
-  useState, useEffect, useRef, createRef,
+  useState, useEffect, useRef, createRef, useContext,
 } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { Typography, TextField } from '@material-ui/core';
@@ -9,15 +10,16 @@ import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
 import CardMedia from '@material-ui/core/CardMedia';
 import CardActions from '@material-ui/core/CardActions';
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import { useLocation } from 'react-router-dom';
 import { useHistory } from 'react-router';
 import { socket } from '../../global/socket';
 import { API_URL, TEAM_COLOR_MAP } from '../../global/constants';
-import { validateCurrentBid } from '../../global/helpers';
+import { getTempBudgetForSecretAuctions, validateCurrentBid } from '../../global/helpers';
 import Leaderboard from './Leaderboard';
+import buyingLeaderboardContext from '../../global/buyingLeaderboardContext';
+import ResultAccordion from '../ResultAccordion';
+import Header from '../Header';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -110,8 +112,9 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: '700',
   },
   leaderboardcontainer: {
-    paddingTop: '100px',
-    paddingLeft: '',
+    paddingTop: '0px',
+    paddingLeft: '30px',
+    display: 'flex',
   },
 }));
 
@@ -121,10 +124,13 @@ const SecondPricedSealedBidAuction = () => {
   const [secondPriceAuctionTimer, setSecondPriceAuctionTimer] = useState();
   const [secondPriceAuctionResults, setSecondPriceAuctionResults] = useState();
   const [classifyPoints, setClassifyPoints] = useState({});
+  const [tempBudget, setTempBudget] = useState();
   const [isFetched, setIsFetched] = useState(false);
   const [bidAmtError, setBidAmtError] = useState();
   const history = useHistory();
   const player = JSON.parse(sessionStorage.getItem('user'));
+  const { buyingLeaderboardData } = useContext(buyingLeaderboardContext);
+  const { totalAmountByTeam } = buyingLeaderboardData;
   const [isFirstBid, setIsFirstBid] = useState(false);
   const allAuctionsObj = JSON.parse(sessionStorage.getItem('allAuction'));
   const secondPriceAuctions = allAuctionsObj.secondPricedSealedBidAuctions1;
@@ -241,17 +247,30 @@ const SecondPricedSealedBidAuction = () => {
           [teamName]: bidAmount,
         };
       }
+      let currentBudget = 100;
+      if (totalAmountByTeam && totalAmountByTeam[player.teamName] >= 0) {
+        currentBudget = totalAmountByTeam[player.teamName];
+      }
+      setTempBudget(getTempBudgetForSecretAuctions(currentBudget, player.teamName, liveStyles.current));
     });
+  }, []);
+
+  useEffect(() => {
+    let currentBudget = 100;
+    if (totalAmountByTeam && totalAmountByTeam[player.teamName] >= 0) {
+      currentBudget = totalAmountByTeam[player.teamName];
+    }
+    setTempBudget(getTempBudgetForSecretAuctions(currentBudget, player.teamName, liveStyles.current));
   }, []);
 
   const setBidAmt = (auctionId) => {
     const bidInput = bidInputRef.current[auctionId].current.value;
     const currentAuction = secondPriceAuctions.artifacts.filter((auction) => parseInt(auction.id, 10) === parseInt(auctionId, 10));
-    const isValidCurrentBid = validateCurrentBid(bidInput);
-    if (!isValidCurrentBid) {
+    const bidInputError = validateCurrentBid(bidInput, tempBudget);
+    if (bidInputError) {
       setBidAmtError({
         ...bidAmtError,
-        [auctionId]: 'Your bid should be a valid number',
+        [auctionId]: bidInputError,
       });
       return;
     }
@@ -281,32 +300,10 @@ const SecondPricedSealedBidAuction = () => {
 
   return (
     <div className={classes.root}>
-      <AppBar className={classes.appbar} position="static">
-        <Toolbar className={classes.toolbar}>
-          <Typography variant="h6" className={classes.title}>
-            ART QUEST
-          </Typography>
-          <Typography className={classes.timercontent} variant="h5" noWrap>
-            {secondPriceAuctionTimer && !secondPriceAuctionResults && (
-              <>
-                Time left in Auction:
-                {secondPriceAuctionTimer && secondPriceAuctionTimer.minutes}
-                :
-                {secondPriceAuctionTimer && secondPriceAuctionTimer.seconds}
-              </>
-            )}
-            {secondPriceAuctionResults && Object.keys(secondPriceAuctionResults).length > 0 && 'Starting next auction in 20 seconds...'}
-          </Typography>
-          <Typography variant="h6" className={classes.playercontent}>
-            {player.playerName}
-            ,
-            Team
-            {player.teamName}
-          </Typography>
-        </Toolbar>
-      </AppBar>
+      <Header player={player} auctionTimer={secondPriceAuctionTimer} auctionResults={secondPriceAuctionResults} tempBudget={tempBudget} />
       <div className={classes.leaderboardcontainer}>
         <Leaderboard classifyPoints={classifyPoints} showAuctionResults={secondPriceAuctionResults} goToNextAuctions={goToNextAuctions} />
+        <ResultAccordion />
       </div>
       {secondPriceAuctions
       && secondPriceAuctions.artifacts.map((auction) => {
