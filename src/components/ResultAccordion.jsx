@@ -18,8 +18,7 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: 'white',
     zIndex: '10',
   },
-  headingContainer: {
-  },
+  headingContainer: {},
   heading: {
     fontSize: theme.typography.pxToRem(15),
     fontWeight: theme.typography.fontWeightRegular,
@@ -79,7 +78,9 @@ export default function ResultAccordion() {
     return painting;
   });
 
-  function handleSell() {}
+  function handleSell() {
+
+  }
 
   return (
     <div className={classes.root}>
@@ -96,7 +97,7 @@ export default function ResultAccordion() {
             {' '}
             {player.teamName}
             {' '}
-            Results
+            Paintings
           </Typography>
         </AccordionSummary>
         <AccordionDetails className={classes.paintingsContainer}>
@@ -116,11 +117,12 @@ export default function ResultAccordion() {
                   </p>
                   {painting.classifyPoint > 0 && <p>+5 classify points</p>}
                 </div>
-                <Button onClick={() => handleSell()} className={classes.sellButton} variant="contained" color="primary">Sell</Button>
+                <Button onClick={() => handleSell()} className={classes.sellButton} variant="contained" color="primary">
+                  Sell
+                </Button>
               </Container>
               <Divider />
             </>
-
           ))}
         </AccordionDetails>
       </Accordion>

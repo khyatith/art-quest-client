@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
-import ImageList from '@material-ui/core/ImageList';
-import ImageListItem from '@material-ui/core/ImageListItem';
+// import ImageList from '@material-ui/core/ImageList';
+// import ImageListItem from '@material-ui/core/ImageListItem';
 import axios from 'axios';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -12,6 +12,7 @@ import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 // import MuiAlert from '@material-ui/lab/Alert';
 import { useHistory } from 'react-router';
+import Confetti from 'react-confetti';
 import { API_URL, TEAM_COLOR_MAP } from '../global/constants';
 import { formatNumberToCurrency } from '../global/helpers';
 import useSessionStorage from '../hooks/useSessionStorage';
@@ -48,6 +49,9 @@ const useStyles = makeStyles((theme) => ({
     color: '#051207',
     fontWeight: '700',
   },
+  winner: {
+    textAlign: 'center',
+  },
 }));
 
 const StyledTableCell = withStyles((theme) => ({
@@ -64,20 +68,22 @@ const StyledTableCell = withStyles((theme) => ({
 function EndBuyingPhase() {
   const classes = useStyles();
   const history = useHistory();
-  const [artforTeams, setArtForTeams] = useState();
+  // const [artforTeams, setArtForTeams] = useState();
   // const [teamEfficiency, setTeamEfficiency] = useState({});
   const [totalDebtByTeam, setTotalDebtByTeam] = useState({});
   const [totalPaintingsWonByTeam, setTotalPaintingsWonByTeam] = useState({});
   const [allTeams, setAllTeams] = useState([]);
   const [classifyPoints, setClassifyPoints] = useState([]);
   const player = useSessionStorage('user')[0];
+  const [showConfetti, setShowConfetti] = useState(true);
 
   const getWinner = async () => {
     const { data } = await axios.get(`${API_URL}/buying/getWinner/${player.hostCode}`);
     if (data && data.leaderBoard) {
-      const { teamName } = player;
-      const allTeamArt = data.leaderBoard[teamName];
-      setArtForTeams(allTeamArt);
+      // LOGIC RELATED TO IMAGE GALLERY
+      // const { teamName } = player;
+      // const allTeamArt = data.leaderBoard[teamName];
+      // setArtForTeams(allTeamArt);
     }
     if (data && data.allTeams) {
       setAllTeams(data.allTeams);
@@ -109,6 +115,13 @@ function EndBuyingPhase() {
       totalPaintings: totalPaintingsWonByTeam[key] ? totalPaintingsWonByTeam[key] : 0,
       classifyPoint: classifyPoints[key] ? classifyPoints[key] : 0,
     }));
+
+    const finalResults = tableData.map((row) => {
+      const obj = { ...row };
+      obj.totalPoints = (parseFloat(row.debt / 10) + parseFloat(row.classifyPoint)).toFixed(2);
+      return obj;
+    });
+    finalResults.sort((a, b) => b.totalPoints - a.totalPoints);
     return (
       <>
         <h2 style={{ textAlign: 'center' }}>Results</h2>
@@ -126,26 +139,28 @@ function EndBuyingPhase() {
               </TableRow>
             </TableHead>
             <TableBody>
-              {tableData.map((row) => {
-                const formattedDebt = parseFloat(row.debt / 10).toFixed(2);
-                const totalPoints = (parseFloat(formattedDebt) + parseFloat(row.classifyPoint)).toFixed(2);
-                return (
-                  <TableRow key={row.key} style={{ backgroundColor: `${TEAM_COLOR_MAP[row.key]}` }}>
-                    <StyledTableCell component="th" scope="row">
-                      {row.key}
-                    </StyledTableCell>
-                    <StyledTableCell align="right">{row.totalPaintings}</StyledTableCell>
-                    <StyledTableCell align="right">{formatNumberToCurrency(parseFloat(row.debt))}</StyledTableCell>
-                    <StyledTableCell align="right">{formattedDebt}</StyledTableCell>
-                    <StyledTableCell align="right">{row.classifyPoint}</StyledTableCell>
-                    <StyledTableCell align="right">{totalPoints}</StyledTableCell>
-                    {/* <StyledTableCell align="right">{formatNumberToCurrency(parseFloat(row.efficiency))}</StyledTableCell> */}
-                  </TableRow>
-                );
-              })}
+              {finalResults.map((row) => (
+                <TableRow key={row.key} style={{ backgroundColor: `${TEAM_COLOR_MAP[row.key]}` }}>
+                  <StyledTableCell component="th" scope="row">
+                    {row.key}
+                  </StyledTableCell>
+                  <StyledTableCell align="right">{row.totalPaintings}</StyledTableCell>
+                  <StyledTableCell align="right">{formatNumberToCurrency(parseFloat(row.debt))}</StyledTableCell>
+                  <StyledTableCell align="right">{parseFloat(row.debt / 10).toFixed(2)}</StyledTableCell>
+                  <StyledTableCell align="right">{row.classifyPoint}</StyledTableCell>
+                  <StyledTableCell align="right">{row.totalPoints}</StyledTableCell>
+                  {/* <StyledTableCell align="right">{formatNumberToCurrency(parseFloat(row.efficiency))}</StyledTableCell> */}
+                </TableRow>
+              ))}
             </TableBody>
           </Table>
         </TableContainer>
+        {!showConfetti && (
+          <div className={classes.winner}>
+            <h2>Winner of the game is: &nbsp;</h2>
+            <h1 style={{ color: TEAM_COLOR_MAP[finalResults[0].key] }}>{finalResults[0].key}</h1>
+          </div>
+        )}
       </>
     );
   };
@@ -160,12 +175,17 @@ function EndBuyingPhase() {
     }
   });
 
+  // Setting confetti after 3 seconds
+  setTimeout(() => {
+    setShowConfetti(false);
+  }, 3000);
   // function Alert(props) {
   //   return <MuiAlert elevation={6} variant="filled" {...props} />;
   // }
 
   return (
     <>
+      {showConfetti && <Confetti />}
       <Header player={player} tempBudget={totalDebtByTeam[player.teamName]} />
       {/* Not moving to phase 2 */}
       {/* <Alert severity="warning">Starting Phase 2 in 15 seconds ...</Alert> */}
@@ -176,9 +196,9 @@ function EndBuyingPhase() {
           Start New Game
         </Button>
       </div> */}
-      <div style={{ textAlign: 'center', marginTop: '40px' }}>
-        {/* {!showWinner && <h2>And the winner is ....</h2>}
-        {showWinner && showTeamWinner()} */}
+
+      {/* ------------------ IMAGE GALLERY -------------------  */}
+      {/* <div style={{ textAlign: 'center', marginTop: '40px' }}>
         <h3>Your art collection</h3>
         <div className={classes.root}>
           <ImageList rowHeight={300} className={classes.imageList}>
@@ -190,6 +210,7 @@ function EndBuyingPhase() {
           </ImageList>
         </div>
       </div>
+      */}
     </>
   );
 }

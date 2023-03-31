@@ -42,6 +42,7 @@ function StagingScreen() {
   const [loadInstructions, setLoadInstructions] = useState(false);
   const [noOfPlayers, setNumberOfPlayers] = useState(0);
   const [versionValue, setVersion] = React.useState(1);
+  const [showCode, setShowCode] = useState(false);
 
   useEffect(() => {
     if (player.playerId === player.hostCode) {
@@ -62,6 +63,11 @@ function StagingScreen() {
   };
 
   const setTeams = () => {
+    if (noOfPlayers <= 0) {
+      console.log('number of players should be greater than zero');
+      return;
+    }
+    setShowCode(true);
     socket.emit('setTeams', { numberOfPlayers: noOfPlayers, roomCode: player.hostCode, version: versionValue });
   };
 
@@ -69,10 +75,6 @@ function StagingScreen() {
     <>
       <Header />
       <div className={classes.root}>
-        <div>
-          <h1 className={classes.form}>Your game code is: {location.pathname.substring(9, 29)}</h1>
-          <h1 className={classes.form}>Your UID is: {player.playerId}</h1>
-        </div>
         {/* {!isAdmin
           && (
           <form>
@@ -90,15 +92,21 @@ function StagingScreen() {
               <MenuItem value={2}>version 2</MenuItem>
               <MenuItem value={3}>version 3</MenuItem>
             </Select>
-            <Button className={classes.btnform} color="primary" variant="contained" onClick={setTeams}>
-              Set Details
-            </Button>
+            {!showCode && (
+              <Button className={classes.btnform} color="primary" variant="contained" onClick={setTeams}>
+                Set Details
+              </Button>
+            )}
+            {noOfPlayers > 0 && showCode && (
+              <div>
+                <h1 className={classes.form}>Your game code is: {location.pathname.substring(9, 29)}</h1>
+                <h1 className={classes.form}>Your UID is: {player.playerId}</h1>
+              </div>
+            )}
           </>
         )}
       </div>
-      {
-        loadInstructions && <GameInstructions />
-      }
+      {loadInstructions && <GameInstructions />}
     </>
   );
 }
