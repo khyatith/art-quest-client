@@ -135,6 +135,7 @@ const SecretAuction = () => {
   const [secretAuctionTimer, setSecretAuctionTimer] = useState();
   const [secretAuctionResults, setSecretAuctionResults] = useState();
   const [classifyPoints, setClassifyPoints] = useState({});
+  const [increaseClassifyPoints, setIncreaseClassifyPoints] = useState({});
   const [tempBudget, setTempBudget] = useState();
   const [isFetched, setIsFetched] = useState(false);
   const [bidAmtError, setBidAmtError] = useState();
@@ -323,20 +324,20 @@ const SecretAuction = () => {
       <Header player={player} auctionTimer={secretAuctionTimer} auctionResults={secretAuctionResults} tempBudget={tempBudget} />
       <div className={classes.leaderboardcontainer}>
         <Leaderboard classifyPoints={classifyPoints} showAuctionResults={secretAuctionResults} goToNextAuctions={goToNextAuctions} />
-        <ResultAccordion />
+        <ResultAccordion setIncreaseClassifyPoints={setIncreaseClassifyPoints} />
       </div>
       {secretAuctions &&
         secretAuctions.artifacts.map((auction) => {
           const liveStylesForCurrentAuction = liveStyles && liveStyles.current[`${auction.id}`].current;
           const winner = secretAuctionResults && secretAuctionResults[`${auction.id}`] && secretAuctionResults[`${auction.id}`].bidTeam;
           return (
-            <Card
-              key={auction.id}
-              className={classes.cardroot}
-              style={{ border: winner && `4px solid ${TEAM_COLOR_MAP[winner]}` }}>
+            <Card key={auction.id} className={classes.cardroot} style={{ border: winner && `4px solid ${TEAM_COLOR_MAP[winner]}` }}>
               <CardHeader title={auction.name} subheader={`${auction.artist}, ${auction.country}, ${auction.dateCreated}`} />
               <CardMedia className={classes.media} component="img" image={`${auction.imageURL}`} title={auction.name} />
-              <Typography variant="h6" style={{ marginTop: '0.5rem' }}>Art Movement: {auction.artMovementName}</Typography>
+              <Typography variant="h6" style={{ marginTop: '0.5rem' }}>
+                Art Movement: {auction.artMovementName}
+                {increaseClassifyPoints && increaseClassifyPoints[auction.artMovementName] && <p className="gentle-shake">+5 classify points</p>}
+              </Typography>
               <CardActions className={classes.cardactionsstyle}>
                 {!secretAuctionResults && (
                   <div className={classes.textcontainer}>
@@ -396,12 +397,8 @@ const SecretAuction = () => {
                             marginTop: '-10px',
                           }}>
                           <h4>
-                            Won by Team
-                            {' '}
-                            {winner}
-                            for
-                            {' '}
-                            ${secretAuctionResults[`${auction.id}`].bidAmount}M
+                            Won by Team {winner}
+                            for ${secretAuctionResults[`${auction.id}`].bidAmount}M
                           </h4>
                         </div>
                       </>

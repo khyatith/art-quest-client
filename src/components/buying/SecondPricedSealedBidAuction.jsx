@@ -124,6 +124,7 @@ const SecondPricedSealedBidAuction = () => {
   const [secondPriceAuctionTimer, setSecondPriceAuctionTimer] = useState();
   const [secondPriceAuctionResults, setSecondPriceAuctionResults] = useState();
   const [classifyPoints, setClassifyPoints] = useState({});
+  const [increaseClassifyPoints, setIncreaseClassifyPoints] = useState({});
   const [tempBudget, setTempBudget] = useState();
   const [isFetched, setIsFetched] = useState(false);
   const [bidAmtError, setBidAmtError] = useState();
@@ -303,7 +304,7 @@ const SecondPricedSealedBidAuction = () => {
       <Header player={player} auctionTimer={secondPriceAuctionTimer} auctionResults={secondPriceAuctionResults} tempBudget={tempBudget} />
       <div className={classes.leaderboardcontainer}>
         <Leaderboard classifyPoints={classifyPoints} showAuctionResults={secondPriceAuctionResults} goToNextAuctions={goToNextAuctions} />
-        <ResultAccordion />
+        <ResultAccordion setIncreaseClassifyPoints={setIncreaseClassifyPoints} />
       </div>
       {secondPriceAuctions
       && secondPriceAuctions.artifacts.map((auction) => {
@@ -320,6 +321,7 @@ const SecondPricedSealedBidAuction = () => {
             <Typography variant="h6" style={{ marginTop: '0.5rem' }}>
               Art Movement:
               {auction.artMovementName}
+              {increaseClassifyPoints && increaseClassifyPoints[auction.artMovementName] && <p className="gentle-shake">+5 classify points</p>}
             </Typography>
             <CardActions className={classes.cardactionsstyle}>
               {!secondPriceAuctionResults && (

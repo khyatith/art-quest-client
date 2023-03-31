@@ -1,4 +1,4 @@
-/* eslint-disable no-param-reassign */
+/* eslint-disable no-restricted-syntax */
 import React, { useContext } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Accordion from '@material-ui/core/Accordion';
@@ -9,6 +9,8 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { Button, Container, Divider } from '@material-ui/core';
 import buyingLeaderboardContext from '../global/buyingLeaderboardContext';
 import { TEAM_COLOR_MAP } from '../global/constants';
+import { fetchHashmapAndPaintingsArray } from '../global/helpers';
+import TransitionsModal from './Modal';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -62,24 +64,34 @@ export default function ResultAccordion() {
   const classes = useStyles();
   const { buyingLeaderboardData } = useContext(buyingLeaderboardContext);
   const player = JSON.parse(sessionStorage.getItem('user'));
-  let paintingsArray = [];
-  if (buyingLeaderboardData.leaderboard && buyingLeaderboardData.leaderboard[player.teamName]) {
-    paintingsArray = buyingLeaderboardData.leaderboard[player.teamName];
-  }
 
-  const hashmap = {};
-  paintingsArray = paintingsArray.map((painting) => {
-    if (painting.artMovement in hashmap) {
-      painting.classifyPoint = 5;
-    } else {
-      painting.classifyPoint = 0;
-      hashmap[painting.artMovement] = true;
+  const numFromArtMovementSold = {};
+  function updateNumFromArtMovementSold() {
+    for (const team of Object.values(buyingLeaderboardData.leaderboard)) {
+      for (const painting of team) {
+        if (painting.artMovement in numFromArtMovementSold) {
+          numFromArtMovementSold[painting.artMovement]++;
+        } else {
+          numFromArtMovementSold[painting.artMovement] = 1;
+        }
+      }
     }
-    return painting;
-  });
+  }
+  updateNumFromArtMovementSold();
 
-  function handleSell() {
+  const { paintingsArray } = fetchHashmapAndPaintingsArray(buyingLeaderboardData, player);
 
+  function handleSell(painting) {
+    console.log(buyingLeaderboardData);
+    console.log(painting);
+    const paintingPrice = painting.bidAmount;
+    const deprecFactor = 0.05;
+    const basePrice = 5;
+    const marketVal = basePrice * numFromArtMovementSold[painting.artMovement];
+    const adjPrice = paintingPrice - deprecFactor * paintingPrice;
+    const apprecFac = (marketVal - adjPrice) / adjPrice;
+    const sellingPrice = paintingPrice * deprecFactor + marketVal * apprecFac;
+    console.log(sellingPrice);
   }
 
   return (
@@ -117,9 +129,10 @@ export default function ResultAccordion() {
                   </p>
                   {painting.classifyPoint > 0 && <p>+5 classify points</p>}
                 </div>
-                <Button onClick={() => handleSell()} className={classes.sellButton} variant="contained" color="primary">
+                <Button onClick={() => handleSell(painting)} className={classes.sellButton} variant="contained" color="primary">
                   Sell
                 </Button>
+                <TransitionsModal text="Click Yes to sell the painting" />
               </Container>
               <Divider />
             </>

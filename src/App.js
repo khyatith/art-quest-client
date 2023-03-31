@@ -22,6 +22,7 @@ import ExpoBegining2 from './components/selling/ExpoBeginning2/ExpoBegining2';
 import ConfirmationScreen from './components/ConfirmationScreen/ConfirmationScreen';
 import AuctionPhase from './components/selling/AuctionPhase/AuctionPhase';
 import EndGame from './components/EndGame/EndGame';
+import './App.css';
 
 function App() {
   const [player, setPlayer] = useState({
