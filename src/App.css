@@ -59,7 +59,3 @@
 .gentle-shake {
   animation: tilt-shaking 0.25s infinite;
 }
-
-body {
-  background-color: pink;
-}

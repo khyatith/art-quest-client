@@ -1,5 +1,6 @@
+/* eslint-disable no-param-reassign */
 /* eslint-disable no-restricted-syntax */
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Accordion from '@material-ui/core/Accordion';
 import AccordionSummary from '@material-ui/core/AccordionSummary';
@@ -7,10 +8,12 @@ import AccordionDetails from '@material-ui/core/AccordionDetails';
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { Button, Container, Divider } from '@material-ui/core';
+import axios from 'axios';
 import buyingLeaderboardContext from '../global/buyingLeaderboardContext';
-import { TEAM_COLOR_MAP } from '../global/constants';
+import { API_URL, TEAM_COLOR_MAP } from '../global/constants';
 import { fetchHashmapAndPaintingsArray } from '../global/helpers';
 import TransitionsModal from './Modal';
+import { socket } from '../global/socket';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -63,10 +66,33 @@ const useStyles = makeStyles((theme) => ({
 export default function ResultAccordion() {
   const classes = useStyles();
   const { buyingLeaderboardData } = useContext(buyingLeaderboardContext);
+  console.log(buyingLeaderboardData);
+  const [currentAuctionRound, setCurrentAuctionRound] = useState();
   const player = JSON.parse(sessionStorage.getItem('user'));
+
+  useEffect(() => {
+    socket.emit('getCurrentAuctionRound', player.hostCode);
+    socket.on('currentAuctionRound', (data) => {
+      console.log('result accordion socket currentAuctionRound', data);
+      setCurrentAuctionRound(data);
+    });
+  }, []);
+
+  useEffect(() => {
+    socket.on('refetchLeaderboard', async (obj) => {
+      const { data } = await axios.get(`${API_URL}/buying/getResults/${player.hostCode}`);
+      // setBuyingLeaderboardData((prevValues) => ({
+      //   ...prevValues,
+      //   ...data,
+      // }));
+      console.log('refetched leaderboard', data);
+      console.log(obj);
+    });
+  }, []);
 
   const numFromArtMovementSold = {};
   function updateNumFromArtMovementSold() {
+    if (!buyingLeaderboardData.leaderboard) return;
     for (const team of Object.values(buyingLeaderboardData.leaderboard)) {
       for (const painting of team) {
         if (painting.artMovement in numFromArtMovementSold) {
@@ -81,17 +107,20 @@ export default function ResultAccordion() {
 
   const { paintingsArray } = fetchHashmapAndPaintingsArray(buyingLeaderboardData, player);
 
-  function handleSell(painting) {
-    console.log(buyingLeaderboardData);
-    console.log(painting);
+  async function handleSell(painting) {
     const paintingPrice = painting.bidAmount;
-    const deprecFactor = 0.05;
+    const deprecFactor = 0.05 * currentAuctionRound;
     const basePrice = 5;
     const marketVal = basePrice * numFromArtMovementSold[painting.artMovement];
     const adjPrice = paintingPrice - deprecFactor * paintingPrice;
     const apprecFac = (marketVal - adjPrice) / adjPrice;
     const sellingPrice = paintingPrice * deprecFactor + marketVal * apprecFac;
-    console.log(sellingPrice);
+
+    painting.sellingPrice = sellingPrice;
+    painting.soldInRound = currentAuctionRound;
+
+    socket.emit('sellPaintingVersion1', { painting, player });
+    console.log('emitted sellPainting');
   }
 
   return (
