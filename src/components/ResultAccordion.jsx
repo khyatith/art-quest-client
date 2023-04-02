@@ -70,6 +70,7 @@ export default function ResultAccordion() {
   const [currentAuctionRound, setCurrentAuctionRound] = useState();
   const player = JSON.parse(sessionStorage.getItem('user'));
 
+  // set current auction round
   useEffect(() => {
     socket.emit('getCurrentAuctionRound', player.hostCode);
     socket.on('currentAuctionRound', (data) => {
@@ -78,15 +79,16 @@ export default function ResultAccordion() {
     });
   }, []);
 
+  // refetch leaderboard
   useEffect(() => {
-    socket.on('refetchLeaderboard', async (obj) => {
+    socket.on('refetchLeaderboard', async (oldLeaderBoard) => {
       const { data } = await axios.get(`${API_URL}/buying/getResults/${player.hostCode}`);
       // setBuyingLeaderboardData((prevValues) => ({
       //   ...prevValues,
       //   ...data,
       // }));
-      console.log('refetched leaderboard', data);
-      console.log(obj);
+      console.log('old leaderboard', oldLeaderBoard);
+      console.log('new leaderboard call', data);
     });
   }, []);
 
@@ -114,12 +116,14 @@ export default function ResultAccordion() {
     const marketVal = basePrice * numFromArtMovementSold[painting.artMovement];
     const adjPrice = paintingPrice - deprecFactor * paintingPrice;
     const apprecFac = (marketVal - adjPrice) / adjPrice;
-    const sellingPrice = paintingPrice * deprecFactor + marketVal * apprecFac;
+    let sellingPrice = paintingPrice * deprecFactor + marketVal * apprecFac;
+    sellingPrice = 10; // above gives negative will fix later
 
     painting.sellingPrice = sellingPrice;
     painting.soldInRound = currentAuctionRound;
 
     socket.emit('sellPaintingVersion1', { painting, player });
+    console.log('painting sp', sellingPrice);
     console.log('emitted sellPainting');
   }
 

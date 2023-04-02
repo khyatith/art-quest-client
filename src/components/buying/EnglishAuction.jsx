@@ -127,7 +127,6 @@ const EnglishAuction = () => {
   const [englishAuctionResults, setEnglishAuctionResults] = useState();
   const [classifyPoints, setClassifyPoints] = useState({});
   const [increaseClassifyPoints, setIncreaseClassifyPoints] = useState({});
-  console.log(increaseClassifyPoints);
   const [bidAmtError, setBidAmtError] = useState();
   const [tempBudget, setTempBudget] = useState(0);
   const [sendResultEventOnce, setSendResultEventOnce] = useState(false);
