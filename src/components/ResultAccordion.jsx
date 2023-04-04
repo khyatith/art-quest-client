@@ -1,3 +1,5 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable no-console */
 /* eslint-disable no-param-reassign */
 /* eslint-disable no-restricted-syntax */
 import React, { useContext, useEffect, useState } from 'react';
@@ -8,9 +10,8 @@ import AccordionDetails from '@material-ui/core/AccordionDetails';
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { Button, Container, Divider } from '@material-ui/core';
-import axios from 'axios';
 import buyingLeaderboardContext from '../global/buyingLeaderboardContext';
-import { API_URL, TEAM_COLOR_MAP } from '../global/constants';
+import { TEAM_COLOR_MAP } from '../global/constants';
 import { fetchHashmapAndPaintingsArray } from '../global/helpers';
 import TransitionsModal from './Modal';
 import { socket } from '../global/socket';
@@ -65,9 +66,10 @@ const useStyles = makeStyles((theme) => ({
 
 export default function ResultAccordion() {
   const classes = useStyles();
-  const { buyingLeaderboardData } = useContext(buyingLeaderboardContext);
-  console.log(buyingLeaderboardData);
+  const { buyingLeaderboardData, setBuyingLeaderboardData } = useContext(buyingLeaderboardContext);
   const [currentAuctionRound, setCurrentAuctionRound] = useState();
+  const [paintings, setPaintings] = useState([]);
+  const [numFromArtMovementSold, setNumFromArtMovementSold] = useState({});
   const player = JSON.parse(sessionStorage.getItem('user'));
 
   // set current auction round
@@ -81,33 +83,35 @@ export default function ResultAccordion() {
 
   // refetch leaderboard
   useEffect(() => {
-    socket.on('refetchLeaderboard', async (oldLeaderBoard) => {
-      const { data } = await axios.get(`${API_URL}/buying/getResults/${player.hostCode}`);
-      // setBuyingLeaderboardData((prevValues) => ({
-      //   ...prevValues,
-      //   ...data,
-      // }));
-      console.log('old leaderboard', oldLeaderBoard);
-      console.log('new leaderboard call', data);
+    socket.on('refetchLeaderboard', async ({ leaderBoardAfterSelling }) => {
+      setBuyingLeaderboardData(leaderBoardAfterSelling);
+      console.log(leaderBoardAfterSelling);
     });
   }, []);
 
-  const numFromArtMovementSold = {};
-  function updateNumFromArtMovementSold() {
-    if (!buyingLeaderboardData.leaderboard) return;
-    for (const team of Object.values(buyingLeaderboardData.leaderboard)) {
-      for (const painting of team) {
-        if (painting.artMovement in numFromArtMovementSold) {
-          numFromArtMovementSold[painting.artMovement]++;
-        } else {
-          numFromArtMovementSold[painting.artMovement] = 1;
+  useEffect(() => {
+    function updateNumFromArtMovementSold() {
+      const x = {};
+      if (!buyingLeaderboardData.leaderboard) return x;
+      for (const team of Object.values(buyingLeaderboardData.leaderboard)) {
+        for (const painting of team) {
+          if (painting.artMovement in x) {
+            x[painting.artMovement]++;
+          } else {
+            x[painting.artMovement] = 1;
+          }
         }
       }
+      return x;
     }
-  }
-  updateNumFromArtMovementSold();
 
-  const { paintingsArray } = fetchHashmapAndPaintingsArray(buyingLeaderboardData, player);
+    const x = updateNumFromArtMovementSold();
+    setNumFromArtMovementSold(x);
+    const { paintingsArray } = fetchHashmapAndPaintingsArray(buyingLeaderboardData, player);
+    setPaintings(paintingsArray);
+
+    console.log('result accordion useEffect buyingLeaderboardData. paintings array len: ', paintingsArray.length);
+  }, [buyingLeaderboardData]);
 
   async function handleSell(painting) {
     const paintingPrice = painting.bidAmount;
@@ -146,7 +150,7 @@ export default function ResultAccordion() {
           </Typography>
         </AccordionSummary>
         <AccordionDetails className={classes.paintingsContainer}>
-          {paintingsArray.map((painting) => (
+          {paintings.map((painting) => (
             <>
               <Container className={classes.paintingContainer}>
                 <div className={classes.painting}>
