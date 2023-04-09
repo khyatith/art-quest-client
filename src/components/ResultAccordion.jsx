@@ -67,19 +67,12 @@ const useStyles = makeStyles((theme) => ({
 export default function ResultAccordion() {
   const classes = useStyles();
   const { buyingLeaderboardData, setBuyingLeaderboardData } = useContext(buyingLeaderboardContext);
-  const [currentAuctionRound, setCurrentAuctionRound] = useState();
   const [paintings, setPaintings] = useState([]);
   const [numFromArtMovementSold, setNumFromArtMovementSold] = useState({});
   const player = JSON.parse(sessionStorage.getItem('user'));
-
-  // set current auction round
-  useEffect(() => {
-    socket.emit('getCurrentAuctionRound', player.hostCode);
-    socket.on('currentAuctionRound', (data) => {
-      console.log('result accordion socket currentAuctionRound', data);
-      setCurrentAuctionRound(data);
-    });
-  }, []);
+  let { currentAuctionRound } = buyingLeaderboardData;
+  if (!currentAuctionRound) currentAuctionRound = 1;
+  console.log(currentAuctionRound);
 
   // refetch leaderboard
   useEffect(() => {
