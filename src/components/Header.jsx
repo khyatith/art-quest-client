@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
+import { bounce } from 'react-animations';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
@@ -39,6 +40,10 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: '#87CEEB',
     padding: '10px',
   },
+  addBounce: {
+    animation: '$bounce 1s',
+  },
+  '@keyframes bounce': bounce,
 }));
 
 function Header({
@@ -49,7 +54,11 @@ function Header({
   tempBudget,
 }) {
   const classes = useStyles();
-  //   const player = useSessionStorage('user')[0];
+  const [shouldAnimate, setShouldAnimate] = useState(false);
+  useEffect(() => {
+    setShouldAnimate(true);
+    setTimeout(() => setShouldAnimate(false), 1000);
+  }, [tempBudget]);
   return (
     <AppBar className={classes.appbar} position="static">
       <Toolbar className={classes.toolbar}>
@@ -89,7 +98,10 @@ function Header({
             {' '}
             {player.teamName}
           </Typography>
-          <Typography className={classes.tempBudget} style={{ backgroundColor: TEAM_COLOR_MAP[player.teamName] }}>
+          <Typography
+            style={{ backgroundColor: TEAM_COLOR_MAP[player.teamName] }}
+            className={`${classes.tempBudget} ${shouldAnimate ? classes.addBounce : ''}`}
+          >
             {' '}
             Available Budget: $
             {tempBudget}
