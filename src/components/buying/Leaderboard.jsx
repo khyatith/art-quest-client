@@ -55,9 +55,13 @@ export default function Leaderboard({ showAuctionResults, goToNextAuctions, maxW
     }
     if (showAuctionResults) {
       fetchLeaderboard(player);
-      setTimeout(goToNextAuctions, 20000);
+      setTimeout(goToNextAuctions, 5000);
     }
   }, [showAuctionResults]);
+
+  useEffect(() => {
+    console.log('leaderboard useEffect buyingLeaderboardData', buyingLeaderboardData);
+  }, [buyingLeaderboardData]);
 
   // const user = JSON.parse(sessionStorage.getItem('user'));
   const { totalAmountByTeam, totalPaintingsWonByTeams } = buyingLeaderboardData || {};
@@ -78,37 +82,33 @@ export default function Leaderboard({ showAuctionResults, goToNextAuctions, maxW
           </TableRow>
         </TableHead>
         <TableBody>
-          {allTeams
-              && allTeams.map((entry) => {
-                const teamName = entry;
-                // starting budget(cash) = 100;
-                /* eslint-disable no-nested-ternary */
-                let cash = STARTING_BUDGET;
-                if (totalAmountByTeam && totalAmountByTeam[teamName] >= 0) {
-                  cash = totalAmountByTeam[teamName];
-                }
-                const cashPoints = cash !== 0 ? parseFloat(cash / 10).toFixed(2) : 0;
-                const classify = classifyPoints && classifyPoints[teamName] ? classifyPoints[teamName] : 0;
-                const totalPaintingsWon = totalPaintingsWonByTeams && totalPaintingsWonByTeams[`${teamName}`] ? totalPaintingsWonByTeams[`${teamName}`] : 0;
-                const total = (0.4 * cash + 0.3 * totalPaintingsWon + 0.3 * classify).toFixed(2);
-                return (
-                  <TableRow key={teamName} style={{ backgroundColor: `${TEAM_COLOR_MAP[teamName]}` }}>
-                    <StyledTableCell align="right">{teamName}</StyledTableCell>
-                    <StyledTableCell align="right">
-                      {totalPaintingsWon}
-                    </StyledTableCell>
-                    <StyledTableCell component="th" scope="row" align="right">
-                      $
-                      {cash}
-                      M
-                    </StyledTableCell>
-                    <StyledTableCell align="right">{cashPoints}</StyledTableCell>
-                    {/* <StyledTableCell align="right">0</StyledTableCell> */}
-                    <StyledTableCell align="right">{classify}</StyledTableCell>
-                    <StyledTableCell align="right">{total}</StyledTableCell>
-                  </TableRow>
-                );
-              })}
+          {allTeams &&
+            allTeams.map((entry) => {
+              const teamName = entry;
+              // starting budget(cash) = 100;
+              /* eslint-disable no-nested-ternary */
+              let cash = STARTING_BUDGET;
+              if (totalAmountByTeam && totalAmountByTeam[teamName] >= 0) {
+                cash = totalAmountByTeam[teamName];
+              }
+              const cashPoints = cash !== 0 ? parseFloat(cash / 10).toFixed(2) : 0;
+              const classify = classifyPoints && classifyPoints[teamName] ? classifyPoints[teamName] : 0;
+              const totalPaintingsWon = totalPaintingsWonByTeams && totalPaintingsWonByTeams[`${teamName}`] ? totalPaintingsWonByTeams[`${teamName}`] : 0;
+              const total = (0.4 * cash + 0.3 * totalPaintingsWon + 0.3 * classify).toFixed(2);
+              return (
+                <TableRow key={teamName} style={{ backgroundColor: `${TEAM_COLOR_MAP[teamName]}` }}>
+                  <StyledTableCell align="right">{teamName}</StyledTableCell>
+                  <StyledTableCell align="right">{totalPaintingsWon}</StyledTableCell>
+                  <StyledTableCell component="th" scope="row" align="right">
+                    ${cash}M
+                  </StyledTableCell>
+                  <StyledTableCell align="right">{cashPoints}</StyledTableCell>
+                  {/* <StyledTableCell align="right">0</StyledTableCell> */}
+                  <StyledTableCell align="right">{classify}</StyledTableCell>
+                  <StyledTableCell align="right">{total}</StyledTableCell>
+                </TableRow>
+              );
+            })}
         </TableBody>
       </Table>
     </TableContainer>

@@ -1,5 +1,8 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable no-console */
 /* eslint-disable no-param-reassign */
-import React, { useContext } from 'react';
+/* eslint-disable no-restricted-syntax */
+import React, { useContext, useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Accordion from '@material-ui/core/Accordion';
 import AccordionSummary from '@material-ui/core/AccordionSummary';
@@ -9,6 +12,9 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { Button, Container, Divider } from '@material-ui/core';
 import buyingLeaderboardContext from '../global/buyingLeaderboardContext';
 import { TEAM_COLOR_MAP } from '../global/constants';
+import { fetchHashmapAndPaintingsArray } from '../global/helpers';
+import TransitionsModal from './Modal';
+import { socket } from '../global/socket';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -18,8 +24,7 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: 'white',
     zIndex: '10',
   },
-  headingContainer: {
-  },
+  headingContainer: {},
   heading: {
     fontSize: theme.typography.pxToRem(15),
     fontWeight: theme.typography.fontWeightRegular,
@@ -61,25 +66,63 @@ const useStyles = makeStyles((theme) => ({
 
 export default function ResultAccordion() {
   const classes = useStyles();
-  const { buyingLeaderboardData } = useContext(buyingLeaderboardContext);
+  const { buyingLeaderboardData, setBuyingLeaderboardData } = useContext(buyingLeaderboardContext);
+  const [paintings, setPaintings] = useState([]);
+  const [numFromArtMovementSold, setNumFromArtMovementSold] = useState({});
   const player = JSON.parse(sessionStorage.getItem('user'));
-  let paintingsArray = [];
-  if (buyingLeaderboardData.leaderboard && buyingLeaderboardData.leaderboard[player.teamName]) {
-    paintingsArray = buyingLeaderboardData.leaderboard[player.teamName];
-  }
+  let { currentAuctionRound } = buyingLeaderboardData;
+  if (!currentAuctionRound) currentAuctionRound = 1;
+  console.log(currentAuctionRound);
 
-  const hashmap = {};
-  paintingsArray = paintingsArray.map((painting) => {
-    if (painting.artMovement in hashmap) {
-      painting.classifyPoint = 5;
-    } else {
-      painting.classifyPoint = 0;
-      hashmap[painting.artMovement] = true;
+  // refetch leaderboard
+  useEffect(() => {
+    socket.on('refetchLeaderboard', async ({ leaderBoardAfterSelling }) => {
+      setBuyingLeaderboardData(leaderBoardAfterSelling);
+      console.log(leaderBoardAfterSelling);
+    });
+  }, []);
+
+  useEffect(() => {
+    function updateNumFromArtMovementSold() {
+      const x = {};
+      if (!buyingLeaderboardData.leaderboard) return x;
+      for (const team of Object.values(buyingLeaderboardData.leaderboard)) {
+        for (const painting of team) {
+          if (painting.artMovement in x) {
+            x[painting.artMovement]++;
+          } else {
+            x[painting.artMovement] = 1;
+          }
+        }
+      }
+      return x;
     }
-    return painting;
-  });
 
-  function handleSell() {}
+    const x = updateNumFromArtMovementSold();
+    setNumFromArtMovementSold(x);
+    const { paintingsArray } = fetchHashmapAndPaintingsArray(buyingLeaderboardData, player);
+    setPaintings(paintingsArray);
+
+    console.log('result accordion useEffect buyingLeaderboardData. paintings array len: ', paintingsArray.length);
+  }, [buyingLeaderboardData]);
+
+  async function handleSell(painting) {
+    const paintingPrice = painting.bidAmount;
+    const deprecFactor = 0.05 * currentAuctionRound;
+    const basePrice = 5;
+    const marketVal = basePrice * numFromArtMovementSold[painting.artMovement];
+    const adjPrice = paintingPrice - deprecFactor * paintingPrice;
+    const apprecFac = (marketVal - adjPrice) / adjPrice;
+    let sellingPrice = paintingPrice * deprecFactor + marketVal * apprecFac;
+    sellingPrice = 10; // above gives negative will fix later
+
+    painting.sellingPrice = sellingPrice;
+    painting.soldInRound = currentAuctionRound;
+
+    socket.emit('sellPaintingVersion1', { painting, player });
+    console.log('painting sp', sellingPrice);
+    console.log('emitted sellPainting');
+  }
 
   return (
     <div className={classes.root}>
@@ -96,11 +139,11 @@ export default function ResultAccordion() {
             {' '}
             {player.teamName}
             {' '}
-            Results
+            Paintings
           </Typography>
         </AccordionSummary>
         <AccordionDetails className={classes.paintingsContainer}>
-          {paintingsArray.map((painting) => (
+          {paintings.map((painting) => (
             <>
               <Container className={classes.paintingContainer}>
                 <div className={classes.painting}>
@@ -116,11 +159,13 @@ export default function ResultAccordion() {
                   </p>
                   {painting.classifyPoint > 0 && <p>+5 classify points</p>}
                 </div>
-                <Button onClick={() => handleSell()} className={classes.sellButton} variant="contained" color="primary">Sell</Button>
+                <Button onClick={() => handleSell(painting)} className={classes.sellButton} variant="contained" color="primary">
+                  Sell
+                </Button>
+                <TransitionsModal text="Click Yes to sell the painting" />
               </Container>
               <Divider />
             </>
-
           ))}
         </AccordionDetails>
       </Accordion>

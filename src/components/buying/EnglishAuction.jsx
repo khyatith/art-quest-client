@@ -2,11 +2,7 @@
 /* eslint-disable react/jsx-wrap-multilines */
 /* eslint-disable no-nested-ternary */
 import React, {
-  useState,
-  useEffect,
-  useRef,
-  createRef,
-  useContext,
+  useState, useEffect, useRef, createRef, useContext,
 } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { Typography, TextField } from '@material-ui/core';
@@ -21,7 +17,7 @@ import { useHistory } from 'react-router';
 import { useLocation } from 'react-router-dom';
 import { socket } from '../../global/socket';
 import { API_URL, TEAM_COLOR_MAP } from '../../global/constants';
-import { getTempBudget, validateCurrentBid } from '../../global/helpers';
+import { fetchHashmapAndPaintingsArray, getTempBudget, validateCurrentBid } from '../../global/helpers';
 import Leaderboard from './Leaderboard';
 import buyingLeaderboardContext from '../../global/buyingLeaderboardContext';
 import ResultAccordion from '../ResultAccordion';
@@ -130,6 +126,7 @@ const EnglishAuction = () => {
   const [englishAuctionTimer, setEnglishAuctionTimer] = useState();
   const [englishAuctionResults, setEnglishAuctionResults] = useState();
   const [classifyPoints, setClassifyPoints] = useState({});
+  const [increaseClassifyPoints, setIncreaseClassifyPoints] = useState({});
   const [bidAmtError, setBidAmtError] = useState();
   const [tempBudget, setTempBudget] = useState(0);
   const [sendResultEventOnce, setSendResultEventOnce] = useState(false);
@@ -142,25 +139,32 @@ const EnglishAuction = () => {
   // eslint-disable-next-line no-unused-vars
   const [auctions, setAuctions] = useState(
     // eslint-disable-next-line no-nested-ternary
-    location.state.englishAuctionsNumber === 1 ? allAuctionsObj.englishAuctions1
-      : (location.state.englishAuctionsNumber === 2 ? allAuctionsObj.englishAuctions2 : allAuctionsObj.englishAuctions3),
+    location.state.englishAuctionsNumber === 1
+      ? allAuctionsObj.englishAuctions1
+      : location.state.englishAuctionsNumber === 2
+        ? allAuctionsObj.englishAuctions2
+        : allAuctionsObj.englishAuctions3,
   );
-  const bidInputRef = useRef(auctions.artifacts.reduce((acc, a) => {
-    /* eslint-disable  no-param-reassign */
-    acc = {
-      ...acc,
-      [a.id]: createRef(),
-    };
-    return acc;
-  }, {}));
-  const previousBidDetails = useRef(auctions.artifacts.reduce((acc, a) => {
-    /* eslint-disable  no-param-reassign */
-    acc = {
-      ...acc,
-      [a.id]: createRef(),
-    };
-    return acc;
-  }, {}));
+  const bidInputRef = useRef(
+    auctions.artifacts.reduce((acc, a) => {
+      /* eslint-disable  no-param-reassign */
+      acc = {
+        ...acc,
+        [a.id]: createRef(),
+      };
+      return acc;
+    }, {}),
+  );
+  const previousBidDetails = useRef(
+    auctions.artifacts.reduce((acc, a) => {
+      /* eslint-disable  no-param-reassign */
+      acc = {
+        ...acc,
+        [a.id]: createRef(),
+      };
+      return acc;
+    }, {}),
+  );
 
   const getRemainingTime = () => {
     const total = parseInt(englishAuctionTimer.total, 10) - 1000;
@@ -180,12 +184,14 @@ const EnglishAuction = () => {
   };
 
   const goToNextAuctions = () => {
-    if (location.state.englishAuctionsNumber === 1) { // 1
+    if (location.state.englishAuctionsNumber === 1) {
+      // 1
       history.push({
         pathname: `/secretAuctions/${player.hostCode}`,
         state: { secretAuctionsNumber: 1 },
       });
-    } else if (location.state.englishAuctionsNumber === 2) { // 2
+    } else if (location.state.englishAuctionsNumber === 2) {
+      // 2
       history.push({
         pathname: `/secondPricedSealedBidAuctions/${player.hostCode}`,
         state: { secondPricedSealedBidAuctions: 1 },
@@ -262,6 +268,9 @@ const EnglishAuction = () => {
       currentBudget = totalAmountByTeam[player.teamName];
     }
     setTempBudget(getTempBudget(currentBudget, player.teamName, previousBidDetails.current));
+
+    const { hashmap } = fetchHashmapAndPaintingsArray(buyingLeaderboardData, player);
+    setIncreaseClassifyPoints(hashmap);
   }, []);
 
   const setBidAmt = (auctionId) => {
@@ -316,126 +325,115 @@ const EnglishAuction = () => {
       <Header player={player} auctionTimer={englishAuctionTimer} auctionResults={englishAuctionResults} tempBudget={tempBudget} />
       <div className={classes.leaderboardcontainer}>
         <Leaderboard classifyPoints={classifyPoints} showAuctionResults={englishAuctionResults} goToNextAuctions={goToNextAuctions} />
-        <ResultAccordion />
+        <ResultAccordion setIncreaseClassifyPoints={setIncreaseClassifyPoints} />
       </div>
-      {auctions && auctions.artifacts.map((auction) => {
-        const previousBid = previousBidDetails.current[auction.id];
-        return (
-          <Card
-            key={auction.id}
-            className={(!englishAuctionTimer && false) ? classes.disabledcardroot : classes.cardroot}
-            style={{ border: previousBid.bidTeam && `4px solid ${TEAM_COLOR_MAP[previousBid.bidTeam]}` }}
-          >
-            <CardHeader
-              title={auction.name}
-              subheader={`${auction.artist}, ${auction.country}, ${auction.dateCreated}`}
-              // style={{ backgroundColor: previousBid.bidTeam && `${TEAM_COLOR_MAP[previousBid.bidTeam]}` }}
-            />
-            <CardMedia
-              className={classes.media}
-              component="img"
-              image={`${auction.imageURL}`}
-              title={auction.name}
-              // style={{ backgroundColor: previousBid.bidTeam && `${TEAM_COLOR_MAP[previousBid.bidTeam]}` }}
-            />
-            <Typography variant="h6" style={{ marginTop: '0.5rem' }}>
-              Art Movement:
-              {' '}
-              {auction.artMovementName}
-            </Typography>
-            { !englishAuctionResults && (
-            <CardActions className={classes.cardactionsstyle}>
-              <div className={classes.textcontainer}>
-                <TextField
-                  inputRef={bidInputRef.current[auction.id]}
-                  error={bidAmtError && !!bidAmtError[auction.id]}
-                  helperText={bidAmtError && bidAmtError[auction.id]}
-                  className={classes.textfieldstyle}
-                  size="small"
-                  name="bidAmount"
-                  placeholder="Enter your bid"
-                  variant="outlined"
-                  disabled={(previousBid && (previousBid.bidTeam === player.teamName)) || englishAuctionResults}
-                  InputProps={{
-                    startAdornment: <InputAdornment position="start">$</InputAdornment>,
-                    endAdornment: <InputAdornment position="end">M</InputAdornment>,
-                  }}
-                />
-                <Button
-                  variant="contained"
-                  color="secondary"
-                  onClick={() => setBidAmt(auction.id)}
-                  disabled={(!englishAuctionTimer && false) || (
-                    previousBid
-                    && (previousBid.bidTeam === player.teamName))}
-                >
-                  Bid
-                </Button>
-                { previousBid
-                && previousBid.bidAmount
-                && (previousBid.bidTeam !== player.teamName
-                )
-                    && (
-                    <p>
-                      * Your bid cannot be less than
-                      {' '}
-                      {`$${parseInt(previousBid.bidAmount, 10) + 2}M`}
-                    </p>
+      {auctions
+        && auctions.artifacts.map((auction) => {
+          const previousBid = previousBidDetails.current[auction.id];
+          return (
+            <Card
+              key={auction.id}
+              className={!englishAuctionTimer && false ? classes.disabledcardroot : classes.cardroot}
+              style={{ border: previousBid.bidTeam && `4px solid ${TEAM_COLOR_MAP[previousBid.bidTeam]}` }}
+            >
+              <CardHeader
+                title={auction.name}
+                subheader={`${auction.artist}, ${auction.country}, ${auction.dateCreated}`}
+                // style={{ backgroundColor: previousBid.bidTeam && `${TEAM_COLOR_MAP[previousBid.bidTeam]}` }}
+              />
+              <CardMedia
+                className={classes.media}
+                component="img"
+                image={`${auction.imageURL}`}
+                title={auction.name}
+                // style={{ backgroundColor: previousBid.bidTeam && `${TEAM_COLOR_MAP[previousBid.bidTeam]}` }}
+              />
+              <Typography variant="h6" style={{ marginTop: '0.5rem' }}>
+                Art Movement:
+                {' '}
+                {auction.artMovementName}
+                {increaseClassifyPoints && increaseClassifyPoints[auction.artMovementName] && <p className="gentle-shake">+5 classify points</p>}
+              </Typography>
+              {!englishAuctionResults && (
+                <CardActions className={classes.cardactionsstyle}>
+                  <div className={classes.textcontainer}>
+                    <TextField
+                      inputRef={bidInputRef.current[auction.id]}
+                      error={bidAmtError && !!bidAmtError[auction.id]}
+                      helperText={bidAmtError && bidAmtError[auction.id]}
+                      className={classes.textfieldstyle}
+                      size="small"
+                      name="bidAmount"
+                      placeholder="Enter your bid"
+                      variant="outlined"
+                      disabled={(previousBid && previousBid.bidTeam === player.teamName) || englishAuctionResults}
+                      InputProps={{
+                        startAdornment: <InputAdornment position="start">$</InputAdornment>,
+                        endAdornment: <InputAdornment position="end">M</InputAdornment>,
+                      }}
+                    />
+                    <Button
+                      variant="contained"
+                      color="secondary"
+                      onClick={() => setBidAmt(auction.id)}
+                      disabled={(!englishAuctionTimer && false) || (previousBid && previousBid.bidTeam === player.teamName)}
+                    >
+                      Bid
+                    </Button>
+                    {previousBid && previousBid.bidAmount && previousBid.bidTeam !== player.teamName && (
+                      <p>
+                        * Your bid cannot be less than
+                        {' '}
+                        {`$${parseInt(previousBid.bidAmount, 10) + 2}M`}
+                      </p>
                     )}
-                { (previousBid.bidAmount && (previousBid.bidTeam === player.teamName))
-                    && (
-                    <p>
-                      * Waiting for bids from other teams
-                    </p>
+                    {previousBid.bidAmount && previousBid.bidTeam === player.teamName && <p>* Waiting for bids from other teams</p>}
+                  </div>
+                  <div className={classes.bottomcontainer}>
+                    {previousBid && previousBid.bidTeam && previousBid.bidAmount ? (
+                      <div className={classes.lastbidcontainer} style={{ backgroundColor: `${previousBid.bidColor}` }}>
+                        <p className={classes.lastbidby}>
+                          Last Bid By:
+                          {`Team ${previousBid.bidTeam}`}
+                        </p>
+                        <p className={classes.lastbidamount}>
+                          Last Bid Amount:
+                          {`$${parseInt(previousBid.bidAmount, 10)}M`}
+                        </p>
+                      </div>
+                    ) : (
+                      <div className={classes.lastbidcontainer}>
+                        <p className={classes.lastbidby}>Highest bid will show here</p>
+                      </div>
                     )}
-              </div>
-              <div className={classes.bottomcontainer}>
-                { previousBid && previousBid.bidTeam && previousBid.bidAmount ? (
-                  <div className={classes.lastbidcontainer} style={{ backgroundColor: `${previousBid.bidColor}` }}>
+                  </div>
+                </CardActions>
+              )}
+              {englishAuctionResults && englishAuctionResults[auction.id] && (
+                <div className={classes.bottomcontainer}>
+                  <div className={classes.lastbidcontainer} style={{ backgroundColor: `${englishAuctionResults[auction.id].bidColor}` }}>
                     <p className={classes.lastbidby}>
-                      Last Bid By:
-                      {`Team ${previousBid.bidTeam}`}
-                    </p>
-                    <p className={classes.lastbidamount}>
-                      Last Bid Amount:
-                      {`$${parseInt(previousBid.bidAmount, 10)}M`}
+                      Won by
+                      {' '}
+                      {`Team ${englishAuctionResults[auction.id].bidTeam}`}
+                      {' '}
+                      for
+                      {' '}
+                      {`$${parseInt(englishAuctionResults[auction.id].bidAmount, 10)}M`}
                     </p>
                   </div>
-                ) : (
+                </div>
+              )}
+              {englishAuctionResults && !englishAuctionResults[auction.id] && (
+                <div className={classes.bottomcontainer}>
                   <div className={classes.lastbidcontainer}>
-                    <p className={classes.lastbidby}>Highest bid will show here</p>
+                    <p className={classes.lastbidby}>No bids were placed</p>
                   </div>
-                )}
-              </div>
-            </CardActions>
-            )}
-            {englishAuctionResults && englishAuctionResults[auction.id] && (
-              <div className={classes.bottomcontainer}>
-                <div className={classes.lastbidcontainer} style={{ backgroundColor: `${englishAuctionResults[auction.id].bidColor}` }}>
-                  <p className={classes.lastbidby}>
-                    Won by
-                    {' '}
-                    {`Team ${englishAuctionResults[auction.id].bidTeam}`}
-                    {' '}
-                    for
-                    {' '}
-                    {`$${parseInt(englishAuctionResults[auction.id].bidAmount, 10)}M`}
-                  </p>
                 </div>
-              </div>
-            )}
-            {englishAuctionResults && !englishAuctionResults[auction.id] && (
-              <div className={classes.bottomcontainer}>
-                <div className={classes.lastbidcontainer}>
-                  <p className={classes.lastbidby}>
-                    No bids were placed
-                  </p>
-                </div>
-              </div>
-            )}
-          </Card>
-        );
-      })}
+              )}
+            </Card>
+          );
+        })}
     </div>
   );
 };

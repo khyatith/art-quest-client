@@ -47,7 +47,7 @@ function LaunchScreen() {
   const handleCreate = () => {
     const existingUser = JSON.parse(sessionStorage.getItem('user'));
     if (existingUser?.playerId === '') {
-      console.log('playerId is empty. Open in new tab and enter name before continuing');
+      // console.log('playerId is empty. Open in new tab and enter name before continuing');
       return;
     }
     sessionStorage.setItem('user', JSON.stringify(player));
@@ -62,8 +62,6 @@ function LaunchScreen() {
   }, []);
 
   const getUID = async () => {
-    console.log('getUID called');
-
     const { data } = await axios.get(`${API_URL}/buying/getUID/`);
     return data;
   };

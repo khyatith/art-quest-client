@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 export const formatNumberToCurrency = (value) => new Intl.NumberFormat('en-US', {
   style: 'currency',
   currency: 'usd',
@@ -18,7 +19,6 @@ export const getTempBudget = (availableBudget, teamName, previousBids) => {
 
 export const getTempBudgetForSecretAuctions = (availableBudget, teamName, previousBids) => {
   const bids = Object.values(previousBids);
-  console.log('getTempBudget bids', bids);
   /* eslint-disable no-restricted-syntax */
   let sum = 0;
   for (const bid of bids) {
@@ -37,3 +37,21 @@ export const validateCurrentBid = (value, currTempBudget) => {
   if (value > currTempBudget) return 'Your bid should be less than or equal to total cash';
   return null;
 };
+
+export function fetchHashmapAndPaintingsArray(buyingLeaderboardData, player) {
+  let paintingsArray = [];
+  const hashmap = {};
+  if (buyingLeaderboardData.leaderboard && buyingLeaderboardData.leaderboard[player.teamName]) {
+    paintingsArray = buyingLeaderboardData.leaderboard[player.teamName];
+  }
+  paintingsArray = paintingsArray.map((painting) => {
+    if (painting.artMovement in hashmap) {
+      painting.classifyPoint = 5;
+    } else {
+      painting.classifyPoint = 0;
+      hashmap[painting.artMovement] = true;
+    }
+    return painting;
+  });
+  return { paintingsArray, hashmap };
+}

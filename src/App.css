@@ -1,5 +1,5 @@
 /* @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@800&display=swap'); */
-.App {
+/* .App {
   text-align: center;
 }
 
@@ -36,4 +36,26 @@
   to {
     transform: rotate(360deg);
   }
+} */
+
+@keyframes tilt-shaking {
+  0% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(5deg);
+  }
+  50% {
+    transform: rotate(0eg);
+  }
+  75% {
+    transform: rotate(-5deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
+.gentle-shake {
+  animation: tilt-shaking 0.25s infinite;
 }
