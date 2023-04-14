@@ -59,10 +59,6 @@ export default function Leaderboard({ showAuctionResults, goToNextAuctions, maxW
     }
   }, [showAuctionResults]);
 
-  useEffect(() => {
-    console.log('leaderboard useEffect buyingLeaderboardData', buyingLeaderboardData);
-  }, [buyingLeaderboardData]);
-
   // const user = JSON.parse(sessionStorage.getItem('user'));
   const { totalAmountByTeam, totalPaintingsWonByTeams } = buyingLeaderboardData || {};
   const classifyPoints = buyingLeaderboardData?.classifyPoints?.classify;

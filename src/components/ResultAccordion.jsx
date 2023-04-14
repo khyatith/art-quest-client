@@ -67,18 +67,20 @@ const useStyles = makeStyles((theme) => ({
 export default function ResultAccordion() {
   const classes = useStyles();
   const { buyingLeaderboardData, setBuyingLeaderboardData } = useContext(buyingLeaderboardContext);
+  console.log('buyingLeaderboardData=>', buyingLeaderboardData);
   const [paintings, setPaintings] = useState([]);
   const [numFromArtMovementSold, setNumFromArtMovementSold] = useState({});
   const player = JSON.parse(sessionStorage.getItem('user'));
   let { currentAuctionRound } = buyingLeaderboardData;
   if (!currentAuctionRound) currentAuctionRound = 1;
-  console.log(currentAuctionRound);
 
   // refetch leaderboard
   useEffect(() => {
     socket.on('refetchLeaderboard', async ({ leaderBoardAfterSelling }) => {
-      setBuyingLeaderboardData(leaderBoardAfterSelling);
-      console.log(leaderBoardAfterSelling);
+      setBuyingLeaderboardData((prevValues) => ({
+        ...prevValues,
+        ...leaderBoardAfterSelling,
+      }));
     });
   }, []);
 
@@ -103,7 +105,7 @@ export default function ResultAccordion() {
     const { paintingsArray } = fetchHashmapAndPaintingsArray(buyingLeaderboardData, player);
     setPaintings(paintingsArray);
 
-    console.log('result accordion useEffect buyingLeaderboardData. paintings array len: ', paintingsArray.length);
+    console.log('paintings array len: ', paintingsArray.length);
   }, [buyingLeaderboardData]);
 
   async function handleSell(painting) {
@@ -111,16 +113,18 @@ export default function ResultAccordion() {
     const deprecFactor = 0.05 * currentAuctionRound;
     const basePrice = 5;
     const marketVal = basePrice * numFromArtMovementSold[painting.artMovement];
-    const adjPrice = paintingPrice - deprecFactor * paintingPrice;
+    const adjPrice = paintingPrice - (deprecFactor * paintingPrice);
     const apprecFac = (marketVal - adjPrice) / adjPrice;
-    let sellingPrice = paintingPrice * deprecFactor + marketVal * apprecFac;
+    let sellingPrice = (paintingPrice * deprecFactor) + (marketVal * apprecFac);
+    // console.log(sellingPrice);
     sellingPrice = 10; // above gives negative will fix later
 
     painting.sellingPrice = sellingPrice;
     painting.soldInRound = currentAuctionRound;
 
+    // console.log(painting);
+
     socket.emit('sellPaintingVersion1', { painting, player });
-    console.log('painting sp', sellingPrice);
     console.log('emitted sellPainting');
   }
 

@@ -26,7 +26,7 @@ import { useLocation } from 'react-router-dom';
 import { useHistory } from 'react-router';
 import { socket } from '../../global/socket';
 import { API_URL, TEAM_COLOR_MAP } from '../../global/constants';
-import { getTempBudgetForSecretAuctions, validateCurrentBid } from '../../global/helpers';
+import { fetchHashmapAndPaintingsArray, getTempBudgetForSecretAuctions, validateCurrentBid } from '../../global/helpers';
 import Leaderboard from './Leaderboard';
 import buyingLeaderboardContext from '../../global/buyingLeaderboardContext';
 import ResultAccordion from '../ResultAccordion';
@@ -136,6 +136,7 @@ const SecretAuction = () => {
   const [secretAuctionResults, setSecretAuctionResults] = useState();
   const [classifyPoints, setClassifyPoints] = useState({});
   const [increaseClassifyPoints, setIncreaseClassifyPoints] = useState({});
+  console.log(increaseClassifyPoints);
   const [tempBudget, setTempBudget] = useState();
   const [isFetched, setIsFetched] = useState(false);
   const [bidAmtError, setBidAmtError] = useState();
@@ -280,7 +281,11 @@ const SecretAuction = () => {
       currentBudget = totalAmountByTeam[player.teamName];
     }
     setTempBudget(getTempBudgetForSecretAuctions(currentBudget, player.teamName, liveStyles.current));
-  }, []);
+
+    const { hashmap } = fetchHashmapAndPaintingsArray(buyingLeaderboardData, player);
+    console.log('hashmap created', hashmap);
+    setIncreaseClassifyPoints(hashmap);
+  }, [buyingLeaderboardData]);
 
   const setBidAmt = (auctionId) => {
     const bidInput = bidInputRef.current[auctionId].current.value;
@@ -324,7 +329,7 @@ const SecretAuction = () => {
       <Header player={player} auctionTimer={secretAuctionTimer} auctionResults={secretAuctionResults} tempBudget={tempBudget} />
       <div className={classes.leaderboardcontainer}>
         <Leaderboard classifyPoints={classifyPoints} showAuctionResults={secretAuctionResults} goToNextAuctions={goToNextAuctions} />
-        <ResultAccordion setIncreaseClassifyPoints={setIncreaseClassifyPoints} />
+        <ResultAccordion />
       </div>
       {secretAuctions &&
         secretAuctions.artifacts.map((auction) => {

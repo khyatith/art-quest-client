@@ -15,7 +15,7 @@ import { useLocation } from 'react-router-dom';
 import { useHistory } from 'react-router';
 import { socket } from '../../global/socket';
 import { API_URL, TEAM_COLOR_MAP } from '../../global/constants';
-import { getTempBudgetForSecretAuctions, validateCurrentBid } from '../../global/helpers';
+import { fetchHashmapAndPaintingsArray, getTempBudgetForSecretAuctions, validateCurrentBid } from '../../global/helpers';
 import Leaderboard from './Leaderboard';
 import buyingLeaderboardContext from '../../global/buyingLeaderboardContext';
 import ResultAccordion from '../ResultAccordion';
@@ -125,6 +125,7 @@ const SecondPricedSealedBidAuction = () => {
   const [secondPriceAuctionResults, setSecondPriceAuctionResults] = useState();
   const [classifyPoints, setClassifyPoints] = useState({});
   const [increaseClassifyPoints, setIncreaseClassifyPoints] = useState({});
+  console.log(increaseClassifyPoints);
   const [tempBudget, setTempBudget] = useState();
   const [isFetched, setIsFetched] = useState(false);
   const [bidAmtError, setBidAmtError] = useState();
@@ -262,7 +263,11 @@ const SecondPricedSealedBidAuction = () => {
       currentBudget = totalAmountByTeam[player.teamName];
     }
     setTempBudget(getTempBudgetForSecretAuctions(currentBudget, player.teamName, liveStyles.current));
-  }, []);
+
+    const { hashmap } = fetchHashmapAndPaintingsArray(buyingLeaderboardData, player);
+    console.log('hashmap created', hashmap);
+    setIncreaseClassifyPoints(hashmap);
+  }, [buyingLeaderboardData]);
 
   const setBidAmt = (auctionId) => {
     const bidInput = bidInputRef.current[auctionId].current.value;
@@ -304,113 +309,106 @@ const SecondPricedSealedBidAuction = () => {
       <Header player={player} auctionTimer={secondPriceAuctionTimer} auctionResults={secondPriceAuctionResults} tempBudget={tempBudget} />
       <div className={classes.leaderboardcontainer}>
         <Leaderboard classifyPoints={classifyPoints} showAuctionResults={secondPriceAuctionResults} goToNextAuctions={goToNextAuctions} />
-        <ResultAccordion setIncreaseClassifyPoints={setIncreaseClassifyPoints} />
+        <ResultAccordion />
       </div>
       {secondPriceAuctions
-      && secondPriceAuctions.artifacts.map((auction) => {
-        const liveStylesForCurrentAuction = liveStyles && liveStyles.current[`${auction.id}`].current;
-        const winner = secondPriceAuctionResults && secondPriceAuctionResults[`${auction.id}`] && secondPriceAuctionResults[`${auction.id}`].bidTeam;
-        return (
-          <Card
-            key={auction.id}
-            className={classes.cardroot}
-            style={{ border: winner && `4px solid ${TEAM_COLOR_MAP[winner]}` }}
-          >
-            <CardHeader title={auction.name} subheader={`${auction.artist}, ${auction.country}, ${auction.dateCreated}`} />
-            <CardMedia className={classes.media} component="img" image={`${auction.imageURL}`} title={auction.name} />
-            <Typography variant="h6" style={{ marginTop: '0.5rem' }}>
-              Art Movement:
-              {auction.artMovementName}
-              {increaseClassifyPoints && increaseClassifyPoints[auction.artMovementName] && <p className="gentle-shake">+5 classify points</p>}
-            </Typography>
-            <CardActions className={classes.cardactionsstyle}>
-              {!secondPriceAuctionResults && (
-                <div className={classes.textcontainer}>
-                  <TextField
-                    inputRef={bidInputRef.current[auction.id]}
-                    error={bidAmtError && !!bidAmtError[auction.id]}
-                    helperText={bidAmtError && bidAmtError[auction.id]}
-                    className={classes.textfieldstyle}
-                    size="small"
-                    name="bidAmount"
-                    placeholder="Enter your bid"
-                    variant="outlined"
-                    disabled={liveStylesForCurrentAuction && Object.keys(liveStylesForCurrentAuction).includes(player.teamName)}
-                    InputProps={{
-                      startAdornment: <InputAdornment position="start">$</InputAdornment>,
-                      endAdornment: <InputAdornment position="end">M</InputAdornment>,
-                    }}
-                  />
-                  <Button
-                    variant="contained"
-                    color="secondary"
-                    disabled={liveStylesForCurrentAuction && Object.keys(liveStylesForCurrentAuction).includes(player.teamName)}
-                    onClick={() => setBidAmt(auction.id)}
-                  >
-                    Bid
-                  </Button>
-                </div>
-              )}
-              <div className={classes.bottomcontainer}>
-                <div className={classes.lastbidcontainer}>
-                  {liveStylesForCurrentAuction
-                  && Object.entries(liveStylesForCurrentAuction).map(([key, value]) => {
-                    const bidAmt = winner && value;
-                    return (
+        && secondPriceAuctions.artifacts.map((auction) => {
+          const liveStylesForCurrentAuction = liveStyles && liveStyles.current[`${auction.id}`].current;
+          const winner = secondPriceAuctionResults && secondPriceAuctionResults[`${auction.id}`] && secondPriceAuctionResults[`${auction.id}`].bidTeam;
+          return (
+            <Card key={auction.id} className={classes.cardroot} style={{ border: winner && `4px solid ${TEAM_COLOR_MAP[winner]}` }}>
+              <CardHeader title={auction.name} subheader={`${auction.artist}, ${auction.country}, ${auction.dateCreated}`} />
+              <CardMedia className={classes.media} component="img" image={`${auction.imageURL}`} title={auction.name} />
+              <Typography variant="h6" style={{ marginTop: '0.5rem' }}>
+                Art Movement:
+                {auction.artMovementName}
+                {increaseClassifyPoints && increaseClassifyPoints[auction.artMovementName] && <p className="gentle-shake">+5 classify points</p>}
+              </Typography>
+              <CardActions className={classes.cardactionsstyle}>
+                {!secondPriceAuctionResults && (
+                  <div className={classes.textcontainer}>
+                    <TextField
+                      inputRef={bidInputRef.current[auction.id]}
+                      error={bidAmtError && !!bidAmtError[auction.id]}
+                      helperText={bidAmtError && bidAmtError[auction.id]}
+                      className={classes.textfieldstyle}
+                      size="small"
+                      name="bidAmount"
+                      placeholder="Enter your bid"
+                      variant="outlined"
+                      disabled={liveStylesForCurrentAuction && Object.keys(liveStylesForCurrentAuction).includes(player.teamName)}
+                      InputProps={{
+                        startAdornment: <InputAdornment position="start">$</InputAdornment>,
+                        endAdornment: <InputAdornment position="end">M</InputAdornment>,
+                      }}
+                    />
+                    <Button
+                      variant="contained"
+                      color="secondary"
+                      disabled={liveStylesForCurrentAuction && Object.keys(liveStylesForCurrentAuction).includes(player.teamName)}
+                      onClick={() => setBidAmt(auction.id)}
+                    >
+                      Bid
+                    </Button>
+                  </div>
+                )}
+                <div className={classes.bottomcontainer}>
+                  <div className={classes.lastbidcontainer}>
+                    {liveStylesForCurrentAuction
+                      && Object.entries(liveStylesForCurrentAuction).map(([key, value]) => {
+                        const bidAmt = winner && value;
+                        return (
+                          <>
+                            <div
+                              style={{
+                                borderRadius: '50%',
+                                backgroundColor: TEAM_COLOR_MAP[key],
+                                width: '20px',
+                                height: '20px',
+                                margin: '0 15px',
+                                display: 'inline-block',
+                                textAlign: 'center',
+                              }}
+                            >
+                              {bidAmt && (
+                              <h5>
+                                $
+                                {bidAmt}
+                                M
+                              </h5>
+                              )}
+                            </div>
+                          </>
+                        );
+                      })}
+                    {winner && (
                       <>
                         <div
                           style={{
-                            borderRadius: '50%',
-                            backgroundColor: TEAM_COLOR_MAP[key],
-                            width: '20px',
-                            height: '20px',
-                            margin: '0 15px',
-                            display: 'inline-block',
-                            textAlign: 'center',
+                            backgroundColor: `${TEAM_COLOR_MAP[winner]}`,
+                            height: '70px',
+                            lineHeight: '40px',
+                            marginTop: '-10px',
                           }}
                         >
-                          {bidAmt
-                          && (
-                          <h5>
-                            $
-                            {bidAmt}
+                          <h4>
+                            Won by Team
+                            {' '}
+                            {winner}
+                            {' '}
+                            for $
+                            {secondPriceAuctionResults[`${auction.id}`].bidAmount}
                             M
-                          </h5>
-                          )}
+                          </h4>
                         </div>
                       </>
-                    );
-                  })}
-                  {winner && (
-                    <>
-                      <div
-                        style={{
-                          backgroundColor: `${TEAM_COLOR_MAP[winner]}`,
-                          height: '70px',
-                          lineHeight: '40px',
-                          marginTop: '-10px',
-                        }}
-                      >
-                        <h4>
-                          Won by Team
-                          {' '}
-                          {winner}
-                          {' '}
-                          for
-                          {' '}
-                          $
-                          {secondPriceAuctionResults[`${auction.id}`].bidAmount}
-                          M
-                        </h4>
-                      </div>
-                    </>
-                  )}
+                    )}
+                  </div>
                 </div>
-              </div>
-            </CardActions>
-          </Card>
-        );
-      })}
+              </CardActions>
+            </Card>
+          );
+        })}
     </div>
   );
 };

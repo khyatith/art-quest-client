@@ -6,7 +6,6 @@ export const formatNumberToCurrency = (value) => new Intl.NumberFormat('en-US', 
 
 export const getTempBudget = (availableBudget, teamName, previousBids) => {
   const bids = Object.values(previousBids);
-  console.log('getTempBudget bids', bids);
   /* eslint-disable no-restricted-syntax */
   let sum = 0;
   for (const bid of bids) {

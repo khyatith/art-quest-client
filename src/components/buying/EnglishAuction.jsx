@@ -253,8 +253,8 @@ const EnglishAuction = () => {
 
   useEffect(() => {
     socket.on('renderEnglishAuctionsResults', (data) => {
-      console.log('english auction number', location.state.englishAuctionsNumber);
-      console.log('data in render english auction results', data);
+      // console.log('english auction number', location.state.englishAuctionsNumber);
+      // console.log('data in render english auction results', data);
       setClassifyPoints(data.classifyPoints.classify);
       if (!englishAuctionResults) {
         setEnglishAuctionResults(data.englishAutionBids);
@@ -270,8 +270,9 @@ const EnglishAuction = () => {
     setTempBudget(getTempBudget(currentBudget, player.teamName, previousBidDetails.current));
 
     const { hashmap } = fetchHashmapAndPaintingsArray(buyingLeaderboardData, player);
+    console.log('hashmap created', hashmap);
     setIncreaseClassifyPoints(hashmap);
-  }, []);
+  }, [buyingLeaderboardData]);
 
   const setBidAmt = (auctionId) => {
     const bidInput = bidInputRef.current[auctionId].current.value;
@@ -325,7 +326,7 @@ const EnglishAuction = () => {
       <Header player={player} auctionTimer={englishAuctionTimer} auctionResults={englishAuctionResults} tempBudget={tempBudget} />
       <div className={classes.leaderboardcontainer}>
         <Leaderboard classifyPoints={classifyPoints} showAuctionResults={englishAuctionResults} goToNextAuctions={goToNextAuctions} />
-        <ResultAccordion setIncreaseClassifyPoints={setIncreaseClassifyPoints} />
+        <ResultAccordion />
       </div>
       {auctions
         && auctions.artifacts.map((auction) => {

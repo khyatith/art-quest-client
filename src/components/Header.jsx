@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { bounce } from 'react-animations';
+import { rubberBand } from 'react-animations';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
@@ -40,10 +40,10 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: '#87CEEB',
     padding: '10px',
   },
-  addBounce: {
-    animation: '$bounce 1s',
+  addAnimation: {
+    animation: '$rubberBand 1s',
   },
-  '@keyframes bounce': bounce,
+  '@keyframes rubberBand': rubberBand,
 }));
 
 function Header({
@@ -100,7 +100,7 @@ function Header({
           </Typography>
           <Typography
             style={{ backgroundColor: TEAM_COLOR_MAP[player.teamName] }}
-            className={`${classes.tempBudget} ${shouldAnimate ? classes.addBounce : ''}`}
+            className={`${classes.tempBudget} ${shouldAnimate ? classes.addAnimation : ''}`}
           >
             {' '}
             Available Budget: $
